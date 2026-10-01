@@ -41,7 +41,7 @@ final class TraceLetterScene: BaseScene {
         } + [CGPoint(x: 0, y: 60)]
 
         inputLocked = true
-        after(0.5) {
+        after(0.5) { [weak self] in
             guard let self else { return }
             self.voice.play([VoiceLine.traceLetter.rawValue, self.sound.soundClip])
             self.bip.hop()
