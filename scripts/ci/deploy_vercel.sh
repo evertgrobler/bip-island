@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Publishes the update (zip + appcast.xml) and a small download page to Vercel, then checks it's live.
+# Publishes the update (zip + appcast.xml) and the download page (site/) to Vercel, then checks it's live.
 # Env: OUT_DIR, FEED_URL, ZIP_NAME, VERSION, BUILD, VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
 set -euo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -17,7 +17,16 @@ site="$root/build/site"
 rm -rf "$site"
 mkdir -p "$site"
 cp "$OUT_DIR/$ZIP_NAME" "$OUT_DIR/$(basename "$FEED_URL")" "$site/"
-cp "$root/site/vercel.json" "$site/"
+cp "$root/site/vercel.json" "$root/site/icon.png" "$root/site/favicon.png" "$site/"
+cp -R "$root/site/fonts" "$site/fonts"
+# Screenshots of the real game, taken earlier in this run (take_screenshots.sh). Without them the
+# page shows marked empty frames.
+if compgen -G "$root/build/screenshots/*.jpg" >/dev/null; then
+  mkdir -p "$site/screenshots"
+  cp "$root"/build/screenshots/*.jpg "$site/screenshots/"
+else
+  echo "::warning title=No screenshots::The download page was published without screenshots."
+fi
 cp "$OUT_DIR/$ZIP_NAME" "$site/BipIsland-latest.zip"
 sed -e "s|{{VERSION}}|$VERSION|g" -e "s|{{BUILD}}|$BUILD|g" -e "s|{{ZIP}}|$ZIP_NAME|g" \
     -e "s|{{DATE}}|$(date -u '+%d %B %Y')|g" "$root/site/index.html" > "$site/index.html"

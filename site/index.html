@@ -4,34 +4,308 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light">
   <title>Bip Island</title>
+  <meta name="description" content="Bip Island: a learning game for children aged 4 to 8, for the Mac.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!--
+    The download page. CI (scripts/ci/deploy_vercel.sh) fills in VERSION, BUILD, ZIP and DATE in
+    double curly braces, and copies the screenshots CI took of the real game into screenshots/.
+    Everything is local: the font is bundled in fonts/, no trackers, no external requests.
+  -->
   <style>
-    :root { --paper: #fbf3de; --ink: #382920; --go: #61bf5c; --teal: #3dbfb3; }
-    body { margin: 0; background: var(--paper); color: var(--ink); font: 18px/1.5 "Chalkboard SE", "Comic Sans MS", system-ui, sans-serif; }
-    main { max-width: 640px; margin: 0 auto; padding: 48px 16px; }
-    h1 { font-size: 48px; margin: 0 0 4px; }
-    .version { opacity: .7; margin: 0 0 32px; }
-    a.download { display: inline-block; background: var(--go); color: #fff; text-decoration: none; font-size: 24px; padding: 18px 32px; border: 4px solid var(--ink); border-radius: 22px; }
-    ol { padding-left: 24px; }
-    li { margin-bottom: 10px; }
-    .card { border: 3px solid var(--ink); border-radius: 18px; padding: 8px 24px; margin-top: 32px; background: #fffdf6; }
+    @font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-display: swap; src: url("fonts/AtkinsonHyperlegible-Regular.ttf") format("truetype"); }
+    @font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; font-display: swap; src: url("fonts/AtkinsonHyperlegible-Bold.ttf") format("truetype"); }
+
+    :root {
+      --ink: #2B2A33;
+      --paper: #FBF4E4;
+      --card: #FFFDF6;
+      --sun: #F7C548;
+      --sea: #8FC9E8;
+      --grass: #9BCB6B;
+      --coral: #E8654F;
+      --lilac: #B9A2E8;
+      --go: #61BF5C;
+      --soft: #5C5866;
+      /* Hand-drawn wobble for boxes and buttons. */
+      --wobble: 18px 26px 20px 30px / 28px 18px 30px 20px;
+      --wobble-2: 28px 16px 30px 18px / 18px 30px 16px 28px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      /* Paper grain, drawn in place (no image download). */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .17 0 0 0 0 .16 0 0 0 0 .2 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      font: 19px/1.6 "Atkinson Hyperlegible", sans-serif;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    h1, h2, h3 { line-height: 1.15; margin: 0 0 12px; }
+    h2 { font-size: clamp(28px, 4vw, 38px); }
+    h3 { font-size: 23px; }
+    p { margin: 0 0 14px; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+    section { padding: 56px 0; }
+    .lead { font-size: 22px; }
+    .muted { color: var(--soft); }
+
+    /* Top */
+    .hero { padding: 40px 0 24px; }
+    .hero-grid { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; }
+    .brand { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+    .brand img { width: 84px; height: 84px; border-radius: 20px; border: 3px solid var(--ink); }
+    .brand h1 { font-size: clamp(42px, 7vw, 64px); margin: 0; }
+    .tagline { font-size: 24px; font-weight: 700; margin-bottom: 14px; }
+
+    /* Boxes */
+    .card { background: var(--card); border: 3px solid var(--ink); border-radius: var(--wobble); padding: 22px 24px; }
+    .card:nth-child(even) { border-radius: var(--wobble-2); }
+
+    /* Screenshots: real ones from CI, or a marked empty frame when there isn't one yet. */
+    .shot { margin: 0; }
+    .shot .frame {
+      position: relative; aspect-ratio: 16 / 10; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px;
+      border: 4px solid var(--ink); border-radius: var(--wobble);
+      background: repeating-linear-gradient(-45deg, var(--card) 0 18px, #F6EEDC 18px 36px);
+      box-shadow: 6px 7px 0 rgba(43, 42, 51, .18);
+    }
+    /* The marked empty frame sits underneath; a real screenshot covers it once it loads. */
+    .shot .frame::after { content: "Screenshot coming soon"; font-weight: 700; font-size: 20px; color: var(--soft); }
+    .shot img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; background: var(--card); }
+    .shot figcaption { font-size: 16px; color: var(--soft); margin-top: 10px; text-align: center; }
+    .shot.missing img { display: none; }
+    .shot.missing .frame { border-style: dashed; }
+
+    /* Buttons */
+    .button {
+      display: inline-flex; align-items: center; gap: 12px; min-height: 64px;
+      padding: 14px 30px; font-size: 24px; font-weight: 700; text-decoration: none;
+      color: var(--ink); background: var(--go); border: 4px solid var(--ink); border-radius: var(--wobble);
+      box-shadow: 4px 5px 0 var(--ink); transition: transform .1s ease, box-shadow .1s ease;
+    }
+    .button:hover { transform: translate(-1px, -2px); box-shadow: 5px 7px 0 var(--ink); }
+    .button:active { transform: translate(3px, 4px); box-shadow: 1px 1px 0 var(--ink); }
+    .button:focus-visible { outline: 4px solid var(--sea); outline-offset: 4px; }
+    .button svg { width: 28px; height: 28px; flex: none; }
+    .version { font-size: 16px; color: var(--soft); margin-top: 12px; }
+
+    /* The four islands */
+    .islands-intro { max-width: 720px; }
+    .island { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: center; padding: 36px 0; }
+    .island + .island { border-top: 3px dashed rgba(43, 42, 51, .2); }
+    .tag {
+      display: inline-block; font-weight: 700; font-size: 16px; padding: 4px 14px; margin-bottom: 10px;
+      border: 3px solid var(--ink); border-radius: 999px 900px 999px 950px;
+    }
+    .letters .tag { background: var(--coral); }
+    .numbers .tag { background: var(--sun); }
+    .words .tag { background: var(--grass); }
+    .coding .tag { background: var(--lilac); }
+    .games { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+    .games li { font-size: 16px; font-weight: 700; padding: 4px 12px; background: var(--card); border: 2px solid var(--ink); border-radius: 12px 16px 12px 18px; }
+
+    /* Strip of extra screenshots */
+    .strip { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 28px; }
+
+    /* Parents */
+    .band { background: rgba(143, 201, 232, .28); border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); }
+    .features { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 28px; }
+    .features h3 { display: flex; align-items: center; gap: 10px; }
+    .dot { width: 18px; height: 18px; flex: none; border: 3px solid var(--ink); border-radius: 50% 45% 55% 50%; }
+
+    /* Download */
+    .downloads { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 24px; }
+    .download-card h3 { margin-bottom: 6px; }
+    .steps { padding-left: 26px; margin: 16px 0 0; }
+    .steps li { margin-bottom: 12px; }
+
+    footer { padding: 32px 0 48px; font-size: 15px; color: var(--soft); }
+
+    @media (min-width: 760px) {
+      .hero-grid { grid-template-columns: 1fr 1.15fr; }
+      .island { grid-template-columns: 1fr 1.2fr; gap: 40px; }
+      .island:nth-of-type(even) .island-text { order: 2; }
+      .strip { grid-template-columns: 1fr 1fr; }
+      .features { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 1000px) { .features { grid-template-columns: 1fr 1fr 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .button { transition: none; } }
   </style>
 </head>
 <body>
-<main>
-  <h1>Bip Island</h1>
-  <p class="version">Version {{VERSION}} (build {{BUILD}}), {{DATE}}</p>
-  <a class="download" href="{{ZIP}}">Download for Mac</a>
-  <div class="card">
-    <h2>First install</h2>
-    <ol>
-      <li>Double-click the downloaded zip. Drag <b>Bip Island</b> into your <b>Applications</b> folder.</li>
-      <li>Right-click <b>Bip Island</b> and choose <b>Open</b>, then <b>Open</b> again.<br>
-        On macOS 15 or newer: if it says it can't be opened, go to <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>.</li>
-      <li>To leave the game: hold <b>Esc</b> for 3 seconds and answer the maths question.</li>
-    </ol>
-    <p>After this, Bip Island updates itself.</p>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="brand">
+        <img src="icon.png" alt="" width="84" height="84">
+        <h1>Bip Island</h1>
+      </div>
+      <p class="tagline">A learning game for children aged 4 to 8.</p>
+      <p class="lead">Children explore four islands with Bip, a small, friendly robot: Letters &amp; Sounds, Numbers, Words &amp; Spelling, and Coding.</p>
+      <p>A warm, friendly narrator speaks every instruction, so your child doesn't need to read to play. They pick what to play on the map, and Bip suggests what to try next.</p>
+      <p><a class="button" href="#download">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Get it for Mac</a></p>
+    </div>
+    <figure class="shot">
+      <div class="frame"><img src="screenshots/map.jpg" alt="The island map in Bip Island, with the four islands to choose from" width="1200" height="750" onerror="this.closest('.shot').classList.add('missing')"></div>
+      <figcaption>The map: your child chooses an island.</figcaption>
+    </figure>
   </div>
+</header>
+
+<main>
+  <section id="islands">
+    <div class="wrap">
+      <div class="islands-intro">
+        <h2>Four islands to explore</h2>
+        <p>Each island has its own games. Rounds are made fresh every time, so the games don't repeat, and each game has levels that move up as your child gets things right. There are 11 games so far.</p>
+      </div>
+
+      <article class="island letters">
+        <div class="island-text">
+          <span class="tag">Letters &amp; Sounds</span>
+          <h3>Hear it, find it, write it</h3>
+          <p>Children learn letter <b>sounds</b> first ("sss", not "ess"), in the order schools use: s a t p i n, then m d g o c k, and on through the digraphs. They meet each sound, hunt for pictures that start with it, pop the right letter and trace it with the mouse.</p>
+          <ul class="games" aria-label="Games on this island">
+            <li>Meet the Sound</li><li>Sound Hunt</li><li>Bubble Pop</li><li>Letter Trace</li><li>Feed the Monster</li>
+          </ul>
+        </div>
+        <figure class="shot">
+          <div class="frame"><img src="screenshots/letters-game.jpg" alt="Feed the Monster, a game on Letters &amp; Sounds island" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
+          <figcaption>Feed the Monster: only foods that start with the sound.</figcaption>
+        </figure>
+      </article>
+
+      <article class="island numbers">
+        <div class="island-text">
+          <span class="tag">Numbers</span>
+          <h3>Counting real things</h3>
+          <p>Maths starts with things you can see: tap each duck as the narrator counts aloud, and learn to spot small amounts at a glance on dice and dots, before moving on to bigger numbers.</p>
+          <ul class="games" aria-label="Games on this island">
+            <li>Count &amp; Tap</li><li>Quick Look</li>
+          </ul>
+        </div>
+        <figure class="shot">
+          <div class="frame"><img src="screenshots/numbers-game.jpg" alt="Count and Tap, a game on Numbers island" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
+          <figcaption>Count &amp; Tap: tap each one as it's counted.</figcaption>
+        </figure>
+      </article>
+
+      <article class="island words">
+        <div class="island-text">
+          <span class="tag">Words &amp; Spelling</span>
+          <h3>From sounds to words</h3>
+          <p>Children put the sounds they know together. They tap each sound in a word and hear it blend, then build words from letter tiles to match a picture. Only words made of sounds your child has already learnt are used.</p>
+          <ul class="games" aria-label="Games on this island">
+            <li>Sound Buttons</li><li>Word Builder</li>
+          </ul>
+        </div>
+        <figure class="shot">
+          <div class="frame"><img src="screenshots/words-game.jpg" alt="Word Builder, a game on Words &amp; Spelling island" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
+          <figcaption>Word Builder: spell the picture with letter tiles.</figcaption>
+        </figure>
+      </article>
+
+      <article class="island coding">
+        <div class="island-text">
+          <span class="tag">Coding</span>
+          <h3>First steps in programming, no reading needed</h3>
+          <p>Coding starts with no code at all: putting picture cards in order, like the steps of getting ready in the morning. Then children snap arrow blocks together to walk Bip to his battery, and watch him follow their program step by step.</p>
+          <ul class="games" aria-label="Games on this island">
+            <li>Morning Order</li><li>Bip's Path</li>
+          </ul>
+        </div>
+        <figure class="shot">
+          <div class="frame"><img src="screenshots/coding-game.jpg" alt="Bip's Path, a game on Coding island" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
+          <figcaption>Bip's Path: arrow blocks walk Bip to his battery.</figcaption>
+        </figure>
+      </article>
+
+      <div class="strip">
+        <figure class="shot">
+          <div class="frame"><img src="screenshots/stickers.jpg" alt="The sticker book in Bip Island" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
+          <figcaption>Stars fill Bip's jar and earn stickers for the sticker book. Nothing is ever bought.</figcaption>
+        </figure>
+        <figure class="shot">
+          <div class="frame"><img src="screenshots/charging.jpg" alt="Bip charging his battery during a play-time break" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
+          <figcaption>Time for a break: Bip plugs in to charge.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="parents" class="band">
+    <div class="wrap">
+      <h2>For parents</h2>
+      <p class="lead">Made for our own family first, with a few firm rules.</p>
+      <div class="features">
+        <div class="card">
+          <h3><span class="dot" style="background: var(--coral)"></span>Kid lock</h3>
+          <p>The game fills the screen and hides the Dock and menu bar. Children can't switch apps or quit by accident. To leave, a grown-up holds <b>Esc</b> for 3 seconds and answers a maths question, or enters a passcode if you set one.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background: var(--sun)"></span>Play-time breaks</h3>
+          <p>After 20 minutes, Bip's battery runs low. Your child finishes the game they're on, then Bip charges for 20 minutes and the games stay closed. Quitting and reopening doesn't skip it. You can change both times, set a daily limit, or end a break early.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background: var(--grass)"></span>Parent area and progress</h3>
+          <p>Behind the parent gate you can see each child's stars and stickers, minutes played today and this week, how they're doing in each skill and each phonics sound, and what needs more practice.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background: var(--sea)"></span>Up to 4 children</h3>
+          <p>Each child has their own progress and picks their animal picture on "Who's playing?". You add, rename or remove children in the parent area, and their age sets where they start.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background: var(--lilac)"></span>No ads, no accounts, no data collection</h3>
+          <p>No ads, no in-app purchases, no sign-up and no tracking. Progress stays on your Mac. The only time Bip Island goes online is to check for updates, and a grown-up installs them behind the parent gate.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background: var(--go)"></span>Follows the Cambridge curriculum</h3>
+          <p>Games line up with Cambridge Early Years and Primary Stages 1 to 3 for English, Mathematics and Computing. There are no timers, lives or "game over": a wrong answer gets a gentle sound, another try, and a spoken hint after two misses.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="download">
+    <div class="wrap">
+      <h2>Download</h2>
+      <p>For a Mac with macOS 14 Sonoma or newer.</p>
+      <!-- One card per platform. A Windows card slots in beside the Mac one later. -->
+      <div class="downloads">
+        <div class="card download-card" id="download-mac">
+          <h3>Bip Island for Mac</h3>
+          <p><a class="button" href="{{ZIP}}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download for Mac</a></p>
+          <p class="version">Version {{VERSION}} (build {{BUILD}}), {{DATE}}</p>
+          <h3>First install</h3>
+          <ol class="steps">
+            <li>Double-click the downloaded zip. Drag <b>Bip Island</b> into your <b>Applications</b> folder.</li>
+            <li>Right-click <b>Bip Island</b> and choose <b>Open</b>, then <b>Open</b> again.<br>
+              On macOS 15 or newer: if it says it can't be opened, go to <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>.</li>
+            <li>To leave the game: hold <b>Esc</b> for 3 seconds and answer the maths question (or enter your passcode, if you've set one).</li>
+          </ol>
+          <p>After this, Bip Island finds its own updates. When one is ready, an "Update ready" button appears in the corner for a grown-up to install.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <p>Bip Island is made for our family. Screenshots are taken from the real game each time a new version is built.</p>
+    <p>Text is set in Atkinson Hyperlegible by the Braille Institute, under the <a href="fonts/OFL.txt">SIL Open Font Licence</a>.</p>
+  </div>
+</footer>
+
 </body>
 </html>

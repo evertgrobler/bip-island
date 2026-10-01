@@ -40,6 +40,12 @@
   reviews due, recent games), Children tab, Settings tab.
 - **Play-time break is shared by the whole Mac** (stored in UserDefaults `bip.breakState`), so
   switching profiles can't skip it. Play minutes are still counted per child.
+- **Download page** (`site/index.html`): intro, the four islands with screenshots, a parents section,
+  and the Mac download + first-install steps. Screenshots are real: CI opens the built app with
+  `BIP_SCREENSHOTS=<folder>` (`BipIsland/App/ScreenshotMode.swift`, `scripts/ci/take_screenshots.sh`),
+  saves 12 scenes, shrinks them to JPEGs and deploys them to `screenshots/`. If that step fails the page
+  shows marked empty frames and the release still ships. The download area has one card per platform,
+  ready for a Windows card after the Godot move (the Godot build needs its own screenshot mode then).
 - **Known open items:** `vo_who_is_playing` still a placeholder clip (ElevenLabs was busy), waves 2b/3/4
   games (17 left), golden rounds, real art, music, Developer ID signing.
 
@@ -146,3 +152,11 @@
 - **1 Oct, night:** Owner asked about Windows. Decided to rebuild in Godot 4 (C#) so one codebase
   ships to Mac and Windows with auto-updates. Full rebuild in one go with CI checks instead of
   playtests; the owner tests once at switchover. New games paused. Plan: `docs/GODOT_MIGRATION.md`.
+- **1 Oct, night:** New download page for parents: intro, a section per island with screenshots, parent
+  features (kid lock, breaks, parent area, 4 children, no ads/data, Cambridge), download + install steps.
+  Font and icon bundled in `site/`. Screenshots come from a CI-only screenshot mode in the Swift app
+  (step is `continue-on-error`, artifact `screenshots-<run>` on every run). Swift change kept to that.
+- **1 Oct, night (late):** Godot Phase 0 CI green: Linux exports both, Windows (Setup.exe) and Mac
+  (Velopack portable app, ad-hoc signed, `.dmg`) install an older build and update themselves from a
+  local feed with saved data intact. Velopack's Mac packer needs a `.entitlements` file and has no
+  `--skipVeloAppCheck` (Windows only).
