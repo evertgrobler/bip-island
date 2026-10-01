@@ -1,5 +1,9 @@
 # Bip Island — project brief for Claude Code
 
+**Start here: read `docs/STATUS.md` first.** It has the current build state, locked
+decisions, the workflow that works on this machine, and gotchas. When you finish a
+session, update it (dated log entry + current state) and commit it with your changes.
+
 A full-screen native macOS learning game for children aged 4–8. Kids explore four islands — Letters & Sounds, Numbers, Words & Spelling, Coding — guided by a robot companion called Bip. Every instruction is spoken, so no reading is needed to play.
 
 The full game design is in `docs/PLAN.md`. Read it before starting a new phase.
