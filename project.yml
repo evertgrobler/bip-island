@@ -41,6 +41,12 @@ targets:
       - path: Resources/Audio
         type: folder
         buildPhase: resources
+      # App icon: Bip on the island (Resources/Assets.xcassets/AppIcon.appiconset, all macOS sizes).
+      - path: Resources/Assets.xcassets
+      # All game content (JSON). Copied as a folder: Bip Island.app/Contents/Resources/Content/…
+      - path: Content
+        type: folder
+        buildPhase: resources
     dependencies:
       - package: Sparkle
       - package: BipCore
@@ -51,6 +57,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: app.bipisland.game
         GENERATE_INFOPLIST_FILE: NO
         COMBINE_HIDPI_IMAGES: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: BipIsland/Info.plist
       properties:
@@ -60,6 +67,7 @@ targets:
         CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
         CFBundlePackageType: APPL
         CFBundleDevelopmentRegion: en
+        CFBundleIconName: AppIcon
         CFBundleInfoDictionaryVersion: "6.0"
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)

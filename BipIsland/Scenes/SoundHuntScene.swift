@@ -1,18 +1,25 @@
 import BipCore
 import SpriteKit
 
-/// "Sound hunt": "Find the picture that starts with… sss" — click the right one of three pictures.
+/// Sound Hunt: "Find the picture that starts with… sss" — click the right one of three pictures.
+/// Each question is a fresh round from `SoundHuntGame`; the word to find never repeats in a visit.
 /// Wrong → soft boop and try again; two misses → spoken hint and the right card wiggles.
 final class SoundHuntScene: BaseScene {
-    private let sound: PhonicsSound
-    private var question: HuntQuestion?
+    private let game: SoundHuntGame
+    private var session: GameSession
+    private let learner: Learner
+    /// The sound Bip chose this visit for; a level change on it ends the visit.
+    private let focus: PhonicsSound
+    private var round: SoundHuntGame.Round?
     private var attempt = QuestionAttempt()
     private var cards: [PictureCard] = []
-    private var questionsAsked = 0
     private static let cardPositions = [CGPoint(x: -400, y: 60), CGPoint(x: 0, y: 60), CGPoint(x: 400, y: 60)]
 
-    init(coordinator: GameCoordinator, sound: PhonicsSound) {
-        self.sound = sound
+    init(coordinator: GameCoordinator, game: SoundHuntGame, session: GameSession, learner: Learner, focus: PhonicsSound) {
+        self.game = game
+        self.session = session
+        self.learner = learner
+        self.focus = focus
         super.init(coordinator: coordinator)
     }
 
@@ -31,14 +38,17 @@ final class SoundHuntScene: BaseScene {
     }
 
     private func askQuestion() {
+        guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
+            // Nothing fresh left to ask (or the visit is over).
+            return endVisit(with: .roundDone)
+        }
         cards.forEach { $0.removeFromParent() }
         attempt = QuestionAttempt()
-        let q = coordinator.planner.makeHuntQuestion(target: sound, using: &coordinator.rng)
-        question = q
-        cards = q.choices.enumerated().map { index, choice in
-            let card = PictureCard(word: choice.pictureWord, seed: 900 + UInt64(questionsAsked * 7 + index))
+        round = next
+        cards = next.choices.enumerated().map { index, choice in
+            let card = PictureCard(picture: choice.picture, word: choice.word, seed: 900 + UInt64(session.roundsPlayed * 7 + index))
             card.name = "tap:card:\(index)"
-            card.position = Self.cardPositions[index]
+            card.position = Self.cardPositions[index % Self.cardPositions.count]
             card.zPosition = 10
             card.setScale(0.01)
             addChild(card)
@@ -51,7 +61,8 @@ final class SoundHuntScene: BaseScene {
     }
 
     private func sayPrompt() {
-        voice.play([VoiceLine.findTheSound.rawValue, sound.soundClip])
+        guard let round else { return }
+        voice.play([VoiceLine.findTheSound.rawValue, round.target.soundClip])
         bip.hop()
     }
 
@@ -62,60 +73,73 @@ final class SoundHuntScene: BaseScene {
             return
         }
         guard name.hasPrefix("tap:card:"), let index = Int(name.dropFirst("tap:card:".count)),
-              let question, index < question.choices.count else { return }
+              let round, index < round.choices.count, index < cards.count else { return }
         let card = cards[index]
-        let isRight = question.choices[index] == question.target
 
-        switch attempt.answer(correct: isRight) {
+        switch attempt.answer(correct: game.isCorrect(round.choices[index], in: round)) {
         case let .correct(firstTry):
             inputLocked = true
-            questionsAsked += 1
             card.removeAllActions()
             card.zRotation = 0
             card.run(.sequence([.scale(to: 1.15, duration: 0.15), .scale(to: 1.05, duration: 0.1)]))
             Buttons.sparkle(at: card.position, in: self)
             sfx.play(.chime)
             bip.celebrate()
-            let change = coordinator.record(correct: firstTry, for: sound)
-            voice.play([coordinator.randomPraise(), question.target.wordClip], completion: { [weak self] in
-                self?.afterAnswer(change)
+            let change = coordinator.record(correct: firstTry, skillID: game.skillID(for: round), soundID: round.target.id)
+            let focusChanged = round.target.id == focus.id && change != .none
+            voice.play([coordinator.randomPraise(), round.answer.audio], completion: { [weak self] in
+                self?.afterAnswer(focusChanged ? change : .none)
             })
         case .tryAgain:
             sfx.play(.boop)
             card.run(Buttons.shake())
             bip.tilt()
             after(0.4) { [weak self] in
-                guard let self else { return }
-                self.voice.play([self.sound.soundClip])
+                guard let self, let round = self.round else { return }
+                self.voice.play([round.target.soundClip])
             }
         case .hint:
             sfx.play(.boop)
             card.run(Buttons.shake())
             bip.tilt()
-            if let rightIndex = question.choices.firstIndex(of: question.target) {
+            if let rightIndex = round.choices.firstIndex(where: { game.isCorrect($0, in: round) }), rightIndex < cards.count {
                 cards[rightIndex].run(Buttons.hintWiggle(), withKey: "hint")
             }
             after(0.4) { [weak self] in
-                guard let self else { return }
-                self.voice.play([self.coordinator.randomHint(), self.sound.soundClip])
+                guard let self, let round = self.round else { return }
+                self.voice.play([self.coordinator.randomHint(), round.target.soundClip])
             }
         }
     }
 
+    private enum Ending { case levelUp, practiseAgain, roundDone }
+
     private func afterAnswer(_ change: MasteryChange) {
         switch change {
         case .levelledUp:
-            sfx.play(.whirr)
-            bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            endVisit(with: .levelUp)
         case .droppedBack:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            endVisit(with: .practiseAgain)
         case .none:
-            if questionsAsked >= LessonPlanner.questionsPerRound {
-                voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            if session.isFinished {
+                endVisit(with: .roundDone)
             } else {
                 after(0.3) { [weak self] in self?.askQuestion() }
             }
+        }
+    }
+
+    private func endVisit(with ending: Ending) {
+        inputLocked = true
+        switch ending {
+        case .levelUp:
+            sfx.play(.whirr)
+            bip.celebrate()
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+        case .practiseAgain:
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+        case .roundDone:
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
         }
     }
 

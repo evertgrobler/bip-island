@@ -1,78 +1,155 @@
 import XCTest
 import BipCore
 
+/// Bip's suggestions on Letters Island, worked out from the content and a child's progress.
 final class LessonPlannerTests: XCTestCase {
-    private let sounds = Phonics.firstGroup.sounds
-    private var planner: LessonPlanner { LessonPlanner(sounds: sounds) }
+    private let rules = TestContent.rules
+    private let today = 1_000
 
-    func testFreshChildMeetsTheFirstSound() {
-        var rng = SeededGenerator(seed: 1)
-        let next = planner.nextActivity(tracker: MasteryTracker(), using: &rng)
-        XCTAssertEqual(next, PlannedActivity(kind: .meetTheSound, sound: sounds[0]))
+    private func letters(_ progress: ChildProgress, band: Band = .foundation) throws -> LettersProgress {
+        let content = try TestContent.library()
+        return LettersProgress(content: content, course: PhonicsCourse(content), progress: progress, startingBand: band)
     }
 
-    func testActivityFollowsTheStage() {
-        var rng = SeededGenerator(seed: 1)
-        XCTAssertEqual(planner.nextActivity(tracker: MasteryTracker(skills: ["s": SkillMastery(level: 1)]), using: &rng).kind, .soundHunt)
-        XCTAssertEqual(planner.nextActivity(tracker: MasteryTracker(skills: ["s": SkillMastery(level: 2)]), using: &rng).kind, .popTheLetter)
+    private func planner(_ progress: ChildProgress, band: Band = .foundation, canHunt: @escaping @Sendable (PhonicsSound) -> Bool = { _ in true }) throws -> LessonPlanner {
+        LessonPlanner(letters: try letters(progress, band: band), canHunt: canHunt)
     }
 
-    func testMasteredSoundMovesOnToTheNextInOrder() {
+    private func next(_ progress: ChildProgress, canHunt: @escaping @Sendable (PhonicsSound) -> Bool = { _ in true }) throws -> (ActivityKind, String) {
         var rng = SeededGenerator(seed: 1)
-        let tracker = MasteryTracker(skills: ["s": SkillMastery(level: 3)])
-        XCTAssertEqual(planner.nextActivity(tracker: tracker, using: &rng), PlannedActivity(kind: .meetTheSound, sound: sounds[1]))
-        XCTAssertEqual(planner.suggestedSound(tracker: tracker)?.id, "a")
+        let activity = try planner(progress, canHunt: canHunt).nextActivity(day: today, rules: rules, using: &rng)
+        return (activity.kind, activity.sound.id)
     }
 
-    func testEverythingMasteredMeansReview() {
-        var rng = SeededGenerator(seed: 42)
-        var skills: [String: SkillMastery] = [:]
-        for s in sounds { skills[s.id] = SkillMastery(level: 3) }
-        let tracker = MasteryTracker(skills: skills)
-        XCTAssertNil(planner.suggestedSound(tracker: tracker))
+    // Progress helpers.
+    private func met(_ ids: [String], in progress: inout ChildProgress) {
+        ids.forEach { progress.markMet(soundID: $0) }
+    }
+
+    private func raise(_ id: String, to stage: SoundStage, in progress: inout ChildProgress) {
+        progress.markMet(soundID: id)
+        while progress.sounds.stage(of: id) < stage {
+            progress.recordAnswer(correct: true, skillID: "practice", soundID: id, day: today, rules: rules)
+        }
+    }
+
+    private func masterSkill(_ id: String, in progress: inout ChildProgress, finishingOn day: Int) {
+        for i in 0..<10 {
+            progress.recordAnswer(correct: true, skillID: id, soundID: nil, day: i < 5 ? day - 1 : day, rules: rules)
+        }
+    }
+
+    // MARK: Tests
+
+    func testAFreshChildMeetsTheFirstSound() throws {
+        let state = try letters(ChildProgress())
+        XCTAssertEqual(state.unlockedGroups, [1])
+        XCTAssertEqual(state.currentGroup.number, 1)
+        XCTAssertTrue(state.knownSoundIDs.isEmpty)
+        let (kind, sound) = try next(ChildProgress())
+        XCTAssertEqual(kind, .meetTheSound)
+        XCTAssertEqual(sound, "s")
+    }
+
+    func testTwoSoundsAreMetBeforePractice() throws {
+        var progress = ChildProgress()
+        met(["s"], in: &progress)
+        XCTAssertEqual(try next(progress).0, .meetTheSound)
+        XCTAssertEqual(try next(progress).1, "a")
+
+        met(["a"], in: &progress)
+        let (kind, sound) = try next(progress)
+        XCTAssertEqual(kind, .soundHunt, "two sounds are waiting: practise before meeting more")
+        XCTAssertEqual(sound, "s")
+    }
+
+    func testRecognisedSoundsMoveOnToBubblePop() throws {
+        var progress = ChildProgress()
+        raise("s", to: .recognises, in: &progress)
+        met(["a", "t"], in: &progress)
+        let (kind, sound) = try next(progress)
+        XCTAssertEqual(kind, .bubblePop)
+        XCTAssertEqual(sound, "s")
+    }
+
+    func testASoundNoPictureStartsWithGoesStraightToBubblePop() throws {
+        var progress = ChildProgress()
+        met(["s", "a"], in: &progress)
+        let (kind, _) = try next(progress, canHunt: { $0.id != "s" })
+        XCTAssertEqual(kind, .bubblePop)
+    }
+
+    func testAMasteredSoundMovesOnToTheNextInOrder() throws {
+        var progress = ChildProgress()
+        raise("s", to: .mastered, in: &progress)
+        XCTAssertEqual(try next(progress).1, "a")
+        XCTAssertEqual(try planner(progress).suggestedSound()?.id, "a")
+    }
+
+    func testAWholeGroupLearntButNotYetMasteredMeansReview() throws {
+        var progress = ChildProgress()
+        for id in ["s", "a", "t", "p", "i", "n"] { raise(id, to: .mastered, in: &progress) }
+        let state = try letters(progress)
+        XCTAssertEqual(state.unlockedGroups, [1], "group 2 waits until snd_g1 is mastered over two days")
+        XCTAssertEqual(state.currentGroup.number, 1)
+        XCTAssertNil(try planner(progress).suggestedSound())
+
         var kinds = Set<ActivityKind>()
-        for _ in 0..<50 { kinds.insert(planner.nextActivity(tracker: tracker, using: &rng).kind) }
-        XCTAssertEqual(kinds, [.soundHunt, .popTheLetter])
+        var rng = SeededGenerator(seed: 42)
+        let planner = try planner(progress)
+        for _ in 0..<50 { kinds.insert(planner.nextActivity(day: today, rules: rules, using: &rng).kind) }
+        XCTAssertEqual(kinds, [.soundHunt, .bubblePop])
     }
 
-    func testHuntQuestionHasThreeDifferentPicturesIncludingTheTarget() {
-        var rng = SeededGenerator(seed: 7)
-        for target in sounds {
-            for _ in 0..<20 {
-                let q = planner.makeHuntQuestion(target: target, using: &rng)
-                XCTAssertEqual(q.choices.count, 3)
-                XCTAssertEqual(Set(q.choices.map(\.pictureWord)).count, 3)
-                XCTAssertEqual(q.choices.filter { $0 == target }.count, 1)
-            }
-        }
+    func testMasteringAGroupOpensTheNext() throws {
+        var progress = ChildProgress()
+        for id in ["s", "a", "t", "p", "i", "n"] { raise(id, to: .mastered, in: &progress) }
+        masterSkill("snd_g1", in: &progress, finishingOn: today)
+        let state = try letters(progress)
+        XCTAssertEqual(state.unlockedGroups, [1, 2])
+        XCTAssertEqual(state.currentGroup.number, 2)
+        XCTAssertEqual(state.learner().unlockedPhonicsGroup, 2)
+        XCTAssertEqual(try next(progress).1, "m")
     }
 
-    func testHuntPutsTheAnswerInDifferentPlaces() {
-        var rng = SeededGenerator(seed: 3)
-        var positions = Set<Int>()
-        for _ in 0..<30 {
-            let q = planner.makeHuntQuestion(target: sounds[0], using: &rng)
-            positions.insert(q.choices.firstIndex(of: sounds[0])!)
-        }
-        XCTAssertEqual(positions, [0, 1, 2])
+    func testAGroupDueForReviewComesFirst() throws {
+        var progress = ChildProgress()
+        for id in ["s", "a", "t", "p", "i", "n"] { raise(id, to: .mastered, in: &progress) }
+        masterSkill("snd_g1", in: &progress, finishingOn: today - 2)
+        XCTAssertTrue(progress.isDueForReview("snd_g1", on: today, rules: rules))
+        let (kind, sound) = try next(progress)
+        XCTAssertNotEqual(kind, .meetTheSound, "a review, not the next new sound (m)")
+        XCTAssertTrue(["s", "a", "t", "p", "i", "n"].contains(sound))
     }
 
-    func testBubblesAlwaysIncludeTheTarget() {
-        var rng = SeededGenerator(seed: 9)
-        for target in sounds {
-            let letters = planner.makeBubbleLetters(target: target, count: 5, using: &rng)
-            XCTAssertEqual(letters.count, 5)
-            XCTAssertTrue(letters.contains(target))
-        }
+    func testASixYearOldStartsAtGroupFive() throws {
+        let state = try letters(ChildProgress(), band: .stage1)
+        XCTAssertEqual(state.unlockedGroups, [1, 2, 3, 4, 5])
+        XCTAssertEqual(state.currentGroup.number, 5)
+        XCTAssertTrue(state.knownSoundIDs.isSuperset(of: ["s", "m", "ck", "h"]), "earlier groups count as known")
+        XCTAssertFalse(state.knownSoundIDs.contains("j"))
+        var rng = SeededGenerator(seed: 1)
+        let activity = try planner(ChildProgress(), band: .stage1).nextActivity(day: today, rules: rules, using: &rng)
+        XCTAssertEqual(activity, PlannedActivity(kind: .meetTheSound, sound: try XCTUnwrap(state.course.sound(id: "j"))))
     }
 
-    func testANewBubbleIsTheTargetWhenNoOtherBubbleShowsIt() {
-        var rng = SeededGenerator(seed: 11)
-        let target = sounds[2]
-        let others = sounds.filter { $0 != target }
-        XCTAssertEqual(planner.nextBubbleLetter(target: target, onScreen: Array(others.prefix(4)), using: &rng), target)
-        for _ in 0..<20 {
-            XCTAssertNotEqual(planner.nextBubbleLetter(target: target, onScreen: [target, others[0]], using: &rng), target)
+    func testTheLearnerCarriesTheFocus() throws {
+        var progress = ChildProgress()
+        met(["s"], in: &progress)
+        let state = try letters(progress)
+        let learner = state.learner(focus: state.course.sound(id: "s"))
+        XCTAssertEqual(learner.focusSoundID, "s")
+        XCTAssertEqual(learner.knownSoundIDs, ["s"])
+        XCTAssertEqual(learner.unlockedPhonicsGroup, 1)
+    }
+
+    func testActivitiesMatchTheGameRegistry() throws {
+        let content = try TestContent.library()
+        for kind in ActivityKind.allCases {
+            XCTAssertNotNil(content.game(id: kind.gameID), kind.gameID)
         }
+        XCTAssertEqual(ActivityKind.meetTheSound.gameID, MeetTheSoundGame.id)
+        XCTAssertEqual(ActivityKind.soundHunt.gameID, SoundHuntGame.id)
+        XCTAssertEqual(ActivityKind.bubblePop.gameID, BubblePopGame.id)
     }
 }

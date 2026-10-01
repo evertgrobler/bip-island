@@ -1,7 +1,7 @@
 import BipCore
 import SpriteKit
 
-/// The island map. Phase 1: Letters Island is open; the other three are asleep.
+/// The island map. Phase 1: Letters Island is open (if its content loaded); the other three are asleep.
 final class MapScene: BaseScene {
     private let greet: Bool
     private var lettersIsland: SKNode?
@@ -17,7 +17,7 @@ final class MapScene: BaseScene {
 
     override func didMove(to view: SKView) {
         drawSea()
-        lettersIsland = addIsland(id: "letters", at: CGPoint(x: -400, y: 170), colour: Palette.grass, open: true, seed: 600) { n in
+        lettersIsland = addIsland(id: "letters", at: CGPoint(x: -400, y: 170), colour: Palette.grass, open: coordinator.letters != nil, seed: 600) { n in
             let letters = Sketch.letter("s a t", size: 110, shadow: Palette.orange)
             letters.position = CGPoint(x: 0, y: 30)
             n.addChild(letters)
@@ -100,7 +100,7 @@ final class MapScene: BaseScene {
 
     override func handleTap(name: String, node: SKNode) {
         switch name {
-        case "tap:island:letters":
+        case "tap:island:letters" where coordinator.letters != nil:
             sfx.play(.whirr)
             Buttons.press(node)
             inputLocked = true

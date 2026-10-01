@@ -1,18 +1,11 @@
-/// The mastery rules from the game plan.
-public enum MasteryRules {
-    /// Correct answers in a row that move a skill up a level.
-    public static let correctInARowToLevelUp = 3
-    /// Misses in a row that drop a skill back a level.
-    public static let missesInARowToDropBack = 2
-}
-
 public enum MasteryChange: Equatable, Sendable {
     case none
     case levelledUp(to: Int)
     case droppedBack(to: Int)
 }
 
-/// Progress on one skill: a level plus the current streaks.
+/// A level plus the current streaks: right answers in a row move up, misses in a row drop back.
+/// The numbers come from `MasteryRules` (Content/curriculum/skills.json).
 public struct SkillMastery: Codable, Equatable, Sendable {
     public private(set) var level: Int
     public private(set) var correctStreak: Int
@@ -24,14 +17,13 @@ public struct SkillMastery: Codable, Equatable, Sendable {
         self.missStreak = missStreak
     }
 
-    /// Records one answered question. Three right in a row moves up a level,
-    /// two misses in a row drops back one. Streaks reset whenever the level changes.
+    /// Records one answered question. Streaks reset whenever the level changes.
     @discardableResult
-    public mutating func record(correct: Bool, minLevel: Int = 0, maxLevel: Int) -> MasteryChange {
+    public mutating func record(correct: Bool, rules: MasteryRules, minLevel: Int = 0, maxLevel: Int) -> MasteryChange {
         if correct {
             correctStreak += 1
             missStreak = 0
-            if correctStreak >= MasteryRules.correctInARowToLevelUp {
+            if correctStreak >= rules.correctInARowToMoveUp {
                 correctStreak = 0
                 if level < maxLevel {
                     level += 1
@@ -41,7 +33,7 @@ public struct SkillMastery: Codable, Equatable, Sendable {
         } else {
             missStreak += 1
             correctStreak = 0
-            if missStreak >= MasteryRules.missesInARowToDropBack {
+            if missStreak >= rules.missesInARowToDropBack {
                 missStreak = 0
                 if level > minLevel {
                     level -= 1
@@ -52,7 +44,7 @@ public struct SkillMastery: Codable, Equatable, Sendable {
         return .none
     }
 
-    /// Moves straight to a level (e.g. after "Meet the sound"), clearing the streaks.
+    /// Moves straight to a level (e.g. after "Meet the Sound"), clearing the streaks.
     public mutating func raise(to newLevel: Int) {
         guard newLevel > level else { return }
         level = newLevel
@@ -61,13 +53,13 @@ public struct SkillMastery: Codable, Equatable, Sendable {
     }
 }
 
-/// Where a child is with one sound. Each stage has its own activity.
+/// Where a child is with one sound. Each stage has its own Letters game.
 public enum SoundStage: Int, Codable, Sendable, CaseIterable, Comparable {
-    /// Not met yet → "Meet the sound".
+    /// Not met yet → Meet the Sound.
     case new = 0
-    /// Met → "Sound hunt".
+    /// Met → Sound Hunt.
     case met = 1
-    /// Recognises it in pictures → "Pop the letter".
+    /// Recognises it in pictures → Bubble Pop.
     case recognises = 2
     /// Knows it → review only.
     case mastered = 3
@@ -75,7 +67,7 @@ public enum SoundStage: Int, Codable, Sendable, CaseIterable, Comparable {
     public static func < (lhs: SoundStage, rhs: SoundStage) -> Bool { lhs.rawValue < rhs.rawValue }
 }
 
-/// Mastery for every sound a child has worked on, keyed by sound id.
+/// The level of every sound a child has worked on, keyed by sound id.
 public struct MasteryTracker: Codable, Equatable, Sendable {
     public private(set) var skills: [String: SkillMastery]
 
@@ -87,25 +79,29 @@ public struct MasteryTracker: Codable, Equatable, Sendable {
         skills[soundID] ?? SkillMastery()
     }
 
-    public func stage(of sound: PhonicsSound) -> SoundStage {
-        let level = min(max(mastery(of: sound.id).level, 0), SoundStage.mastered.rawValue)
+    public func stage(of soundID: String) -> SoundStage {
+        let level = min(max(mastery(of: soundID).level, 0), SoundStage.mastered.rawValue)
         return SoundStage(rawValue: level) ?? .new
     }
 
-    /// Records one answered question about a sound. A miss at "met" drops back to "new",
+    public func stage(of sound: PhonicsSound) -> SoundStage {
+        stage(of: sound.id)
+    }
+
+    /// Records one answered question about a sound. Two misses at "met" drop back to "new",
     /// so the child hears the sound introduced again.
     @discardableResult
-    public mutating func record(correct: Bool, for sound: PhonicsSound) -> MasteryChange {
-        var mastery = mastery(of: sound.id)
-        let change = mastery.record(correct: correct, maxLevel: SoundStage.mastered.rawValue)
-        skills[sound.id] = mastery
+    public mutating func record(correct: Bool, for soundID: String, rules: MasteryRules) -> MasteryChange {
+        var mastery = mastery(of: soundID)
+        let change = mastery.record(correct: correct, rules: rules, maxLevel: SoundStage.mastered.rawValue)
+        skills[soundID] = mastery
         return change
     }
 
-    /// Called when "Meet the sound" finishes.
-    public mutating func markMet(_ sound: PhonicsSound) {
-        var mastery = mastery(of: sound.id)
+    /// Called when Meet the Sound finishes.
+    public mutating func markMet(_ soundID: String) {
+        var mastery = mastery(of: soundID)
         mastery.raise(to: SoundStage.met.rawValue)
-        skills[sound.id] = mastery
+        skills[soundID] = mastery
     }
 }

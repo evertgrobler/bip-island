@@ -104,7 +104,7 @@
     {
       "id": "sheep",
       "picture": "pic_sheep",
-      "audioPlural": "word_sheeps"
+      "audioPlural": "word_sheep"
     },
     {
       "id": "ladybird",
@@ -129,7 +129,7 @@
     {
       "id": "fish",
       "picture": "pic_fish",
-      "audioPlural": "word_fishs"
+      "audioPlural": "word_fish"
     },
     {
       "id": "bee",

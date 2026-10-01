@@ -92,10 +92,11 @@ The authoritative mapping is `Content/curriculum/games.json`, generated from the
 - **Within a game:** 3 correct in a row moves up a level, and 2 misses in a row drops back a step.
 - **Mastered** means 80% correct over the last 10 attempts, on at least 2 different days, so one lucky session doesn't count.
 - **Review:** mastered skills come back after 2, 5 and 14 days. Bip's recommendations prefer skills due for review.
+- The game reads these numbers from `masteryRules` in `skills.json` (the `mastery` text next to it is the same rules in words). Change both together. Questions per visit to a game come from `session.roundsPerSession` in `games.json`.
 
 ## The content files
 
-All game content is data. Games never hard-code words, numbers or levels.
+All game content is data. Games never hard-code words, numbers or levels. The app bundles the whole `Content/` folder, and `ContentLibrary` (in `BipCore/Sources/BipCore/Content/`) decodes every file into Swift models at start-up. A unit test decodes each file and fails if a model would drop any key, so a new field in the JSON must also be added to `ContentModels.swift`.
 
 | File | What it holds | Used by |
 | --- | --- | --- |

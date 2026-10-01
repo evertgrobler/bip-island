@@ -118,6 +118,8 @@ The game is split into three separate parts, so adding a new game or new words n
 2. **Game types**: each mini-game follows the same template. It says which skills and ages it teaches, builds a round from the content lists at the child's level, checks the answer, and lists its skins. A new game is one new file that plugs in.
 3. **Bip's planner**: suggests what to play next from the child's progress, what's due for review, and what they haven't seen lately. It works the same for 10 games or 100.
 
+In code, the template is the `MiniGame` protocol in `BipCore/Sources/BipCore/Games/MiniGame.swift`; Meet the Sound, Sound Hunt and Bubble Pop are the first three game types built on it (one file each in the same folder). A game's skills, ages and island come from its entry in `Content/curriculum/games.json`.
+
 Automatic checks run on every update before it can reach your Mac:
 
 - **Every round is fair:** the build plays 1,000 random rounds of every game and fails if any round has no right answer, two right answers, or a distractor that sounds the same.
@@ -132,7 +134,7 @@ The plug-in template and Bip's planner come first, so every later game is quick 
 
 | Phase | Games added | Freshness added |
 | --- | --- | --- |
-| 1. Prototype (being built now) | Meet the Sound, Sound Hunt, Bubble Pop | Random rounds |
+| 1. Prototype (being built now) | Meet the Sound, Sound Hunt, Bubble Pop, on the plug-in template and reading all content from `Content/` | Random rounds |
 | 2a. Core of each island | Letter Trace, Feed the Monster, Count & Tap, Quick Look, Sound Buttons, Word Builder, Morning Order, Bip's Path | Bip's recommendations, play-time breaks, sticker book, mystery box |
 | 2b. Second wave | Number Train, More or Less, Missing Letter, Rhyme Time, Pattern Party, Fix-It | Skins (3 per game), golden rounds |
 | 3. Polish | Letter Fishing, Sound Detective, Ten-Frame Garden, Tricky Word Memory, Silly Sentences, Repeat Robot, Bip's Dance Party | Island grows, creature collection, decorations |

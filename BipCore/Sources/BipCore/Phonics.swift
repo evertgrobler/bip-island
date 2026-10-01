@@ -1,122 +1,92 @@
-/// How a sound behaves when spoken. This drives how the voice clip has to be produced.
-public enum SoundKind: String, Codable, Sendable, CaseIterable {
-    /// Can be held: s m f n l r v z. Written "sssss", never "ess".
-    case stretchy
-    /// Short vowels a e i o u, as in apple, egg, igloo, octopus, umbrella. Never the letter name.
-    case shortVowel
-    /// Stop (bouncy) sounds t p k c b d g, plus ck. Must be clipped: no "tuh".
-    case stop
-    /// Other single sounds: h j w x y qu.
-    case other
-    /// Two letters, one sound: sh ch th ng ee oo ai.
-    case digraph
-}
-
-/// One phonics sound, e.g. "s" as in sun.
-public struct PhonicsSound: Hashable, Codable, Sendable, Identifiable {
-    /// The letters that make the sound, lower case ("s", "ck", "qu", "sh").
+/// One phonics sound as the games use it, built from a grapheme in Content/phonics/graphemes.json.
+public struct PhonicsSound: Hashable, Sendable, Identifiable {
+    /// Unique id ("s", "ck", "ow_long").
     public let id: String
-    public let kind: SoundKind
+    /// The letters the child sees ("s", "ow", "a-e").
+    public let grapheme: String
+    public let group: Int
+    /// The sound itself. Two graphemes with the same IPA sound the same (c, k and ck).
+    public let ipa: String
+    public let kind: GraphemeKind
+    /// The pure-sound clip, e.g. snd_s.
+    public let soundClip: String
     /// The picture word used to introduce the sound (s → sun).
     public let pictureWord: String
-    /// False when the sound is not at the start of the picture word (duck, box, ring, moon).
-    public let isAtStartOfWord: Bool
+    public let picture: String
+    public let letterName: String?
 
-    public init(_ id: String, _ kind: SoundKind, _ pictureWord: String, atStart: Bool = true) {
-        self.id = id
-        self.kind = kind
-        self.pictureWord = pictureWord
-        self.isAtStartOfWord = atStart
+    public init(_ grapheme: Grapheme) {
+        id = grapheme.id
+        self.grapheme = grapheme.grapheme
+        group = grapheme.group
+        ipa = grapheme.ipa
+        kind = grapheme.kind
+        soundClip = grapheme.audio
+        pictureWord = grapheme.mnemonicWord
+        picture = grapheme.mnemonicPicture
+        letterName = grapheme.letterName
     }
 
-    public var grapheme: String { id }
-    /// Stop sounds have to be trimmed to a clean burst so children don't learn "tuh".
-    public var mustBeClipped: Bool { kind == .stop }
-    public var soundClip: String { AudioCatalogue.soundClip(for: self) }
     public var wordClip: String { AudioCatalogue.wordClip(for: pictureWord) }
+    /// Stop sounds have to be trimmed to a clean burst so children don't learn "tuh".
+    public var mustBeClipped: Bool { kind == .bouncy }
+
+    /// True when a child could mix the two up in a game: the same sound (c and k) or the
+    /// same letters (ow in cow and ow in snow). A sound is not confusable with itself.
+    public func isConfusable(with other: PhonicsSound) -> Bool {
+        id != other.id && (ipa == other.ipa || grapheme == other.grapheme)
+    }
 }
 
-/// A Jolly Phonics teaching group.
+/// One teaching group, e.g. group 1: s a t p i n.
 public struct PhonicsGroup: Sendable, Identifiable {
     public let number: Int
-    public let minimumAge: Int
+    public let band: Band
     public let sounds: [PhonicsSound]
     public var id: Int { number }
-
-    public init(number: Int, minimumAge: Int, sounds: [PhonicsSound]) {
-        self.number = number
-        self.minimumAge = minimumAge
-        self.sounds = sounds
-    }
+    /// The skill in skills.json that this group teaches.
+    public var skillID: String { PhonicsCourse.skillID(forGroup: number) }
 }
 
-/// The phonics teaching order. Sounds come first; letter names only once all 26 letters' sounds are known.
-public enum Phonics {
-    public static let groups: [PhonicsGroup] = [
-        PhonicsGroup(number: 1, minimumAge: 4, sounds: [
-            PhonicsSound("s", .stretchy, "sun"),
-            PhonicsSound("a", .shortVowel, "apple"),
-            PhonicsSound("t", .stop, "tent"),
-            PhonicsSound("p", .stop, "pig"),
-            PhonicsSound("i", .shortVowel, "igloo"),
-            PhonicsSound("n", .stretchy, "nest"),
-        ]),
-        PhonicsGroup(number: 2, minimumAge: 4, sounds: [
-            PhonicsSound("m", .stretchy, "mop"),
-            PhonicsSound("d", .stop, "dog"),
-            PhonicsSound("g", .stop, "goat"),
-            PhonicsSound("o", .shortVowel, "octopus"),
-            PhonicsSound("c", .stop, "cat"),
-            PhonicsSound("k", .stop, "kite"),
-        ]),
-        PhonicsGroup(number: 3, minimumAge: 4, sounds: [
-            PhonicsSound("ck", .stop, "duck", atStart: false),
-            PhonicsSound("e", .shortVowel, "egg"),
-            PhonicsSound("u", .shortVowel, "umbrella"),
-            PhonicsSound("r", .stretchy, "rabbit"),
-        ]),
-        PhonicsGroup(number: 4, minimumAge: 4, sounds: [
-            PhonicsSound("h", .other, "hat"),
-            PhonicsSound("b", .stop, "bed"),
-            PhonicsSound("f", .stretchy, "fish"),
-            PhonicsSound("l", .stretchy, "leg"),
-        ]),
-        PhonicsGroup(number: 5, minimumAge: 4, sounds: [
-            PhonicsSound("j", .other, "jam"),
-            PhonicsSound("v", .stretchy, "van"),
-            PhonicsSound("w", .other, "web"),
-            PhonicsSound("x", .other, "box", atStart: false),
-            PhonicsSound("y", .other, "yoyo"),
-            PhonicsSound("z", .stretchy, "zip"),
-            PhonicsSound("qu", .other, "queen"),
-        ]),
-        PhonicsGroup(number: 6, minimumAge: 6, sounds: [
-            PhonicsSound("sh", .digraph, "ship"),
-            PhonicsSound("ch", .digraph, "chip"),
-            PhonicsSound("th", .digraph, "thumb"),
-            PhonicsSound("ng", .digraph, "ring", atStart: false),
-            PhonicsSound("ee", .digraph, "bee", atStart: false),
-            PhonicsSound("oo", .digraph, "moon", atStart: false),
-            PhonicsSound("ai", .digraph, "rain", atStart: false),
-        ]),
-    ]
+/// The phonics teaching order, read from the content. Sounds come first; letter names only after group 5.
+public struct PhonicsCourse: Sendable {
+    public let groups: [PhonicsGroup]
 
-    public static var firstGroup: PhonicsGroup { groups[0] }
+    public init(_ file: GraphemesFile) {
+        groups = file.groups.sorted { $0.group < $1.group }.map { entry in
+            PhonicsGroup(number: entry.group, band: entry.band,
+                         sounds: file.graphemes.filter { $0.group == entry.group }.map(PhonicsSound.init))
+        }
+    }
+
+    public init(_ content: ContentLibrary) {
+        self.init(content.phonics)
+    }
+
+    /// Phonics group skills are called snd_g1 … snd_g9 in skills.json.
+    public static func skillID(forGroup number: Int) -> String { "snd_g\(number)" }
+
+    /// The group number a phonics skill id belongs to, or nil for other skills.
+    public static func group(forSkill id: String) -> Int? {
+        id.hasPrefix("snd_g") ? Int(id.dropFirst("snd_g".count)) : nil
+    }
 
     /// Every sound in teaching order.
-    public static var allSounds: [PhonicsSound] { groups.flatMap(\.sounds) }
+    public var allSounds: [PhonicsSound] { groups.flatMap(\.sounds) }
 
-    public static func sound(id: String) -> PhonicsSound? {
+    public var firstGroup: PhonicsGroup { groups[0] }
+
+    public func group(_ number: Int) -> PhonicsGroup? {
+        groups.first { $0.number == number }
+    }
+
+    public func sound(id: String) -> PhonicsSound? {
         allSounds.first { $0.id == id }
     }
 
-    /// The groups a child of this age works through. Digraphs (group 6) wait until age 6.
-    public static func groups(forAge age: Int) -> [PhonicsGroup] {
-        groups.filter { $0.minimumAge <= age }
-    }
-
-    public static func teachingOrder(forAge age: Int) -> [PhonicsSound] {
-        groups(forAge: age).flatMap(\.sounds)
+    /// Every sound in groups 1…`group`, in teaching order.
+    public func sounds(upToGroup group: Int) -> [PhonicsSound] {
+        groups.filter { $0.number <= group }.flatMap(\.sounds)
     }
 
     public static let alphabet: [String] = "abcdefghijklmnopqrstuvwxyz".map { String($0) }

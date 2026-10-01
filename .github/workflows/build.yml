@@ -130,6 +130,11 @@ jobs:
             SPARKLE_FEED_URL="${{ steps.release.outputs.feed_url }}" \
             SPARKLE_PUBLIC_KEY="${{ steps.release.outputs.public_key }}"
           ls -la "$APP_PATH/Contents"
+          # The app icon (Resources/Assets.xcassets) must make it into the app.
+          if [ ! -f "$APP_PATH/Contents/Resources/AppIcon.icns" ]; then
+            echo "::error::The app icon (AppIcon.icns) is missing from the built app."
+            exit 1
+          fi
 
       - name: Find Sparkle's tools
         run: |

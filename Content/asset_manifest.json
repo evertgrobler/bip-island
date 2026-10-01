@@ -1372,6 +1372,11 @@
       "notes": ""
     },
     {
+      "id": "word_apples",
+      "text": "apples",
+      "notes": ""
+    },
+    {
       "id": "word_are",
       "text": "are",
       "notes": ""
@@ -1422,6 +1427,11 @@
       "notes": ""
     },
     {
+      "id": "word_bees",
+      "text": "bees",
+      "notes": ""
+    },
+    {
       "id": "word_behind",
       "text": "behind",
       "notes": ""
@@ -1459,6 +1469,11 @@
     {
       "id": "word_bird",
       "text": "bird",
+      "notes": ""
+    },
+    {
+      "id": "word_biscuits",
+      "text": "biscuits",
       "notes": ""
     },
     {
@@ -1997,6 +2012,11 @@
       "notes": ""
     },
     {
+      "id": "word_frogs",
+      "text": "frogs",
+      "notes": ""
+    },
+    {
       "id": "word_full",
       "text": "full",
       "notes": ""
@@ -2254,6 +2274,11 @@
     {
       "id": "word_ladder",
       "text": "ladder",
+      "notes": ""
+    },
+    {
+      "id": "word_ladybirds",
+      "text": "ladybirds",
       "notes": ""
     },
     {
@@ -2839,6 +2864,11 @@
     {
       "id": "word_shell",
       "text": "shell",
+      "notes": ""
+    },
+    {
+      "id": "word_shells",
+      "text": "shells",
       "notes": ""
     },
     {

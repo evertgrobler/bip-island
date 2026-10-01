@@ -1,5 +1,8 @@
 {
   "note": "Every mini-game, the skills it practises, the Cambridge objectives those skills cover, and the content file it draws rounds from. buildPhase matches docs/GAMES.md.",
+  "session": {
+    "roundsPerSession": 6
+  },
   "games": [
     {
       "id": "meet_the_sound",
