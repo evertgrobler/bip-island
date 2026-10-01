@@ -179,11 +179,14 @@ public struct GameLevel: Codable, Hashable, Sendable {
     public let soundCounts: [Int]?
     /// Bip's Path: the band of grid puzzles to use.
     public let gridBand: Band?
+    /// Picture-ordering games: the most picture cards in one story.
+    public let cards: Int?
     /// For people reading the file.
     public let note: String?
 
     public init(band: Band? = nil, countTo: Int? = nil, choices: Int? = nil, flashTenths: Int? = nil, bubbles: Int? = nil,
-                speedPercent: Int? = nil, soundCounts: [Int]? = nil, gridBand: Band? = nil, note: String? = nil) {
+                speedPercent: Int? = nil, soundCounts: [Int]? = nil, gridBand: Band? = nil, cards: Int? = nil,
+                note: String? = nil) {
         self.band = band
         self.countTo = countTo
         self.choices = choices
@@ -192,6 +195,7 @@ public struct GameLevel: Codable, Hashable, Sendable {
         self.speedPercent = speedPercent
         self.soundCounts = soundCounts
         self.gridBand = gridBand
+        self.cards = cards
         self.note = note
     }
 

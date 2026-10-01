@@ -617,7 +617,21 @@
         "1CT.06"
       ],
       "content": "coding/sequences.json",
-      "buildPhase": 2
+      "buildPhase": 2,
+      "levels": [
+        {
+          "cards": 3,
+          "note": "Three-step stories"
+        },
+        {
+          "cards": 4
+        },
+        {
+          "band": "stage1",
+          "cards": 6,
+          "note": "Whole stories"
+        }
+      ]
     },
     {
       "id": "bips_path",
