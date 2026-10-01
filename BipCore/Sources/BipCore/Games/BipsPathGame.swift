@@ -46,9 +46,13 @@ public struct BipsPathGame: MiniGame {
         return out
     }
 
+    /// Puzzles from the level's grid band (small grids first), then any the child's band allows.
     public func makeRound<G: RandomNumberGenerator>(for learner: Learner, session: GameSession, using rng: inout G) -> Round? {
-        let fresh = levels.filter { $0.band <= learner.band && !session.usedItems.contains($0.id) }
-            .shuffled(using: &rng)
+        let open = levels.filter { !session.usedItems.contains($0.id) }
+        let gridBand = self.level(for: learner).gridBand
+        let atLevel = gridBand.map { band in open.filter { $0.band == band } } ?? []
+        let fallback = open.filter { $0.band <= max(learner.band, gridBand ?? learner.band) && !atLevel.contains($0) }
+        let fresh = atLevel.shuffled(using: &rng) + fallback.shuffled(using: &rng)
         for level in fresh {
             guard GridWalker.reachesGoal(program: level.optimalProgram, on: level) else { continue }
             let wrong = Self.brokenPrograms(for: level, count: Self.choiceCount - 1, using: &rng)

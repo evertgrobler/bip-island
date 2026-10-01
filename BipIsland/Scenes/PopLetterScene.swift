@@ -68,9 +68,14 @@ final class PopLetterScene: BaseScene {
             return
         }
         round = first
-        let lanes: [CGFloat] = [-440, -220, 0, 220, 440]
-        let starts: [CGFloat] = [-420, -150, 120, -300, 260].shuffled(using: &coordinator.rng)
-        for (i, letter) in first.choices.prefix(lanes.count).enumerated() {
+        // One lane per bubble (more bubbles at higher levels), spread across the screen.
+        let count = first.choices.count
+        let spacing = min(220, 1300 / CGFloat(max(count - 1, 1)))
+        let lanes: [CGFloat] = (0..<count).map { (CGFloat($0) - CGFloat(count - 1) / 2) * spacing }
+        let starts: [CGFloat] = (0..<count).map { i in -420 + CGFloat(i) * 680 / CGFloat(max(count - 1, 1)) }
+            .shuffled(using: &coordinator.rng)
+        let pace = CGFloat(first.speedPercent) / 100
+        for (i, letter) in first.choices.enumerated() {
             let node = SKNode()
             node.name = "tap:bubble:\(i)"
             node.zPosition = 10
@@ -86,7 +91,7 @@ final class PopLetterScene: BaseScene {
             node.addChild(label)
             addChild(node)
             bubbles.append(Bubble(node: node, lane: lanes[i], phase: CGFloat(i) * 1.3,
-                                  speed: CGFloat.random(in: 45...65, using: &coordinator.rng), sound: letter, label: label))
+                                  speed: pace * CGFloat.random(in: 45...65, using: &coordinator.rng), sound: letter, label: label))
         }
 
         after(0.6) { [weak self] in self?.askQuestion(isFirst: true) }
@@ -240,11 +245,11 @@ final class PopLetterScene: BaseScene {
         case .levelUp:
             sfx.play(.whirr)
             bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .practiseAgain:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .roundDone:
-            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         }
     }
 

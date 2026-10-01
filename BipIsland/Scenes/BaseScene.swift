@@ -151,6 +151,82 @@ class BaseScene: SKScene {
         hideKeyRing()
     }
 
+    // MARK: Levels and the end of a visit
+
+    private var levelBadge: SKNode?
+
+    /// Top centre: which level of this game the child is on, as filled stars (and the number for grown-ups).
+    func showLevelBadge(level: Int, of count: Int) {
+        levelBadge?.removeFromParent()
+        let badge = SKNode()
+        badge.position = CGPoint(x: 0, y: 420)
+        badge.zPosition = 45
+        let width = CGFloat(count) * 46 + 40
+        badge.addChild(Sketch.node(.roundedRect(CGRect(x: -width / 2, y: -30, width: width, height: 60), radius: 28),
+                                   fill: Palette.card, lineWidth: 4, seed: 560))
+        for i in 0..<count {
+            let x = (CGFloat(i) - CGFloat(count - 1) / 2) * 46
+            let star = Sketch.node(.polygon(Sketch.starPoints(center: CGPoint(x: x, y: 0), radius: 18)),
+                                   fill: i <= level ? Palette.sun : Palette.stone.withAlphaComponent(0.5),
+                                   lineWidth: 3, wobble: 1, seed: 561 + UInt64(i))
+            badge.addChild(star)
+        }
+        addChild(badge)
+        levelBadge = badge
+    }
+
+    /// The end of a visit: a star pops in for every star earned, and a level-up gets a bigger burst
+    /// and a fuller badge. Then `next` runs (usually back to the island).
+    func finishVisit(then next: @escaping () -> Void) {
+        let summary = coordinator.visitSummary()
+        inputLocked = true
+        let card = SKNode()
+        card.zPosition = 80
+        card.addChild(Sketch.node(.roundedRect(CGRect(x: -420, y: -170, width: 840, height: 340), radius: 40),
+                                  fill: Palette.card, lineWidth: 6, seed: 570))
+        card.setScale(0.01)
+        addChild(card)
+        card.run(.sequence([.scale(to: 1.05, duration: 0.2), .scale(to: 1, duration: 0.1)]))
+        sfx.play(.chime)
+        bip.celebrate()
+
+        let shown = min(summary.starsEarned, 10)
+        let spacing: CGFloat = 70
+        for i in 0..<shown {
+            let x = (CGFloat(i) - CGFloat(shown - 1) / 2) * spacing
+            let star = Sketch.node(.polygon(Sketch.starPoints(center: .zero, radius: 30)), fill: Palette.sun,
+                                   lineWidth: 4, wobble: 1, seed: 571 + UInt64(i))
+            star.position = CGPoint(x: x, y: 40)
+            star.setScale(0.01)
+            card.addChild(star)
+            star.run(.sequence([.wait(forDuration: 0.3 + 0.15 * Double(i)),
+                                .run { [weak self] in self?.sfx.play(.tick) },
+                                .scale(to: 1.2, duration: 0.12), .scale(to: 1, duration: 0.08)]))
+        }
+        let total = Sketch.label(summary.starsEarned > 0 ? "+\(summary.starsEarned) stars" : "Well played!", size: 46, colour: Palette.ink)
+        total.position = CGPoint(x: 0, y: -60)
+        card.addChild(total)
+
+        var wait = 0.6 + 0.15 * Double(shown)
+        if summary.levelledUp {
+            let label = Sketch.label("Level \(summary.levelNow + 1)!", size: 58, colour: Palette.ink)
+            label.position = CGPoint(x: 0, y: -125)
+            label.alpha = 0
+            card.addChild(label)
+            label.run(.sequence([.wait(forDuration: wait), .fadeIn(withDuration: 0.2)]))
+            run(.sequence([.wait(forDuration: wait), .run { [weak self] in
+                guard let self else { return }
+                self.sfx.play(.whirr)
+                Buttons.sparkle(at: CGPoint(x: -200, y: 0), in: self)
+                Buttons.sparkle(at: CGPoint(x: 200, y: 0), in: self)
+                self.showLevelBadge(level: summary.levelNow, of: summary.levelCount)
+                self.levelBadge?.run(.sequence([.scale(to: 1.3, duration: 0.2), .scale(to: 1, duration: 0.2)]))
+            }]))
+            wait += 1.2
+        }
+        after(wait + 1.2, next)
+    }
+
     /// Runs `block` after a delay on the scene's clock (so it pauses with the parent gate).
     func after(_ seconds: TimeInterval, _ block: @escaping () -> Void) {
         run(.sequence([.wait(forDuration: seconds), .run(block)]))

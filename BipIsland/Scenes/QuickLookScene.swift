@@ -1,7 +1,7 @@
 import BipCore
 import SpriteKit
 
-/// Quick Look: dots flash for two seconds — how many, without counting?
+/// Quick Look: dots flash briefly (2.5 seconds at first, a little less at higher levels) — how many, without counting?
 /// (The flash is display time, not a countdown: wrong answers still get retries and hints.)
 /// Then tap the numeral, like Count & Tap.
 final class QuickLookScene: BaseScene {
@@ -63,7 +63,7 @@ final class QuickLookScene: BaseScene {
         }
         inputLocked = true
         sayPrompt()
-        after(2.0) { [weak self] in self?.hideDots() }
+        after(next.flashSeconds) { [weak self] in self?.hideDots() }
     }
 
     private func sayPrompt() {
@@ -162,11 +162,11 @@ final class QuickLookScene: BaseScene {
         case .levelUp:
             sfx.play(.whirr)
             bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .practiseAgain:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .roundDone:
-            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         }
     }
 

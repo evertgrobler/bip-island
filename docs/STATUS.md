@@ -105,3 +105,6 @@
   account paused): cards play silence until generated. List = new `vo_` rows in `asset_manifest.json`.
 - **1 Oct late:** Optional parent passcode (Settings tab): holding Esc then asks for it instead of
   maths; 3 wrong tries fall back to maths. Stored as a salted SHA-256 hash in UserDefaults.
+- **1 Oct, night:** Levels in every game (games.json `levels`, per-child `gameLevels` in
+  ChildProgress, level stars top-centre, 8 questions a visit, end-of-visit celebration). Morning
+  Order has no levels yet (left to the Morning Order session; use `learner.gameLevel`).

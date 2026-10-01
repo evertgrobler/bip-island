@@ -151,7 +151,7 @@ final class RoundGeneratorTests: XCTestCase {
         let f = try fixture()
         var rng = SeededGenerator(seed: 5)
         playSessions(of: f.pop, f, rounds: Self.roundsPerGame, seed: 6) { round, learner, _ in
-            XCTAssertEqual(round.choices.count, BubblePopGame.bubbleCount)
+            XCTAssertEqual(round.choices.count, f.pop.level(for: learner).bubbles ?? BubblePopGame.bubbleCount)
             XCTAssertEqual(f.pop.correctChoices(in: round), [round.target])
             XCTAssertEqual(lookAlikesOrSoundAlikes(of: round.target, in: round.choices), 1,
                            "\(round.target.id): \(round.choices.map(\.grapheme))")
@@ -177,11 +177,13 @@ final class RoundGeneratorTests: XCTestCase {
     func testBubblePopUsesDifferentLettersWhenThereAreEnough() throws {
         let f = try fixture()
         var rng = SeededGenerator(seed: 7)
-        let learner = Learner(band: .foundation, unlockedPhonicsGroup: 1, knownSoundIDs: ["s", "a"], focusSoundID: "s")
+        // Level 2 has five bubbles; group 1 has five other letters to show.
+        let learner = Learner(band: .foundation, unlockedPhonicsGroup: 1, knownSoundIDs: ["s", "a"], focusSoundID: "s", gameLevel: 1)
+        XCTAssertEqual(f.pop.level(for: learner).bubbles, 5)
         for _ in 0..<100 {
             var session = GameSession(gameID: BubblePopGame.id, skin: f.pop.skins[0], maxRounds: 1)
             let round = try XCTUnwrap(session.nextRound(of: f.pop, for: learner, using: &rng))
-            XCTAssertEqual(Set(round.choices.map(\.id)).count, BubblePopGame.bubbleCount, "group 1 has five other letters to show")
+            XCTAssertEqual(Set(round.choices.map(\.id)).count, 5, "group 1 has five other letters to show")
         }
     }
 

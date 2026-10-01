@@ -26,12 +26,15 @@ public struct WordBuilderGame: MiniGame {
         words = content.words.words.filter { $0.picturable && $0.picture != nil }
     }
 
-    /// Words the child can spell: decodable, and 3 sounds for the youngest band.
+    /// Words the child can spell: decodable, with the level's number of sounds. If the level
+    /// has nothing yet at the child's phonics group, the band's usual words instead.
     func candidates(for learner: Learner) -> [Word] {
-        words.filter { word in
-            guard word.decodableFromGroup <= learner.unlockedPhonicsGroup else { return false }
-            return learner.band == .foundation ? word.soundCount == 3 : word.soundCount >= 3
+        let decodable = words.filter { $0.decodableFromGroup <= learner.unlockedPhonicsGroup }
+        if let counts = level(for: learner).soundCounts {
+            let atLevel = decodable.filter { counts.contains($0.soundCount) }
+            if !atLevel.isEmpty { return atLevel }
         }
+        return decodable.filter { learner.band == .foundation ? $0.soundCount == 3 : $0.soundCount >= 3 }
     }
 
     /// Misspellings: distinct shuffles of the tiles that don't spell the word.
