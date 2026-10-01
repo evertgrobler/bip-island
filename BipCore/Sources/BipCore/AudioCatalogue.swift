@@ -13,6 +13,17 @@ public enum VoiceLine: String, CaseIterable, Sendable {
     case levelUp = "vo_level_up"
     case letsPractiseAgain = "vo_lets_practise_again"
     case roundDone = "vo_round_done"
+    case traceLetter = "vo_trace_letter"
+    case feedMonster = "vo_feed_monster"
+    case countTap = "vo_count_tap"
+    case quickLook = "vo_quick_look"
+    case soundButtons = "vo_sound_buttons"
+    case wordBuilder = "vo_build_word"
+    case morningOrder = "vo_morning_order"
+    case bipsPath = "vo_bips_path"
+    case numbersIsland = "vo_numbers_island"
+    case wordsIsland = "vo_words_island"
+    case codingIsland = "vo_coding_island"
 }
 
 /// Audio clip names, following the file-name contract in CLAUDE.md.

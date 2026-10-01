@@ -24,6 +24,9 @@ final class ParentGateModel: ObservableObject {
     var onClose: (() -> Void)?
     var onQuit: (() -> Void)?
     var onCheckForUpdates: (() -> Void)?
+    var onEndBreakEarly: (() -> Void)?
+    /// Set by the app: play length, break length and daily maximum.
+    var playSettings: PlayTimeSettings?
 
     private var hold = HoldDetector(duration: 3)
     private var timer: Timer?
@@ -93,5 +96,9 @@ final class ParentGateModel: ObservableObject {
 
     func checkForUpdates() {
         onCheckForUpdates?()
+    }
+
+    func endBreakEarly() {
+        onEndBreakEarly?()
     }
 }

@@ -44,6 +44,26 @@ final class LettersIslandScene: BaseScene {
         addHomeButton()
         addBip(at: CGPoint(x: -170, y: -380), scale: 0.85)
 
+        let trace = SKNode()
+        trace.name = "tap:trace"
+        trace.position = CGPoint(x: -560, y: -300)
+        trace.zPosition = 10
+        trace.addChild(Sketch.node(.ellipse(center: .zero, rx: 100, ry: 100), fill: Palette.card, lineWidth: 6, seed: 760))
+        let traceLetter = Sketch.letter("s", size: 110, shadow: Palette.teal)
+        trace.addChild(traceLetter)
+        addChild(trace)
+
+        let monster = SKNode()
+        monster.name = "tap:monster"
+        monster.position = CGPoint(x: 560, y: -300)
+        monster.zPosition = 10
+        monster.addChild(Sketch.node(.ellipse(center: .zero, rx: 100, ry: 100), fill: Palette.purple, lineWidth: 6, seed: 770))
+        monster.addChild(Sketch.node(.ellipse(center: CGPoint(x: 0, y: -10), rx: 44, ry: 34), fill: Palette.ink, lineWidth: 4, seed: 771))
+        for eye in [-30, 30] {
+            monster.addChild(Sketch.node(.ellipse(center: CGPoint(x: CGFloat(eye), y: 44), rx: 16, ry: 20), fill: .white, lineWidth: 4, seed: 772 + UInt64(eye)))
+        }
+        addChild(monster)
+
         let play = Buttons.play()
         play.position = layout.positions.count > 6 ? CGPoint(x: 380, y: -320) : CGPoint(x: 140, y: -230)
         play.zPosition = 10
@@ -101,6 +121,18 @@ final class LettersIslandScene: BaseScene {
             sfx.play(.whirr)
             Buttons.press(node)
             startSuggested()
+        } else if name == "tap:trace" {
+            sfx.play(.whirr)
+            Buttons.press(node)
+            guard !inputLocked else { return }
+            inputLocked = true
+            after(0.25) { [weak self] in self?.coordinator.startTrace() }
+        } else if name == "tap:monster" {
+            sfx.play(.whirr)
+            Buttons.press(node)
+            guard !inputLocked else { return }
+            inputLocked = true
+            after(0.25) { [weak self] in self?.coordinator.startMonster() }
         } else if name.hasPrefix("tap:stone:") {
             let id = String(name.dropFirst("tap:stone:".count))
             guard let sound = coordinator.letters?.course.sound(id: id) else { return }

@@ -7,12 +7,51 @@ struct LettersGames {
     let meet: MeetTheSoundGame
     let hunt: SoundHuntGame
     let pop: BubblePopGame
+    let trace: LetterTraceGame
+    let monster: FeedMonsterGame
 
     init(content: ContentLibrary) throws {
         course = PhonicsCourse(content)
         meet = try MeetTheSoundGame(content: content, course: course)
         hunt = try SoundHuntGame(content: content, course: course)
         pop = try BubblePopGame(content: content, course: course)
+        trace = try LetterTraceGame(content: content, course: course)
+        monster = try FeedMonsterGame(content: content, course: course)
+    }
+}
+
+/// The Numbers games.
+struct NumbersGames {
+    let count: CountTapGame
+    let quick: QuickLookGame
+
+    init(content: ContentLibrary) throws {
+        count = try CountTapGame(content: content)
+        quick = try QuickLookGame(content: content)
+    }
+}
+
+/// The Words games.
+struct WordsGames {
+    let course: PhonicsCourse
+    let buttons: SoundButtonsGame
+    let builder: WordBuilderGame
+
+    init(content: ContentLibrary) throws {
+        course = PhonicsCourse(content)
+        buttons = try SoundButtonsGame(content: content, course: course)
+        builder = try WordBuilderGame(content: content)
+    }
+}
+
+/// The Coding games.
+struct CodingGames {
+    let order: MorningOrderGame
+    let path: BipsPathGame
+
+    init(content: ContentLibrary) throws {
+        order = try MorningOrderGame(content: content)
+        path = try BipsPathGame(content: content)
     }
 }
 
@@ -24,18 +63,28 @@ final class GameCoordinator: ObservableObject {
 
     /// Skins the scenes can draw today: the first look of each game. The other skins in each game
     /// type get their artwork in phase 2b (docs/GAMES.md), and are picked at random once listed here.
-    static let drawnSkins: Set<String> = ["paper_desk", "treasure_chests", "bubbles"]
+    static let drawnSkins: Set<String> = [
+        "paper_desk", "treasure_chests", "bubbles", "sparkles", "monster_blue",
+        "ducks", "dice", "buttons", "tiles", "picture_cards", "island",
+    ]
 
     let skView: SKView
     let voice = VoicePlayer()
     let sounds = BipSounds()
     /// Nil only if the bundled content couldn't be read (CI checks it, so this shouldn't happen).
     let content: ContentLibrary?
+    /// Each island loads on its own, so one bad game file can't close the whole map.
     let letters: LettersGames?
+    let numbers: NumbersGames?
+    let words: WordsGames?
+    let coding: CodingGames?
     private(set) var progress: ChildProgress
     private let store = ProgressStore()
     private let childID: UUID?
     private let childAge: Int?
+    /// Play length, break length and daily maximum, set by parents behind the parent gate.
+    let playSettings = PlayTimeSettings()
+    private var lastBreakCheck = Date()
     var rng = SystemRandomNumberGenerator()
     private(set) var hasWelcomed = false
 
@@ -44,15 +93,27 @@ final class GameCoordinator: ObservableObject {
         skView.ignoresSiblingOrder = false
         skView.preferredFramesPerSecond = 60
 
-        var loaded: (ContentLibrary, LettersGames)?
+        var library: ContentLibrary?
         do {
-            let library = try ContentLibrary.bundled()
-            loaded = (library, try LettersGames(content: library))
+            library = try ContentLibrary.bundled()
         } catch {
-            NSLog("Bip Island: game content didn't load, so Letters Island stays asleep: %@", String(describing: error))
+            NSLog("Bip Island: game content didn't load, so the islands stay asleep: %@", String(describing: error))
         }
-        content = loaded?.0
-        letters = loaded?.1
+        content = library
+        if let library {
+            letters = try? LettersGames(content: library)
+            numbers = try? NumbersGames(content: library)
+            words = try? WordsGames(content: library)
+            coding = try? CodingGames(content: library)
+            if letters == nil || numbers == nil || words == nil || coding == nil {
+                NSLog("Bip Island: some island games didn't load and stay asleep")
+            }
+        } else {
+            letters = nil
+            numbers = nil
+            words = nil
+            coding = nil
+        }
 
         let child = store.currentChild()
         childID = child.id
@@ -84,16 +145,104 @@ final class GameCoordinator: ObservableObject {
         return LessonPlanner(letters: state, canHunt: { hunt.canHunt($0, upToGroup: group) })
     }
 
+    /// What round generators need: band, unlocked phonics group and known sounds.
+    func plainLearner(focus: PhonicsSound? = nil) -> Learner? {
+        guard let state = lettersProgress else { return nil }
+        return state.learner(focus: focus)
+    }
+
+    /// The sound to practise outside the planner: Bip's suggestion, else the group's first sound.
+    func practiceSound() -> PhonicsSound? {
+        if let suggested = planner?.suggestedSound() { return suggested }
+        return lettersProgress?.currentGroup.sounds.first
+    }
+
     // MARK: Navigation
 
+    /// Banks the minutes since the last check and reports where the break stands.
+    @discardableResult
+    func currentBreakPhase() -> BreakPhase {
+        let now = Date()
+        let elapsed = Int(now.timeIntervalSince(lastBreakCheck))
+        lastBreakCheck = now
+        var state = progress.breaks ?? BreakState(dayStamp: today)
+        let phase = PlayBreaks.advance(state: &state, elapsed: elapsed, now: now, day: today,
+                                       settings: playSettings.breakSettings)
+        progress.setBreaks(state)
+        store.save(progress, for: childID)
+        return phase
+    }
+
+    /// A parent ends the break early from settings.
+    func endBreakEarly() {
+        var state = progress.breaks ?? BreakState(dayStamp: today)
+        PlayBreaks.endBreakEarly(state: &state)
+        progress.setBreaks(state)
+        store.save(progress, for: childID)
+        lastBreakCheck = Date()
+    }
+
+    /// False while Bip is charging or the day is done: games stay closed.
+    func playAllowed() -> Bool {
+        currentBreakPhase() == .playing
+    }
+
     func showMap() {
+        guard playAllowed() else { return showCharging() }
         present(MapScene(coordinator: self, greet: !hasWelcomed))
         hasWelcomed = true
     }
 
+    func showCharging() {
+        present(ChargingScene(coordinator: self))
+    }
+
+    func showStickers() {
+        present(StickerScene(coordinator: self))
+    }
+
+    /// Bip's mystery box: once a day, bonus stars. Returns true when the box was full.
+    @discardableResult
+    func claimMystery() -> Bool {
+        guard progress.claimMysteryBox(on: today) else { return false }
+        store.save(progress, for: childID)
+        return true
+    }
+
+    var mysteryAvailable: Bool {
+        progress.lastMysteryDay != today
+    }
+
     func showLettersIsland(greet: Bool = true) {
+        guard playAllowed() else { return showCharging() }
         guard lettersProgress != nil else { return showMap() }
         present(LettersIslandScene(coordinator: self, greet: greet))
+    }
+
+    func showNumbersIsland(greet: Bool = true) {
+        guard playAllowed() else { return showCharging() }
+        guard numbers != nil else { return showMap() }
+        present(NumbersIslandScene(coordinator: self, greet: greet))
+    }
+
+    func showWordsIsland(greet: Bool = true) {
+        guard playAllowed() else { return showCharging() }
+        guard words != nil else { return showMap() }
+        present(WordsIslandScene(coordinator: self, greet: greet))
+    }
+
+    func showCodingIsland(greet: Bool = true) {
+        guard playAllowed() else { return showCharging() }
+        guard coding != nil else { return showMap() }
+        present(CodingIslandScene(coordinator: self, greet: greet))
+    }
+
+    /// Bip's suggestion of what to play next, across all four islands. The child picks freely;
+    /// one island glows, and Bip nudges towards another island when one dominates recent play.
+    var islandSuggestion: IslandSuggestion? {
+        guard let content else { return nil }
+        return PlayRecommender(content: content).suggest(progress: progress, startingBand: startingBand,
+                                                         day: today, rules: content.masteryRules, using: &rng)
     }
 
     /// Bip's suggestion: the next activity for the first sound not yet learnt.
@@ -121,8 +270,80 @@ final class GameCoordinator: ObservableObject {
         store.save(progress, for: childID)
     }
 
+    // MARK: Starting games from the islands
+
+    func startTrace() {
+        guard let content, let letters, let sound = practiceSound(), let learner = plainLearner(focus: sound) else { return }
+        var session = GameSession(game: letters.trace, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
+        guard session.nextRound(of: letters.trace, for: learner, using: &rng) != nil else { return }
+        progress.notePlayed(gameID: LetterTraceGame.id)
+        store.save(progress, for: childID)
+        present(TraceLetterScene(coordinator: self, game: letters.trace, sound: sound))
+    }
+
+    func startMonster() {
+        guard let content, let letters, let sound = practiceSound(), let learner = plainLearner(focus: sound) else { return }
+        let session = GameSession(game: letters.monster, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
+        progress.notePlayed(gameID: FeedMonsterGame.id)
+        store.save(progress, for: childID)
+        present(FeedMonsterScene(coordinator: self, game: letters.monster, session: session, learner: learner, focus: sound))
+    }
+
+    func startCount() {
+        guard let content, let numbers, let learner = plainLearner() else { return }
+        let session = GameSession(game: numbers.count, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
+        progress.notePlayed(gameID: CountTapGame.id)
+        store.save(progress, for: childID)
+        present(CountTapScene(coordinator: self, game: numbers.count, session: session, learner: learner))
+    }
+
+    func startQuick() {
+        guard let content, let numbers, let learner = plainLearner() else { return }
+        let session = GameSession(game: numbers.quick, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
+        progress.notePlayed(gameID: QuickLookGame.id)
+        store.save(progress, for: childID)
+        present(QuickLookScene(coordinator: self, game: numbers.quick, session: session, learner: learner))
+    }
+
+    func startButtons() {
+        guard let content, let words, let learner = plainLearner() else { return }
+        let session = GameSession(game: words.buttons, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
+        progress.notePlayed(gameID: SoundButtonsGame.id)
+        store.save(progress, for: childID)
+        present(SoundButtonsScene(coordinator: self, game: words.buttons, session: session, learner: learner, course: words.course))
+    }
+
+    func startBuilder() {
+        guard let content, let words, let learner = plainLearner() else { return }
+        let session = GameSession(game: words.builder, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
+        progress.notePlayed(gameID: WordBuilderGame.id)
+        store.save(progress, for: childID)
+        present(WordBuilderScene(coordinator: self, game: words.builder, session: session, learner: learner))
+    }
+
+    func startOrder() {
+        guard let content, let coding, let learner = plainLearner() else { return }
+        let session = GameSession(game: coding.order, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
+        progress.notePlayed(gameID: MorningOrderGame.id)
+        store.save(progress, for: childID)
+        present(MorningOrderScene(coordinator: self, game: coding.order, session: session, learner: learner))
+    }
+
+    func startPath() {
+        guard let content, let coding, let learner = plainLearner() else { return }
+        let session = GameSession(game: coding.path, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
+        progress.notePlayed(gameID: BipsPathGame.id)
+        store.save(progress, for: childID)
+        present(BipsPathScene(coordinator: self, game: coding.path, session: session, learner: learner))
+    }
+
     private func present(_ scene: BaseScene) {
         voice.stop()
+        // While Bip charges (or the day is done) every game and island redirects here.
+        if !(scene is ChargingScene) && !(scene is StickerScene) && !playAllowed() {
+            skView.presentScene(ChargingScene(coordinator: self), transition: .fade(with: Palette.paper, duration: 0.45))
+            return
+        }
         skView.presentScene(scene, transition: .fade(with: Palette.paper, duration: 0.45))
     }
 

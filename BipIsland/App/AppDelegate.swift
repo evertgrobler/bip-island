@@ -26,6 +26,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         gate.onClose = { [weak self] in self?.coordinator.setPaused(false) }
         gate.onQuit = { [weak self] in self?.quitForReal() }
         gate.onCheckForUpdates = { [weak self] in self?.updates.checkForUpdates() }
+        gate.onEndBreakEarly = { [weak self] in self?.coordinator.endBreakEarly() }
+        gate.playSettings = coordinator.playSettings
         updates.onWillRelaunch = { [weak self] in self?.kidLock.allowQuit = true }
 
         installMainMenu()
