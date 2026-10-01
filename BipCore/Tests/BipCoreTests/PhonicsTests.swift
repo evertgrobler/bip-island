@@ -24,7 +24,7 @@ final class PhonicsTests: XCTestCase {
         XCTAssertEqual(ids.count, Set(ids).count)
     }
 
-    func testStopSoundsMustBeClipped() {
+    func testStopSoundsMustBeClipped() throws {
         for id in ["t", "p", "k", "c", "b", "d", "g", "ck"] {
             let sound = try XCTUnwrap(Phonics.sound(id: id), id)
             XCTAssertEqual(sound.kind, .stop, id)

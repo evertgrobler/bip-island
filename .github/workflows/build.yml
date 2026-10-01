@@ -58,7 +58,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          xcodebuild test -project BipIsland.xcodeproj -scheme BipIsland -destination 'platform=macOS' \
+          xcodebuild test -project BipIsland.xcodeproj -scheme BipIsland -destination 'platform=macOS,arch=arm64' \
             -derivedDataPath "$DERIVED" -clonedSourcePackagesDirPath "$PACKAGES" -quiet
 
       - name: Decide whether to publish
