@@ -7,6 +7,12 @@ public enum DayNumber {
         let start = calendar.startOfDay(for: Date(timeIntervalSinceReferenceDate: 0))
         return calendar.dateComponents([.day], from: start, to: calendar.startOfDay(for: date)).day ?? 0
     }
+
+    /// The start of a numbered day (the reverse of `of`).
+    public static func date(for day: Int, calendar: Calendar = .current) -> Date {
+        let start = calendar.startOfDay(for: Date(timeIntervalSinceReferenceDate: 0))
+        return calendar.date(byAdding: .day, value: day, to: start) ?? start
+    }
 }
 
 /// One answered question, kept for the mastery check.
@@ -111,7 +117,13 @@ public struct ChildProgress: Codable, Equatable, Sendable {
     /// The day Bip's mystery box was last opened (nil if never).
     public private(set) var lastMysteryDay: Int?
     /// Where the play-time break stands (nil until the first play session is recorded).
+    /// Older saves kept the break per child; the app now keeps one break for the whole Mac
+    /// (so switching profiles can't skip it) and only reads this to carry it over.
     public private(set) var breaks: BreakState?
+    /// Seconds played, by day number, for the parent progress view. Only recent days are kept.
+    public private(set) var playSecondsByDay: [Int: Int]
+
+    static let playDaysKept = 60
 
     public init(sounds: MasteryTracker = MasteryTracker()) {
         version = Self.currentVersion
@@ -121,6 +133,7 @@ public struct ChildProgress: Codable, Equatable, Sendable {
         stars = 0
         lastMysteryDay = nil
         breaks = nil
+        playSecondsByDay = [:]
     }
 
     public init(from decoder: Decoder) throws {
@@ -132,6 +145,7 @@ public struct ChildProgress: Codable, Equatable, Sendable {
         stars = try c.decodeIfPresent(Int.self, forKey: .stars) ?? 0
         lastMysteryDay = try c.decodeIfPresent(Int.self, forKey: .lastMysteryDay)
         breaks = try c.decodeIfPresent(BreakState.self, forKey: .breaks)
+        playSecondsByDay = try c.decodeIfPresent([Int: Int].self, forKey: .playSecondsByDay) ?? [:]
     }
 
     public func skill(_ id: String) -> SkillRecord {
@@ -200,5 +214,23 @@ public struct ChildProgress: Codable, Equatable, Sendable {
     /// Records play-time break progress. See PlayBreaks.
     public mutating func setBreaks(_ state: BreakState) {
         breaks = state
+    }
+
+    /// Adds play time to a day, for the parent progress view. Days older than
+    /// `playDaysKept` before this one are dropped.
+    public mutating func notePlayTime(seconds: Int, on day: Int) {
+        guard seconds > 0 else { return }
+        playSecondsByDay[day, default: 0] += seconds
+        playSecondsByDay = playSecondsByDay.filter { $0.key > day - Self.playDaysKept }
+    }
+
+    /// Seconds played over the `days` days ending on `day` (today counts as one).
+    public func secondsPlayed(lastDays days: Int, endingOn day: Int) -> Int {
+        playSecondsByDay.filter { $0.key > day - days && $0.key <= day }.values.reduce(0, +)
+    }
+
+    /// Different days with any play in the `days` days ending on `day`.
+    public func daysPlayed(lastDays days: Int, endingOn day: Int) -> Int {
+        playSecondsByDay.filter { $0.key > day - days && $0.key <= day && $0.value > 0 }.count
     }
 }

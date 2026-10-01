@@ -24,6 +24,7 @@ public enum VoiceLine: String, CaseIterable, Sendable {
     case numbersIsland = "vo_numbers_island"
     case wordsIsland = "vo_words_island"
     case codingIsland = "vo_coding_island"
+    case whoIsPlaying = "vo_who_is_playing"
 }
 
 /// Audio clip names, following the file-name contract in CLAUDE.md.

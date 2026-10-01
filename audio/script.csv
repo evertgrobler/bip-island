@@ -1,10 +1,11 @@
 file,text,notes,placeholder
-snd_s.m4a,sssss,"Stretchy sound. A clean hiss held for about 1 second. Never the letter name ""ess"". No vowel before or after.",sss
+snd_u.m4a,Up.,"Short vowel /ʌ/ as in up, umbrella, sun. Generate the word ""Up."" and keep only the vowel: cut just before the silence of the p (about 0.25 s). Never the letter name ""you"".",uh
+snd_s.m4a,Sssssssss.,"Stretchy sound. A clean hiss held for about 1 second, soft fade in and out. Never the letter name ""ess"". No vowel before or after.",sss
 snd_a.m4a,"a, as in ant","Short vowel /æ/ as in ant, apple, cat. Generate the phrase, then trim to the vowel only (about 0.4 s). Never the letter name ""ay"" and no ""uh"" after it.","a, as in ant"
 snd_t.m4a,tap,"Stop sound. Generate the word ""tap"" and trim to the first ~100 ms so only the crisp, unvoiced t burst is left. No ""tuh"", never ""tee"". If it can't be made clean, record it by hand.","t, as in tap"
 snd_p.m4a,pan,"Stop sound. Generate the word ""pan"" and trim to the first ~100 ms: a soft puff of air, unvoiced. No ""puh"", never ""pee"". Record by hand if trimming fails.","p, as in pan"
-snd_i.m4a,"i, as in ink","Short vowel /ɪ/ as in ink, insect, pin. Generate the phrase, trim to the vowel only (about 0.4 s). Never the letter name ""eye"".","i, as in ink"
-snd_n.m4a,nnnnn,"Stretchy sound. A hummed n held for about 1 second, mouth closed-ish. Never the letter name ""en"" and no ""nuh"".",nnn
+snd_i.m4a,It.,"Short vowel /ɪ/ as in ink, insect, pin. Generate the word ""It."" and keep only the vowel: cut just before the silence of the t (about 0.25 s). Never the letter name ""eye"" (a phrase starting with a lone ""i"" is read as ""eye"").","i, as in ink"
+snd_n.m4a,Nnnnnnnnnn.,"Stretchy sound. A hummed n held for about 1 second, mouth closed-ish, with soft fades and nothing after it. Never the letter name ""en"" and no ""nuh"".",nnn
 vo_welcome.m4a,"Hello! This is Bip, a little robot who loves sounds. Click on an island to start exploring!","Plays when the island map first opens. Narrator: warm, female South African English voice, speaking slowly and clearly for a 4-year-old.",
 vo_island_sleeping.m4a,That island is still asleep. Let's play on Letters Island!,"When a child clicks an island that isn't built yet. Gentle, not disappointed.",
 vo_letters_island.m4a,"Welcome to Letters Island! Click Bip, and let's play.",Plays when arriving on Letters Island.,
@@ -41,3 +42,4 @@ vo_bips_path.m4a,"Snap the arrows together, then press Go to walk Bip home.",Bip
 vo_numbers_island.m4a,"Welcome to Numbers Island! Click Bip, and let's count.",Plays when arriving on Numbers Island.,Numbers Island!
 vo_words_island.m4a,"Welcome to Words Island! Click Bip, and let's read.",Plays when arriving on Words Island.,Words Island!
 vo_coding_island.m4a,"Welcome to Coding Island! Click Bip, and let's program.",Plays when arriving on Coding Island.,Coding Island!
+vo_who_is_playing.m4a,Who's playing today? Click your picture!,"Plays on the profile picker when more than one child uses the Mac. Warm and inviting, a little pause before 'Click your picture'.",Who's playing?
