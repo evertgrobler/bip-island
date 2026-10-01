@@ -51,10 +51,12 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: app.bipisland.game
         GENERATE_INFOPLIST_FILE: NO
         COMBINE_HIDPI_IMAGES: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: BipIsland/Info.plist
       properties:
         CFBundleDisplayName: Bip Island
+        CFBundleIconName: AppIcon
         CFBundleName: $(PRODUCT_NAME)
         CFBundleExecutable: $(EXECUTABLE_NAME)
         CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)

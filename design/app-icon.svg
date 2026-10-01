@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="11" cy="11" r="1.8" fill="#2B2A33" fill-opacity="0.07"/>
+    </pattern>
+    <clipPath id="tile">
+      <path d="M512 100 C 330 100 285 100 222 112 C 160 124 124 160 112 222 C 100 285 100 330 100 512 C 100 694 100 739 112 802 C 124 864 160 900 222 912 C 285 924 330 924 512 924 C 694 924 739 924 802 912 C 864 900 900 864 912 802 C 924 739 924 694 924 512 C 924 330 924 285 912 222 C 900 160 864 124 802 112 C 739 100 694 100 512 100 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- soft drop shadow under the tile (macOS icon grid: 824 px tile on a 1024 canvas) -->
+  <path transform="translate(0 14)" fill="#2B2A33" fill-opacity="0.28"
+        d="M512 100 C 330 100 285 100 222 112 C 160 124 124 160 112 222 C 100 285 100 330 100 512 C 100 694 100 739 112 802 C 124 864 160 900 222 912 C 285 924 330 924 512 924 C 694 924 739 924 802 912 C 864 900 900 864 912 802 C 924 739 924 694 924 512 C 924 330 924 285 912 222 C 900 160 864 124 802 112 C 739 100 694 100 512 100 Z"/>
+
+  <g clip-path="url(#tile)">
+    <!-- sky and sea -->
+    <rect x="80" y="80" width="880" height="880" fill="#BFE3EC"/>
+    <rect x="80" y="80" width="880" height="880" fill="url(#dots)"/>
+    <!-- sun -->
+    <circle cx="790" cy="250" r="78" fill="#F7C548" stroke="#2B2A33" stroke-width="14"/>
+    <g stroke="#2B2A33" stroke-width="14" stroke-linecap="round">
+      <path d="M790 132 L792 112"/><path d="M880 166 L896 152"/><path d="M910 252 L930 254"/>
+      <path d="M700 168 L686 154"/><path d="M880 338 L894 352"/>
+    </g>
+    <!-- waves -->
+    <g fill="none" stroke="#5FA9BC" stroke-width="12" stroke-linecap="round">
+      <path d="M150 300 c 22 -16 44 -16 66 0 c 22 16 44 16 66 0"/>
+      <path d="M560 180 c 22 -16 44 -16 66 0 c 22 16 44 16 66 0"/>
+    </g>
+    <!-- island -->
+    <path d="M60 820 C 120 700 300 650 512 652 C 740 648 900 700 970 820 L 970 980 L 60 980 Z"
+          fill="#F3D9A4" stroke="#2B2A33" stroke-width="16" stroke-linejoin="round"/>
+    <path d="M160 800 C 220 735 360 712 512 714 C 680 710 810 738 870 800 C 830 850 700 868 512 866 C 330 868 200 850 160 800 Z"
+          fill="#9BCB6B" stroke="#2B2A33" stroke-width="14" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Bip (stands on the island, head breaks the frame slightly for character) -->
+  <g stroke="#2B2A33" stroke-linecap="round" stroke-linejoin="round">
+    <!-- antenna -->
+    <path d="M512 262 C 508 226 516 200 512 168" fill="none" stroke-width="18"/>
+    <circle cx="512" cy="150" r="34" fill="#E8654F" stroke-width="16"/>
+    <circle cx="501" cy="140" r="9" fill="#FFFDF6" stroke="none"/>
+    <!-- body -->
+    <path d="M372 676 C 440 664 588 664 654 678 C 668 730 664 800 652 836 C 590 852 436 852 374 836 C 360 790 358 724 372 676 Z"
+          fill="#F7C548" stroke-width="18"/>
+    <path d="M512 798 C 478 772 476 740 498 738 C 506 738 512 746 512 754 C 512 746 518 738 526 738 C 548 740 546 772 512 798 Z"
+          fill="#E8654F" stroke-width="12"/>
+    <!-- arms -->
+    <path d="M374 708 C 330 712 300 690 286 650" fill="none" stroke-width="18"/>
+    <path d="M652 708 C 700 704 732 676 744 630" fill="none" stroke-width="18"/>
+    <!-- head -->
+    <path d="M318 296 C 410 254 616 252 706 292 C 736 360 734 560 704 626 C 612 664 410 666 320 628 C 288 556 286 368 318 296 Z"
+          fill="#8FC9E8" stroke-width="20"/>
+    <!-- eyes -->
+    <circle cx="428" cy="440" r="64" fill="#FFFDF6" stroke-width="16"/>
+    <circle cx="598" cy="440" r="64" fill="#FFFDF6" stroke-width="16"/>
+    <circle cx="442" cy="452" r="30" fill="#2B2A33" stroke="none"/>
+    <circle cx="612" cy="452" r="30" fill="#2B2A33" stroke="none"/>
+    <circle cx="454" cy="440" r="10" fill="#FFFDF6" stroke="none"/>
+    <circle cx="624" cy="440" r="10" fill="#FFFDF6" stroke="none"/>
+    <!-- cheeks -->
+    <ellipse cx="370" cy="540" rx="28" ry="18" fill="#F5A9B8" stroke="none"/>
+    <ellipse cx="656" cy="540" rx="28" ry="18" fill="#F5A9B8" stroke="none"/>
+    <!-- smile -->
+    <path d="M454 548 C 482 594 546 594 574 546" fill="none" stroke-width="18"/>
+  </g>
+</svg>
