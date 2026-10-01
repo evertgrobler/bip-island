@@ -41,6 +41,10 @@ targets:
       - path: Resources/Audio
         type: folder
         buildPhase: resources
+      # Atkinson Hyperlegible (OFL): the one font for all text. Registered via ATSApplicationFontsPath.
+      - path: Resources/Fonts
+        type: folder
+        buildPhase: resources
       # App icon: Bip on the island (Resources/Assets.xcassets/AppIcon.appiconset, all macOS sizes).
       - path: Resources/Assets.xcassets
       # All game content (JSON). Copied as a folder: Bip Island.app/Contents/Resources/Content/…
@@ -68,6 +72,8 @@ targets:
         CFBundlePackageType: APPL
         CFBundleDevelopmentRegion: en
         CFBundleIconName: AppIcon
+        # Bundled fonts live in Contents/Resources/Fonts and load with the app (no network).
+        ATSApplicationFontsPath: Fonts
         CFBundleInfoDictionaryVersion: "6.0"
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)

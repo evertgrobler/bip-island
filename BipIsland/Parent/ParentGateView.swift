@@ -33,18 +33,20 @@ struct ParentGateView: View {
             // flips white-on-cream when the Mac is in Dark Mode.
             .colorScheme(.light)
             .foregroundStyle(Color(nsColor: Palette.ink))
+            // Everything else in the panel (buttons, steppers, notes) uses the game font too.
+            .font(Fonts.ui(17))
         }
     }
 
     private var question: some View {
         VStack(spacing: 18) {
             Text("Grown-ups only")
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .font(Fonts.ui(30, bold: true))
             Text("What is \(gate.challenge.question)?")
-                .font(.system(size: 26, weight: .semibold, design: .rounded))
+                .font(Fonts.ui(26, bold: true))
             TextField("Answer", text: $gate.answer)
                 .textFieldStyle(.roundedBorder)
-                .font(.system(size: 26, design: .rounded))
+                .font(Fonts.ui(26))
                 .multilineTextAlignment(.center)
                 .frame(width: 200)
                 .focused($answerFocused)
@@ -67,7 +69,7 @@ struct ParentGateView: View {
     private var parentArea: some View {
         VStack(spacing: 16) {
             Text("Parent area")
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .font(Fonts.ui(30, bold: true))
             Text(gate.versionText)
                 .foregroundStyle(.secondary)
             Text(gate.voiceText)
@@ -85,7 +87,7 @@ struct ParentGateView: View {
                     .disabled(!gate.updatesConfigured)
                 if !gate.updatesConfigured {
                     Text("Automatic updates aren't switched on in this build.")
-                        .font(.footnote)
+                        .font(Fonts.ui(13))
                         .foregroundStyle(.secondary)
                 }
                 Button(role: .destructive) { gate.quit() } label: {
@@ -107,7 +109,7 @@ struct PlaySettingsView: View {
     var body: some View {
         VStack(spacing: 10) {
             Text("Play time")
-                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .font(Fonts.ui(22, bold: true))
             Stepper("Play for \(settings.playMinutes) minutes", value: $settings.playMinutes, in: 5...120, step: 5)
             Stepper("Break for \(settings.breakMinutes) minutes", value: $settings.breakMinutes, in: 5...60, step: 5)
             Toggle("Daily maximum", isOn: $dailyMaxOn)

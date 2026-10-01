@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 
 /// Warm, bright, hand-drawn colours. The named ones match the approved mock-ups:
 /// ink #2B2A33, paper #FBF4E4, sunshine yellow #F7C548, sea blue #8FC9E8, leaf green #9BCB6B,
@@ -36,7 +37,21 @@ enum Palette {
     }
 }
 
-/// The chalky handwritten font for letters (built into macOS), with a fallback.
+/// Atkinson Hyperlegible is the one font for every word in the game: letters, words, labels and
+/// the parent area. It is bundled in Resources/Fonts (OFL licence) and registered by
+/// ATSApplicationFontsPath in Info.plist, so it never needs the network.
 enum Fonts {
-    static let letters = NSFont(name: "ChalkboardSE-Bold", size: 12) != nil ? "ChalkboardSE-Bold" : "MarkerFelt-Wide"
+    static let regular = "AtkinsonHyperlegible-Regular"
+    static let bold = "AtkinsonHyperlegible-Bold"
+    /// Letters and words the child reads.
+    static let letters = bold
+
+    /// True when the bundled font loaded. If it didn't, SpriteKit and SwiftUI quietly fall back
+    /// to the system font, so the game still works.
+    static var isInstalled: Bool { NSFont(name: regular, size: 12) != nil && NSFont(name: bold, size: 12) != nil }
+
+    /// The same font for SwiftUI screens (the parent area).
+    static func ui(_ size: CGFloat, bold isBold: Bool = false) -> Font {
+        .custom(isBold ? bold : regular, size: size)
+    }
 }
