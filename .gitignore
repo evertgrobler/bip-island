@@ -17,3 +17,6 @@ Resources/Audio/PLACEHOLDERS.txt
 sparkle_private*
 
 .DS_Store
+
+# Python caches
+__pycache__/
