@@ -98,7 +98,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if event.type == .keyDown && !event.isARepeat {
-            coordinator.replayPrompt()
+            coordinator.handleKey(event)
         }
         return nil
     }

@@ -377,7 +377,14 @@ final class GameCoordinator: ObservableObject {
         AudioCatalogue.hintClips.randomElement(using: &rng) ?? "hint_01"
     }
 
-    /// Any key: hear the current sound or instruction again.
+    /// Any key: the scene plays with it (arrows choose, Enter confirms), or the
+    /// current sound or instruction plays again when the key does nothing in play.
+    func handleKey(_ event: NSEvent) {
+        if let scene = skView.scene as? BaseScene, scene.handleKey(event) { return }
+        replayPrompt()
+    }
+
+    /// Any key pressed: say the current sound or instruction again.
     func replayPrompt() {
         (skView.scene as? BaseScene)?.replayPrompt()
     }

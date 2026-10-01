@@ -97,8 +97,11 @@ final class MeetSoundScene: BaseScene {
         nextButton.run(.sequence([.scale(to: 1, duration: 0.25), Buttons.pulse()]))
     }
 
-    override func handleTap(name: String, node: SKNode) {
-        switch name {
+    override var keyOptions: [SKNode] {
+        nextButton.isHidden ? [] : [nextButton]
+    }
+
+    override func handleTap(name: String, node: SKNode) {        switch name {
         case "tap:letter":
             voice.play([sound.soundClip], onClipStart: { [weak self] _, clip in self?.reactToClip(clip) })
         case "tap:picture":

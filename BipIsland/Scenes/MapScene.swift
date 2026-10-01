@@ -9,6 +9,10 @@ final class MapScene: BaseScene {
     private var wordsIsland: SKNode?
     private var codingIsland: SKNode?
 
+    override var keyOptions: [SKNode] {
+        [lettersIsland, numbersIsland, wordsIsland, codingIsland].compactMap { $0 }
+    }
+
     init(coordinator: GameCoordinator, greet: Bool) {
         self.greet = greet
         super.init(coordinator: coordinator)

@@ -35,6 +35,8 @@ final class QuickLookScene: BaseScene {
         after(0.5) { [weak self] in self?.askQuestion() }
     }
 
+    override var keyOptions: [SKNode] { numerals }
+
     private func askQuestion() {
         guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
             return endVisit(with: .roundDone)
@@ -44,6 +46,7 @@ final class QuickLookScene: BaseScene {
         dots = []
         numerals = []
         attempt = QuestionAttempt()
+        resetKeys()
         round = next
 
         // Dice-like spots, so small numbers read as patterns.

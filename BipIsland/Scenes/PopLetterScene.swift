@@ -130,6 +130,8 @@ final class PopLetterScene: BaseScene {
         }
     }
 
+    override var keyOptions: [SKNode] { bubbles.map(\.node) }
+
     /// The first question uses the bubbles already floating; later ones get a new round of letters.
     private func askQuestion(isFirst: Bool = false) {
         if !isFirst {
@@ -144,6 +146,7 @@ final class PopLetterScene: BaseScene {
             }
         }
         attempt = QuestionAttempt()
+        resetKeys()
         slowDown = 1
         bubbles.forEach { $0.node.removeAction(forKey: "hint"); $0.node.setScale(1); $0.node.zRotation = 0 }
         inputLocked = false

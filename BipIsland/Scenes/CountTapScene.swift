@@ -36,6 +36,8 @@ final class CountTapScene: BaseScene {
         after(0.5) { [weak self] in self?.askQuestion() }
     }
 
+    override var keyOptions: [SKNode] { numerals }
+
     private func askQuestion() {
         guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
             return endVisit(with: .roundDone)
@@ -46,6 +48,7 @@ final class CountTapScene: BaseScene {
         numerals = []
         tapped = []
         attempt = QuestionAttempt()
+        resetKeys()
         round = next
 
         let perRow = 5
