@@ -6,6 +6,10 @@
 
 ## Where things stand (1 October 2026, late evening)
 
+- **Moving to Godot (Mac + Windows), approved 1 Oct.** Plan and checklist: `docs/GODOT_MIGRATION.md`.
+  **New games are paused**: the Swift Mac app gets bug fixes only until the switchover. Godot builds
+  go to a separate test feed; the family feed keeps serving the Swift app. Downloads are a plain `.dmg` / `Setup.exe`,
+  free and unsigned, with no app stores.
 - **Phase 0 (voice): done.** All 702 narrator clips bundled in `Resources/Audio/` (ElevenLabs
   "Bip Island Narrator", `eleven_v3`). Trimmed deaf (by waveform, not ear): stops 0.1 s,
   vowels 0.4 s, stretchies ~1 s. Owner is ear-checking `t`/`p`/`k` in playtests.
@@ -47,6 +51,8 @@
 
 ## Locked decisions (don't relitigate)
 
+- Engine move: Godot 4 .NET (C#), Velopack updates, direct `.dmg` / `Setup.exe` downloads, no stores,
+  no paid signing for now. Details in `docs/GODOT_MIGRATION.md`.
 - Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts).
 - Voice: "Bip Island Narrator" `Mq5hYfc3xyDzuW3pPMck`, `eleven_v3`, SA English teacher.
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
@@ -66,6 +72,20 @@
 3. CI failure loop that works: `gh run view <id> --log-failed | grep error`, fix, push, poll.
 4. Owner playtests CI artifacts: `gh run download <main-run> -n <name> -D ~/Downloads/<label>`,
    unzip, right-click → Open. Kid-lock exit: hold Esc 3 s + maths. Dark Mode: keep panels light.
+
+## Godot version (in progress, see docs/GODOT_MIGRATION.md)
+
+- Project in `godot/` (Godot 4.7.2 .NET, C#, `BipIsland.csproj`). Shared assets are copied in by
+  `python3 scripts/godot/prepare_assets.py` (fonts, Content JSON, voice clips converted to `.ogg`).
+- In a cloud session: `apt-get install -y dotnet-sdk-8.0` (the dotnet.microsoft.com installer is
+  blocked by the proxy), then `scripts/godot/install_godot.sh` prints the Godot binary path.
+  `cd godot && dotnet build`, then `$GODOT --headless --path . --import`.
+- Self-tests run the real game: `-- --bip-report out.json`, `-- --bip-screenshot out.png` (needs
+  `xvfb-run` + `--rendering-driver opengl3`), `-- --bip-update-test <feed> <report>`.
+- CI: `.github/workflows/godot.yml`. Linux exports both platforms and packs the Windows `Setup.exe`
+  (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from a local feed.
+  Main builds go to a public Vercel Blob store (`godot-test/`); the Swift app's feed is untouched.
+- Drawing is y-down in Godot: when porting a Swift drawing, negate y values and angles.
 
 ## Gotchas learned the hard way
 
@@ -129,7 +149,14 @@
   games.json levels: 1, 2, 2, 3), split-digraph words left out, and a right answer is sounded out tile
   by tile. Bip's Path: footprints show the route, an arrow shows which way Bip faces on turning
   puzzles (`GridWalker.facings`), plus take-back and clear buttons.
+- **1 Oct, night:** Owner asked about Windows. Decided to rebuild in Godot 4 (C#) so one codebase
+  ships to Mac and Windows with auto-updates. Full rebuild in one go with CI checks instead of
+  playtests; the owner tests once at switchover. New games paused. Plan: `docs/GODOT_MIGRATION.md`.
 - **1 Oct, night:** New download page for parents: intro, a section per island with screenshots, parent
   features (kid lock, breaks, parent area, 4 children, no ads/data, Cambridge), download + install steps.
   Font and icon bundled in `site/`. Screenshots come from a CI-only screenshot mode in the Swift app
   (step is `continue-on-error`, artifact `screenshots-<run>` on every run). Swift change kept to that.
+- **1 Oct, night (late):** Godot Phase 0 CI green: Linux exports both, Windows (Setup.exe) and Mac
+  (Velopack portable app, ad-hoc signed, `.dmg`) install an older build and update themselves from a
+  local feed with saved data intact. Velopack's Mac packer needs a `.entitlements` file and has no
+  `--skipVeloAppCheck` (Windows only).

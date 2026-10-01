@@ -1,0 +1,317 @@
+# Builds and tests the Godot version of the game (Mac + Windows). See docs/GODOT_MIGRATION.md.
+# Nothing here touches the Swift app or its Sparkle feed: the family keeps getting the Swift app
+# until the switchover.
+name: Godot
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: godot-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  GODOT_VERSION: 4.7.2
+  VPK_VERSION: 1.2.161
+  # The Godot test build's Velopack id, so it installs next to anything else.
+  PACK_ID: BipIslandTest
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+
+jobs:
+  export:
+    name: Test and export (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Set up tools
+        timeout-minutes: 10
+        run: |
+          # Only install what the runner image lacks; a slow package mirror once hung this step.
+          missing=""
+          command -v ffmpeg > /dev/null || missing="$missing ffmpeg"
+          command -v xvfb-run > /dev/null || missing="$missing xvfb"
+          ldconfig -p | grep -q 'libGL.so.1' || missing="$missing libgl1 libglx-mesa0"
+          if [ -n "$missing" ]; then
+            echo "Installing:$missing"
+            for attempt in 1 2 3; do
+              if timeout 180 sudo apt-get update -q -o Acquire::Retries=3 > /dev/null &&
+                 timeout 300 sudo apt-get install -y -q --no-install-recommends -o Acquire::Retries=3 $missing > /dev/null; then
+                break
+              fi
+              [ "$attempt" = 3 ] && { echo "::error::Couldn't install:$missing"; exit 1; }
+              echo "Package install attempt $attempt failed; trying again."
+              sleep 10
+            done
+          fi
+          ffmpeg -version | head -1
+          command -v xvfb-run
+
+      - name: Install Velopack
+        timeout-minutes: 5
+        run: dotnet tool install -g vpk --version "$VPK_VERSION"
+
+      - name: Check game content
+        run: python3 scripts/validate_content.py
+
+      - name: Version
+        id: version
+        run: |
+          version="0.2.${GITHUB_RUN_NUMBER}"
+          scripts/godot/set_version.sh "$version" "$GITHUB_RUN_NUMBER"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Copy fonts, content and voice clips into the Godot project
+        run: python3 scripts/godot/prepare_assets.py
+
+      - name: Update feed address (main only)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::warning::The Vercel secrets aren't set, so this build won't check for updates."
+            exit 0
+          fi
+          store="$(scripts/godot/blob_store.sh)"
+          echo "::add-mask::$(printf '%s\n' "$store" | sed -n 1p)"
+          base="$(printf '%s\n' "$store" | sed -n 2p)"
+          printf '{"feed": "%s/godot-test/"}\n' "$base" > godot/assets/update.json
+          echo "Update feed: $base/godot-test/"
+
+      - name: Cache Godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-mono
+
+      - name: Install Godot
+        run: echo "GODOT=$(scripts/godot/install_godot.sh)" >> "$GITHUB_ENV"
+
+      - name: Build the C# code and import assets
+        working-directory: godot
+        run: |
+          dotnet build -warnaserror
+          "$GODOT" --headless --path . --import
+
+      - name: Self-test (fonts, content, clips)
+        working-directory: godot
+        run: |
+          mkdir -p ../build/godot
+          "$GODOT" --headless --path . -- --bip-report ../build/godot/report-linux.json
+          python3 ../scripts/godot/check_report.py ../build/godot/report-linux.json
+
+      - name: Screenshots
+        working-directory: godot
+        run: |
+          mkdir -p ../build/godot/screenshots
+          xvfb-run -a -s "-screen 0 1600x1000x24" "$GODOT" --path . --rendering-driver opengl3 \
+            --resolution 1600x1000 -- --bip-windowed --bip-screenshot ../build/godot/screenshots/main.png \
+            2>&1 | grep -v ALSA || true
+          test -s ../build/godot/screenshots/main.png || {
+            echo "::error::The screenshot wasn't made."
+            exit 1
+          }
+
+      - name: Export for Mac and Windows
+        working-directory: godot
+        run: |
+          mkdir -p build/windows build/macos
+          "$GODOT" --headless --path . --export-release "Windows" "build/windows/Bip Island.exe" 2>&1 | tee ../build/godot/export-windows.log
+          "$GODOT" --headless --path . --export-release "macOS" "build/macos/BipIsland.zip" 2>&1 | tee ../build/godot/export-macos.log
+          test -f "build/windows/Bip Island.exe" && test -f "build/windows/Bip Island.pck" || {
+            echo "::error::The Windows export is missing files."; exit 1; }
+          test -s build/macos/BipIsland.zip || { echo "::error::The Mac export is missing."; exit 1; }
+          du -sh build/windows build/macos
+
+      - name: Pack the Windows installer and update (Velopack)
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          out=build/godot/windows
+          for v in "$VERSION-selftest:old" "$VERSION:win"; do
+            vpk "[win]" pack -x --packId "$PACK_ID" --packVersion "${v%%:*}" --packDir "godot/build/windows" \
+              --mainExe "Bip Island.exe" --packTitle "Bip Island" --skipVeloAppCheck --outputDir "$out/${v##*:}"
+          done
+          ls -la "$out"/*
+
+      - name: Keep the screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-screenshots-${{ steps.version.outputs.version }}
+          path: build/godot/screenshots
+          retention-days: 14
+
+      - name: Keep the Mac export
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-macos-export
+          path: godot/build/macos/BipIsland.zip
+          retention-days: 3
+          compression-level: 0
+
+      - name: Keep the Windows packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-windows-packages
+          path: build/godot/windows
+          retention-days: 3
+          compression-level: 0
+
+  windows:
+    name: Install and update test (Windows)
+    needs: export
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Get the packages
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-windows-packages
+          path: packages
+
+      - name: Install the older version, update it, check
+        shell: pwsh
+        run: >
+          scripts/godot/windows_update_test.ps1 -OldDir packages/old -NewDir packages/win
+          -Version "${{ needs.export.outputs.version }}" -PackId "$env:PACK_ID"
+
+      - name: Keep the Windows release
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-windows-${{ needs.export.outputs.version }}
+          path: packages/win
+          retention-days: 14
+          compression-level: 0
+
+  macos:
+    name: Package, install and update test (Mac)
+    needs: export
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install Velopack
+        run: dotnet tool install -g vpk --version "$VPK_VERSION"
+
+      - name: Get the export
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-macos-export
+          path: export
+
+      - name: Pack, install the older version, update it, check, make the .dmg
+        env:
+          EXPORT_ZIP: export/BipIsland.zip
+          VERSION: ${{ needs.export.outputs.version }}
+          OUT_DIR: build/godot/macos
+        run: scripts/godot/mac_package_and_test.sh
+
+      - name: Keep the Mac release
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-macos-${{ needs.export.outputs.version }}
+          path: build/godot/macos
+          retention-days: 14
+          compression-level: 0
+
+  publish:
+    name: Publish the test release (Vercel Blob)
+    needs: [export, windows, macos]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Get the Windows release
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-windows-${{ needs.export.outputs.version }}
+          path: release/windows
+
+      - name: Get the Mac release
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-macos-${{ needs.export.outputs.version }}
+          path: release/macos
+
+      - name: Upload to Vercel Blob
+        id: upload
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERSION: ${{ needs.export.outputs.version }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::warning::The Vercel secrets aren't set, so the test release wasn't published."
+            exit 0
+          fi
+          # Never let an older run overwrite a newer one.
+          head="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if [ -n "$head" ] && [ "$head" != "$GITHUB_SHA" ]; then
+            echo "::notice::main has moved on, so this older build isn't published."
+            exit 0
+          fi
+          store="$(scripts/godot/blob_store.sh)"
+          token="$(printf '%s\n' "$store" | sed -n 1p)"
+          echo "::add-mask::$token"
+          tools="$RUNNER_TEMP/blob-tools"
+          mkdir -p "$tools"
+          (cd "$tools" && npm init -y > /dev/null && npm install --silent @vercel/blob@2)
+          cp scripts/godot/publish_blob.mjs "$tools/"
+          BLOB_READ_WRITE_TOKEN="$token" node "$tools/publish_blob.mjs" release/windows release/macos godot-test/
+          base="$(printf '%s\n' "$store" | sed -n 2p)"
+          for os in win osx; do
+            curl -fsS "$base/godot-test/$os/releases.$os.json" | grep -q "$VERSION" || {
+              echo "::error::The $os update feed doesn't list $VERSION."
+              exit 1
+            }
+          done
+
+      - name: Summary
+        if: steps.upload.outputs.mac_url != ''
+        run: |
+          {
+            echo "### Godot test build ${{ needs.export.outputs.version }} published"
+            echo "- Mac: ${{ steps.upload.outputs.mac_url }}"
+            echo "- Windows: ${{ steps.upload.outputs.win_url }}"
+            echo
+            echo "Installed test copies download this version quietly; a grown-up approves the install."
+          } >> "$GITHUB_STEP_SUMMARY"

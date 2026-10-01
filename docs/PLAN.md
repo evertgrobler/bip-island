@@ -144,6 +144,7 @@ Prove the hardest part first: if the phonics audio and the core click-and-hear l
 | 2. All islands | Groups 2–5, Numbers, Words, Coding tiers 1–3, profiles, progress | Each island has 15+ activities and mastery tracking | Not started |
 | 3. Polish | Art, music, sticker book, parent gate and dashboard, ages 6–8 content, Coding tiers 4–6 | Kids ask to play it again | Not started |
 | 4. Release | Signing, notarisation or App Store review, website page | Installs cleanly on a fresh Mac | Not started |
+| Godot move | Rebuild in Godot 4 (C#) for Mac + Windows, auto-updating, direct downloads (see `docs/GODOT_MIGRATION.md`) | The owner plays the Godot build on both computers and switches the family feed over | Approved 1 Oct 2026; Phase 0 not started |
 
 ## Decisions
 
