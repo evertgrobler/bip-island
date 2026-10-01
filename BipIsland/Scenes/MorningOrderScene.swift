@@ -1,21 +1,28 @@
 import BipCore
 import SpriteKit
 
-/// Morning Order: drag the picture cards into order — what comes first? — then tap the
-/// green arrow. Wrong order → soft boop and try again; two misses → the first wrong card
-/// wiggles and the routine is said in the right order.
+/// Morning Order: put the picture cards in order — what comes first? The shuffled cards wait
+/// in a row at the bottom; tapping one sends it up to the next numbered space (1, 2, 3…) and
+/// says what it shows. Tapping a placed card sends it back down. When every space is full the
+/// order is checked: wrong → soft boop and the cards from the first mistake slide back down;
+/// two misses → the card that belongs next wiggles and the routine is said in order.
+/// Tapping instead of dragging: small hands miss drop targets, and a click always lands.
 final class MorningOrderScene: BaseScene {
     private let game: MorningOrderGame
     private var session: GameSession
     private let learner: Learner
     private var round: MorningOrderGame.Round?
     private var attempt = QuestionAttempt()
-    private var cards: [PictureCard] = []
-    private var slotCards: [PictureCard?] = []
+    /// One holder per card (named tap:card:<i>), in the round's card order.
+    private var holders: [SKNode] = []
+    private var trayPositions: [CGPoint] = []
     private var slotPositions: [CGPoint] = []
-    private var dragged: PictureCard?
-    private var dragOffset = CGPoint.zero
-    private let nextButton = Buttons.next()
+    /// Which card (index into holders) sits in each numbered space.
+    private var slots: [Int?] = []
+    private var slotMarks: [SKNode] = []
+
+    private static let slotY: CGFloat = 150
+    private static let trayY: CGFloat = -190
 
     init(coordinator: GameCoordinator, game: MorningOrderGame, session: GameSession, learner: Learner) {
         self.game = game
@@ -30,47 +37,81 @@ final class MorningOrderScene: BaseScene {
 
     override func didMove(to view: SKView) {
         addHomeButton()
-        addBip(at: CGPoint(x: -560, y: -400), scale: 0.8)
+        addBip(at: CGPoint(x: -700, y: -400), scale: 0.7)
         let replay = Buttons.replay()
-        replay.position = CGPoint(x: 600, y: -400)
+        replay.position = CGPoint(x: 700, y: -400)
         replay.zPosition = 10
         addChild(replay)
-        nextButton.position = CGPoint(x: 600, y: -180)
-        nextButton.zPosition = 10
-        addChild(nextButton)
         after(0.5) { [weak self] in self?.askQuestion() }
     }
 
-    /// Enter checks the order, like the green arrow.
-    override var keyOptions: [SKNode] { [nextButton] }
+    /// Arrows move between the cards still waiting, then the placed ones; Enter taps.
+    override var keyOptions: [SKNode] {
+        let waiting = holders.indices.filter { !slots.contains($0) }.sorted { trayPositions[$0].x < trayPositions[$1].x }
+        let placed = slots.compactMap { $0 }
+        return (waiting + placed).map { holders[$0] }
+    }
 
     private func askQuestion() {
         guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
             return endVisit(with: .roundDone)
         }
-        cards.forEach { $0.removeFromParent() }
-        cards = []
-        slotCards = []
-        slotPositions = []
-        dragged = nil
+        holders.forEach { $0.removeFromParent() }
+        slotMarks.forEach { $0.removeFromParent() }
+        holders = []
+        slotMarks = []
         attempt = QuestionAttempt()
+        resetKeys()
         round = next
 
-        // Slots first, then the cards land shuffled on them.
-        let count = CGFloat(next.set.cards.count)
-        for i in 0..<next.set.cards.count {
-            slotPositions.append(CGPoint(x: (CGFloat(i) - (count - 1) / 2) * 300, y: 80))
-            slotCards.append(nil)
+        let cards = next.set.cards
+        let count = cards.count
+        // Six cards still fit across the screen with room between them.
+        let scale: CGFloat = count <= 4 ? 1 : (count == 5 ? 0.86 : 0.72)
+        let spacing = PictureCard.size * scale + 40
+        let xs = (0..<count).map { (CGFloat($0) - CGFloat(count - 1) / 2) * spacing }
+        slotPositions = xs.map { CGPoint(x: $0, y: Self.slotY) }
+        slots = Array(repeating: nil, count: count)
+
+        // Empty numbered spaces along the top, with an arrow showing which way the story goes.
+        let half = PictureCard.size * scale / 2
+        for (i, point) in slotPositions.enumerated() {
+            let mark = SKNode()
+            mark.position = point
+            mark.zPosition = 2
+            mark.addChild(Sketch.node(.roundedRect(CGRect(x: -half, y: -half, width: half * 2, height: half * 2), radius: 26 * scale),
+                                      fill: Palette.stone.withAlphaComponent(0.35), ink: Palette.ink.withAlphaComponent(0.3),
+                                      lineWidth: 4, wobble: 3, seed: 960 + UInt64(i)))
+            let badge = SKNode()
+            badge.position = CGPoint(x: 0, y: half + 44)
+            badge.addChild(Sketch.node(.ellipse(center: .zero, rx: 34, ry: 34), fill: Palette.sun, lineWidth: 4.5, seed: 970 + UInt64(i)))
+            badge.addChild(Sketch.letter("\(i + 1)", size: 46, shadow: nil))
+            mark.addChild(badge)
+            addChild(mark)
+            slotMarks.append(mark)
         }
-        let startOrder = next.set.cards.shuffled(using: &coordinator.rng)
-        for (i, card) in startOrder.enumerated() {
-            let node = PictureCard(picture: card.picture, word: card.text, seed: 980 + UInt64(session.roundsPlayed * 11 + i))
-            node.name = "tap:card:\(i)"
-            node.position = slotPositions[i]
-            node.zPosition = 10
-            addChild(node)
-            cards.append(node)
-            slotCards[i] = node
+
+        // Shuffled along the bottom, never already in the right order.
+        var trayOrder = Array(0..<count)
+        while trayOrder == Array(0..<count) && count > 1 {
+            trayOrder.shuffle(using: &coordinator.rng)
+        }
+        trayPositions = Array(repeating: .zero, count: count)
+        for (spot, index) in trayOrder.enumerated() {
+            trayPositions[index] = CGPoint(x: xs[spot], y: Self.trayY)
+        }
+        for (i, card) in cards.enumerated() {
+            let holder = SKNode()
+            holder.name = "tap:card:\(i)"
+            let picture = PictureCard(picture: card.picture, word: card.text, seed: 980 + UInt64(session.roundsPlayed * 11 + i))
+            picture.setScale(scale)
+            holder.addChild(picture)
+            holder.position = trayPositions[i]
+            holder.zPosition = 10
+            holder.alpha = 0
+            holder.run(.sequence([.wait(forDuration: 0.08 * Double(i)), .fadeIn(withDuration: 0.25)]))
+            addChild(holder)
+            holders.append(holder)
         }
         inputLocked = false
         sayPrompt()
@@ -81,85 +122,7 @@ final class MorningOrderScene: BaseScene {
         bip.hop()
     }
 
-    // MARK: Dragging
-
-    override func mouseDown(with event: NSEvent) {
-        super.mouseDown(with: event)
-        guard !inputLocked, dragged == nil else { return }
-        let point = event.location(in: self)
-        for card in cards where card.contains(point) {
-            dragged = card
-            dragOffset = CGPoint(x: card.position.x - point.x, y: card.position.y - point.y)
-            card.zPosition = 20
-            card.removeAction(forKey: "hint")
-            break
-        }
-    }
-
-    override func mouseDragged(with event: NSEvent) {
-        guard let card = dragged, !inputLocked else { return }
-        let point = event.location(in: self)
-        card.position = CGPoint(x: point.x + dragOffset.x, y: point.y + dragOffset.y)
-    }
-
-    override func mouseUp(with event: NSEvent) {
-        guard let card = dragged else { return }
-        dragged = nil
-        guard !inputLocked else { return }
-        card.zPosition = 10
-        var best = -1
-        var bestDistance = CGFloat(160 * 160)
-        for (i, slot) in slotPositions.enumerated() {
-            let dx = card.position.x - slot.x
-            let dy = card.position.y - slot.y
-            let distance = dx * dx + dy * dy
-            if distance < bestDistance {
-                bestDistance = distance
-                best = i
-            }
-        }
-        guard best >= 0 else { return }
-        if let from = slotCards.firstIndex(where: { $0 === card }) {
-            slotCards[from] = nil
-        }
-        if let occupant = slotCards[best] {
-            let fromPosition = card.position
-            occupant.run(.move(to: fromPosition, duration: 0.2))
-            if let from = slotCards.firstIndex(where: { $0 === occupant }) {
-                slotCards[from] = nil
-            }
-            // The occupant keeps the dragged card's old slot once it arrives.
-            slotCards[best] = card
-            card.run(.move(to: slotPositions[best], duration: 0.2))
-            if let old = nearestSlot(to: fromPosition, excluding: best) {
-                slotCards[old] = occupant
-                occupant.run(.move(to: slotPositions[old], duration: 0.2))
-            }
-        } else {
-            slotCards[best] = card
-            card.run(.move(to: slotPositions[best], duration: 0.15))
-        }
-        sfx.play(.tick)
-    }
-
-    private func nearestSlot(to point: CGPoint, excluding: Int) -> Int? {
-        var best: Int?
-        var bestDistance = CGFloat.greatestFiniteMagnitude
-        for (i, slot) in slotPositions.enumerated() where i != excluding && slotCards[i] == nil {
-            let dx = point.x - slot.x
-            let dy = point.y - slot.y
-            let distance = dx * dx + dy * dy
-            if distance < bestDistance {
-                bestDistance = distance
-                best = i
-            }
-        }
-        return best
-    }
-
-    private func currentOrder() -> [SequenceCard] {
-        slotCards.compactMap { node in round?.set.cards.first { $0.text == node?.cardWord } }
-    }
+    // MARK: Tapping cards
 
     override func handleTap(name: String, node: SKNode) {
         if name == "tap:replay" {
@@ -167,21 +130,54 @@ final class MorningOrderScene: BaseScene {
             sayPrompt()
             return
         }
-        guard name == "tap:next", let round else { return }
-        Buttons.press(node)
-        check(round: round)
+        guard name.hasPrefix("tap:card:"), let index = Int(name.dropFirst("tap:card:".count)),
+              holders.indices.contains(index), let round else { return }
+        let holder = holders[index]
+        settle(holder)
+
+        if let slot = slots.firstIndex(of: index) {
+            // Placed already: back down to the bottom row.
+            slots[slot] = nil
+            sfx.play(.pop)
+            holder.run(.move(to: trayPositions[index], duration: 0.22))
+            return
+        }
+        guard let empty = slots.firstIndex(of: nil) else { return }
+        slots[empty] = index
+        sfx.play(.tick)
+        holder.zPosition = 12
+        let move = SKAction.move(to: slotPositions[empty], duration: 0.25)
+        move.timingMode = .easeOut
+        holder.run(.sequence([move, .run { holder.zPosition = 10 }]))
+
+        let card = round.set.cards[index]
+        if slots.contains(nil) {
+            voice.play([card.audio])
+        } else {
+            // Last space filled: say the card, then see if the story is in order.
+            inputLocked = true
+            voice.play([card.audio], completion: { [weak self] in self?.check(round: round) })
+        }
+    }
+
+    /// Stop any hint wiggle and stand the card up straight.
+    private func settle(_ holder: SKNode) {
+        holder.removeAction(forKey: "hint")
+        holder.run(.group([.rotate(toAngle: 0, duration: 0.1), .scale(to: 1, duration: 0.1)]))
+    }
+
+    /// The cards in the numbered spaces, in order.
+    private func currentOrder(in round: MorningOrderGame.Round) -> [SequenceCard] {
+        slots.compactMap { $0 }.map { round.set.cards[$0] }
     }
 
     private func check(round: MorningOrderGame.Round) {
-        guard slotCards.allSatisfy({ $0 != nil }) else {
-            sfx.play(.boop)
-            return
-        }
-        switch attempt.answer(correct: game.isCorrect(currentOrder(), in: round)) {
+        let order = currentOrder(in: round)
+        switch attempt.answer(correct: game.isCorrect(order, in: round)) {
         case let .correct(firstTry):
-            inputLocked = true
             sfx.play(.chime)
             bip.celebrate()
+            for holder in holders { Buttons.press(holder) }
             let change = coordinator.record(correct: firstTry, skillID: game.skillID(for: round), soundID: nil)
             voice.play([coordinator.randomPraise()], completion: { [weak self] in
                 self?.afterAnswer(change)
@@ -189,19 +185,40 @@ final class MorningOrderScene: BaseScene {
         case .tryAgain:
             sfx.play(.boop)
             bip.tilt()
-            for card in cards { card.run(Buttons.shake()) }
+            sendBack(from: firstMistake(in: order, round: round))
+            after(0.5) { [weak self] in self?.inputLocked = false }
         case .hint:
             sfx.play(.boop)
             bip.tilt()
-            let order = currentOrder()
-            for (i, card) in order.enumerated() where card != round.answer[i] {
-                if let node = slotCards[i] { node.run(Buttons.hintWiggle(), withKey: "hint") }
-                break
+            let mistake = firstMistake(in: order, round: round)
+            sendBack(from: mistake)
+            // The card that belongs in the first wrong space wiggles.
+            let wanted = round.answer[mistake]
+            if let index = round.set.cards.firstIndex(of: wanted) {
+                after(0.4) { [weak self] in
+                    self?.holders[index].run(Buttons.hintWiggle(), withKey: "hint")
+                }
             }
             after(0.4) { [weak self] in
-                guard let self, let round = self.round else { return }
-                self.voice.play([self.coordinator.randomHint()] + round.answer.map(\.audio))
+                guard let self else { return }
+                self.voice.play([self.coordinator.randomHint()] + round.answer.map(\.audio), completion: { [weak self] in
+                    self?.inputLocked = false
+                })
             }
+        }
+    }
+
+    private func firstMistake(in order: [SequenceCard], round: MorningOrderGame.Round) -> Int {
+        order.indices.first { order[$0] != round.answer[$0] } ?? 0
+    }
+
+    /// Everything from the first mistake on goes back to the bottom row; the right start stays.
+    private func sendBack(from first: Int) {
+        for slot in first..<slots.count {
+            guard let index = slots[slot] else { continue }
+            slots[slot] = nil
+            let holder = holders[index]
+            holder.run(.sequence([Buttons.shake(), .move(to: trayPositions[index], duration: 0.25)]))
         }
     }
 
@@ -248,8 +265,4 @@ final class MorningOrderScene: BaseScene {
     override func goHome() {
         coordinator.showCodingIsland()
     }
-}
-
-private extension PictureCard {
-    var cardWord: String { word }
 }
