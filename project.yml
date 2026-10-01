@@ -82,11 +82,13 @@ targets:
         NSPrincipalClass: NSApplication
         NSHighResolutionCapable: true
         NSHumanReadableCopyright: Made for our family.
-        # Sparkle 2 auto-updates. Checks hourly, downloads quietly, installs when the app is quit.
+        # Sparkle 2 updates. Checks on launch and hourly, but never installs on its own: the game
+        # shows an "Update ready" button and a grown-up installs it behind the parent gate.
         SUFeedURL: $(SPARKLE_FEED_URL)
         SUPublicEDKey: $(SPARKLE_PUBLIC_KEY)
         SUEnableAutomaticChecks: true
-        SUAutomaticallyUpdate: true
+        SUAutomaticallyUpdate: false
+        SUAllowsAutomaticUpdates: false
         SUScheduledCheckInterval: 3600
 
   BipIslandTests:

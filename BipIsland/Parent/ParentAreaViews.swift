@@ -448,10 +448,14 @@ struct SettingsTab: View {
             PasscodeSection(gate: gate)
             ParentSection(title: "This copy of Bip Island") {
                 Text(gate.versionText)
+                if let version = gate.updateReady {
+                    Text("Version \(version) is ready to install.")
+                        .font(Fonts.ui(17, bold: true))
+                }
                 Text(gate.voiceText)
                     .foregroundStyle(.secondary)
                 HStack(spacing: 12) {
-                    Button("Check for updates now") { gate.checkForUpdates() }
+                    Button(gate.updateReady == nil ? "Check for updates now" : "Install the update") { gate.checkForUpdates() }
                         .disabled(!gate.updatesConfigured)
                     Button(role: .destructive) { gate.quit() } label: {
                         Text("Quit Bip Island")

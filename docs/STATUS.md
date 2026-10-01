@@ -107,4 +107,7 @@
   maths; 3 wrong tries fall back to maths. Stored as a salted SHA-256 hash in UserDefaults.
 - **1 Oct, night:** Levels in every game (games.json `levels`, per-child `gameLevels` in
   ChildProgress, level stars top-centre, 8 questions a visit, end-of-visit celebration). Morning
-  Order has no levels yet (left to the Morning Order session; use `learner.gameLevel`).
+  Order levels added too (`cards` 3, 4, 6; the Morning Order session wires it up).
+- **1 Oct, night:** Updates now need a grown-up: Sparkle checks on launch and hourly but never
+  installs alone (`SUAutomaticallyUpdate` off, gentle reminders in `UpdateController`). A found
+  update shows an "Update ready" button top-right; it opens the parent gate, then Sparkle's window.

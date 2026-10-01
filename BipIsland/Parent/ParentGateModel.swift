@@ -20,6 +20,8 @@ final class ParentGateModel: ObservableObject {
     @Published private(set) var usingPasscode = false
     /// Whether a parent passcode is set on this Mac.
     @Published private(set) var hasPasscode = false
+    /// A new version waiting for a grown-up to install it (its version number).
+    @Published var updateReady: String?
 
     let versionText: String
     let voiceText: String
@@ -38,6 +40,8 @@ final class ParentGateModel: ObservableObject {
         didSet { hasPasscode = passcode != nil }
     }
     private var wrongPasscodeTries = 0
+    /// Opened from the "Update ready" button: install the update once the gate is passed.
+    private var installAfterUnlock = false
     private var hold = HoldDetector(duration: 3)
     private var timer: Timer?
     private var rng = SystemRandomNumberGenerator()
@@ -78,7 +82,15 @@ final class ParentGateModel: ObservableObject {
         }
     }
 
+    /// The "Update ready" button: the same passcode or maths, then Sparkle's install window.
+    func openForUpdate() {
+        guard phase == .closed else { return }
+        open()
+        installAfterUnlock = true
+    }
+
     func open() {
+        installAfterUnlock = false
         escapeReleased()
         challenge = ParentChallenge.random(using: &rng)
         answer = ""
@@ -92,7 +104,7 @@ final class ParentGateModel: ObservableObject {
     func submitAnswer() {
         if usingPasscode, let passcode {
             if passcode.matches(answer) {
-                phase = .unlocked
+                unlock()
             } else {
                 wrongPasscodeTries += 1
                 lastAnswerWasWrong = true
@@ -102,11 +114,19 @@ final class ParentGateModel: ObservableObject {
             return
         }
         if challenge.isCorrect(answer) {
-            phase = .unlocked
+            unlock()
         } else {
             lastAnswerWasWrong = true
             challenge = ParentChallenge.random(using: &rng)
             answer = ""
+        }
+    }
+
+    private func unlock() {
+        phase = .unlocked
+        if installAfterUnlock {
+            installAfterUnlock = false
+            onCheckForUpdates?()
         }
     }
 
@@ -134,6 +154,7 @@ final class ParentGateModel: ObservableObject {
     func close() {
         guard phase != .closed else { return }
         phase = .closed
+        installAfterUnlock = false
         answer = ""
         onClose?()
     }
