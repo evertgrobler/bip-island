@@ -1,5 +1,6 @@
 file,text,notes,placeholder
-snd_s.m4a,sssss,"Stretchy sound. A clean hiss held for about 1 second. Never the letter name ""ess"". No vowel before or after.",sss
+snd_u.m4a,Up.,"Short vowel /ʌ/ as in up, umbrella, sun. Generate the word ""Up."" and keep only the vowel: cut just before the silence of the p (about 0.25 s). Never the letter name ""you"".",uh
+snd_s.m4a,Sssssssss.,"Stretchy sound. A clean hiss held for about 1 second, soft fade in and out. Never the letter name ""ess"". No vowel before or after.",sss
 snd_a.m4a,"a, as in ant","Short vowel /æ/ as in ant, apple, cat. Generate the phrase, then trim to the vowel only (about 0.4 s). Never the letter name ""ay"" and no ""uh"" after it.","a, as in ant"
 snd_t.m4a,tap,"Stop sound. Generate the word ""tap"" and trim to the first ~100 ms so only the crisp, unvoiced t burst is left. No ""tuh"", never ""tee"". If it can't be made clean, record it by hand.","t, as in tap"
 snd_p.m4a,pan,"Stop sound. Generate the word ""pan"" and trim to the first ~100 ms: a soft puff of air, unvoiced. No ""puh"", never ""pee"". Record by hand if trimming fails.","p, as in pan"
