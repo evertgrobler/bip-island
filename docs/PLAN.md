@@ -151,7 +151,7 @@ Prove the hardest part first: if the phonics audio and the core click-and-hear l
 - [x] Audience: your own family first, to see how it plays and feels; no App Store needed yet, so free Xcode signing is enough.
 - [x] Build: entirely with Claude Code, in a new GitHub repository.
 - [x] Art style: hand-drawn.
-- [x] Voice: a female South African English voice, designed in ElevenLabs (replaces Alice).
+- [x] Voice: "Bip Island Narrator" (ElevenLabs voice ID Mq5hYfc3xyDzuW3pPMck), a female South African English voice. Locked in as the official game voice on 1 October 2026.
 - [x] Companion: a robot (Bip, working name).
 - [x] Repository: private, named bip-island.
 - [x] Workflow: cloud-driven. Claude Code cloud sessions write the code, GitHub Actions builds it on a Mac runner, and the app updates itself on your Mac via Sparkle. No Xcode needed on your Mac.

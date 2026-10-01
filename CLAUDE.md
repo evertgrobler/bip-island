@@ -54,7 +54,7 @@ Versioning: `CFBundleShortVersionString` = `0.MINOR.PATCH`, `CFBundleVersion` = 
 ## Art and voice
 
 - Art style: **hand-drawn** — wobbly ink outlines, paper texture, warm bright colours. Bip is a small, friendly hand-drawn robot.
-- Narrator voice: a **female South African English** voice, generated with ElevenLabs (being designed separately; until it exists, use placeholder clips generated with macOS `say` in CI or silent stubs, and keep the file-name contract below so real clips drop in).
+- Narrator voice (**official, locked in 1 October 2026**): ElevenLabs voice **"Bip Island Narrator"**, voice ID `Mq5hYfc3xyDzuW3pPMck` — a warm, friendly female South African English teacher voice. Every spoken clip in the game uses this voice and nothing else. Generate clips with the `eleven_v3` model unless a test shows another model pronounces pure phonemes better. Until real clips exist, use placeholder clips (macOS `say` in CI, or silent stubs) and keep the file-name contract below so real clips drop in.
 - Bip himself makes short robot sound effects (beeps, whirrs), not speech.
 
 Audio file-name contract (`Resources/Audio/`):
