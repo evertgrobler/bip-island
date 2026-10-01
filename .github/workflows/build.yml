@@ -11,6 +11,11 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    # bash with -e and -o pipefail, so a failure inside a pipe fails the step.
+    shell: bash
+
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -58,8 +63,18 @@ jobs:
 
       - name: Run unit tests
         run: |
+          mkdir -p build
           xcodebuild test -project BipIsland.xcodeproj -scheme BipIsland -destination 'platform=macOS,arch=arm64' \
-            -derivedDataPath "$DERIVED" -clonedSourcePackagesDirPath "$PACKAGES" -quiet
+            -derivedDataPath "$DERIVED" -clonedSourcePackagesDirPath "$PACKAGES" 2>&1 \
+            | tee build/test.log | grep -E "^Test Case .*(passed|failed)|error:|Executed [0-9]+ test" || true
+          # Make sure tests really ran (and none failed), not just that the build succeeded.
+          summary="$(grep -E "Executed [0-9]+ tests?, with [0-9]+ failures?" build/test.log | tail -1)"
+          echo "$summary"
+          echo "**Unit tests:** ${summary:-no summary found}" >> "$GITHUB_STEP_SUMMARY"
+          echo "$summary" | grep -Eq "Executed [1-9][0-9]* tests?, with 0 failures" || {
+            echo "::error::Unit tests didn't run or didn't all pass."
+            exit 1
+          }
 
       - name: Decide whether to publish
         id: release

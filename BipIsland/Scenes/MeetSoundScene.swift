@@ -109,9 +109,9 @@ final class MeetSoundScene: BaseScene {
             Buttons.press(node)
             coordinator.markMet(sound)
             bip.celebrate()
-            voice.play([coordinator.randomPraise()]) { [weak self] in
+            voice.play([coordinator.randomPraise()], completion: { [weak self] in
                 self?.coordinator.showLettersIsland(greet: false)
-            }
+            })
         default:
             break
         }

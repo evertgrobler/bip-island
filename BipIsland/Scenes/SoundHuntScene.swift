@@ -77,9 +77,9 @@ final class SoundHuntScene: BaseScene {
             sfx.play(.chime)
             bip.celebrate()
             let change = coordinator.record(correct: firstTry, for: sound)
-            voice.play([coordinator.randomPraise(), question.target.wordClip]) { [weak self] in
+            voice.play([coordinator.randomPraise(), question.target.wordClip], completion: { [weak self] in
                 self?.afterAnswer(change)
-            }
+            })
         case .tryAgain:
             sfx.play(.boop)
             card.run(Buttons.shake())
@@ -107,12 +107,12 @@ final class SoundHuntScene: BaseScene {
         case .levelledUp:
             sfx.play(.whirr)
             bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue]) { [weak self] in self?.finish() }
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
         case .droppedBack:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue]) { [weak self] in self?.finish() }
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
         case .none:
             if questionsAsked >= LessonPlanner.questionsPerRound {
-                voice.play([VoiceLine.roundDone.rawValue]) { [weak self] in self?.finish() }
+                voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
             } else {
                 after(0.3) { [weak self] in self?.askQuestion() }
             }

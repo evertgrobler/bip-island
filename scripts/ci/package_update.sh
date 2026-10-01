@@ -31,6 +31,18 @@ if [ "$app_feed" != "$FEED_URL" ]; then
   exit 1
 fi
 
+# Every clip in audio/script.csv must be inside the app (real or placeholder).
+root="$(cd "$here/../.." && pwd)"
+expected_clips="$(tail -n +2 "$root/audio/script.csv" | grep -c '^[a-z].*\.m4a,' || true)"
+bundled_clips="$(find "$APP_PATH/Contents/Resources/Audio" -name '*.m4a' 2>/dev/null | wc -l | tr -d ' ')"
+echo "Voice clips in the app: $bundled_clips of $expected_clips"
+if [ "$bundled_clips" -eq 0 ]; then
+  echo "::error::No voice clips were bundled into the app (Resources/Audio is missing)."
+  exit 1
+elif [ "$bundled_clips" -lt "$expected_clips" ]; then
+  echo "::warning::Only $bundled_clips of $expected_clips voice clips are in the app; the rest will be silent."
+fi
+
 rm -rf "$OUT_DIR"
 mkdir -p "$OUT_DIR"
 zip_name="BipIsland-$version-$build.zip"
