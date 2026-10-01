@@ -1,9 +1,8 @@
 import SpriteKit
 
 /// Hand-drawn pictures, by picture id from Content/asset_manifest.json (pic_<word>).
-/// Each fits in roughly a 220 × 220 box around the origin. Every picture phonics group 1 can show
-/// (sun, ant, ants, tap, pan, ink, net, pin, pins, tin) is drawn; the rest show a clearly labelled
-/// placeholder with the word, so nothing is ever blank.
+/// Each fits in roughly a 220 × 220 box around the origin. Ids without real art yet show
+/// an emoji stand-in (EmojiPictures) so pre-readers always see a picture, never a word.
 enum PictureNode {
     static func make(picture id: String, word: String) -> SKNode {
         switch id {
@@ -22,7 +21,7 @@ enum PictureNode {
         case "pic_pig": return pig()
         case "pic_igloo": return igloo()
         case "pic_nest": return nest()
-        default: return placeholder(word)
+        default: return EmojiPictures.make(picture: id) ?? placeholder(word: word)
         }
     }
 
@@ -244,7 +243,8 @@ enum PictureNode {
     }
 
     /// Not drawn yet: a dashed frame with the word written in, so it's obvious this is a stand-in.
-    private static func placeholder(_ word: String) -> SKNode {
+    /// Last resort for a picture with neither art nor emoji: the word, clearly marked.
+    private static func placeholder(word: String) -> SKNode {
         let n = SKNode()
         n.addChild(Sketch.node(.roundedRect(CGRect(x: -100, y: -80, width: 200, height: 160), radius: 24), fill: Palette.stone.withAlphaComponent(0.5),
                                ink: Palette.ink.withAlphaComponent(0.5), lineWidth: 3, wobble: 3.5, seed: 424))
