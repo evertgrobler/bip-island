@@ -26,11 +26,14 @@
   (`GameSKView` cursor rects). Parent gate panel keeps the normal system pointer.
 - **Build:** CI green on `main` (109 unit tests). Latest family build: **0.1.0 build 25**,
   `Downloads/bip-island-keyboard/` on the owner's Mac. App updates itself via Sparkle.
+- **Font:** Atkinson Hyperlegible everywhere (game text and parent area), bundled in
+  `Resources/Fonts/`. Owner decision, see CLAUDE.md "Art and voice".
 - **Known open items:** profile picker (single child only), parent progress view, waves 2b/3/4
   games (17 left), golden rounds, real art, music, Developer ID signing.
 
 ## Locked decisions (don't relitigate)
 
+- Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts).
 - Voice: "Bip Island Narrator" `Mq5hYfc3xyDzuW3pPMck`, `eleven_v3`, SA English teacher.
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
 - No timers/lives/game-over. Wrong → boop → retry → hint after 2 misses. 120 pt targets.
@@ -79,5 +82,7 @@
 - **1 Oct PM:** Fixed crash (PR #6), fixed Dark-Mode parent panel (PR #7), merged both.
 - **1 Oct PM:** Emoji pictures for all 242 missing word pictures (PR #8, build 23).
 - **1 Oct eve:** Keyboard play for all games + coding (PR #9, build 25). Owner playtesting.
+- **1 Oct, later:** Switched all text to Atkinson Hyperlegible (bundled TTFs + OFL licence,
+  `ATSApplicationFontsPath`), parent area included. CI now fails if the font is missing.
 - **1 Oct late:** Owner feedback: Morning Order hard to play, pictures didn't match. Redid it as
   tap-to-place with numbered spaces, 36 new step pictures, plus a big custom cursor.

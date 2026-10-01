@@ -135,6 +135,17 @@ jobs:
             echo "::error::The app icon (AppIcon.icns) is missing from the built app."
             exit 1
           fi
+          # The game font (Resources/Fonts) must be bundled and registered.
+          for font in AtkinsonHyperlegible-Regular.ttf AtkinsonHyperlegible-Bold.ttf; do
+            if [ ! -f "$APP_PATH/Contents/Resources/Fonts/$font" ]; then
+              echo "::error::The font $font is missing from the built app."
+              exit 1
+            fi
+          done
+          /usr/libexec/PlistBuddy -c "Print :ATSApplicationFontsPath" "$APP_PATH/Contents/Info.plist" | grep -qx Fonts || {
+            echo "::error::Info.plist doesn't register the bundled fonts (ATSApplicationFontsPath)."
+            exit 1
+          }
 
       - name: Find Sparkle's tools
         run: |
