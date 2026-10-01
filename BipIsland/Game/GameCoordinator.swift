@@ -89,7 +89,7 @@ final class GameCoordinator: ObservableObject {
     private(set) var hasWelcomed = false
 
     init() {
-        skView = SKView(frame: NSRect(x: 0, y: 0, width: 1280, height: 800))
+        skView = GameSKView(frame: NSRect(x: 0, y: 0, width: 1280, height: 800))
         skView.ignoresSiblingOrder = false
         skView.preferredFramesPerSecond = 60
 

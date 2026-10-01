@@ -21,7 +21,7 @@ enum PictureNode {
         case "pic_pig": return pig()
         case "pic_igloo": return igloo()
         case "pic_nest": return nest()
-        default: return EmojiPictures.make(picture: id) ?? placeholder(word: word)
+        default: return StepPictures.make(picture: id) ?? EmojiPictures.make(picture: id) ?? placeholder(word: word)
         }
     }
 
@@ -163,7 +163,7 @@ enum PictureNode {
         return n
     }
 
-    private static func tap() -> SKNode {
+    static func tap() -> SKNode {
         let n = SKNode()
         // Pipe from the wall, the spout curving down, a handle on top and a falling drop.
         n.addChild(Sketch.node(.roundedRect(CGRect(x: -110, y: 10, width: 24, height: 70), radius: 6), fill: Palette.stone, lineWidth: 4.5, seed: 391))

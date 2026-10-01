@@ -35,6 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         kidLock.install(content: NSHostingView(rootView: root))
         installKeyMonitor()
         coordinator.start()
+        BigCursor.arrow.set()
     }
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {

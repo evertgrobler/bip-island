@@ -4,7 +4,7 @@
 > for the design. **When you finish work, update this file**: append a dated entry under
 > "Session log", refresh "Where things stand", and commit it with your changes.
 
-## Where things stand (1 October 2026, evening)
+## Where things stand (1 October 2026, late evening)
 
 - **Phase 0 (voice): done.** All 702 narrator clips bundled in `Resources/Audio/` (ElevenLabs
   "Bip Island Narrator", `eleven_v3`). Trimmed deaf (by waveform, not ear): stops 0.1 s,
@@ -16,8 +16,14 @@
   charging scene + parent settings, sticker book (118), daily mystery box, parent area.
 - **Keyboard play live:** arrows move an orange glow, Enter/Space chooses, 1-3 picks,
   coding fully keyboard drivable (arrows + Enter + Backspace, 1-7 palette). Other keys replay.
-- **Pictures:** 15 hand-drawn + 242 emoji stand-ins (`BipIsland/Drawing/EmojiPictures.swift`).
+- **Pictures:** 15 hand-drawn + emoji stand-ins (`BipIsland/Drawing/EmojiPictures.swift`).
   Each table row is the still-to-draw list. Full coverage of all 256 manifest pictures.
+  Morning Order's 36 step cards are small scenes (`StepPictures.swift`): shared ground per set
+  (soil, sand, pond), hand-drawn bread/frogs/oven/sandcastle + emoji, each step builds on the last.
+- **Morning Order is tap-to-place** (no dragging): tap a card → it flies to the next numbered
+  space and its line is spoken; tap a placed card to send it back; auto-checks when full.
+- **Big cursor:** `BipIsland/App/BigCursor.swift` — 72 pt orange hand-drawn arrow on the game view
+  (`GameSKView` cursor rects). Parent gate panel keeps the normal system pointer.
 - **Build:** CI green on `main` (109 unit tests). Latest family build: **0.1.0 build 25**,
   `Downloads/bip-island-keyboard/` on the owner's Mac. App updates itself via Sparkle.
 - **Known open items:** profile picker (single child only), parent progress view, waves 2b/3/4
@@ -73,3 +79,5 @@
 - **1 Oct PM:** Fixed crash (PR #6), fixed Dark-Mode parent panel (PR #7), merged both.
 - **1 Oct PM:** Emoji pictures for all 242 missing word pictures (PR #8, build 23).
 - **1 Oct eve:** Keyboard play for all games + coding (PR #9, build 25). Owner playtesting.
+- **1 Oct late:** Owner feedback: Morning Order hard to play, pictures didn't match. Redid it as
+  tap-to-place with numbered spaces, 36 new step pictures, plus a big custom cursor.
