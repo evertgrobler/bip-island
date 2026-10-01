@@ -245,7 +245,10 @@ final class RoundGeneratorTests: XCTestCase {
             XCTAssertTrue(learner.knownSoundIDs.contains(round.target.id), "asked about a sound the child hasn't met")
             XCTAssertLessThanOrEqual(round.target.group, learner.unlockedPhonicsGroup)
             for food in round.choices {
-                let banked = try XCTUnwrap(f.content.word(food.word), "\(food.word) isn't in the word bank")
+                guard let banked = f.content.word(food.word) else {
+                    XCTFail("\(food.word) isn't in the word bank")
+                    continue
+                }
                 XCTAssertLessThanOrEqual(banked.decodableFromGroup, learner.unlockedPhonicsGroup)
                 XCTAssertTrue(f.content.pictureIDs.contains(food.picture), food.picture)
                 XCTAssertTrue(f.content.audioIDs.contains(food.audio), food.audio)
