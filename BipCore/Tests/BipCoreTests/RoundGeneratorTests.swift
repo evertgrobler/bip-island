@@ -412,6 +412,25 @@ final class RoundGeneratorTests: XCTestCase {
         XCTAssertGreaterThan(seenLevels.count, 5, "rounds should cover several levels")
     }
 
+    func testGridWalkerTracksWhichWayBipFaces() throws {
+        let f = try fixture()
+        for level in f.content.levels.levels where level.game == BipsPathGame.id {
+            let program = level.optimalProgram
+            let facings = GridWalker.facings(program: program, on: level)
+            XCTAssertEqual(facings.count, GridWalker.path(program: program, on: level).positions.count, level.id)
+            XCTAssertEqual(facings.first?.rawValue, level.startFacing, level.id)
+            if !program.contains(where: { $0.hasPrefix("turn") }) {
+                XCTAssertTrue(facings.allSatisfy { $0.rawValue == level.startFacing }, "arrow blocks never turn Bip")
+            }
+        }
+        // A crash stops the facings where the path stops.
+        if let level = f.content.levels.levels.first(where: { $0.game == BipsPathGame.id }) {
+            let offGrid = Array(repeating: "up", count: level.grid.rows + 1)
+            XCTAssertEqual(GridWalker.facings(program: offGrid, on: level).count,
+                           GridWalker.path(program: offGrid, on: level).positions.count)
+        }
+    }
+
     func testGridWalkerBasics() throws {
         let f = try fixture()
         let levels = f.content.levels.levels.filter { $0.game == BipsPathGame.id }

@@ -181,12 +181,14 @@ public struct GameLevel: Codable, Hashable, Sendable {
     public let gridBand: Band?
     /// Picture-ordering games: the most picture cards in one story.
     public let cards: Int?
+    /// Word Builder: spare tiles in the bank that aren't in the word.
+    public let spares: Int?
     /// For people reading the file.
     public let note: String?
 
     public init(band: Band? = nil, countTo: Int? = nil, choices: Int? = nil, flashTenths: Int? = nil, bubbles: Int? = nil,
                 speedPercent: Int? = nil, soundCounts: [Int]? = nil, gridBand: Band? = nil, cards: Int? = nil,
-                note: String? = nil) {
+                spares: Int? = nil, note: String? = nil) {
         self.band = band
         self.countTo = countTo
         self.choices = choices
@@ -196,6 +198,7 @@ public struct GameLevel: Codable, Hashable, Sendable {
         self.soundCounts = soundCounts
         self.gridBand = gridBand
         self.cards = cards
+        self.spares = spares
         self.note = note
     }
 

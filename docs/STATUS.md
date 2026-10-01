@@ -111,3 +111,9 @@
 - **1 Oct, night:** Updates now need a grown-up: Sparkle checks on launch and hourly but never
   installs alone (`SUAutomaticallyUpdate` off, gentle reminders in `UpdateController`). A found
   update shows an "Update ready" button top-right; it opens the parent gate, then Sparkle's window.
+- **1 Oct, night:** Building play deepened. Word Builder: tiles show real graphemes (was showing ids
+  like `oo_short`), tap a tile to drop it in the next space (drag still works), each tile says its
+  sound as it lands, spare tiles come only from taught sounds that can't spell the word (`spares` in
+  games.json levels: 1, 2, 2, 3), split-digraph words left out, and a right answer is sounded out tile
+  by tile. Bip's Path: footprints show the route, an arrow shows which way Bip faces on turning
+  puzzles (`GridWalker.facings`), plus take-back and clear buttons.

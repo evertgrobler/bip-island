@@ -31,6 +31,20 @@ public enum GridWalker {
         }
     }
 
+    /// Which way Bip faces before the first block and after each block that ran, matching
+    /// `path`'s positions one for one (so the scene can turn him as he walks).
+    public static func facings(program: [String], on level: GridLevel) -> [Facing] {
+        let walked = path(program: program, on: level).positions.count
+        var facing = Facing(level.startFacing)
+        var out = [facing]
+        for block in program where out.count < walked {
+            if block == "turnLeft" { facing = facing.turned(left: true) }
+            if block == "turnRight" { facing = facing.turned(left: false) }
+            out.append(facing)
+        }
+        return out
+    }
+
     /// Whether the program lands Bip on the goal without crashing.
     public static func reachesGoal(program: [String], on level: GridLevel) -> Bool {
         let result = path(program: program, on: level)

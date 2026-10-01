@@ -116,6 +116,44 @@ final class GameLevelTests: XCTestCase {
         }
     }
 
+    func testWordBuilderBankHasTheWordAndSafeSpares() throws {
+        let g = try games()
+        everyLevel(of: g.builder, g, seed: 10) { round, learner, step in
+            let wanted = min(step.spares ?? 1, WordBuilderGame.maxSpares)
+            XCTAssertEqual(round.answerTiles.map(\.id), round.answer, "the word's tiles spell the word")
+            // Every tile of the word is in the bank, as often as the word needs it.
+            var bank = round.bank.map(\.id)
+            for id in round.answer {
+                let at = try! XCTUnwrap(bank.firstIndex(of: id), "\(id) missing from the bank for \(round.word.word)")
+                bank.remove(at: at)
+            }
+            XCTAssertLessThanOrEqual(bank.count, wanted, "too many spare tiles")
+            let wordSounds = round.answer.compactMap { g.course.sound(id: $0) }
+            for spare in bank {
+                let sound = try! XCTUnwrap(g.course.sound(id: spare))
+                XCTAssertLessThanOrEqual(sound.group, learner.unlockedPhonicsGroup, "spare \(spare) isn't taught yet")
+                XCTAssertFalse(wordSounds.contains { $0.isConfusable(with: sound) }, "spare \(spare) could spell \(round.word.word)")
+            }
+            for tile in round.bank {
+                XCTAssertFalse(tile.text.contains("_") || tile.text.contains("-"), "tile shows \(tile.text)")
+                XCTAssertTrue(tile.soundClip.hasPrefix("snd_"), tile.soundClip)
+            }
+        }
+    }
+
+    func testWordBuilderGetsMoreSparesAtHigherLevels() throws {
+        let g = try games()
+        let spares = g.builder.entry.levelSteps.map { $0.spares ?? 1 }
+        XCTAssertEqual(spares, spares.sorted(), "spare tiles never go down as levels go up")
+        XCTAssertGreaterThan(spares.last ?? 0, spares.first ?? 0)
+        var rng = SeededGenerator(seed: 11)
+        let top = Learner(band: .stage1, unlockedPhonicsGroup: g.course.groups.count,
+                          knownSoundIDs: Set(g.course.allSounds.map(\.id)), gameLevel: spares.count - 1)
+        var session = GameSession(gameID: WordBuilderGame.id, skin: g.builder.skins[0], maxRounds: 1)
+        let round = try XCTUnwrap(session.nextRound(of: g.builder, for: top, using: &rng))
+        XCTAssertEqual(round.bank.count, round.answer.count + spares.last!, "with every sound open, the top level gets all its spares")
+    }
+
     func testBipsPathMovesToBiggerGrids() throws {
         let g = try games()
         everyLevel(of: g.path, g, seed: 8) { round, _, step in
