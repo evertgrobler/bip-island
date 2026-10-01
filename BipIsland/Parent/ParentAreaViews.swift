@@ -445,6 +445,7 @@ struct SettingsTab: View {
                 PlaySettingsView(settings: settings, gate: gate)
                     .frame(maxWidth: .infinity)
             }
+            PasscodeSection(gate: gate)
             ParentSection(title: "This copy of Bip Island") {
                 Text(gate.versionText)
                 Text(gate.voiceText)
@@ -464,5 +465,78 @@ struct SettingsTab: View {
                 }
             }
         }
+    }
+}
+
+/// Set, change or remove the parent passcode. With one set, holding Esc asks for it instead of
+/// a maths question.
+struct PasscodeSection: View {
+    @ObservedObject var gate: ParentGateModel
+    @State private var editing = false
+    @State private var first = ""
+    @State private var second = ""
+    @State private var problem: String?
+    @State private var saved = false
+
+    var body: some View {
+        ParentSection(title: "Parent passcode") {
+            Text(gate.hasPasscode
+                 ? "A passcode is set. Holding Esc asks for it instead of a maths question (after 3 wrong tries it asks maths)."
+                 : "Set a 4 to 8 digit passcode to use instead of the maths question when you hold Esc.")
+                .foregroundStyle(.secondary)
+            if editing {
+                HStack(spacing: 12) {
+                    SecureField("New passcode", text: $first)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 170)
+                    SecureField("Type it again", text: $second)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 170)
+                        .onSubmit(save)
+                    Button("Save", action: save)
+                    Button("Cancel") { reset() }
+                }
+                if let problem {
+                    Text(problem).foregroundStyle(.red)
+                }
+            } else {
+                HStack(spacing: 12) {
+                    Button(gate.hasPasscode ? "Change passcode" : "Set a passcode") {
+                        reset()
+                        editing = true
+                    }
+                    if gate.hasPasscode {
+                        Button("Remove passcode", role: .destructive) {
+                            gate.removePasscode()
+                            saved = false
+                        }
+                    }
+                    if saved {
+                        Text("Saved.").foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+    }
+
+    private func save() {
+        guard ParentPasscode.normalised(first) != nil else {
+            problem = "Use 4 to 8 digits."
+            return
+        }
+        guard ParentPasscode.normalised(first) == ParentPasscode.normalised(second) else {
+            problem = "The two don't match. Try again."
+            return
+        }
+        saved = gate.setPasscode(first)
+        if saved { editing = false; first = ""; second = ""; problem = nil }
+    }
+
+    private func reset() {
+        editing = false
+        first = ""
+        second = ""
+        problem = nil
+        saved = false
     }
 }

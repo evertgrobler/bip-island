@@ -100,3 +100,5 @@
   lone letter was sent to ElevenLabs and trimmed. New method (in audio/script.csv): say a word like
   "It." / "Up." and cut the vowel before the stop; stretchy sounds as "Nnnnn." with fades.
   ElevenLabs then disabled the account's free tier ("unusual activity", proxy) — needs a paid plan.
+- **1 Oct late:** Optional parent passcode (Settings tab): holding Esc then asks for it instead of
+  maths; 3 wrong tries fall back to maths. Stored as a salted SHA-256 hash in UserDefaults.

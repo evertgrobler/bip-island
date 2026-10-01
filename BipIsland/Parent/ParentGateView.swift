@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The grown-ups-only panel. Children can't read it, and the maths keeps them out.
+/// The grown-ups-only panel. Children can't read it, and the passcode (or maths) keeps them out.
 struct ParentGateView: View {
     @ObservedObject var gate: ParentGateModel
     @ObservedObject var coordinator: GameCoordinator
@@ -43,18 +43,39 @@ struct ParentGateView: View {
         VStack(spacing: 18) {
             Text("Grown-ups only")
                 .font(Fonts.ui(30, bold: true))
-            Text("What is \(gate.challenge.question)?")
-                .font(Fonts.ui(26, bold: true))
-            TextField("Answer", text: $gate.answer)
-                .textFieldStyle(.roundedBorder)
-                .font(Fonts.ui(26))
-                .multilineTextAlignment(.center)
-                .frame(width: 200)
-                .focused($answerFocused)
-                .onSubmit { gate.submitAnswer() }
-            if gate.lastAnswerWasWrong {
-                Text("Not quite. Try this one.")
-                    .foregroundStyle(.red)
+            if gate.usingPasscode {
+                Text("Enter the parent passcode")
+                    .font(Fonts.ui(26, bold: true))
+                SecureField("Passcode", text: $gate.answer)
+                    .textFieldStyle(.roundedBorder)
+                    .font(Fonts.ui(26))
+                    .multilineTextAlignment(.center)
+                    .frame(width: 200)
+                    .focused($answerFocused)
+                    .onSubmit { gate.submitAnswer() }
+                if gate.lastAnswerWasWrong {
+                    Text("That's not the passcode.")
+                        .foregroundStyle(.red)
+                }
+                Button("Forgot it? Answer a maths question instead") {
+                    gate.useMathsInstead()
+                    answerFocused = true
+                }
+                .buttonStyle(.link)
+            } else {
+                Text("What is \(gate.challenge.question)?")
+                    .font(Fonts.ui(26, bold: true))
+                TextField("Answer", text: $gate.answer)
+                    .textFieldStyle(.roundedBorder)
+                    .font(Fonts.ui(26))
+                    .multilineTextAlignment(.center)
+                    .frame(width: 200)
+                    .focused($answerFocused)
+                    .onSubmit { gate.submitAnswer() }
+                if gate.lastAnswerWasWrong {
+                    Text(gate.hasPasscode ? "Answer this one to come in." : "Not quite. Try this one.")
+                        .foregroundStyle(.red)
+                }
             }
             HStack(spacing: 16) {
                 Button("Back to the game") { gate.close() }
