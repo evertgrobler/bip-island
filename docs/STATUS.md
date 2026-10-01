@@ -6,6 +6,10 @@
 
 ## Where things stand (1 October 2026, late evening)
 
+- **Moving to Godot (Mac + Windows), approved 1 Oct.** Plan and checklist: `docs/GODOT_MIGRATION.md`.
+  **New games are paused**: the Swift Mac app gets bug fixes only until the switchover. Godot builds
+  go to a separate test feed; the family feed keeps serving the Swift app. Downloads are a plain `.dmg` / `Setup.exe`,
+  free and unsigned, with no app stores.
 - **Phase 0 (voice): done.** All 702 narrator clips bundled in `Resources/Audio/` (ElevenLabs
   "Bip Island Narrator", `eleven_v3`). Trimmed deaf (by waveform, not ear): stops 0.1 s,
   vowels 0.4 s, stretchies ~1 s. Owner is ear-checking `t`/`p`/`k` in playtests.
@@ -41,6 +45,8 @@
 
 ## Locked decisions (don't relitigate)
 
+- Engine move: Godot 4 .NET (C#), Velopack updates, direct `.dmg` / `Setup.exe` downloads, no stores,
+  no paid signing for now. Details in `docs/GODOT_MIGRATION.md`.
 - Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts).
 - Voice: "Bip Island Narrator" `Mq5hYfc3xyDzuW3pPMck`, `eleven_v3`, SA English teacher.
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
@@ -103,3 +109,6 @@
 - **1 Oct, night:** Owner: Morning Order repeats the same stories. Added 22 new stories (87 cards,
   pictures in `StepPictures.swift`). Their `vo_<set>_<n>` clips are **not recorded yet** (ElevenLabs
   account paused): cards play silence until generated. List = new `vo_` rows in `asset_manifest.json`.
+- **1 Oct, night:** Owner asked about Windows. Decided to rebuild in Godot 4 (C#) so one codebase
+  ships to Mac and Windows with auto-updates. Full rebuild in one go with CI checks instead of
+  playtests; the owner tests once at switchover. New games paused. Plan: `docs/GODOT_MIGRATION.md`.
