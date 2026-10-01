@@ -8,7 +8,7 @@ The mini-game catalogue, the freshness system (random rounds, skins, Bip's plann
 
 ## Who this is for right now
 
-The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only. UK / South African spelling everywhere (colour, mum, favourite) — in code comments, UI text and docs.
+The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only. UK / South African spelling everywhere (colour, mum, favourite) — in code comments, UI text and docs. All words the child hears or sees are proper South African English: no slang (say "corner shop", not "spaza"; "picnic", not "braai").
 
 ## How the owner works
 
@@ -43,9 +43,11 @@ Versioning: `CFBundleShortVersionString` = `0.MINOR.PATCH`, `CFBundleVersion` = 
 - App opens straight into full screen with a kid lock: hide Dock and menu bar, disable process switching and Cmd-Q (`NSApplication.PresentationOptions` + `applicationShouldTerminate`).
 - Parent gate to exit or open settings: hold Esc 3 seconds, then answer an adult maths question.
 - No network access except Sparkle's update check. No ads, analytics, accounts or data collection.
-- No timers, lives or "game over". Wrong answer → soft sound, retry, then a spoken hint after 2 misses.
+- No time pressure inside games: no countdown timers, lives or "game over". Wrong answer → soft sound, retry, then a spoken hint after 2 misses.
 - Click targets at least 120 pt. Design for a mouse, not a trackpad. Any key = "play that sound again".
-- Sessions of ~15–20 minutes; parent can set a daily limit.
+- **Play-time breaks:** after 20 minutes of play, Bip's battery runs low; the child finishes the current game, then Bip "charges" for a 20-minute break during which games stay closed. Track time with the wall clock in persisted storage so quitting and reopening the app cannot skip a break. Parents set play length, break length and an optional daily maximum behind the parent gate, and can end a break early.
+- **Free choice:** children pick any unlocked game on the map. Bip only recommends (one island glows), and nudges towards another island when one island dominates recent play. Never force a game.
+- **Rewards** are collected, never bought: stars → stickers → creatures → decorations → new areas (see `docs/GAMES.md`).
 
 ## Phonics rules
 
