@@ -1,0 +1,9 @@
+# Godot's import cache and C# build output
+.godot/
+bin/
+obj/
+# Copied in by scripts/godot/prepare_assets.py
+assets/
+# Export output
+build/
+*.translation
