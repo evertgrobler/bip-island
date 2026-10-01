@@ -25,7 +25,7 @@ vpk pack -x -H || true
 pack() { # pack <version> <output dir>
   vpk pack -x --packId "$PACK_ID" --packVersion "$1" --packDir "$app" --mainExe "$exe" \
     --packTitle "Bip Island" --noInst \
-    --signAppIdentity "-" --signEntitlements "$root/godot/macos/entitlements.plist" \
+    --signAppIdentity "-" --signEntitlements "$root/godot/macos/BipIsland.entitlements" \
     --outputDir "$2"
 }
 old_version="$VERSION-selftest"
