@@ -29,6 +29,10 @@ struct ParentGateView: View {
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
                     .stroke(Color(nsColor: Palette.ink), lineWidth: 4)
             )
+            // The panel is always cream: pin it to light mode so text never
+            // flips white-on-cream when the Mac is in Dark Mode.
+            .colorScheme(.light)
+            .foregroundStyle(Color(nsColor: Palette.ink))
         }
     }
 
