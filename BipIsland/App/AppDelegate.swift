@@ -12,6 +12,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Holding Option while the app opens starts "parent mode": a normal window, no kid lock.
         let parentMode = NSEvent.modifierFlags.contains(.option)
+        if !Fonts.isInstalled {
+            NSLog("Bip Island: Atkinson Hyperlegible didn't load; text falls back to the system font")
+        }
 
         updates = UpdateController()
         coordinator = GameCoordinator()
