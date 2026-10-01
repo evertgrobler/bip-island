@@ -13,6 +13,8 @@ public struct BubblePopGame: MiniGame {
         public let choices: [PhonicsSound]
         /// Letters a bubble may show when it floats back in. Never confusable with the target.
         public let others: [PhonicsSound]
+        /// How fast the bubbles drift (100 = normal).
+        public var speedPercent: Int = 100
         public var usedItems: [String] { [] }
     }
 
@@ -39,12 +41,17 @@ public struct BubblePopGame: MiniGame {
         let others = unlocked.filter { $0.id != target.id && !$0.isConfusable(with: target) }
         guard !others.isEmpty else { return nil }
 
-        // Different letters where there are enough, repeating only when the pool is small.
+        // More bubbles at higher levels. Different letters where there are enough, repeating only
+        // when the pool is small.
+        let step = level(for: learner)
+        let count = min(max(step.bubbles ?? Self.bubbleCount, 3), 8)
         var distractors: [PhonicsSound] = []
-        while distractors.count < Self.bubbleCount - 1 {
-            distractors += others.shuffled(using: &rng).prefix(Self.bubbleCount - 1 - distractors.count)
+        while distractors.count < count - 1 {
+            distractors += others.shuffled(using: &rng).prefix(count - 1 - distractors.count)
         }
-        return Round(target: target, choices: ([target] + distractors).shuffled(using: &rng), others: others)
+        var round = Round(target: target, choices: ([target] + distractors).shuffled(using: &rng), others: others)
+        round.speedPercent = step.speedPercent ?? 100
+        return round
     }
 
     /// The letter for a bubble floating back in. If no other bubble shows the target, this one must,

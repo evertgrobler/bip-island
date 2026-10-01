@@ -133,6 +133,29 @@ if not isinstance(games_doc.get("session", {}).get("roundsPerSession"), int) or 
     err("games.json: session.roundsPerSession must be a whole number of at least 1")
 game_ids = [gm["id"] for gm in games]
 if len(game_ids) != len(set(game_ids)): err("games.json: duplicate game id")
+LEVEL_KEYS = {"band", "countTo", "choices", "flashTenths", "bubbles", "speedPercent", "soundCounts", "gridBand", "cards", "note"}
+BANDS = ["foundation", "stage1", "stage2", "stage3"]
+for gm in games:
+    levels = gm.get("levels", [])
+    for i, lv in enumerate(levels):
+        where = f"game {gm['id']} level {i + 1}"
+        for k in lv:
+            if k not in LEVEL_KEYS: err(f"{where}: unknown key {k}")
+        for k in ("band", "gridBand"):
+            if k in lv and lv[k] not in BANDS: err(f"{where}: unknown {k} {lv[k]}")
+        for k in ("countTo", "choices", "flashTenths", "bubbles", "speedPercent", "cards"):
+            if k in lv and (not isinstance(lv[k], int) or lv[k] < 1): err(f"{where}: {k} must be a positive whole number")
+        if "choices" in lv and not 2 <= lv["choices"] <= 5: err(f"{where}: choices must be 2 to 5")
+        if "bubbles" in lv and not 3 <= lv["bubbles"] <= 8: err(f"{where}: bubbles must be 3 to 8")
+        if "cards" in lv and not 2 <= lv["cards"] <= 6: err(f"{where}: cards must be 2 to 6")
+        if "soundCounts" in lv and not any(w["picturable"] and w["soundCount"] in lv["soundCounts"] for w in words_doc["words"]):
+            err(f"{where}: no picturable words with {lv['soundCounts']} sounds")
+    # A level without a band carries on the band before it.
+    current, bands = 0, []
+    for lv in levels:
+        current = BANDS.index(lv["band"]) if lv.get("band") in BANDS else current
+        bands.append(current)
+    if bands != sorted(bands): err(f"game {gm['id']}: level bands must not go backwards")
 for gm in games:
     for s in gm["skills"]:
         if s not in SK: err(f"game {gm['id']}: unknown skill {s}")

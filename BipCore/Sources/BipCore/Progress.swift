@@ -122,6 +122,8 @@ public struct ChildProgress: Codable, Equatable, Sendable {
     public private(set) var breaks: BreakState?
     /// Seconds played, by day number, for the parent progress view. Only recent days are kept.
     public private(set) var playSecondsByDay: [Int: Int]
+    /// The child's level in each game (games.json `levels`), keyed by game id.
+    public private(set) var gameLevels: [String: SkillMastery]
 
     static let playDaysKept = 60
 
@@ -134,6 +136,7 @@ public struct ChildProgress: Codable, Equatable, Sendable {
         lastMysteryDay = nil
         breaks = nil
         playSecondsByDay = [:]
+        gameLevels = [:]
     }
 
     public init(from decoder: Decoder) throws {
@@ -146,6 +149,7 @@ public struct ChildProgress: Codable, Equatable, Sendable {
         lastMysteryDay = try c.decodeIfPresent(Int.self, forKey: .lastMysteryDay)
         breaks = try c.decodeIfPresent(BreakState.self, forKey: .breaks)
         playSecondsByDay = try c.decodeIfPresent([Int: Int].self, forKey: .playSecondsByDay) ?? [:]
+        gameLevels = try c.decodeIfPresent([String: SkillMastery].self, forKey: .gameLevels) ?? [:]
     }
 
     public func skill(_ id: String) -> SkillRecord {
@@ -214,6 +218,23 @@ public struct ChildProgress: Codable, Equatable, Sendable {
     /// Records play-time break progress. See PlayBreaks.
     public mutating func setBreaks(_ state: BreakState) {
         breaks = state
+    }
+
+    /// The child's level in a game, or `start` if they haven't played it yet.
+    public func gameLevel(for gameID: String, startingAt start: Int) -> Int {
+        gameLevels[gameID]?.level ?? start
+    }
+
+    /// One answer in a game: right answers in a row move the game up a level, misses drop it back
+    /// (the same rules as everything else). Returns the change.
+    @discardableResult
+    public mutating func recordGameAnswer(correct: Bool, gameID: String, startingAt start: Int, levelCount: Int,
+                                          rules: MasteryRules) -> MasteryChange {
+        guard levelCount > 1 else { return .none }
+        var mastery = gameLevels[gameID] ?? SkillMastery(level: min(max(start, 0), levelCount - 1))
+        let change = mastery.record(correct: correct, rules: rules, maxLevel: levelCount - 1)
+        gameLevels[gameID] = mastery
+        return change
     }
 
     /// Adds play time to a day, for the parent progress view. Days older than

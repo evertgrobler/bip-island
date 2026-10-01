@@ -13,7 +13,11 @@ final class SoundHuntScene: BaseScene {
     private var round: SoundHuntGame.Round?
     private var attempt = QuestionAttempt()
     private var cards: [PictureCard] = []
-    private static let cardPositions = [CGPoint(x: -400, y: 60), CGPoint(x: 0, y: 60), CGPoint(x: 400, y: 60)]
+    /// Three pictures 400 apart; four (a higher level) 350 apart, still 270 pt cards.
+    private static func cardPositions(count: Int) -> [CGPoint] {
+        let spacing: CGFloat = count > 3 ? 350 : 400
+        return (0..<count).map { CGPoint(x: (CGFloat($0) - CGFloat(count - 1) / 2) * spacing, y: 60) }
+    }
 
     init(coordinator: GameCoordinator, game: SoundHuntGame, session: GameSession, learner: Learner, focus: PhonicsSound) {
         self.game = game
@@ -51,7 +55,7 @@ final class SoundHuntScene: BaseScene {
         cards = next.choices.enumerated().map { index, choice in
             let card = PictureCard(picture: choice.picture, word: choice.word, seed: 900 + UInt64(session.roundsPlayed * 7 + index))
             card.name = "tap:card:\(index)"
-            card.position = Self.cardPositions[index % Self.cardPositions.count]
+            card.position = Self.cardPositions(count: next.choices.count)[index]
             card.zPosition = 10
             card.setScale(0.01)
             addChild(card)
@@ -138,11 +142,11 @@ final class SoundHuntScene: BaseScene {
         case .levelUp:
             sfx.play(.whirr)
             bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .practiseAgain:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .roundDone:
-            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         }
     }
 

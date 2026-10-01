@@ -31,10 +31,23 @@ public struct MorningOrderGame: MiniGame {
         set.cards.sorted { $0.n < $1.n }
     }
 
+    /// The fewest cards a story can be trimmed to: three cards still give two different muddles.
+    public static let minimumCards = 3
+
+    /// A story cut to its first `limit` steps (the whole story if it's already short enough).
+    /// Early levels ask for three steps, later ones for the whole story.
+    public static func trimmed(_ set: SequenceSet, to limit: Int?) -> SequenceSet {
+        let cards = correctOrder(of: set)
+        guard let limit, cards.count > limit else { return set }
+        return SequenceSet(id: set.id, band: set.band, cards: Array(cards.prefix(max(limit, minimumCards))))
+    }
+
     public func makeRound<G: RandomNumberGenerator>(for learner: Learner, session: GameSession, using rng: inout G) -> Round? {
+        let limit = level(for: learner).cards
         let fresh = sets.filter { $0.band <= learner.band && !session.usedItems.contains($0.id) }
             .shuffled(using: &rng)
-        for set in fresh {
+        for whole in fresh {
+            let set = Self.trimmed(whole, to: limit)
             let answer = Self.correctOrder(of: set)
             var wrong: [[SequenceCard]] = []
             for _ in 0..<30 where wrong.count < Self.choiceCount - 1 {
