@@ -147,6 +147,23 @@ jobs:
             exit 1
           }
 
+      # Opens the built game in screenshot mode for the download page. Never blocks a release:
+      # without screenshots the page shows empty frames.
+      - name: Take screenshots for the download page
+        continue-on-error: true
+        timeout-minutes: 6
+        run: scripts/ci/take_screenshots.sh
+
+      - name: Keep the screenshots
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ github.run_number }}
+          path: build/screenshots
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Find Sparkle's tools
         run: |
           tool="$(find "$PACKAGES/artifacts" -type f -name generate_appcast 2>/dev/null | head -1)"

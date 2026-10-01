@@ -36,6 +36,12 @@
   reviews due, recent games), Children tab, Settings tab.
 - **Play-time break is shared by the whole Mac** (stored in UserDefaults `bip.breakState`), so
   switching profiles can't skip it. Play minutes are still counted per child.
+- **Download page** (`site/index.html`): intro, the four islands with screenshots, a parents section,
+  and the Mac download + first-install steps. Screenshots are real: CI opens the built app with
+  `BIP_SCREENSHOTS=<folder>` (`BipIsland/App/ScreenshotMode.swift`, `scripts/ci/take_screenshots.sh`),
+  saves 12 scenes, shrinks them to JPEGs and deploys them to `screenshots/`. If that step fails the page
+  shows marked empty frames and the release still ships. The download area has one card per platform,
+  ready for a Windows card after the Godot move (the Godot build needs its own screenshot mode then).
 - **Known open items:** `vo_who_is_playing` still a placeholder clip (ElevenLabs was busy), waves 2b/3/4
   games (17 left), golden rounds, real art, music, Developer ID signing.
 
@@ -123,3 +129,7 @@
   games.json levels: 1, 2, 2, 3), split-digraph words left out, and a right answer is sounded out tile
   by tile. Bip's Path: footprints show the route, an arrow shows which way Bip faces on turning
   puzzles (`GridWalker.facings`), plus take-back and clear buttons.
+- **1 Oct, night:** New download page for parents: intro, a section per island with screenshots, parent
+  features (kid lock, breaks, parent area, 4 children, no ads/data, Cambridge), download + install steps.
+  Font and icon bundled in `site/`. Screenshots come from a CI-only screenshot mode in the Swift app
+  (step is `continue-on-error`, artifact `screenshots-<run>` on every run). Swift change kept to that.
