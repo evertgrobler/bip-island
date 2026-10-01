@@ -4,6 +4,9 @@ import SpriteKit
 /// Words Island: Sound Buttons and Word Builder. Bip starts blending; either button starts its game.
 final class WordsIslandScene: BaseScene {
     private let greet: Bool
+    private var keyNodes: [SKNode] = []
+
+    override var keyOptions: [SKNode] { keyNodes }
 
     init(coordinator: GameCoordinator, greet: Bool) {
         self.greet = greet
@@ -34,6 +37,7 @@ final class WordsIslandScene: BaseScene {
             buttons.addChild(text)
         }
         addChild(buttons)
+        keyNodes.append(buttons)
 
         let builder = SKNode()
         builder.name = "tap:builder"
@@ -47,6 +51,7 @@ final class WordsIslandScene: BaseScene {
             builder.addChild(text)
         }
         addChild(builder)
+        keyNodes.append(builder)
         buttons.run(Buttons.pulse())
 
         addHomeButton()

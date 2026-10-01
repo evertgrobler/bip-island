@@ -6,6 +6,9 @@ import SpriteKit
 /// activity; clicking a stone meets that sound.
 final class LettersIslandScene: BaseScene {
     private let greet: Bool
+    private var keyNodes: [SKNode] = []
+
+    override var keyOptions: [SKNode] { keyNodes }
 
     init(coordinator: GameCoordinator, greet: Bool) {
         self.greet = greet
@@ -36,6 +39,7 @@ final class LettersIslandScene: BaseScene {
             holder.zPosition = stone.zPosition
             holder.addChild(stone)
             addChild(holder)
+            keyNodes.append(stone)
             if sound == suggested {
                 stone.run(Buttons.pulse())
             }
@@ -52,6 +56,7 @@ final class LettersIslandScene: BaseScene {
         let traceLetter = Sketch.letter("s", size: 110, shadow: Palette.teal)
         trace.addChild(traceLetter)
         addChild(trace)
+        keyNodes.append(trace)
 
         let monster = SKNode()
         monster.name = "tap:monster"
@@ -63,12 +68,13 @@ final class LettersIslandScene: BaseScene {
             monster.addChild(Sketch.node(.ellipse(center: CGPoint(x: CGFloat(eye), y: 44), rx: 16, ry: 20), fill: .white, lineWidth: 4, seed: 772 + UInt64(i)))
         }
         addChild(monster)
-
+        keyNodes.append(monster)
         let play = Buttons.play()
         play.position = layout.positions.count > 6 ? CGPoint(x: 380, y: -320) : CGPoint(x: 140, y: -230)
         play.zPosition = 10
         play.run(Buttons.pulse())
         addChild(play)
+        keyNodes.append(play)
 
         if greet {
             after(0.5) { [weak self] in self?.replayPrompt() }

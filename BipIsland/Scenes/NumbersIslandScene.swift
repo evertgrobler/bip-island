@@ -4,6 +4,9 @@ import SpriteKit
 /// Numbers Island: Count & Tap and Quick Look. Bip starts counting; either button starts its game.
 final class NumbersIslandScene: BaseScene {
     private let greet: Bool
+    private var keyNodes: [SKNode] = []
+
+    override var keyOptions: [SKNode] { keyNodes }
 
     init(coordinator: GameCoordinator, greet: Bool) {
         self.greet = greet
@@ -31,6 +34,7 @@ final class NumbersIslandScene: BaseScene {
         numerals.position = CGPoint(x: 0, y: 10)
         count.addChild(numerals)
         addChild(count)
+        keyNodes.append(count)
 
         let quick = SKNode()
         quick.name = "tap:quick"
@@ -42,6 +46,7 @@ final class NumbersIslandScene: BaseScene {
             quick.addChild(dot)
         }
         addChild(quick)
+        keyNodes.append(quick)
         count.run(Buttons.pulse())
 
         addHomeButton()

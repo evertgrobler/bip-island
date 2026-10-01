@@ -4,6 +4,9 @@ import SpriteKit
 /// Coding Island: Morning Order and Bip's Path. Bip starts programming; either button starts its game.
 final class CodingIslandScene: BaseScene {
     private let greet: Bool
+    private var keyNodes: [SKNode] = []
+
+    override var keyOptions: [SKNode] { keyNodes }
 
     init(coordinator: GameCoordinator, greet: Bool) {
         self.greet = greet
@@ -34,6 +37,7 @@ final class CodingIslandScene: BaseScene {
             order.addChild(text)
         }
         addChild(order)
+        keyNodes.append(order)
 
         let path = SKNode()
         path.name = "tap:path"
@@ -47,6 +51,7 @@ final class CodingIslandScene: BaseScene {
             path.addChild(arrow)
         }
         addChild(path)
+        keyNodes.append(path)
         order.run(Buttons.pulse())
 
         addHomeButton()

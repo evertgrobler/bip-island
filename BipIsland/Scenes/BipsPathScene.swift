@@ -166,6 +166,41 @@ final class BipsPathScene: BaseScene {
         }
     }
 
+    private func addBlock(_ block: String) {
+        guard paletteBlocks.contains(block), strip.count < 12 else {
+            sfx.play(.boop)
+            return
+        }
+        sfx.play(.tick)
+        strip.append(block)
+        drawStrip()
+    }
+
+    /// The whole game from the keyboard: arrows snap blocks in (1-7 picks from the
+    /// palette too), Enter presses Go, Backspace takes the last block back.
+    override func handleKey(_ event: NSEvent) -> Bool {
+        guard !inputLocked, let round else { return true }
+        switch event.keyCode {
+        case 126: addBlock("up"); return true
+        case 125: addBlock("down"); return true
+        case 123: addBlock("left"); return true
+        case 124: addBlock("right"); return true
+        case 36, 49: pressGo(in: round); return true
+        case 51:
+            if !strip.isEmpty {
+                sfx.play(.tick)
+                strip.removeLast()
+                drawStrip()
+            }
+            return true
+        case 18...24:
+            let index = Int(event.keyCode) - 18
+            if index < paletteBlocks.count { addBlock(paletteBlocks[index]) }
+            return true
+        default: return false
+        }
+    }
+
     private func sayPrompt() {
         voice.play([VoiceLine.bipsPath.rawValue])
         bip.hop()
@@ -178,10 +213,8 @@ final class BipsPathScene: BaseScene {
             return
         }
         if name.hasPrefix("tap:block:"), let index = Int(name.dropFirst("tap:block:".count)), index < paletteBlocks.count {
-            guard !inputLocked, strip.count < 12 else { return }
-            sfx.play(.tick)
-            strip.append(paletteBlocks[index])
-            drawStrip()
+            guard !inputLocked else { return }
+            addBlock(paletteBlocks[index])
             return
         }
         if name.hasPrefix("tap:strip:"), let index = Int(name.dropFirst("tap:strip:".count)), index < strip.count {

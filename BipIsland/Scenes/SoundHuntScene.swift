@@ -37,6 +37,8 @@ final class SoundHuntScene: BaseScene {
         after(0.5) { [weak self] in self?.askQuestion() }
     }
 
+    override var keyOptions: [SKNode] { cards }
+
     private func askQuestion() {
         guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
             // Nothing fresh left to ask (or the visit is over).
@@ -44,6 +46,7 @@ final class SoundHuntScene: BaseScene {
         }
         cards.forEach { $0.removeFromParent() }
         attempt = QuestionAttempt()
+        resetKeys()
         round = next
         cards = next.choices.enumerated().map { index, choice in
             let card = PictureCard(picture: choice.picture, word: choice.word, seed: 900 + UInt64(session.roundsPlayed * 7 + index))

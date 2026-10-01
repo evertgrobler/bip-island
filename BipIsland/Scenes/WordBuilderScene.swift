@@ -60,6 +60,9 @@ final class WordBuilderScene: BaseScene {
         after(0.5) { [weak self] in self?.askQuestion() }
     }
 
+    /// Enter checks the word, like the green arrow.
+    override var keyOptions: [SKNode] { [nextButton] }
+
     private func askQuestion() {
         guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
             return endVisit(with: .roundDone)

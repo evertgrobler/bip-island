@@ -38,6 +38,8 @@ final class SoundButtonsScene: BaseScene {
         after(0.5) { [weak self] in self?.askQuestion() }
     }
 
+    override var keyOptions: [SKNode] { cards }
+
     private func askQuestion() {
         guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
             return endVisit(with: .roundDone)
@@ -47,6 +49,7 @@ final class SoundButtonsScene: BaseScene {
         tiles = []
         cards = []
         attempt = QuestionAttempt()
+        resetKeys()
         round = next
         clips = next.word.graphemes.compactMap { course.sound(id: $0)?.soundClip }
 
