@@ -2,7 +2,9 @@ import BipCore
 import SpriteKit
 
 /// Bip's Path: snap arrow blocks into the strip, then press Go. Bip walks the program one
-/// step at a time with a highlight on the current block, so a mistake shows itself.
+/// step at a time with a highlight on the current block, leaving footprints, so a mistake
+/// shows itself. On turning puzzles an arrow shows which way he faces. The take-back button
+/// removes the last block and the bin clears the strip.
 /// Any working program passes; fewer blocks earns praise. Wrong → soft boop and keep
 /// editing; two misses → the next right block wiggles.
 final class BipsPathScene: BaseScene {
@@ -18,6 +20,8 @@ final class BipsPathScene: BaseScene {
     private var palette: [SKNode] = []
     private var paletteBlocks: [String] = []
     private var goButton: SKNode?
+    private var trail: [SKNode] = []
+    private var facingArrow: SKNode?
     private static let cell: CGFloat = 100
 
     init(coordinator: GameCoordinator, game: BipsPathGame, session: GameSession, learner: Learner) {
@@ -44,6 +48,14 @@ final class BipsPathScene: BaseScene {
         go.zPosition = 10
         addChild(go)
         goButton = go
+        let undo = Self.undoButton()
+        undo.position = CGPoint(x: 260, y: -160)
+        undo.zPosition = 10
+        addChild(undo)
+        let clear = Self.clearButton()
+        clear.position = CGPoint(x: 430, y: -160)
+        clear.zPosition = 10
+        addChild(clear)
         after(0.5) { [weak self] in self?.askQuestion() }
     }
 
@@ -56,6 +68,8 @@ final class BipsPathScene: BaseScene {
         stripNodes.forEach { $0.removeFromParent() }
         grid = nil
         token = nil
+        trail = []
+        facingArrow = nil
         palette = []
         strip = []
         stripNodes = []
@@ -100,9 +114,62 @@ final class BipsPathScene: BaseScene {
         bip.position = cellPoint(row: level.start.row, column: level.start.column)
         bip.setScale(0.32)
         board.addChild(bip)
+        if level.blocks.contains("forward") {
+            // Turning puzzles: an arrow in front of Bip shows which way "forward" goes.
+            let arrow = Sketch.node(.polygon([CGPoint(x: -12, y: -10), CGPoint(x: 12, y: -10), CGPoint(x: 0, y: 12)]),
+                                    fill: Palette.orange, lineWidth: 3, seed: 1003)
+            arrow.zPosition = 2
+            board.addChild(arrow)
+            facingArrow = arrow
+        }
         addChild(board)
         grid = board
         token = bip
+        pointArrow(GridWalker.Facing(rawValue: level.startFacing) ?? .up, at: bip.position, animated: false)
+    }
+
+    /// Puts the facing arrow just in front of Bip, pointing the way he faces.
+    private func pointArrow(_ facing: GridWalker.Facing, at point: CGPoint, animated: Bool) {
+        guard let facingArrow else { return }
+        let (angle, offset): (CGFloat, CGPoint) = {
+            switch facing {
+            case .up: return (0, CGPoint(x: 0, y: 38))
+            case .right: return (-.pi / 2, CGPoint(x: 38, y: 0))
+            case .down: return (.pi, CGPoint(x: 0, y: -38))
+            case .left: return (.pi / 2, CGPoint(x: -38, y: 0))
+            }
+        }()
+        let target = CGPoint(x: point.x + offset.x, y: point.y + offset.y)
+        if animated {
+            facingArrow.run(.group([.move(to: target, duration: 0.3), .rotate(toAngle: angle, duration: 0.3, shortestUnitArc: true)]))
+        } else {
+            facingArrow.removeAllActions()
+            facingArrow.position = target
+            facingArrow.zRotation = angle
+        }
+    }
+
+    /// Take back the last block: a curly arrow pointing back.
+    static func undoButton() -> SKNode {
+        let n = SKNode()
+        n.name = "tap:undo"
+        n.addChild(Sketch.node(.ellipse(center: .zero, rx: 64, ry: 64), fill: Palette.sun, lineWidth: 5, seed: 1004))
+        n.addChild(Sketch.node(.arc(center: CGPoint(x: 4, y: -4), rx: 26, ry: 24, from: -2.4, to: 1.6), lineWidth: 7, seed: 1005))
+        n.addChild(Sketch.node(.polygon([CGPoint(x: -34, y: 4), CGPoint(x: -10, y: 4), CGPoint(x: -22, y: -18)]),
+                               fill: Palette.ink, lineWidth: 3, seed: 1006))
+        return n
+    }
+
+    /// Clear the strip: a little bin.
+    static func clearButton() -> SKNode {
+        let n = SKNode()
+        n.name = "tap:clear"
+        n.addChild(Sketch.node(.ellipse(center: .zero, rx: 64, ry: 64), fill: Palette.pink, lineWidth: 5, seed: 1007))
+        n.addChild(Sketch.node(.polygon([CGPoint(x: -20, y: 16), CGPoint(x: 20, y: 16), CGPoint(x: 14, y: -28), CGPoint(x: -14, y: -28)]),
+                               fill: Palette.card, lineWidth: 4, seed: 1008))
+        n.addChild(Sketch.node(.polyline([CGPoint(x: -28, y: 24), CGPoint(x: 28, y: 24)]), lineWidth: 5, seed: 1009))
+        n.addChild(Sketch.node(.polyline([CGPoint(x: -8, y: 30), CGPoint(x: 8, y: 30)]), lineWidth: 5, seed: 1010))
+        return n
     }
 
     private func drawPalette(_ level: GridLevel) {
@@ -224,6 +291,18 @@ final class BipsPathScene: BaseScene {
             drawStrip()
             return
         }
+        if name == "tap:undo" || name == "tap:clear" {
+            guard !inputLocked else { return }
+            Buttons.press(node)
+            if strip.isEmpty {
+                sfx.play(.boop)
+            } else {
+                sfx.play(.tick)
+                if name == "tap:undo" { strip.removeLast() } else { strip.removeAll() }
+                drawStrip()
+            }
+            return
+        }
         guard name == "tap:go", let round else { return }
         pressGo(in: round)
     }
@@ -234,9 +313,11 @@ final class BipsPathScene: BaseScene {
             return
         }
         inputLocked = true
+        clearTrail()
         let result = GridWalker.path(program: strip, on: round.level)
+        let facings = GridWalker.facings(program: strip, on: round.level)
         let won = !result.crashed && result.positions.last == round.level.goal
-        animateWalk(result.positions, step: 1) { [weak self] in
+        animateWalk(result.positions, facings: facings, step: 1) { [weak self] in
             guard let self else { return }
             if won {
                 self.win(in: round)
@@ -246,7 +327,7 @@ final class BipsPathScene: BaseScene {
         }
     }
 
-    private func animateWalk(_ positions: [GridPosition], step: Int, done: @escaping () -> Void) {
+    private func animateWalk(_ positions: [GridPosition], facings: [GridWalker.Facing], step: Int, done: @escaping () -> Void) {
         guard let token, step < positions.count else {
             done()
             return
@@ -255,9 +336,39 @@ final class BipsPathScene: BaseScene {
             stripNodes[step - 1].run(.sequence([.scale(to: 1.2, duration: 0.15), .scale(to: 1, duration: 0.15)]))
         }
         sfx.play(.tick)
-        token.run(.move(to: cellPoint(row: positions[step].row, column: positions[step].column), duration: 0.35)) { [weak self] in
-            self?.animateWalk(positions, step: step + 1, done: done)
+        let from = positions[step - 1]
+        let to = positions[step]
+        let target = cellPoint(row: to.row, column: to.column)
+        if step < facings.count { pointArrow(facings[step], at: target, animated: true) }
+        if from == to {
+            // A turn: Bip stays put and the arrow swings round.
+            token.run(.sequence([.rotate(byAngle: 0.15, duration: 0.1), .rotate(toAngle: 0, duration: 0.15), .wait(forDuration: 0.1)])) { [weak self] in
+                self?.animateWalk(positions, facings: facings, step: step + 1, done: done)
+            }
+            return
         }
+        dropFootprint(at: cellPoint(row: from.row, column: from.column))
+        token.run(.move(to: target, duration: 0.35)) { [weak self] in
+            self?.animateWalk(positions, facings: facings, step: step + 1, done: done)
+        }
+    }
+
+    /// A little footprint dot on every square Bip walks off, so the route he took stays visible.
+    private func dropFootprint(at point: CGPoint) {
+        guard let grid else { return }
+        let dot = Sketch.node(.ellipse(center: .zero, rx: 11, ry: 11), fill: Palette.teal, lineWidth: 2.5,
+                              seed: 1011 + UInt64(trail.count))
+        dot.position = point
+        dot.zPosition = 1
+        dot.setScale(0.1)
+        grid.addChild(dot)
+        dot.run(.scale(to: 1, duration: 0.15))
+        trail.append(dot)
+    }
+
+    private func clearTrail() {
+        trail.forEach { $0.removeFromParent() }
+        trail = []
     }
 
     private func win(in round: BipsPathGame.Round) {
@@ -311,8 +422,11 @@ final class BipsPathScene: BaseScene {
     }
 
     private func resetToken(in round: BipsPathGame.Round) {
-        token?.position = cellPoint(row: round.level.start.row, column: round.level.start.column)
+        let start = cellPoint(row: round.level.start.row, column: round.level.start.column)
+        token?.position = start
         token?.zRotation = 0
+        pointArrow(GridWalker.Facing(rawValue: round.level.startFacing) ?? .up, at: start, animated: false)
+        // The footprints stay until the next Go, so the child can see where it went wrong.
     }
 
     private enum Ending { case levelUp, practiseAgain, roundDone }
@@ -338,11 +452,11 @@ final class BipsPathScene: BaseScene {
         case .levelUp:
             sfx.play(.whirr)
             bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .practiseAgain:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .roundDone:
-            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         }
     }
 

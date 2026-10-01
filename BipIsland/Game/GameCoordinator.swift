@@ -222,6 +222,43 @@ final class GameCoordinator: ObservableObject {
         return LessonPlanner(letters: state, canHunt: { hunt.canHunt($0, upToGroup: group) })
     }
 
+    // MARK: Levels inside games
+
+    /// The game being played now (nil on the map and islands).
+    private(set) var currentGameID: String?
+    private var visitStartStars = 0
+    private var visitStartLevel = 0
+
+    /// The child's level in a game (games.json `levels`), starting where their band does.
+    func gameLevel(_ gameID: String) -> Int {
+        guard let entry = content?.game(id: gameID) else { return 0 }
+        return progress.gameLevel(for: gameID, startingAt: entry.startingLevel(for: startingBand))
+    }
+
+    func levelCount(_ gameID: String) -> Int {
+        content?.game(id: gameID)?.levelSteps.count ?? 1
+    }
+
+    /// A learner for one game, at the child's level in it.
+    func learnerFor(_ gameID: String, focus: PhonicsSound? = nil) -> Learner? {
+        plainLearner(focus: focus)?.at(level: gameLevel(gameID))
+    }
+
+    /// What happened this visit, for the celebration at the end.
+    struct VisitSummary {
+        let starsEarned: Int
+        let levelBefore: Int
+        let levelNow: Int
+        let levelCount: Int
+        var levelledUp: Bool { levelNow > levelBefore }
+    }
+
+    func visitSummary() -> VisitSummary {
+        let id = currentGameID ?? ""
+        return VisitSummary(starsEarned: max(0, progress.stars - visitStartStars), levelBefore: visitStartLevel,
+                            levelNow: currentGameID == nil ? visitStartLevel : gameLevel(id), levelCount: levelCount(id))
+    }
+
     /// What round generators need: band, unlocked phonics group and known sounds.
     func plainLearner(focus: PhonicsSound? = nil) -> Learner? {
         guard let state = lettersProgress else { return nil }
@@ -331,18 +368,18 @@ final class GameCoordinator: ObservableObject {
 
     func start(_ activity: PlannedActivity) {
         guard let content, let letters, let state = lettersProgress else { return }
-        let learner = state.learner(focus: activity.sound)
+        let learner = state.learner(focus: activity.sound).at(level: gameLevel(activity.kind.gameID))
         switch activity.kind {
         case .meetTheSound:
             var session = GameSession(game: letters.meet, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
             guard let round = session.nextRound(of: letters.meet, for: learner, using: &rng) else { return }
-            present(MeetSoundScene(coordinator: self, sound: round.sound))
+            present(MeetSoundScene(coordinator: self, sound: round.sound), gameID: MeetTheSoundGame.id)
         case .soundHunt:
             let session = GameSession(game: letters.hunt, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
-            present(SoundHuntScene(coordinator: self, game: letters.hunt, session: session, learner: learner, focus: activity.sound))
+            present(SoundHuntScene(coordinator: self, game: letters.hunt, session: session, learner: learner, focus: activity.sound), gameID: SoundHuntGame.id)
         case .bubblePop:
             let session = GameSession(game: letters.pop, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
-            present(PopLetterScene(coordinator: self, game: letters.pop, session: session, learner: learner, focus: activity.sound))
+            present(PopLetterScene(coordinator: self, game: letters.pop, session: session, learner: learner, focus: activity.sound), gameID: BubblePopGame.id)
         }
         progress.notePlayed(gameID: activity.kind.gameID)
         store.save(progress, for: childID)
@@ -351,71 +388,79 @@ final class GameCoordinator: ObservableObject {
     // MARK: Starting games from the islands
 
     func startTrace() {
-        guard let content, let letters, let sound = practiceSound(), let learner = plainLearner(focus: sound) else { return }
+        guard let content, let letters, let sound = practiceSound(), let learner = learnerFor(LetterTraceGame.id, focus: sound) else { return }
         var session = GameSession(game: letters.trace, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
         guard session.nextRound(of: letters.trace, for: learner, using: &rng) != nil else { return }
         progress.notePlayed(gameID: LetterTraceGame.id)
         store.save(progress, for: childID)
-        present(TraceLetterScene(coordinator: self, game: letters.trace, sound: sound))
+        present(TraceLetterScene(coordinator: self, game: letters.trace, sound: sound), gameID: LetterTraceGame.id)
     }
 
     func startMonster() {
-        guard let content, let letters, let sound = practiceSound(), let learner = plainLearner(focus: sound) else { return }
+        guard let content, let letters, let sound = practiceSound(), let learner = learnerFor(FeedMonsterGame.id, focus: sound) else { return }
         let session = GameSession(game: letters.monster, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
         progress.notePlayed(gameID: FeedMonsterGame.id)
         store.save(progress, for: childID)
-        present(FeedMonsterScene(coordinator: self, game: letters.monster, session: session, learner: learner, focus: sound))
+        present(FeedMonsterScene(coordinator: self, game: letters.monster, session: session, learner: learner, focus: sound), gameID: FeedMonsterGame.id)
     }
 
     func startCount() {
-        guard let content, let numbers, let learner = plainLearner() else { return }
+        guard let content, let numbers, let learner = learnerFor(CountTapGame.id) else { return }
         let session = GameSession(game: numbers.count, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
         progress.notePlayed(gameID: CountTapGame.id)
         store.save(progress, for: childID)
-        present(CountTapScene(coordinator: self, game: numbers.count, session: session, learner: learner))
+        present(CountTapScene(coordinator: self, game: numbers.count, session: session, learner: learner), gameID: CountTapGame.id)
     }
 
     func startQuick() {
-        guard let content, let numbers, let learner = plainLearner() else { return }
+        guard let content, let numbers, let learner = learnerFor(QuickLookGame.id) else { return }
         let session = GameSession(game: numbers.quick, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
         progress.notePlayed(gameID: QuickLookGame.id)
         store.save(progress, for: childID)
-        present(QuickLookScene(coordinator: self, game: numbers.quick, session: session, learner: learner))
+        present(QuickLookScene(coordinator: self, game: numbers.quick, session: session, learner: learner), gameID: QuickLookGame.id)
     }
 
     func startButtons() {
-        guard let content, let words, let learner = plainLearner() else { return }
+        guard let content, let words, let learner = learnerFor(SoundButtonsGame.id) else { return }
         let session = GameSession(game: words.buttons, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
         progress.notePlayed(gameID: SoundButtonsGame.id)
         store.save(progress, for: childID)
-        present(SoundButtonsScene(coordinator: self, game: words.buttons, session: session, learner: learner, course: words.course))
+        present(SoundButtonsScene(coordinator: self, game: words.buttons, session: session, learner: learner, course: words.course), gameID: SoundButtonsGame.id)
     }
 
     func startBuilder() {
-        guard let content, let words, let learner = plainLearner() else { return }
+        guard let content, let words, let learner = learnerFor(WordBuilderGame.id) else { return }
         let session = GameSession(game: words.builder, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
         progress.notePlayed(gameID: WordBuilderGame.id)
         store.save(progress, for: childID)
-        present(WordBuilderScene(coordinator: self, game: words.builder, session: session, learner: learner))
+        present(WordBuilderScene(coordinator: self, game: words.builder, session: session, learner: learner), gameID: WordBuilderGame.id)
     }
 
     func startOrder() {
-        guard let content, let coding, let learner = plainLearner() else { return }
+        guard let content, let coding, let learner = learnerFor(MorningOrderGame.id) else { return }
         let session = GameSession(game: coding.order, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
         progress.notePlayed(gameID: MorningOrderGame.id)
         store.save(progress, for: childID)
-        present(MorningOrderScene(coordinator: self, game: coding.order, session: session, learner: learner))
+        present(MorningOrderScene(coordinator: self, game: coding.order, session: session, learner: learner), gameID: MorningOrderGame.id)
     }
 
     func startPath() {
-        guard let content, let coding, let learner = plainLearner() else { return }
+        guard let content, let coding, let learner = learnerFor(BipsPathGame.id) else { return }
         let session = GameSession(game: coding.path, settings: content.games.session, drawableSkins: Self.drawnSkins, using: &rng)
         progress.notePlayed(gameID: BipsPathGame.id)
         store.save(progress, for: childID)
-        present(BipsPathScene(coordinator: self, game: coding.path, session: session, learner: learner))
+        present(BipsPathScene(coordinator: self, game: coding.path, session: session, learner: learner), gameID: BipsPathGame.id)
     }
 
-    private func present(_ scene: BaseScene) {
+    private func present(_ scene: BaseScene, gameID: String? = nil) {
+        currentGameID = gameID
+        if let gameID {
+            visitStartStars = progress.stars
+            visitStartLevel = gameLevel(gameID)
+            if levelCount(gameID) > 1 {
+                scene.showLevelBadge(level: visitStartLevel, of: levelCount(gameID))
+            }
+        }
         voice.stop()
         // While Bip charges (or the day is done) every game and island redirects here.
         if !(scene is ChargingScene) && !(scene is StickerScene) && !playAllowed() {
@@ -432,6 +477,11 @@ final class GameCoordinator: ObservableObject {
     func record(correct: Bool, skillID: String, soundID: String?) -> MasteryChange {
         guard let content else { return .none }
         let change = progress.recordAnswer(correct: correct, skillID: skillID, soundID: soundID, day: today, rules: content.masteryRules)
+        // The game's own level moves too (3 right in a row up, 2 misses back); it shows at the end of the visit.
+        if let gameID = currentGameID, let entry = content.game(id: gameID) {
+            progress.recordGameAnswer(correct: correct, gameID: gameID, startingAt: entry.startingLevel(for: startingBand),
+                                      levelCount: entry.levelSteps.count, rules: content.masteryRules)
+        }
         store.save(progress, for: childID)
         return change
     }

@@ -26,7 +26,8 @@ public partial class Boot : Node
         Instance = this;
         // Must run before anything else: while installing or updating, Velopack starts the game
         // with special arguments and expects it to do its job and exit straight away.
-        VelopackApp.Build().Run();
+        // Updates need a grown-up (owner rule): never install a downloaded update on launch by itself.
+        VelopackApp.Build().SetAutoApplyOnStartup(false).Run();
 
         ProcessMode = ProcessModeEnum.Always;
         UserArgs = OS.GetCmdlineUserArgs();

@@ -136,6 +136,73 @@ public struct GameEntry: Codable, Hashable, Sendable, Identifiable {
     /// Which content file the rounds come from (for people; the game type knows how to read it).
     public let content: String
     public let buildPhase: Int
+    /// Difficulty steps, easiest first. Missing or empty means the game has one level.
+    public let levels: [GameLevel]?
+
+    /// The steps, never empty.
+    public var levelSteps: [GameLevel] {
+        let steps = levels ?? []
+        return steps.isEmpty ? [GameLevel.single] : steps
+    }
+
+    /// A level by index, clamped to the ones that exist.
+    public func level(_ index: Int) -> GameLevel {
+        let steps = levelSteps
+        return steps[min(max(index, 0), steps.count - 1)]
+    }
+
+    /// Where a new child starts: the first level of their band (the last level that is marked
+    /// with a band no older than theirs). A level without a band carries on the band before it.
+    public func startingLevel(for band: Band) -> Int {
+        var start = 0
+        for (index, step) in levelSteps.enumerated() {
+            if let marked = step.band, marked <= band { start = index }
+        }
+        return start
+    }
+}
+
+/// One difficulty step of a game. Each game reads the fields it understands; the rest stay empty.
+public struct GameLevel: Codable, Hashable, Sendable {
+    /// Children of this band (and older) start at this level or above.
+    public let band: Band?
+    /// Counting games: the largest number asked.
+    public let countTo: Int?
+    /// Answers to pick from on screen.
+    public let choices: Int?
+    /// Quick Look: how long the dots show, in tenths of a second.
+    public let flashTenths: Int?
+    /// Bubble Pop: bubbles on screen and drift speed (100 = normal).
+    public let bubbles: Int?
+    public let speedPercent: Int?
+    /// Word games: how many sounds the words have.
+    public let soundCounts: [Int]?
+    /// Bip's Path: the band of grid puzzles to use.
+    public let gridBand: Band?
+    /// Picture-ordering games: the most picture cards in one story.
+    public let cards: Int?
+    /// Word Builder: spare tiles in the bank that aren't in the word.
+    public let spares: Int?
+    /// For people reading the file.
+    public let note: String?
+
+    public init(band: Band? = nil, countTo: Int? = nil, choices: Int? = nil, flashTenths: Int? = nil, bubbles: Int? = nil,
+                speedPercent: Int? = nil, soundCounts: [Int]? = nil, gridBand: Band? = nil, cards: Int? = nil,
+                spares: Int? = nil, note: String? = nil) {
+        self.band = band
+        self.countTo = countTo
+        self.choices = choices
+        self.flashTenths = flashTenths
+        self.bubbles = bubbles
+        self.speedPercent = speedPercent
+        self.soundCounts = soundCounts
+        self.gridBand = gridBand
+        self.cards = cards
+        self.spares = spares
+        self.note = note
+    }
+
+    static let single = GameLevel()
 }
 
 // MARK: - phonics/graphemes.json

@@ -1,7 +1,8 @@
 import Foundation
 import BipCore
 
-/// Hold Esc for 3 seconds → adult maths question → parent area (quit, updates).
+/// Hold Esc for 3 seconds → the parent passcode (if one is set) or an adult maths question →
+/// parent area. After `ParentPasscode.triesBeforeMaths` wrong codes it asks maths instead.
 final class ParentGateModel: ObservableObject {
     enum Phase: Equatable {
         case closed
@@ -15,6 +16,12 @@ final class ParentGateModel: ObservableObject {
     @Published private(set) var challenge: ParentChallenge
     @Published var answer = ""
     @Published private(set) var lastAnswerWasWrong = false
+    /// True while the gate is asking for the passcode rather than maths.
+    @Published private(set) var usingPasscode = false
+    /// Whether a parent passcode is set on this Mac.
+    @Published private(set) var hasPasscode = false
+    /// A new version waiting for a grown-up to install it (its version number).
+    @Published var updateReady: String?
 
     let versionText: String
     let voiceText: String
@@ -28,6 +35,13 @@ final class ParentGateModel: ObservableObject {
     /// Set by the app: play length, break length and daily maximum.
     var playSettings: PlayTimeSettings?
 
+    private static let passcodeKey = "bip.parentPasscode"
+    private var passcode: ParentPasscode? {
+        didSet { hasPasscode = passcode != nil }
+    }
+    private var wrongPasscodeTries = 0
+    /// Opened from the "Update ready" button: install the update once the gate is passed.
+    private var installAfterUnlock = false
     private var hold = HoldDetector(duration: 3)
     private var timer: Timer?
     private var rng = SystemRandomNumberGenerator()
@@ -37,6 +51,10 @@ final class ParentGateModel: ObservableObject {
         self.voiceText = voiceText
         self.updatesConfigured = updatesConfigured
         challenge = ParentChallenge.random(using: &rng)
+        if let data = UserDefaults.standard.data(forKey: Self.passcodeKey) {
+            passcode = try? JSONDecoder().decode(ParentPasscode.self, from: data)
+        }
+        hasPasscode = passcode != nil
     }
 
     private var now: TimeInterval { ProcessInfo.processInfo.systemUptime }
@@ -64,18 +82,39 @@ final class ParentGateModel: ObservableObject {
         }
     }
 
+    /// The "Update ready" button: the same passcode or maths, then Sparkle's install window.
+    func openForUpdate() {
+        guard phase == .closed else { return }
+        open()
+        installAfterUnlock = true
+    }
+
     func open() {
+        installAfterUnlock = false
         escapeReleased()
         challenge = ParentChallenge.random(using: &rng)
         answer = ""
         lastAnswerWasWrong = false
+        wrongPasscodeTries = 0
+        usingPasscode = passcode != nil
         phase = .question
         onOpen?()
     }
 
     func submitAnswer() {
+        if usingPasscode, let passcode {
+            if passcode.matches(answer) {
+                unlock()
+            } else {
+                wrongPasscodeTries += 1
+                lastAnswerWasWrong = true
+                if wrongPasscodeTries >= ParentPasscode.triesBeforeMaths { useMathsInstead() }
+            }
+            answer = ""
+            return
+        }
         if challenge.isCorrect(answer) {
-            phase = .unlocked
+            unlock()
         } else {
             lastAnswerWasWrong = true
             challenge = ParentChallenge.random(using: &rng)
@@ -83,9 +122,39 @@ final class ParentGateModel: ObservableObject {
         }
     }
 
+    private func unlock() {
+        phase = .unlocked
+        if installAfterUnlock {
+            installAfterUnlock = false
+            onCheckForUpdates?()
+        }
+    }
+
+    /// "Forgot the passcode?": answer a maths question instead.
+    func useMathsInstead() {
+        usingPasscode = false
+        challenge = ParentChallenge.random(using: &rng)
+        answer = ""
+    }
+
+    /// Sets or changes the passcode. False when it isn't 4–8 digits.
+    @discardableResult
+    func setPasscode(_ code: String) -> Bool {
+        guard let new = ParentPasscode(code: code), let data = try? JSONEncoder().encode(new) else { return false }
+        UserDefaults.standard.set(data, forKey: Self.passcodeKey)
+        passcode = new
+        return true
+    }
+
+    func removePasscode() {
+        UserDefaults.standard.removeObject(forKey: Self.passcodeKey)
+        passcode = nil
+    }
+
     func close() {
         guard phase != .closed else { return }
         phase = .closed
+        installAfterUnlock = false
         answer = ""
         onClose?()
     }

@@ -1,20 +1,22 @@
 import BipCore
 import SpriteKit
 
-/// Word Builder: drag letter tiles into the slots to build the word in the picture,
-/// then tap the green arrow. One decoy tile hides in the bank, so placing it is the only
-/// way to go wrong. Wrong → soft boop and try again; two misses → the word is said and
-/// the first wrong slot wiggles.
+/// Word Builder: build the word in the picture from letter tiles, then tap the green arrow.
+/// Tap a tile to send it to the next empty space (tap it again to take it back), or drag it
+/// to any space. Each tile says its sound as it lands. Spare tiles hide in the bank (more at
+/// higher levels). Wrong → soft boop and try again; two misses → the word is said and the
+/// wrong spaces wiggle. Right → the tiles light up one by one as the word is sounded out.
 final class WordBuilderScene: BaseScene {
     private final class Tile: SKNode {
-        let grapheme: String
+        let tile: WordBuilderGame.Tile
 
-        init(grapheme: String) {
-            self.grapheme = grapheme
+        init(tile: WordBuilderGame.Tile) {
+            self.tile = tile
             super.init()
             addChild(Sketch.node(.roundedRect(CGRect(x: -56, y: -56, width: 112, height: 112), radius: 20),
                                  fill: Palette.teal, lineWidth: 5, seed: 972))
-            addChild(Sketch.letter(grapheme, size: 76, colour: .white, shadow: nil))
+            let size: CGFloat = tile.text.count >= 3 ? 50 : tile.text.count == 2 ? 62 : 76
+            addChild(Sketch.letter(tile.text, size: size, colour: .white, shadow: nil))
         }
 
         required init?(coder: NSCoder) {
@@ -34,6 +36,8 @@ final class WordBuilderScene: BaseScene {
     private var bankHomes: [CGPoint] = []
     private var dragged: Tile?
     private var dragOffset = CGPoint.zero
+    private var pressPoint = CGPoint.zero
+    private var draggedFromSlot: Int?
     private let nextButton = Buttons.next()
 
     init(coordinator: GameCoordinator, game: WordBuilderGame, session: GameSession, learner: Learner) {
@@ -60,8 +64,8 @@ final class WordBuilderScene: BaseScene {
         after(0.5) { [weak self] in self?.askQuestion() }
     }
 
-    /// Enter checks the word, like the green arrow.
-    override var keyOptions: [SKNode] { [nextButton] }
+    /// Arrows move between the tiles and the green arrow; Enter picks one, like a tap.
+    override var keyOptions: [SKNode] { bankTiles.map { $0 as SKNode } + [nextButton] }
 
     private func askQuestion() {
         guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
@@ -98,12 +102,11 @@ final class WordBuilderScene: BaseScene {
             slotTiles.append(nil)
         }
 
-        var bank = next.answer.shuffled(using: &coordinator.rng)
-        bank.insert(decoyLetter(avoiding: next.answer), at: Int.random(in: 0...bank.count, using: &coordinator.rng))
-        for (i, grapheme) in bank.enumerated() {
-            let tile = Tile(grapheme: grapheme)
+        let spacing: CGFloat = next.bank.count > 6 ? 128 : 140
+        for (i, piece) in next.bank.enumerated() {
+            let tile = Tile(tile: piece)
             tile.name = "tap:tile:\(i)"
-            tile.position = CGPoint(x: (CGFloat(i) - CGFloat(bank.count - 1) / 2) * 140 - 40, y: -180)
+            tile.position = CGPoint(x: (CGFloat(i) - CGFloat(next.bank.count - 1) / 2) * spacing - 40, y: -180)
             tile.zPosition = 10
             addChild(tile)
             bankTiles.append(tile)
@@ -113,34 +116,29 @@ final class WordBuilderScene: BaseScene {
         sayPrompt()
     }
 
-    /// A letter that isn't in the word, so it can only be wrong.
-    private func decoyLetter(avoiding tiles: [String]) -> String {
-        let alphabet = "abcdefghijklmnopqrstuvwxyz".map { String($0) }
-        let joined = tiles.joined()
-        return alphabet.filter { !joined.contains($0) }.randomElement(using: &coordinator.rng) ?? "z"
-    }
-
     private func sayPrompt() {
         guard let round else { return }
         voice.play([VoiceLine.wordBuilder.rawValue, AudioCatalogue.wordClip(for: round.word.word)])
         bip.hop()
     }
 
-    // MARK: Dragging
+    // MARK: Tapping and dragging
 
     override func mouseDown(with event: NSEvent) {
-        super.mouseDown(with: event)
-        guard !inputLocked, dragged == nil else { return }
         let point = event.location(in: self)
-        for tile in bankTiles where tile.contains(point) {
-            dragged = tile
-            dragOffset = CGPoint(x: tile.position.x - point.x, y: tile.position.y - point.y)
-            tile.zPosition = 20
-            tile.removeAllActions()
-            if let slotIndex = slotTiles.firstIndex(where: { $0 === tile }) {
-                slotTiles[slotIndex] = nil
-            }
-            break
+        guard !inputLocked, dragged == nil,
+              let tile = bankTiles.last(where: { $0.contains(point) }) else {
+            super.mouseDown(with: event)
+            return
+        }
+        dragged = tile
+        pressPoint = point
+        dragOffset = CGPoint(x: tile.position.x - point.x, y: tile.position.y - point.y)
+        tile.zPosition = 20
+        tile.removeAllActions()
+        draggedFromSlot = slotTiles.firstIndex(where: { $0 === tile })
+        if let slotIndex = draggedFromSlot {
+            slotTiles[slotIndex] = nil
         }
     }
 
@@ -153,8 +151,20 @@ final class WordBuilderScene: BaseScene {
     override func mouseUp(with event: NSEvent) {
         guard let tile = dragged else { return }
         dragged = nil
-        guard !inputLocked else { return }
         tile.zPosition = 10
+        guard !inputLocked else { return sendHome(tile) }
+        let point = event.location(in: self)
+        let moved = hypot(point.x - pressPoint.x, point.y - pressPoint.y)
+        if moved < 12 {
+            // A tap: a tile in a space goes back; a tile in the bank goes to the next space.
+            if draggedFromSlot != nil {
+                sendHome(tile)
+                sfx.play(.tick)
+            } else {
+                placeInNextSpace(tile)
+            }
+            return
+        }
         var best = -1
         var bestDistance = CGFloat(130 * 130)
         for (i, slot) in slots.enumerated() {
@@ -166,17 +176,43 @@ final class WordBuilderScene: BaseScene {
                 best = i
             }
         }
-        if best >= 0 && slotTiles[best] == nil {
-            slotTiles[best] = tile
-            tile.run(.move(to: slots[best].position, duration: 0.15))
-            sfx.play(.tick)
-        } else if let index = bankTiles.firstIndex(where: { $0 === tile }), index < bankHomes.count {
-            tile.run(.move(to: bankHomes[index], duration: 0.2))
+        if best >= 0 {
+            place(tile, in: best)
+        } else {
+            sendHome(tile)
         }
     }
 
+    /// Puts a tile in a space and says its sound. A tile already there goes back to the bank.
+    private func place(_ tile: Tile, in index: Int) {
+        if let old = slotTiles[index], old !== tile { sendHome(old) }
+        slotTiles[index] = tile
+        tile.zPosition = 10
+        tile.run(.move(to: slots[index].position, duration: 0.15))
+        sfx.play(.tick)
+        voice.play([tile.tile.soundClip])
+        if slotTiles.allSatisfy({ $0 != nil }) {
+            nextButton.run(.sequence([.scale(to: 1.15, duration: 0.15), .scale(to: 1, duration: 0.15)]))
+        }
+    }
+
+    private func placeInNextSpace(_ tile: Tile) {
+        guard let empty = slotTiles.firstIndex(where: { $0 == nil }) else {
+            sendHome(tile)
+            sfx.play(.boop)
+            return
+        }
+        place(tile, in: empty)
+    }
+
+    private func sendHome(_ tile: Tile) {
+        if let slotIndex = slotTiles.firstIndex(where: { $0 === tile }) { slotTiles[slotIndex] = nil }
+        guard let index = bankTiles.firstIndex(where: { $0 === tile }), index < bankHomes.count else { return }
+        tile.run(.move(to: bankHomes[index], duration: 0.2))
+    }
+
     private func currentSpelling() -> [String] {
-        slotTiles.map { $0?.grapheme ?? "" }
+        slotTiles.map { $0?.tile.id ?? "" }
     }
 
     override func handleTap(name: String, node: SKNode) {
@@ -187,6 +223,16 @@ final class WordBuilderScene: BaseScene {
         }
         if name == "tap:picture", let round {
             voice.play([AudioCatalogue.wordClip(for: round.word.word)])
+            return
+        }
+        // Keyboard: Enter on a tile works like tapping it.
+        if name.hasPrefix("tap:tile:"), let tile = node as? Tile, dragged == nil {
+            if slotTiles.contains(where: { $0 === tile }) {
+                sendHome(tile)
+                sfx.play(.tick)
+            } else {
+                placeInNextSpace(tile)
+            }
             return
         }
         guard name == "tap:next", let round else { return }
@@ -206,9 +252,12 @@ final class WordBuilderScene: BaseScene {
             sfx.play(.chime)
             bip.celebrate()
             let change = coordinator.record(correct: firstTry, skillID: game.skillID(for: round), soundID: nil)
-            voice.play([coordinator.randomPraise(), AudioCatalogue.wordClip(for: round.word.word)], completion: { [weak self] in
-                self?.afterAnswer(change)
-            })
+            soundOut(round) { [weak self] in
+                guard let self else { return }
+                self.voice.play([self.coordinator.randomPraise()], completion: { [weak self] in
+                    self?.afterAnswer(change)
+                })
+            }
         case .tryAgain:
             sfx.play(.boop)
             bip.tilt()
@@ -226,6 +275,16 @@ final class WordBuilderScene: BaseScene {
                 self.voice.play([self.coordinator.randomHint(), AudioCatalogue.wordClip(for: round.word.word)])
             }
         }
+    }
+
+    /// Each tile lights up as its sound is said, then the whole word: s-u-n, sun.
+    private func soundOut(_ round: WordBuilderGame.Round, then done: @escaping () -> Void) {
+        let placed = slotTiles.compactMap { $0 }
+        for (i, tile) in placed.enumerated() {
+            tile.run(.sequence([.wait(forDuration: 0.55 * Double(i)),
+                                .scale(to: 1.18, duration: 0.15), .scale(to: 1, duration: 0.2)]))
+        }
+        voice.play(round.answerTiles.map(\.soundClip) + [AudioCatalogue.wordClip(for: round.word.word)], completion: done)
     }
 
     private enum Ending { case levelUp, practiseAgain, roundDone }
@@ -251,11 +310,11 @@ final class WordBuilderScene: BaseScene {
         case .levelUp:
             sfx.play(.whirr)
             bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .practiseAgain:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .roundDone:
-            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         }
     }
 

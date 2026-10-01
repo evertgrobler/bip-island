@@ -1,7 +1,7 @@
 {
   "note": "Every mini-game, the skills it practises, the Cambridge objectives those skills cover, and the content file it draws rounds from. buildPhase matches docs/GAMES.md.",
   "session": {
-    "roundsPerSession": 6
+    "roundsPerSession": 8
   },
   "games": [
     {
@@ -53,7 +53,17 @@
         "1Ww.02"
       ],
       "content": "words/words.json (picturable, firstSound)",
-      "buildPhase": 1
+      "buildPhase": 1,
+      "levels": [
+        {
+          "choices": 3,
+          "note": "Three pictures"
+        },
+        {
+          "choices": 4,
+          "note": "Four pictures"
+        }
+      ]
     },
     {
       "id": "bubble_pop",
@@ -83,7 +93,30 @@
         "2Ww.02"
       ],
       "content": "phonics/graphemes.json",
-      "buildPhase": 1
+      "buildPhase": 1,
+      "levels": [
+        {
+          "bubbles": 4,
+          "speedPercent": 80,
+          "note": "Four slow bubbles"
+        },
+        {
+          "bubbles": 5,
+          "speedPercent": 100,
+          "note": "Five bubbles"
+        },
+        {
+          "band": "stage1",
+          "bubbles": 6,
+          "speedPercent": 120,
+          "note": "Six, a little faster"
+        },
+        {
+          "bubbles": 7,
+          "speedPercent": 140,
+          "note": "Seven, faster"
+        }
+      ]
     },
     {
       "id": "letter_trace",
@@ -119,7 +152,17 @@
         "1Ww.02"
       ],
       "content": "words/words.json (picturable, firstSound)",
-      "buildPhase": 2
+      "buildPhase": 2,
+      "levels": [
+        {
+          "choices": 3,
+          "note": "One right food in three"
+        },
+        {
+          "choices": 4,
+          "note": "One in four"
+        }
+      ]
     },
     {
       "id": "letter_fishing",
@@ -181,7 +224,26 @@
         "1Np.01"
       ],
       "content": "numbers/numbers.json (countingObjects)",
-      "buildPhase": 2
+      "buildPhase": 2,
+      "levels": [
+        {
+          "countTo": 5,
+          "note": "Count up to 5"
+        },
+        {
+          "countTo": 10,
+          "note": "Up to 10"
+        },
+        {
+          "band": "stage1",
+          "countTo": 15,
+          "note": "Up to 15"
+        },
+        {
+          "countTo": 20,
+          "note": "Up to 20"
+        }
+      ]
     },
     {
       "id": "quick_look",
@@ -199,7 +261,30 @@
         "2Nc.02"
       ],
       "content": "numbers/numbers.json",
-      "buildPhase": 2
+      "buildPhase": 2,
+      "levels": [
+        {
+          "countTo": 3,
+          "flashTenths": 25,
+          "note": "Up to 3 dots, 2.5 seconds"
+        },
+        {
+          "countTo": 5,
+          "flashTenths": 20,
+          "note": "Up to 5, 2 seconds"
+        },
+        {
+          "band": "stage1",
+          "countTo": 8,
+          "flashTenths": 17,
+          "note": "Up to 8"
+        },
+        {
+          "countTo": 10,
+          "flashTenths": 14,
+          "note": "Up to 10, quicker"
+        }
+      ]
     },
     {
       "id": "feed_the_monster_numbers",
@@ -336,7 +421,33 @@
         "2Rw.06"
       ],
       "content": "words/words.json",
-      "buildPhase": 2
+      "buildPhase": 2,
+      "levels": [
+        {
+          "soundCounts": [
+            3
+          ],
+          "choices": 3,
+          "note": "Three-sound words (c-a-t)"
+        },
+        {
+          "band": "stage1",
+          "soundCounts": [
+            3,
+            4
+          ],
+          "choices": 3,
+          "note": "Three and four sounds"
+        },
+        {
+          "soundCounts": [
+            4,
+            5
+          ],
+          "choices": 3,
+          "note": "Four and five sounds (frog, stamp)"
+        }
+      ]
     },
     {
       "id": "word_builder",
@@ -356,7 +467,40 @@
         "2Ww.05"
       ],
       "content": "words/words.json + words/endings.json",
-      "buildPhase": 2
+      "buildPhase": 2,
+      "levels": [
+        {
+          "soundCounts": [
+            3
+          ],
+          "spares": 1,
+          "note": "Three-sound words, one spare tile"
+        },
+        {
+          "soundCounts": [
+            3
+          ],
+          "spares": 2,
+          "note": "Two spare tiles"
+        },
+        {
+          "band": "stage1",
+          "soundCounts": [
+            3,
+            4
+          ],
+          "spares": 2,
+          "note": "Three and four sounds"
+        },
+        {
+          "soundCounts": [
+            4,
+            5
+          ],
+          "spares": 3,
+          "note": "Longer words, three spares"
+        }
+      ]
     },
     {
       "id": "missing_letter",
@@ -483,7 +627,21 @@
         "1CT.06"
       ],
       "content": "coding/sequences.json",
-      "buildPhase": 2
+      "buildPhase": 2,
+      "levels": [
+        {
+          "cards": 3,
+          "note": "Three-step stories"
+        },
+        {
+          "cards": 4
+        },
+        {
+          "band": "stage1",
+          "cards": 6,
+          "note": "Whole stories"
+        }
+      ]
     },
     {
       "id": "bips_path",
@@ -508,7 +666,23 @@
         "2P.08"
       ],
       "content": "coding/levels.json",
-      "buildPhase": 2
+      "buildPhase": 2,
+      "levels": [
+        {
+          "gridBand": "foundation",
+          "note": "Small grids, arrows"
+        },
+        {
+          "band": "stage1",
+          "gridBand": "stage1",
+          "note": "Bigger grids"
+        },
+        {
+          "band": "stage2",
+          "gridBand": "stage2",
+          "note": "Biggest grids"
+        }
+      ]
     },
     {
       "id": "fix_it",

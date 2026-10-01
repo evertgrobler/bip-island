@@ -10,12 +10,14 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
 - Pause new games during the move. The current Mac app gets bug fixes only. The 17 remaining games are built once, in Godot.
 - Carry children's progress over from the Mac app to the Godot version.
 - **Full rebuild in one go.** The owner can't test right now, so there are no playtest gates between phases. Automated checks in CI replace them, and the owner tests once, at the switchover.
-- **No stores.** Direct download only: `.dmg` for the Mac, `Setup.exe` for Windows, from the Vercel site.
+- **No stores.** Direct download only: `.dmg` for the Mac, `Setup.exe` for Windows, linked from the Vercel download page.
+- **Updates need a grown-up** (owner rule from 1 Oct, as in the Swift app): the game checks and downloads quietly, but installs only after the parent gate, through an "Update ready" button.
+- **Hosting: Vercel Blob.** The Godot builds (about 400 MB for both computers) are too big for a Vercel Hobby deployment (100 MB), so the installers and update packages go in a public Vercel Blob store (`bip-island-downloads`), created automatically with the existing `VERCEL_TOKEN`. Only the latest version is kept there, to stay inside the free storage.
 - **Free and unsigned.** Ad-hoc signed on the Mac, unsigned on Windows. Each computer needs one "Open anyway" click on first install. Paid signing can be switched on later through secrets.
 
 **How the rebuild stays safe without owner testing:**
 - The Godot game lives in a new `godot/` folder with its own CI workflow.
-- It publishes only to a separate **test feed** (`/test/` on Vercel). The family feed keeps serving the Swift app untouched until the switchover.
+- It publishes only to a separate **test feed** (`godot-test/` in the Blob store). The family feed keeps serving the Swift app untouched until the switchover.
 - The Swift app stays the fallback the whole time.
 
 ## What carries over unchanged, and what gets rebuilt
@@ -37,7 +39,7 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
    - This mirrors today's `BipCore/` package.
    - All 109 tests are ported to xUnit.
    - Big win: **cloud sessions can run the tests themselves on Linux.** Today only CI can.
-3. **Updates: Velopack** on both Mac and Windows. The update feed is static files on the existing Vercel site, next to the current `appcast.xml`, served over HTTPS.
+3. **Updates: Velopack** on both Mac and Windows. The update feed is static files in the public Vercel Blob store, served over HTTPS, with one folder per computer (`win/`, `osx/`).
    - Phase 0 must prove that Velopack works with ad-hoc signing on the Mac.
    - Fallback if it doesn't: a small built-in updater that reads a JSON feed, checks an Ed25519 signature (the same idea as Sparkle) and swaps in the new app.
 4. **Kid lock:**
@@ -89,10 +91,12 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
 **Phase 3 — The 11 games, about 4–5 sessions.**
 - Meet, Hunt, Pop, Trace, Monster, Count & Tap, Quick Look, Sound Buttons, Word Builder, Morning Order (tap-to-place), Bip's Path.
 - Each game is checked side by side against the Mac version.
+- Game levels in every game (games.json `levels`, per-child `gameLevels`, level stars, 8 questions a visit, end-of-visit celebration).
 
 **Phase 4 — Systems and parent area, about 2 sessions.**
 - Profiles (up to 4), saves, play breaks, sticker book, mystery box, recommendations and nudge.
-- Parent gate: hold Esc for 3 seconds, then a maths question.
+- Parent gate: hold Esc for 3 seconds, then a maths question, or the optional parent passcode (salted SHA-256; 3 wrong tries fall back to maths).
+- "Update ready" button: installs a downloaded update only after the parent gate.
 - Parent area tabs (Progress, Children, Settings), rebuilt with Godot's UI controls.
 
 **Phase 5 — Switch over, about 1–2 sessions. This is the owner's single test.**

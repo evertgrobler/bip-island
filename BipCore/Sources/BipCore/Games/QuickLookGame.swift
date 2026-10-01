@@ -7,6 +7,8 @@ public struct QuickLookGame: MiniGame {
     public struct Round: GameRound {
         public let count: Int
         public let choices: [Int]
+        /// How long the dots show, in seconds (shorter at higher levels).
+        public let flashSeconds: Double
         public var usedItems: [String] { [] }
     }
 
@@ -23,12 +25,17 @@ public struct QuickLookGame: MiniGame {
         numbers = content.numbers
     }
 
-    /// 1 up to what the band sees at a glance (5, then 10).
+    /// The standard flash when a level doesn't say.
+    public static let defaultFlashSeconds = 2.0
+
+    /// 1 up to the level's number (3, 5, 8, 10), or what the band sees at a glance.
     public func makeRound<G: RandomNumberGenerator>(for learner: Learner, session: GameSession, using rng: inout G) -> Round? {
-        let seeTo = min(numbers.bands[learner.band.rawValue]?.subitiseTo ?? 5, 10)
+        let step = level(for: learner)
+        let seeTo = min(step.countTo ?? numbers.bands[learner.band.rawValue]?.subitiseTo ?? 5, 10)
         guard seeTo >= 1 else { return nil }
         let count = Int.random(in: 1...seeTo, using: &rng)
-        return Round(count: count, choices: NumeralChoices.three(around: count, using: &rng))
+        let flash = step.flashTenths.map { Double($0) / 10 } ?? Self.defaultFlashSeconds
+        return Round(count: count, choices: NumeralChoices.three(around: count, using: &rng), flashSeconds: flash)
     }
 
     public func isCorrect(_ choice: Int, in round: Round) -> Bool {

@@ -17,7 +17,11 @@ final class FeedMonsterScene: BaseScene {
     private var dragged: PictureCard?
     private var dragOffset = CGPoint.zero
     private var monsterMouth = CGPoint(x: 520, y: 60)
-    private static let cardPositions = [CGPoint(x: -500, y: 60), CGPoint(x: -150, y: 60), CGPoint(x: 200, y: 60)]
+    /// Three foods in a row; four (a higher level) in a 2 × 2 grid, slightly smaller, left of the monster.
+    private static func cardPositions(count: Int) -> [CGPoint] {
+        if count <= 3 { return Array([CGPoint(x: -500, y: 60), CGPoint(x: -150, y: 60), CGPoint(x: 200, y: 60)].prefix(count)) }
+        return [CGPoint(x: -420, y: 190), CGPoint(x: -100, y: 190), CGPoint(x: -420, y: -110), CGPoint(x: -100, y: -110)]
+    }
 
     init(coordinator: GameCoordinator, game: FeedMonsterGame, session: GameSession, learner: Learner, focus: PhonicsSound) {
         self.game = game
@@ -66,7 +70,9 @@ final class FeedMonsterScene: BaseScene {
         for (index, choice) in next.choices.enumerated() {
             let card = PictureCard(picture: choice.picture, word: choice.word, seed: 910 + UInt64(session.roundsPlayed * 7 + index))
             card.name = "tap:food:\(index)"
-            card.position = Self.cardPositions[index % Self.cardPositions.count]
+            let positions = Self.cardPositions(count: next.choices.count)
+            card.position = positions[index % positions.count]
+            if next.choices.count > 3 { card.setScale(0.85) }
             card.zPosition = 10
             addChild(card)
             cards.append(card)
@@ -187,11 +193,11 @@ final class FeedMonsterScene: BaseScene {
         case .levelUp:
             sfx.play(.whirr)
             bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .practiseAgain:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .roundDone:
-            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         }
     }
 

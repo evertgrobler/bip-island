@@ -32,12 +32,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         gate.onEndBreakEarly = { [weak self] in self?.coordinator.endBreakEarly() }
         gate.playSettings = coordinator.playSettings
         updates.onWillRelaunch = { [weak self] in self?.kidLock.allowQuit = true }
+        updates.onUpdateReady = { [weak self] version in
+            DispatchQueue.main.async { self?.gate.updateReady = version }
+        }
 
         installMainMenu()
         let root = RootView(coordinator: coordinator, gate: gate)
         kidLock.install(content: NSHostingView(rootView: root))
         installKeyMonitor()
         coordinator.start()
+        updates.checkQuietlyOnLaunch()
         BigCursor.arrow.set()
     }
 

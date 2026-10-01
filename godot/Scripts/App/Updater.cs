@@ -9,8 +9,9 @@ namespace BipIsland.App;
 /// <summary>
 /// Automatic updates (Velopack), the Godot version of the Swift app's Sparkle setup.
 /// The feed address comes from res://assets/update.json, written by CI; local and pull-request
-/// builds have none and never check. A new version is downloaded quietly in the background and
-/// applied the next time the game starts (VelopackApp's auto-apply), so play is never interrupted.
+/// builds have none and never check. A new version is downloaded quietly in the background, but
+/// updates need a grown-up (owner rule, as in the Swift app): it is only installed after the parent
+/// gate (the "Update ready" button arrives in Phase 4 with the gate).
 /// The feed has one folder per computer (feed/win/ and feed/osx/), because Velopack names its packages
 /// the same on both.
 /// </summary>
@@ -70,7 +71,7 @@ public static class Updater
             var update = await manager.CheckForUpdatesAsync();
             if (update == null) return;
             await manager.DownloadUpdatesAsync(update);
-            GD.Print($"Bip Island: version {update.TargetFullRelease.Version} downloaded; it installs next time the game starts.");
+            GD.Print($"Bip Island: version {update.TargetFullRelease.Version} downloaded; it installs once a grown-up says yes.");
         }
         catch (Exception e)
         {
