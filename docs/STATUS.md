@@ -67,6 +67,20 @@
 4. Owner playtests CI artifacts: `gh run download <main-run> -n <name> -D ~/Downloads/<label>`,
    unzip, right-click → Open. Kid-lock exit: hold Esc 3 s + maths. Dark Mode: keep panels light.
 
+## Godot version (in progress, see docs/GODOT_MIGRATION.md)
+
+- Project in `godot/` (Godot 4.7.2 .NET, C#, `BipIsland.csproj`). Shared assets are copied in by
+  `python3 scripts/godot/prepare_assets.py` (fonts, Content JSON, voice clips converted to `.ogg`).
+- In a cloud session: `apt-get install -y dotnet-sdk-8.0` (the dotnet.microsoft.com installer is
+  blocked by the proxy), then `scripts/godot/install_godot.sh` prints the Godot binary path.
+  `cd godot && dotnet build`, then `$GODOT --headless --path . --import`.
+- Self-tests run the real game: `-- --bip-report out.json`, `-- --bip-screenshot out.png` (needs
+  `xvfb-run` + `--rendering-driver opengl3`), `-- --bip-update-test <feed> <report>`.
+- CI: `.github/workflows/godot.yml`. Linux exports both platforms and packs the Windows `Setup.exe`
+  (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from a local feed.
+  Main builds go to a public Vercel Blob store (`godot-test/`); the Swift app's feed is untouched.
+- Drawing is y-down in Godot: when porting a Swift drawing, negate y values and angles.
+
 ## Gotchas learned the hard way
 
 - `UInt64(negativeInt)` **traps at runtime** (crashed Letters Island, build 17). Use enumerated indices.
