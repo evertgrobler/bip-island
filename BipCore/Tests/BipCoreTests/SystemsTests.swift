@@ -164,7 +164,7 @@ final class SystemsTests: XCTestCase {
 
     func testOldSavesStillLoad() throws {
         // Version 1 had no stars, mystery box or breaks: they decode as empty.
-        let old = #"{"version":1,"sounds":{},"skills":{},"recentGames":[]}"#.data(using: .utf8)!
+        let old = #"{"version":1,"sounds":{"skills":{}},"skills":{},"recentGames":[]}"#.data(using: .utf8)!
         let loaded = try JSONDecoder().decode(ChildProgress.self, from: old)
         XCTAssertEqual(loaded.stars, 0)
         XCTAssertNil(loaded.lastMysteryDay)
