@@ -112,7 +112,27 @@ def visit(n, stack=()):
     state[n] = 2
 for n in SK: visit(n)
 
+# --- every phonics group is taught by the skill snd_g<group> (the game links them by this id)
+for grp in ph["groups"]:
+    if f"snd_g{grp['group']}" not in SK: err(f"phonics group {grp['group']}: no skill snd_g{grp['group']} in skills.json")
+
+# --- mastery rules the game reads (the prose in "mastery" is for people)
+rules = skills_doc.get("masteryRules", {})
+for key in ("correctInARowToMoveUp", "missesInARowToDropBack", "masteredWindow", "masteredPercent", "masteredDistinctDays"):
+    if not isinstance(rules.get(key), int) or rules[key] < 1: err(f"masteryRules.{key} must be a whole number of at least 1")
+if isinstance(rules.get("masteredPercent"), int) and rules["masteredPercent"] > 100: err("masteryRules.masteredPercent is over 100")
+review = rules.get("reviewAfterDays")
+if not (isinstance(review, list) and review and all(isinstance(d, int) and d > 0 for d in review) and review == sorted(set(review))):
+    err("masteryRules.reviewAfterDays must be increasing whole numbers of days")
+for age, band in skills_doc["startingBand"].items():
+    if band not in ("foundation", "stage1", "stage2", "stage3"): err(f"startingBand {age}: unknown band {band}")
+
 # --- games
+games_doc = load("curriculum/games.json")
+if not isinstance(games_doc.get("session", {}).get("roundsPerSession"), int) or games_doc["session"]["roundsPerSession"] < 1:
+    err("games.json: session.roundsPerSession must be a whole number of at least 1")
+game_ids = [gm["id"] for gm in games]
+if len(game_ids) != len(set(game_ids)): err("games.json: duplicate game id")
 for gm in games:
     for s in gm["skills"]:
         if s not in SK: err(f"game {gm['id']}: unknown skill {s}")
@@ -214,6 +234,9 @@ for n in range(0, 101):
     a(f"num_{n}", str(n), "Say the number.")
 for o in numbers["countingObjects"]:
     p(o["picture"], o["id"])
+    plural = o["audioPlural"][len("word_"):]
+    if not o["audioPlural"].startswith("word_"): err(f"counting object {o['id']}: plural clip must be word_<plural>")
+    a(o["audioPlural"], plural.replace("_", " "))
 cur = numbers["currency"]
 for c in cur["coins"] + cur["notes"]:
     p(f"pic_money_{c['id']}", f"South African {c['label']} {'coin' if c in cur['coins'] else 'note'}, in the game's own hand-drawn style")

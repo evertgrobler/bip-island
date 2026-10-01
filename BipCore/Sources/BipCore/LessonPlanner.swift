@@ -1,11 +1,15 @@
+/// The three Letters games, by their ids in games.json.
 public enum ActivityKind: String, Codable, Sendable, CaseIterable {
-    case meetTheSound
-    case soundHunt
-    case popTheLetter
+    case meetTheSound = "meet_the_sound"
+    case soundHunt = "sound_hunt"
+    case bubblePop = "bubble_pop"
+
+    public var gameID: String { rawValue }
 }
 
 public struct PlannedActivity: Equatable, Sendable {
     public let kind: ActivityKind
+    /// The sound Bip wants to practise.
     public let sound: PhonicsSound
 
     public init(kind: ActivityKind, sound: PhonicsSound) {
@@ -14,75 +18,119 @@ public struct PlannedActivity: Equatable, Sendable {
     }
 }
 
-/// A "find the picture that starts with…" question.
-public struct HuntQuestion: Equatable, Sendable {
-    public let target: PhonicsSound
-    /// Shuffled; always contains the target exactly once.
-    public let choices: [PhonicsSound]
-}
+/// Where one child is on Letters Island, worked out from their progress and the skill map.
+public struct LettersProgress: Sendable {
+    public let course: PhonicsCourse
+    public let progress: ChildProgress
+    public let startingBand: Band
+    /// Group numbers whose skill (snd_g1 …) is unlocked, in order. Group 1 is always open.
+    public let unlockedGroups: [Int]
+    /// The group shown on the island: the first open group with sounds still to learn.
+    public let currentGroup: PhonicsGroup
+    /// Sounds the child has met, plus every sound in a group they already know.
+    public let knownSoundIDs: Set<String>
 
-/// Bip's suggestion of what to play next, plus question building for each activity.
-public struct LessonPlanner: Sendable {
-    /// Sounds in teaching order.
-    public let sounds: [PhonicsSound]
-    /// Questions in one round of "Sound hunt" or "Pop the letter" (a round also ends on a level change).
-    public static let questionsPerRound = 6
+    public init(content: ContentLibrary, course: PhonicsCourse, progress: ChildProgress, startingBand: Band) {
+        self.course = course
+        self.progress = progress
+        self.startingBand = startingBand
 
-    public init(sounds: [PhonicsSound]) {
-        precondition(!sounds.isEmpty, "A lesson needs at least one sound")
-        self.sounds = sounds
-    }
-
-    public static func activity(for stage: SoundStage) -> ActivityKind? {
-        switch stage {
-        case .new: return .meetTheSound
-        case .met: return .soundHunt
-        case .recognises: return .popTheLetter
-        case .mastered: return nil
+        let lookup = { (id: String) in content.skill(id: id) }
+        func groupSkill(_ group: PhonicsGroup) -> Skill? { content.skill(id: group.skillID) }
+        let open = course.groups.filter { group in
+            guard let found = groupSkill(group) else { return false }
+            return progress.isUnlocked(found, startingBand: startingBand, lookup: lookup)
         }
-    }
+        let openGroups = open.isEmpty ? [course.firstGroup] : open
+        unlockedGroups = openGroups.map(\.number)
 
-    /// The first sound in order that isn't mastered yet, at the activity for its stage.
-    /// Once everything is mastered, a random review of hunt or pop.
-    public func nextActivity<G: RandomNumberGenerator>(tracker: MasteryTracker, using rng: inout G) -> PlannedActivity {
-        for sound in sounds {
-            if let kind = Self.activity(for: tracker.stage(of: sound)) {
-                return PlannedActivity(kind: kind, sound: sound)
+        var known = Set<String>()
+        for group in openGroups {
+            let groupKnown = groupSkill(group).map { progress.isKnown($0, startingBand: startingBand) } ?? false
+            for sound in group.sounds where groupKnown || progress.sounds.stage(of: sound) >= .met {
+                known.insert(sound.id)
             }
         }
-        let sound = sounds.randomElement(using: &rng)!
-        let kind: ActivityKind = Bool.random(using: &rng) ? .soundHunt : .popTheLetter
-        return PlannedActivity(kind: kind, sound: sound)
-    }
+        knownSoundIDs = known
 
-    /// The sound Bip suggests next (the first one not mastered), or nil when all are mastered.
-    public func suggestedSound(tracker: MasteryTracker) -> PhonicsSound? {
-        sounds.first { tracker.stage(of: $0) < .mastered }
-    }
-
-    /// Three pictures: the target and two others, in random order.
-    public func makeHuntQuestion<G: RandomNumberGenerator>(target: PhonicsSound, choiceCount: Int = 3, using rng: inout G) -> HuntQuestion {
-        let others = sounds.filter { $0.id != target.id && $0.pictureWord != target.pictureWord }
-        let distractors = Array(others.shuffled(using: &rng).prefix(max(choiceCount - 1, 0)))
-        return HuntQuestion(target: target, choices: ([target] + distractors).shuffled(using: &rng))
-    }
-
-    /// Letters for the starting bubbles. The target always appears at least once.
-    public func makeBubbleLetters<G: RandomNumberGenerator>(target: PhonicsSound, count: Int, using rng: inout G) -> [PhonicsSound] {
-        guard count > 0 else { return [] }
-        var letters = [target]
-        while letters.count < count {
-            letters.append(nextBubbleLetter(target: target, onScreen: letters, using: &rng))
+        let stillToLearn = openGroups.first { group in
+            let treatedAsKnown = groupSkill(group).map { progress.isTreatedAsKnown($0, startingBand: startingBand) } ?? false
+            return !treatedAsKnown && group.sounds.contains { progress.sounds.stage(of: $0) < .mastered }
         }
-        return letters.shuffled(using: &rng)
+        currentGroup = stillToLearn ?? openGroups.last!
     }
 
-    /// The letter for a bubble that is (re)appearing. If no other bubble shows the target, this one must,
-    /// so the right answer is always there to find. Otherwise it is a random letter that isn't the target,
-    /// keeping the target to roughly one bubble at a time.
-    public func nextBubbleLetter<G: RandomNumberGenerator>(target: PhonicsSound, onScreen: [PhonicsSound], using rng: inout G) -> PhonicsSound {
-        if !onScreen.contains(target) { return target }
-        let others = sounds.filter { $0 != target }
-        return others.randomElement(using: &rng) ?? target
+    public var highestUnlockedGroup: Int { unlockedGroups.last ?? 1 }
+
+    public func stage(of sound: PhonicsSound) -> SoundStage {
+        progress.sounds.stage(of: sound)
+    }
+
+    /// What the round generators need, optionally focused on one sound.
+    public func learner(focus: PhonicsSound? = nil) -> Learner {
+        Learner(band: startingBand, unlockedPhonicsGroup: highestUnlockedGroup, knownSoundIDs: knownSoundIDs, focusSoundID: focus?.id)
+    }
+}
+
+/// Bip's suggestion of what to play next on Letters Island.
+///
+/// Rules: a phonics group that is due for review comes first. Otherwise new sounds are met in order,
+/// keeping no more than two met-but-not-yet-recognised sounds waiting; waiting sounds are practised
+/// with Sound Hunt (met) and then Bubble Pop (recognises). When the group is all learnt, it's review.
+public struct LessonPlanner: Sendable {
+    /// How many met-but-not-recognised sounds can wait before Bip stops introducing new ones.
+    public static let maxSoundsWaiting = 2
+
+    public let letters: LettersProgress
+    /// Whether Sound Hunt has pictures for a sound (no word starts with ng or x).
+    public let canHunt: @Sendable (PhonicsSound) -> Bool
+
+    public init(letters: LettersProgress, canHunt: @escaping @Sendable (PhonicsSound) -> Bool) {
+        self.letters = letters
+        self.canHunt = canHunt
+    }
+
+    public func nextActivity<G: RandomNumberGenerator>(day: Int, rules: MasteryRules, using rng: inout G) -> PlannedActivity {
+        // 1. Reviews first.
+        for number in letters.unlockedGroups {
+            guard let group = letters.course.group(number),
+                  letters.progress.isDueForReview(group.skillID, on: day, rules: rules) else { continue }
+            if let review = reviewActivity(in: group, using: &rng) { return review }
+        }
+
+        // 2. Meet, then hunt, then pop, through the current group.
+        let sounds = letters.currentGroup.sounds
+        let notMastered = sounds.filter { letters.stage(of: $0) < .mastered }
+        let waiting = notMastered.filter { letters.stage(of: $0) == .met }.count
+        if let fresh = notMastered.first(where: { letters.stage(of: $0) == .new }), waiting < Self.maxSoundsWaiting {
+            return PlannedActivity(kind: .meetTheSound, sound: fresh)
+        }
+        if let practise = notMastered.first(where: { letters.stage(of: $0) != .new }) {
+            return PlannedActivity(kind: practiceKind(for: practise), sound: practise)
+        }
+        if let fresh = notMastered.first {
+            return PlannedActivity(kind: .meetTheSound, sound: fresh)
+        }
+
+        // 3. Everything in the group is learnt: review it.
+        return reviewActivity(in: letters.currentGroup, using: &rng)
+            ?? PlannedActivity(kind: .meetTheSound, sound: sounds.randomElement(using: &rng) ?? letters.course.allSounds[0])
+    }
+
+    /// The sound Bip suggests next (the first in the current group not learnt yet), or nil.
+    public func suggestedSound() -> PhonicsSound? {
+        letters.currentGroup.sounds.first { letters.stage(of: $0) < .mastered }
+    }
+
+    /// Sound Hunt for a met sound, Bubble Pop once it's recognised (or if no picture starts with it).
+    func practiceKind(for sound: PhonicsSound) -> ActivityKind {
+        letters.stage(of: sound) == .met && canHunt(sound) ? .soundHunt : .bubblePop
+    }
+
+    private func reviewActivity<G: RandomNumberGenerator>(in group: PhonicsGroup, using rng: inout G) -> PlannedActivity? {
+        let known = group.sounds.filter { letters.knownSoundIDs.contains($0.id) }
+        guard let sound = known.randomElement(using: &rng) else { return nil }
+        let kind: ActivityKind = canHunt(sound) && Bool.random(using: &rng) ? .soundHunt : .bubblePop
+        return PlannedActivity(kind: kind, sound: sound)
     }
 }

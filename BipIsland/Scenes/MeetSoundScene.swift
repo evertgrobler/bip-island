@@ -1,8 +1,8 @@
 import BipCore
 import SpriteKit
 
-/// "Meet the sound": the letter bounces in, the narrator says the pure sound three times,
-/// then the picture word (s → sun). Click the letter to hear it again; the green arrow carries on.
+/// Meet the Sound: the letter bounces in, the narrator says the pure sound three times,
+/// then the picture word (s → sun, from Content/phonics/graphemes.json). Click the letter to hear it again; the green arrow carries on.
 final class MeetSoundScene: BaseScene {
     private let sound: PhonicsSound
     private let letter: SKNode
@@ -55,7 +55,7 @@ final class MeetSoundScene: BaseScene {
     }
 
     private func showPicture() {
-        let card = PictureCard(word: sound.pictureWord, seed: 800)
+        let card = PictureCard(picture: sound.picture, word: sound.pictureWord, seed: 800)
         card.name = "tap:picture"
         card.position = CGPoint(x: 470, y: 60)
         card.setScale(0.01)

@@ -41,6 +41,10 @@ targets:
       - path: Resources/Audio
         type: folder
         buildPhase: resources
+      # All game content (JSON). Copied as a folder: Bip Island.app/Contents/Resources/Content/…
+      - path: Content
+        type: folder
+        buildPhase: resources
     dependencies:
       - package: Sparkle
       - package: BipCore

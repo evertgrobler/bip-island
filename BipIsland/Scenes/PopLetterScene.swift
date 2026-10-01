@@ -1,8 +1,9 @@
 import BipCore
 import SpriteKit
 
-/// "Pop the letter": letter bubbles float slowly up; pop the one that says the sound you hear.
-/// No timer: bubbles drift round and round, and the right letter is always there to find.
+/// Bubble Pop: letter bubbles float slowly up; pop the one that says the sound you hear.
+/// No timer: bubbles drift round and round. Each question is a fresh round from `BubblePopGame`,
+/// which keeps exactly one right letter on screen at all times.
 final class PopLetterScene: BaseScene {
     private final class Bubble {
         let node: SKNode
@@ -22,10 +23,14 @@ final class PopLetterScene: BaseScene {
         }
     }
 
-    private let sound: PhonicsSound
+    private let game: BubblePopGame
+    private var session: GameSession
+    private let learner: Learner
+    /// The sound Bip chose this visit for; a level change on it ends the visit.
+    private let focus: PhonicsSound
+    private var round: BubblePopGame.Round?
     private var bubbles: [Bubble] = []
     private var attempt = QuestionAttempt()
-    private var questionsAsked = 0
     private var lastUpdate: TimeInterval?
     private var elapsed: CGFloat = 0
     private var slowDown: CGFloat = 1
@@ -33,8 +38,11 @@ final class PopLetterScene: BaseScene {
     private static let top: CGFloat = 600
     private static let bottom: CGFloat = -600
 
-    init(coordinator: GameCoordinator, sound: PhonicsSound) {
-        self.sound = sound
+    init(coordinator: GameCoordinator, game: BubblePopGame, session: GameSession, learner: Learner, focus: PhonicsSound) {
+        self.game = game
+        self.session = session
+        self.learner = learner
+        self.focus = focus
         super.init(coordinator: coordinator)
     }
 
@@ -55,10 +63,14 @@ final class PopLetterScene: BaseScene {
         replay.zPosition = 40
         addChild(replay)
 
-        let letters = coordinator.planner.makeBubbleLetters(target: sound, count: 5, using: &coordinator.rng)
+        guard let first = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
+            after(0.3) { [weak self] in self?.finish() }
+            return
+        }
+        round = first
         let lanes: [CGFloat] = [-440, -220, 0, 220, 440]
         let starts: [CGFloat] = [-420, -150, 120, -300, 260].shuffled(using: &coordinator.rng)
-        for (i, letter) in letters.enumerated() {
+        for (i, letter) in first.choices.prefix(lanes.count).enumerated() {
             let node = SKNode()
             node.name = "tap:bubble:\(i)"
             node.zPosition = 10
@@ -77,7 +89,7 @@ final class PopLetterScene: BaseScene {
                                   speed: CGFloat.random(in: 45...65, using: &coordinator.rng), sound: letter, label: label))
         }
 
-        after(0.6) { [weak self] in self?.askQuestion() }
+        after(0.6) { [weak self] in self?.askQuestion(isFirst: true) }
     }
 
     override func update(_ currentTime: TimeInterval) {
@@ -97,8 +109,9 @@ final class PopLetterScene: BaseScene {
 
     /// A bubble that floated off the top comes back at the bottom with a new letter.
     private func respawn(_ bubble: Bubble) {
+        guard let round else { return }
         let others = bubbles.filter { $0 !== bubble }.map(\.sound)
-        let letter = coordinator.planner.nextBubbleLetter(target: sound, onScreen: others, using: &coordinator.rng)
+        let letter = game.nextBubble(in: round, onScreen: others, using: &coordinator.rng)
         setLetter(letter, on: bubble)
     }
 
@@ -112,12 +125,24 @@ final class PopLetterScene: BaseScene {
         bubble.node.setScale(1)
         bubble.node.zRotation = 0
         bubble.node.alpha = 1
-        if attempt.needsHint && letter == sound {
+        if attempt.needsHint, let round, game.isCorrect(letter, in: round) {
             bubble.node.run(Buttons.hintWiggle(), withKey: "hint")
         }
     }
 
-    private func askQuestion() {
+    /// The first question uses the bubbles already floating; later ones get a new round of letters.
+    private func askQuestion(isFirst: Bool = false) {
+        if !isFirst {
+            guard let next = session.nextRound(of: game, for: learner, using: &coordinator.rng) else {
+                return endVisit(with: .roundDone)
+            }
+            round = next
+            for (bubble, letter) in zip(bubbles, next.choices) {
+                setLetter(letter, on: bubble)
+                bubble.label.setScale(0.4)
+                bubble.label.run(.scale(to: 1, duration: 0.25))
+            }
+        }
         attempt = QuestionAttempt()
         slowDown = 1
         bubbles.forEach { $0.node.removeAction(forKey: "hint"); $0.node.setScale(1); $0.node.zRotation = 0 }
@@ -126,7 +151,8 @@ final class PopLetterScene: BaseScene {
     }
 
     private func sayPrompt() {
-        voice.play([VoiceLine.popTheLetter.rawValue, sound.soundClip])
+        guard let round else { return }
+        voice.play([VoiceLine.popTheLetter.rawValue, round.target.soundClip])
         bip.hop()
     }
 
@@ -136,38 +162,39 @@ final class PopLetterScene: BaseScene {
             sayPrompt()
             return
         }
-        guard name.hasPrefix("tap:bubble:"), let index = Int(name.dropFirst("tap:bubble:".count)), index < bubbles.count else { return }
+        guard name.hasPrefix("tap:bubble:"), let index = Int(name.dropFirst("tap:bubble:".count)), index < bubbles.count,
+              let round else { return }
         let bubble = bubbles[index]
 
-        switch attempt.answer(correct: bubble.sound == sound) {
+        switch attempt.answer(correct: game.isCorrect(bubble.sound, in: round)) {
         case let .correct(firstTry):
             inputLocked = true
-            questionsAsked += 1
             pop(bubble)
             bip.celebrate()
-            let change = coordinator.record(correct: firstTry, for: sound)
+            let change = coordinator.record(correct: firstTry, skillID: game.skillID(for: round), soundID: round.target.id)
+            let focusChanged = round.target.id == focus.id && change != .none
             voice.play([coordinator.randomPraise()], completion: { [weak self] in
-                self?.afterAnswer(change)
+                self?.afterAnswer(focusChanged ? change : .none)
             })
         case .tryAgain:
             sfx.play(.boop)
             bubble.node.run(Buttons.shake())
             bip.tilt()
             after(0.4) { [weak self] in
-                guard let self else { return }
-                self.voice.play([self.sound.soundClip])
+                guard let self, let round = self.round else { return }
+                self.voice.play([round.target.soundClip])
             }
         case .hint:
             sfx.play(.boop)
             bubble.node.run(Buttons.shake())
             bip.tilt()
             slowDown = 0.35
-            for b in bubbles where b.sound == sound {
+            for b in bubbles where game.isCorrect(b.sound, in: round) {
                 b.node.run(Buttons.hintWiggle(), withKey: "hint")
             }
             after(0.4) { [weak self] in
-                guard let self else { return }
-                self.voice.play([self.coordinator.randomHint(), self.sound.soundClip])
+                guard let self, let round = self.round else { return }
+                self.voice.play([self.coordinator.randomHint(), round.target.soundClip])
             }
         }
     }
@@ -187,20 +214,34 @@ final class PopLetterScene: BaseScene {
         ]))
     }
 
+    private enum Ending { case levelUp, practiseAgain, roundDone }
+
     private func afterAnswer(_ change: MasteryChange) {
         switch change {
         case .levelledUp:
-            sfx.play(.whirr)
-            bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            endVisit(with: .levelUp)
         case .droppedBack:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            endVisit(with: .practiseAgain)
         case .none:
-            if questionsAsked >= LessonPlanner.questionsPerRound {
-                voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            if session.isFinished {
+                endVisit(with: .roundDone)
             } else {
                 after(0.3) { [weak self] in self?.askQuestion() }
             }
+        }
+    }
+
+    private func endVisit(with ending: Ending) {
+        inputLocked = true
+        switch ending {
+        case .levelUp:
+            sfx.play(.whirr)
+            bip.celebrate()
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+        case .practiseAgain:
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+        case .roundDone:
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
         }
     }
 

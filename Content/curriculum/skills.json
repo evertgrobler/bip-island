@@ -6,6 +6,18 @@
     "mastered": "80% correct over the last 10 attempts, on at least 2 different days",
     "review": "mastered skills come back for review after 2, 5 and 14 days (spaced repetition)"
   },
+  "masteryRules": {
+    "correctInARowToMoveUp": 3,
+    "missesInARowToDropBack": 2,
+    "masteredWindow": 10,
+    "masteredPercent": 80,
+    "masteredDistinctDays": 2,
+    "reviewAfterDays": [
+      2,
+      5,
+      14
+    ]
+  },
   "startingBand": {
     "4": "foundation",
     "5": "foundation",

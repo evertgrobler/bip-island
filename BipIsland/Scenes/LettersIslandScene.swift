@@ -1,8 +1,9 @@
 import BipCore
 import SpriteKit
 
-/// Letters Island: the six group-1 sounds as stepping stones with progress stars.
-/// Clicking Bip or the big play button starts Bip's suggested activity; clicking a stone meets that sound.
+/// Letters Island: the sounds of the child's current phonics group (from Content/phonics/graphemes.json)
+/// as stepping stones with progress stars. Clicking Bip or the big play button starts Bip's suggested
+/// activity; clicking a stone meets that sound.
 final class LettersIslandScene: BaseScene {
     private let greet: Bool
 
@@ -23,14 +24,18 @@ final class LettersIslandScene: BaseScene {
         grass.zPosition = -49
         addChild(grass)
 
-        let sounds = coordinator.planner.sounds
-        let suggested = coordinator.planner.suggestedSound(tracker: coordinator.tracker)
+        let sounds = coordinator.lettersProgress?.currentGroup.sounds ?? []
+        let suggested = coordinator.planner?.suggestedSound()
+        let layout = Self.stoneLayout(count: sounds.count)
         for (i, sound) in sounds.enumerated() {
-            let x = -575 + CGFloat(i) * 230
-            let y = 140 + 60 * sin(CGFloat(i) * 1.1)
             let stone = makeStone(for: sound, index: i)
-            stone.position = CGPoint(x: x, y: y)
-            addChild(stone)
+            // The holder sets the size, so the pulse and press animations (which scale to 1) still work.
+            let holder = SKNode()
+            holder.position = layout.positions[i]
+            holder.setScale(layout.scale)
+            holder.zPosition = stone.zPosition
+            holder.addChild(stone)
+            addChild(holder)
             if sound == suggested {
                 stone.run(Buttons.pulse())
             }
@@ -40,7 +45,7 @@ final class LettersIslandScene: BaseScene {
         addBip(at: CGPoint(x: -170, y: -380), scale: 0.85)
 
         let play = Buttons.play()
-        play.position = CGPoint(x: 140, y: -230)
+        play.position = layout.positions.count > 6 ? CGPoint(x: 380, y: -320) : CGPoint(x: 140, y: -230)
         play.zPosition = 10
         play.run(Buttons.pulse())
         addChild(play)
@@ -53,6 +58,22 @@ final class LettersIslandScene: BaseScene {
                 self?.sfx.play(.whirr)
             }
         }
+    }
+
+    /// One wavy row for up to six stones; two rows, slightly smaller, for bigger groups.
+    /// Stones stay at least 150 pt across, above the 120 pt minimum.
+    private static func stoneLayout(count: Int) -> (positions: [CGPoint], scale: CGFloat) {
+        func row(_ n: Int, y: CGFloat, spacing: CGFloat, wave: CGFloat) -> [CGPoint] {
+            (0..<n).map { i in
+                let x = (CGFloat(i) - CGFloat(n - 1) / 2) * spacing
+                return CGPoint(x: x, y: y + wave * sin(CGFloat(i) * 1.1))
+            }
+        }
+        if count <= 6 {
+            return (row(count, y: 140, spacing: 230, wave: 60), 1)
+        }
+        let top = (count + 1) / 2
+        return (row(top, y: 250, spacing: 230, wave: 18) + row(count - top, y: 10, spacing: 230, wave: 18), 0.85)
     }
 
     private func makeStone(for sound: PhonicsSound, index: Int) -> SKNode {
@@ -82,7 +103,7 @@ final class LettersIslandScene: BaseScene {
             startSuggested()
         } else if name.hasPrefix("tap:stone:") {
             let id = String(name.dropFirst("tap:stone:".count))
-            guard let sound = Phonics.sound(id: id) else { return }
+            guard let sound = coordinator.letters?.course.sound(id: id) else { return }
             sfx.play(.tick)
             Buttons.press(node)
             inputLocked = true
