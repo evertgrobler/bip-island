@@ -310,17 +310,19 @@ final class RoundGeneratorTests: XCTestCase {
         }
     }
 
-    func testQuickLookReachesTenForOlderChildren() throws {
+    func testQuickLookReachesTenAtTheTopLevel() throws {
         let f = try fixture()
         var rng = SeededGenerator(seed: 25)
+        // Levels now set the range (3, 5, 8, then 10); the top level sees 1 to 10.
         let learner = Learner(band: .stage1, unlockedPhonicsGroup: 9,
                               knownSoundIDs: Set(f.course.allSounds.map(\.id)))
+            .at(level: f.quick.entry.levelSteps.count - 1)
         var seen = Set<Int>()
         for _ in 0..<200 {
             var session = GameSession(gameID: QuickLookGame.id, skin: f.quick.skins[0], maxRounds: 1)
             if let round = session.nextRound(of: f.quick, for: learner, using: &rng) { seen.insert(round.count) }
         }
-        XCTAssertEqual(seen, Set(1...10), "stage 1 sees 1 to 10")
+        XCTAssertEqual(seen, Set(1...10), "the top level sees 1 to 10")
     }
 
     // MARK: Sound Buttons
