@@ -992,6 +992,86 @@
       "notes": "PURE SOUND /z/ (digraph). Same 'zzz' as z: two letters, one sound."
     },
     {
+      "id": "vo_appletree_1",
+      "text": "A flower on the tree",
+      "notes": ""
+    },
+    {
+      "id": "vo_appletree_2",
+      "text": "A little green apple",
+      "notes": ""
+    },
+    {
+      "id": "vo_appletree_3",
+      "text": "A big red apple",
+      "notes": ""
+    },
+    {
+      "id": "vo_appletree_4",
+      "text": "Pick the apple",
+      "notes": ""
+    },
+    {
+      "id": "vo_bath_1",
+      "text": "Fill the bath",
+      "notes": ""
+    },
+    {
+      "id": "vo_bath_2",
+      "text": "Climb in",
+      "notes": ""
+    },
+    {
+      "id": "vo_bath_3",
+      "text": "Wash with soap",
+      "notes": ""
+    },
+    {
+      "id": "vo_bath_4",
+      "text": "Pull out the plug",
+      "notes": ""
+    },
+    {
+      "id": "vo_bedtime_1",
+      "text": "Brush your teeth",
+      "notes": ""
+    },
+    {
+      "id": "vo_bedtime_2",
+      "text": "Read a story",
+      "notes": ""
+    },
+    {
+      "id": "vo_bedtime_3",
+      "text": "Switch off the light",
+      "notes": ""
+    },
+    {
+      "id": "vo_bedtime_4",
+      "text": "Go to sleep",
+      "notes": ""
+    },
+    {
+      "id": "vo_birthday_1",
+      "text": "Bake a cake",
+      "notes": ""
+    },
+    {
+      "id": "vo_birthday_2",
+      "text": "Light the candles",
+      "notes": ""
+    },
+    {
+      "id": "vo_birthday_3",
+      "text": "Sing happy birthday",
+      "notes": ""
+    },
+    {
+      "id": "vo_birthday_4",
+      "text": "Blow out the candles",
+      "notes": ""
+    },
+    {
       "id": "vo_biscuits_1",
       "text": "Wash your hands",
       "notes": ""
@@ -1022,6 +1102,126 @@
       "notes": ""
     },
     {
+      "id": "vo_butterfly_1",
+      "text": "A tiny egg on a leaf",
+      "notes": ""
+    },
+    {
+      "id": "vo_butterfly_2",
+      "text": "A caterpillar eats",
+      "notes": ""
+    },
+    {
+      "id": "vo_butterfly_3",
+      "text": "A chrysalis",
+      "notes": ""
+    },
+    {
+      "id": "vo_butterfly_4",
+      "text": "A butterfly",
+      "notes": ""
+    },
+    {
+      "id": "vo_carwash_1",
+      "text": "A muddy car",
+      "notes": ""
+    },
+    {
+      "id": "vo_carwash_2",
+      "text": "Spray it with water",
+      "notes": ""
+    },
+    {
+      "id": "vo_carwash_3",
+      "text": "Scrub it with soap",
+      "notes": ""
+    },
+    {
+      "id": "vo_carwash_4",
+      "text": "A shiny clean car",
+      "notes": ""
+    },
+    {
+      "id": "vo_cereal_1",
+      "text": "Get a bowl",
+      "notes": ""
+    },
+    {
+      "id": "vo_cereal_2",
+      "text": "Pour in the cereal",
+      "notes": ""
+    },
+    {
+      "id": "vo_cereal_3",
+      "text": "Add the milk",
+      "notes": ""
+    },
+    {
+      "id": "vo_cereal_4",
+      "text": "Eat it with a spoon",
+      "notes": ""
+    },
+    {
+      "id": "vo_chick_1",
+      "text": "An egg in a nest",
+      "notes": ""
+    },
+    {
+      "id": "vo_chick_2",
+      "text": "The egg cracks",
+      "notes": ""
+    },
+    {
+      "id": "vo_chick_3",
+      "text": "A chick hatches",
+      "notes": ""
+    },
+    {
+      "id": "vo_chick_4",
+      "text": "The chick grows into a hen",
+      "notes": ""
+    },
+    {
+      "id": "vo_day_1",
+      "text": "The sun comes up",
+      "notes": ""
+    },
+    {
+      "id": "vo_day_2",
+      "text": "The sun is high",
+      "notes": ""
+    },
+    {
+      "id": "vo_day_3",
+      "text": "The sun goes down",
+      "notes": ""
+    },
+    {
+      "id": "vo_day_4",
+      "text": "Night time",
+      "notes": ""
+    },
+    {
+      "id": "vo_dogwalk_1",
+      "text": "Put on the lead",
+      "notes": ""
+    },
+    {
+      "id": "vo_dogwalk_2",
+      "text": "Walk to the park",
+      "notes": ""
+    },
+    {
+      "id": "vo_dogwalk_3",
+      "text": "Throw the ball",
+      "notes": ""
+    },
+    {
+      "id": "vo_dogwalk_4",
+      "text": "Give the dog a drink",
+      "notes": ""
+    },
+    {
       "id": "vo_frog_1",
       "text": "Frogspawn",
       "notes": ""
@@ -1044,6 +1244,46 @@
     {
       "id": "vo_frog_5",
       "text": "Frog",
+      "notes": ""
+    },
+    {
+      "id": "vo_goingout_1",
+      "text": "Put on your socks",
+      "notes": ""
+    },
+    {
+      "id": "vo_goingout_2",
+      "text": "Put on your shoes",
+      "notes": ""
+    },
+    {
+      "id": "vo_goingout_3",
+      "text": "Put on your hat",
+      "notes": ""
+    },
+    {
+      "id": "vo_goingout_4",
+      "text": "Go out to play",
+      "notes": ""
+    },
+    {
+      "id": "vo_growing_1",
+      "text": "A baby",
+      "notes": ""
+    },
+    {
+      "id": "vo_growing_2",
+      "text": "A child",
+      "notes": ""
+    },
+    {
+      "id": "vo_growing_3",
+      "text": "A grown-up",
+      "notes": ""
+    },
+    {
+      "id": "vo_growing_4",
+      "text": "A granny",
       "notes": ""
     },
     {
@@ -1152,6 +1392,81 @@
       "notes": "Read the whole sentence naturally."
     },
     {
+      "id": "vo_house_1",
+      "text": "Dig the ground",
+      "notes": ""
+    },
+    {
+      "id": "vo_house_2",
+      "text": "Build the walls",
+      "notes": ""
+    },
+    {
+      "id": "vo_house_3",
+      "text": "Put on the roof",
+      "notes": ""
+    },
+    {
+      "id": "vo_house_4",
+      "text": "Move in",
+      "notes": ""
+    },
+    {
+      "id": "vo_icecream_1",
+      "text": "A cold ice cream",
+      "notes": ""
+    },
+    {
+      "id": "vo_icecream_2",
+      "text": "The sun is hot",
+      "notes": ""
+    },
+    {
+      "id": "vo_icecream_3",
+      "text": "It melts",
+      "notes": ""
+    },
+    {
+      "id": "vo_laundry_1",
+      "text": "Muddy clothes",
+      "notes": ""
+    },
+    {
+      "id": "vo_laundry_2",
+      "text": "Wash them in the machine",
+      "notes": ""
+    },
+    {
+      "id": "vo_laundry_3",
+      "text": "Hang them up to dry",
+      "notes": ""
+    },
+    {
+      "id": "vo_laundry_4",
+      "text": "Fold them away",
+      "notes": ""
+    },
+    {
+      "id": "vo_letter_1",
+      "text": "Draw a picture",
+      "notes": ""
+    },
+    {
+      "id": "vo_letter_2",
+      "text": "Put it in an envelope",
+      "notes": ""
+    },
+    {
+      "id": "vo_letter_3",
+      "text": "Post it",
+      "notes": ""
+    },
+    {
+      "id": "vo_letter_4",
+      "text": "Granny opens it",
+      "notes": ""
+    },
+    {
       "id": "vo_morning_1",
       "text": "Wake up",
       "notes": ""
@@ -1164,6 +1479,86 @@
     {
       "id": "vo_morning_3",
       "text": "Eat breakfast",
+      "notes": ""
+    },
+    {
+      "id": "vo_picnic_1",
+      "text": "Pack the basket",
+      "notes": ""
+    },
+    {
+      "id": "vo_picnic_2",
+      "text": "Spread the blanket",
+      "notes": ""
+    },
+    {
+      "id": "vo_picnic_3",
+      "text": "Eat the picnic",
+      "notes": ""
+    },
+    {
+      "id": "vo_picnic_4",
+      "text": "Pack up the rubbish",
+      "notes": ""
+    },
+    {
+      "id": "vo_pizza_1",
+      "text": "Roll out the dough",
+      "notes": ""
+    },
+    {
+      "id": "vo_pizza_2",
+      "text": "Spread the tomato sauce",
+      "notes": ""
+    },
+    {
+      "id": "vo_pizza_3",
+      "text": "Add the cheese",
+      "notes": ""
+    },
+    {
+      "id": "vo_pizza_4",
+      "text": "Bake and eat",
+      "notes": ""
+    },
+    {
+      "id": "vo_rainbow_1",
+      "text": "Clouds come",
+      "notes": ""
+    },
+    {
+      "id": "vo_rainbow_2",
+      "text": "It rains",
+      "notes": ""
+    },
+    {
+      "id": "vo_rainbow_3",
+      "text": "The sun comes out",
+      "notes": ""
+    },
+    {
+      "id": "vo_rainbow_4",
+      "text": "A rainbow",
+      "notes": ""
+    },
+    {
+      "id": "vo_rocket_1",
+      "text": "Climb into the rocket",
+      "notes": ""
+    },
+    {
+      "id": "vo_rocket_2",
+      "text": "Count down: three, two, one",
+      "notes": ""
+    },
+    {
+      "id": "vo_rocket_3",
+      "text": "Blast off",
+      "notes": ""
+    },
+    {
+      "id": "vo_rocket_4",
+      "text": "Land on the moon",
       "notes": ""
     },
     {
@@ -1334,6 +1729,46 @@
     {
       "id": "vo_sent_16",
       "text": "The bird is in my shirt.",
+      "notes": ""
+    },
+    {
+      "id": "vo_slide_1",
+      "text": "Climb the ladder",
+      "notes": ""
+    },
+    {
+      "id": "vo_slide_2",
+      "text": "Sit at the top",
+      "notes": ""
+    },
+    {
+      "id": "vo_slide_3",
+      "text": "Slide down",
+      "notes": ""
+    },
+    {
+      "id": "vo_slide_4",
+      "text": "Land at the bottom",
+      "notes": ""
+    },
+    {
+      "id": "vo_tower_1",
+      "text": "One block",
+      "notes": ""
+    },
+    {
+      "id": "vo_tower_2",
+      "text": "Two blocks",
+      "notes": ""
+    },
+    {
+      "id": "vo_tower_3",
+      "text": "Three blocks",
+      "notes": ""
+    },
+    {
+      "id": "vo_tower_4",
+      "text": "The tower falls down",
       "notes": ""
     },
     {
@@ -3346,6 +3781,22 @@
       "brief": "apple"
     },
     {
+      "id": "pic_appletree_1",
+      "brief": "appletree step 1: A flower on the tree"
+    },
+    {
+      "id": "pic_appletree_2",
+      "brief": "appletree step 2: A little green apple"
+    },
+    {
+      "id": "pic_appletree_3",
+      "brief": "appletree step 3: A big red apple"
+    },
+    {
+      "id": "pic_appletree_4",
+      "brief": "appletree step 4: Pick the apple"
+    },
+    {
       "id": "pic_bag",
       "brief": "bag"
     },
@@ -3362,8 +3813,40 @@
       "brief": "bat"
     },
     {
+      "id": "pic_bath_1",
+      "brief": "bath step 1: Fill the bath"
+    },
+    {
+      "id": "pic_bath_2",
+      "brief": "bath step 2: Climb in"
+    },
+    {
+      "id": "pic_bath_3",
+      "brief": "bath step 3: Wash with soap"
+    },
+    {
+      "id": "pic_bath_4",
+      "brief": "bath step 4: Pull out the plug"
+    },
+    {
       "id": "pic_bed",
       "brief": "bed"
+    },
+    {
+      "id": "pic_bedtime_1",
+      "brief": "bedtime step 1: Brush your teeth"
+    },
+    {
+      "id": "pic_bedtime_2",
+      "brief": "bedtime step 2: Read a story"
+    },
+    {
+      "id": "pic_bedtime_3",
+      "brief": "bedtime step 3: Switch off the light"
+    },
+    {
+      "id": "pic_bedtime_4",
+      "brief": "bedtime step 4: Go to sleep"
     },
     {
       "id": "pic_bee",
@@ -3392,6 +3875,22 @@
     {
       "id": "pic_bird",
       "brief": "bird (picture for the sound ir)"
+    },
+    {
+      "id": "pic_birthday_1",
+      "brief": "birthday step 1: Bake a cake"
+    },
+    {
+      "id": "pic_birthday_2",
+      "brief": "birthday step 2: Light the candles"
+    },
+    {
+      "id": "pic_birthday_3",
+      "brief": "birthday step 3: Sing happy birthday"
+    },
+    {
+      "id": "pic_birthday_4",
+      "brief": "birthday step 4: Blow out the candles"
     },
     {
       "id": "pic_biscuit",
@@ -3454,6 +3953,22 @@
       "brief": "bus (picture for the sound b)"
     },
     {
+      "id": "pic_butterfly_1",
+      "brief": "butterfly step 1: A tiny egg on a leaf"
+    },
+    {
+      "id": "pic_butterfly_2",
+      "brief": "butterfly step 2: A caterpillar eats"
+    },
+    {
+      "id": "pic_butterfly_3",
+      "brief": "butterfly step 3: A chrysalis"
+    },
+    {
+      "id": "pic_butterfly_4",
+      "brief": "butterfly step 4: A butterfly"
+    },
+    {
       "id": "pic_buzz",
       "brief": "buzz (picture for the sound zz)"
     },
@@ -3478,12 +3993,60 @@
       "brief": "car (picture for the sound ar)"
     },
     {
+      "id": "pic_carwash_1",
+      "brief": "carwash step 1: A muddy car"
+    },
+    {
+      "id": "pic_carwash_2",
+      "brief": "carwash step 2: Spray it with water"
+    },
+    {
+      "id": "pic_carwash_3",
+      "brief": "carwash step 3: Scrub it with soap"
+    },
+    {
+      "id": "pic_carwash_4",
+      "brief": "carwash step 4: A shiny clean car"
+    },
+    {
       "id": "pic_cat",
       "brief": "cat (picture for the sound c)"
     },
     {
+      "id": "pic_cereal_1",
+      "brief": "cereal step 1: Get a bowl"
+    },
+    {
+      "id": "pic_cereal_2",
+      "brief": "cereal step 2: Pour in the cereal"
+    },
+    {
+      "id": "pic_cereal_3",
+      "brief": "cereal step 3: Add the milk"
+    },
+    {
+      "id": "pic_cereal_4",
+      "brief": "cereal step 4: Eat it with a spoon"
+    },
+    {
       "id": "pic_chick",
       "brief": "chick"
+    },
+    {
+      "id": "pic_chick_1",
+      "brief": "chick step 1: An egg in a nest"
+    },
+    {
+      "id": "pic_chick_2",
+      "brief": "chick step 2: The egg cracks"
+    },
+    {
+      "id": "pic_chick_3",
+      "brief": "chick step 3: A chick hatches"
+    },
+    {
+      "id": "pic_chick_4",
+      "brief": "chick step 4: The chick grows into a hen"
     },
     {
       "id": "pic_chin",
@@ -3538,6 +4101,22 @@
       "brief": "dad"
     },
     {
+      "id": "pic_day_1",
+      "brief": "day step 1: The sun comes up"
+    },
+    {
+      "id": "pic_day_2",
+      "brief": "day step 2: The sun is high"
+    },
+    {
+      "id": "pic_day_3",
+      "brief": "day step 3: The sun goes down"
+    },
+    {
+      "id": "pic_day_4",
+      "brief": "day step 4: Night time"
+    },
+    {
       "id": "pic_desk",
       "brief": "desk"
     },
@@ -3552,6 +4131,22 @@
     {
       "id": "pic_dog",
       "brief": "dog (picture for the sound d)"
+    },
+    {
+      "id": "pic_dogwalk_1",
+      "brief": "dogwalk step 1: Put on the lead"
+    },
+    {
+      "id": "pic_dogwalk_2",
+      "brief": "dogwalk step 2: Walk to the park"
+    },
+    {
+      "id": "pic_dogwalk_3",
+      "brief": "dogwalk step 3: Throw the ball"
+    },
+    {
+      "id": "pic_dogwalk_4",
+      "brief": "dogwalk step 4: Give the dog a drink"
     },
     {
       "id": "pic_doll",
@@ -3646,6 +4241,38 @@
       "brief": "goat (picture for the sound g)"
     },
     {
+      "id": "pic_goingout_1",
+      "brief": "goingout step 1: Put on your socks"
+    },
+    {
+      "id": "pic_goingout_2",
+      "brief": "goingout step 2: Put on your shoes"
+    },
+    {
+      "id": "pic_goingout_3",
+      "brief": "goingout step 3: Put on your hat"
+    },
+    {
+      "id": "pic_goingout_4",
+      "brief": "goingout step 4: Go out to play"
+    },
+    {
+      "id": "pic_growing_1",
+      "brief": "growing step 1: A baby"
+    },
+    {
+      "id": "pic_growing_2",
+      "brief": "growing step 2: A child"
+    },
+    {
+      "id": "pic_growing_3",
+      "brief": "growing step 3: A grown-up"
+    },
+    {
+      "id": "pic_growing_4",
+      "brief": "growing step 4: A granny"
+    },
+    {
       "id": "pic_hammer",
       "brief": "hammer (picture for the sound mm)"
     },
@@ -3690,8 +4317,36 @@
       "brief": "hook"
     },
     {
+      "id": "pic_house_1",
+      "brief": "house step 1: Dig the ground"
+    },
+    {
+      "id": "pic_house_2",
+      "brief": "house step 2: Build the walls"
+    },
+    {
+      "id": "pic_house_3",
+      "brief": "house step 3: Put on the roof"
+    },
+    {
+      "id": "pic_house_4",
+      "brief": "house step 4: Move in"
+    },
+    {
       "id": "pic_hut",
       "brief": "hut"
+    },
+    {
+      "id": "pic_icecream_1",
+      "brief": "icecream step 1: A cold ice cream"
+    },
+    {
+      "id": "pic_icecream_2",
+      "brief": "icecream step 2: The sun is hot"
+    },
+    {
+      "id": "pic_icecream_3",
+      "brief": "icecream step 3: It melts"
     },
     {
       "id": "pic_ink",
@@ -3742,6 +4397,22 @@
       "brief": "lamp"
     },
     {
+      "id": "pic_laundry_1",
+      "brief": "laundry step 1: Muddy clothes"
+    },
+    {
+      "id": "pic_laundry_2",
+      "brief": "laundry step 2: Wash them in the machine"
+    },
+    {
+      "id": "pic_laundry_3",
+      "brief": "laundry step 3: Hang them up to dry"
+    },
+    {
+      "id": "pic_laundry_4",
+      "brief": "laundry step 4: Fold them away"
+    },
+    {
       "id": "pic_leaf",
       "brief": "leaf (picture for the sound ea)"
     },
@@ -3752,6 +4423,22 @@
     {
       "id": "pic_letter",
       "brief": "letter (picture for the sound tt)"
+    },
+    {
+      "id": "pic_letter_1",
+      "brief": "letter step 1: Draw a picture"
+    },
+    {
+      "id": "pic_letter_2",
+      "brief": "letter step 2: Put it in an envelope"
+    },
+    {
+      "id": "pic_letter_3",
+      "brief": "letter step 3: Post it"
+    },
+    {
+      "id": "pic_letter_4",
+      "brief": "letter step 4: Granny opens it"
     },
     {
       "id": "pic_lid",
@@ -3918,6 +4605,22 @@
       "brief": "pencil"
     },
     {
+      "id": "pic_picnic_1",
+      "brief": "picnic step 1: Pack the basket"
+    },
+    {
+      "id": "pic_picnic_2",
+      "brief": "picnic step 2: Spread the blanket"
+    },
+    {
+      "id": "pic_picnic_3",
+      "brief": "picnic step 3: Eat the picnic"
+    },
+    {
+      "id": "pic_picnic_4",
+      "brief": "picnic step 4: Pack up the rubbish"
+    },
+    {
       "id": "pic_pie",
       "brief": "pie (picture for the sound ie)"
     },
@@ -3932,6 +4635,22 @@
     {
       "id": "pic_pins",
       "brief": "pins"
+    },
+    {
+      "id": "pic_pizza_1",
+      "brief": "pizza step 1: Roll out the dough"
+    },
+    {
+      "id": "pic_pizza_2",
+      "brief": "pizza step 2: Spread the tomato sauce"
+    },
+    {
+      "id": "pic_pizza_3",
+      "brief": "pizza step 3: Add the cheese"
+    },
+    {
+      "id": "pic_pizza_4",
+      "brief": "pizza step 4: Bake and eat"
     },
     {
       "id": "pic_plum",
@@ -3962,6 +4681,22 @@
       "brief": "rain (picture for the sound ai)"
     },
     {
+      "id": "pic_rainbow_1",
+      "brief": "rainbow step 1: Clouds come"
+    },
+    {
+      "id": "pic_rainbow_2",
+      "brief": "rainbow step 2: It rains"
+    },
+    {
+      "id": "pic_rainbow_3",
+      "brief": "rainbow step 3: The sun comes out"
+    },
+    {
+      "id": "pic_rainbow_4",
+      "brief": "rainbow step 4: A rainbow"
+    },
+    {
       "id": "pic_rat",
       "brief": "rat"
     },
@@ -3972,6 +4707,22 @@
     {
       "id": "pic_rock",
       "brief": "rock"
+    },
+    {
+      "id": "pic_rocket_1",
+      "brief": "rocket step 1: Climb into the rocket"
+    },
+    {
+      "id": "pic_rocket_2",
+      "brief": "rocket step 2: Count down: three, two, one"
+    },
+    {
+      "id": "pic_rocket_3",
+      "brief": "rocket step 3: Blast off"
+    },
+    {
+      "id": "pic_rocket_4",
+      "brief": "rocket step 4: Land on the moon"
     },
     {
       "id": "pic_rope",
@@ -4222,6 +4973,22 @@
       "brief": "sister"
     },
     {
+      "id": "pic_slide_1",
+      "brief": "slide step 1: Climb the ladder"
+    },
+    {
+      "id": "pic_slide_2",
+      "brief": "slide step 2: Sit at the top"
+    },
+    {
+      "id": "pic_slide_3",
+      "brief": "slide step 3: Slide down"
+    },
+    {
+      "id": "pic_slide_4",
+      "brief": "slide step 4: Land at the bottom"
+    },
+    {
       "id": "pic_snail",
       "brief": "snail"
     },
@@ -4288,6 +5055,22 @@
     {
       "id": "pic_top",
       "brief": "top"
+    },
+    {
+      "id": "pic_tower_1",
+      "brief": "tower step 1: One block"
+    },
+    {
+      "id": "pic_tower_2",
+      "brief": "tower step 2: Two blocks"
+    },
+    {
+      "id": "pic_tower_3",
+      "brief": "tower step 3: Three blocks"
+    },
+    {
+      "id": "pic_tower_4",
+      "brief": "tower step 4: The tower falls down"
     },
     {
       "id": "pic_town",

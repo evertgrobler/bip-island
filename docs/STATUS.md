@@ -18,7 +18,7 @@
   coding fully keyboard drivable (arrows + Enter + Backspace, 1-7 palette). Other keys replay.
 - **Pictures:** 15 hand-drawn + emoji stand-ins (`BipIsland/Drawing/EmojiPictures.swift`).
   Each table row is the still-to-draw list. Full coverage of all 256 manifest pictures.
-  Morning Order's 36 step cards are small scenes (`StepPictures.swift`): shared ground per set
+  Morning Order's 123 step cards (30 stories: 20 foundation, 8 stage 1, 2 stage 2) are small scenes (`StepPictures.swift`): shared ground per set
   (soil, sand, pond), hand-drawn bread/frogs/oven/sandcastle + emoji, each step builds on the last.
 - **Morning Order is tap-to-place** (no dragging): tap a card → it flies to the next numbered
   space and its line is spoken; tap a placed card to send it back; auto-checks when full.
@@ -100,5 +100,8 @@
   lone letter was sent to ElevenLabs and trimmed. New method (in audio/script.csv): say a word like
   "It." / "Up." and cut the vowel before the stop; stretchy sounds as "Nnnnn." with fades.
   ElevenLabs then disabled the account's free tier ("unusual activity", proxy) — needs a paid plan.
+- **1 Oct, night:** Owner: Morning Order repeats the same stories. Added 22 new stories (87 cards,
+  pictures in `StepPictures.swift`). Their `vo_<set>_<n>` clips are **not recorded yet** (ElevenLabs
+  account paused): cards play silence until generated. List = new `vo_` rows in `asset_manifest.json`.
 - **1 Oct late:** Optional parent passcode (Settings tab): holding Esc then asks for it instead of
   maths; 3 wrong tries fall back to maths. Stored as a salted SHA-256 hash in UserDefaults.

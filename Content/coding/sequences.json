@@ -264,6 +264,660 @@
           "audio": "vo_biscuits_6"
         }
       ]
+    },
+    {
+      "id": "bedtime",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Brush your teeth",
+          "picture": "pic_bedtime_1",
+          "audio": "vo_bedtime_1"
+        },
+        {
+          "n": 2,
+          "text": "Read a story",
+          "picture": "pic_bedtime_2",
+          "audio": "vo_bedtime_2"
+        },
+        {
+          "n": 3,
+          "text": "Switch off the light",
+          "picture": "pic_bedtime_3",
+          "audio": "vo_bedtime_3"
+        },
+        {
+          "n": 4,
+          "text": "Go to sleep",
+          "picture": "pic_bedtime_4",
+          "audio": "vo_bedtime_4"
+        }
+      ]
+    },
+    {
+      "id": "bath",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Fill the bath",
+          "picture": "pic_bath_1",
+          "audio": "vo_bath_1"
+        },
+        {
+          "n": 2,
+          "text": "Climb in",
+          "picture": "pic_bath_2",
+          "audio": "vo_bath_2"
+        },
+        {
+          "n": 3,
+          "text": "Wash with soap",
+          "picture": "pic_bath_3",
+          "audio": "vo_bath_3"
+        },
+        {
+          "n": 4,
+          "text": "Pull out the plug",
+          "picture": "pic_bath_4",
+          "audio": "vo_bath_4"
+        }
+      ]
+    },
+    {
+      "id": "chick",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "An egg in a nest",
+          "picture": "pic_chick_1",
+          "audio": "vo_chick_1"
+        },
+        {
+          "n": 2,
+          "text": "The egg cracks",
+          "picture": "pic_chick_2",
+          "audio": "vo_chick_2"
+        },
+        {
+          "n": 3,
+          "text": "A chick hatches",
+          "picture": "pic_chick_3",
+          "audio": "vo_chick_3"
+        },
+        {
+          "n": 4,
+          "text": "The chick grows into a hen",
+          "picture": "pic_chick_4",
+          "audio": "vo_chick_4"
+        }
+      ]
+    },
+    {
+      "id": "butterfly",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "A tiny egg on a leaf",
+          "picture": "pic_butterfly_1",
+          "audio": "vo_butterfly_1"
+        },
+        {
+          "n": 2,
+          "text": "A caterpillar eats",
+          "picture": "pic_butterfly_2",
+          "audio": "vo_butterfly_2"
+        },
+        {
+          "n": 3,
+          "text": "A chrysalis",
+          "picture": "pic_butterfly_3",
+          "audio": "vo_butterfly_3"
+        },
+        {
+          "n": 4,
+          "text": "A butterfly",
+          "picture": "pic_butterfly_4",
+          "audio": "vo_butterfly_4"
+        }
+      ]
+    },
+    {
+      "id": "rainbow",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Clouds come",
+          "picture": "pic_rainbow_1",
+          "audio": "vo_rainbow_1"
+        },
+        {
+          "n": 2,
+          "text": "It rains",
+          "picture": "pic_rainbow_2",
+          "audio": "vo_rainbow_2"
+        },
+        {
+          "n": 3,
+          "text": "The sun comes out",
+          "picture": "pic_rainbow_3",
+          "audio": "vo_rainbow_3"
+        },
+        {
+          "n": 4,
+          "text": "A rainbow",
+          "picture": "pic_rainbow_4",
+          "audio": "vo_rainbow_4"
+        }
+      ]
+    },
+    {
+      "id": "birthday",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Bake a cake",
+          "picture": "pic_birthday_1",
+          "audio": "vo_birthday_1"
+        },
+        {
+          "n": 2,
+          "text": "Light the candles",
+          "picture": "pic_birthday_2",
+          "audio": "vo_birthday_2"
+        },
+        {
+          "n": 3,
+          "text": "Sing happy birthday",
+          "picture": "pic_birthday_3",
+          "audio": "vo_birthday_3"
+        },
+        {
+          "n": 4,
+          "text": "Blow out the candles",
+          "picture": "pic_birthday_4",
+          "audio": "vo_birthday_4"
+        }
+      ]
+    },
+    {
+      "id": "dogwalk",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Put on the lead",
+          "picture": "pic_dogwalk_1",
+          "audio": "vo_dogwalk_1"
+        },
+        {
+          "n": 2,
+          "text": "Walk to the park",
+          "picture": "pic_dogwalk_2",
+          "audio": "vo_dogwalk_2"
+        },
+        {
+          "n": 3,
+          "text": "Throw the ball",
+          "picture": "pic_dogwalk_3",
+          "audio": "vo_dogwalk_3"
+        },
+        {
+          "n": 4,
+          "text": "Give the dog a drink",
+          "picture": "pic_dogwalk_4",
+          "audio": "vo_dogwalk_4"
+        }
+      ]
+    },
+    {
+      "id": "icecream",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "A cold ice cream",
+          "picture": "pic_icecream_1",
+          "audio": "vo_icecream_1"
+        },
+        {
+          "n": 2,
+          "text": "The sun is hot",
+          "picture": "pic_icecream_2",
+          "audio": "vo_icecream_2"
+        },
+        {
+          "n": 3,
+          "text": "It melts",
+          "picture": "pic_icecream_3",
+          "audio": "vo_icecream_3"
+        }
+      ]
+    },
+    {
+      "id": "pizza",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Roll out the dough",
+          "picture": "pic_pizza_1",
+          "audio": "vo_pizza_1"
+        },
+        {
+          "n": 2,
+          "text": "Spread the tomato sauce",
+          "picture": "pic_pizza_2",
+          "audio": "vo_pizza_2"
+        },
+        {
+          "n": 3,
+          "text": "Add the cheese",
+          "picture": "pic_pizza_3",
+          "audio": "vo_pizza_3"
+        },
+        {
+          "n": 4,
+          "text": "Bake and eat",
+          "picture": "pic_pizza_4",
+          "audio": "vo_pizza_4"
+        }
+      ]
+    },
+    {
+      "id": "tower",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "One block",
+          "picture": "pic_tower_1",
+          "audio": "vo_tower_1"
+        },
+        {
+          "n": 2,
+          "text": "Two blocks",
+          "picture": "pic_tower_2",
+          "audio": "vo_tower_2"
+        },
+        {
+          "n": 3,
+          "text": "Three blocks",
+          "picture": "pic_tower_3",
+          "audio": "vo_tower_3"
+        },
+        {
+          "n": 4,
+          "text": "The tower falls down",
+          "picture": "pic_tower_4",
+          "audio": "vo_tower_4"
+        }
+      ]
+    },
+    {
+      "id": "appletree",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "A flower on the tree",
+          "picture": "pic_appletree_1",
+          "audio": "vo_appletree_1"
+        },
+        {
+          "n": 2,
+          "text": "A little green apple",
+          "picture": "pic_appletree_2",
+          "audio": "vo_appletree_2"
+        },
+        {
+          "n": 3,
+          "text": "A big red apple",
+          "picture": "pic_appletree_3",
+          "audio": "vo_appletree_3"
+        },
+        {
+          "n": 4,
+          "text": "Pick the apple",
+          "picture": "pic_appletree_4",
+          "audio": "vo_appletree_4"
+        }
+      ]
+    },
+    {
+      "id": "cereal",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Get a bowl",
+          "picture": "pic_cereal_1",
+          "audio": "vo_cereal_1"
+        },
+        {
+          "n": 2,
+          "text": "Pour in the cereal",
+          "picture": "pic_cereal_2",
+          "audio": "vo_cereal_2"
+        },
+        {
+          "n": 3,
+          "text": "Add the milk",
+          "picture": "pic_cereal_3",
+          "audio": "vo_cereal_3"
+        },
+        {
+          "n": 4,
+          "text": "Eat it with a spoon",
+          "picture": "pic_cereal_4",
+          "audio": "vo_cereal_4"
+        }
+      ]
+    },
+    {
+      "id": "goingout",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Put on your socks",
+          "picture": "pic_goingout_1",
+          "audio": "vo_goingout_1"
+        },
+        {
+          "n": 2,
+          "text": "Put on your shoes",
+          "picture": "pic_goingout_2",
+          "audio": "vo_goingout_2"
+        },
+        {
+          "n": 3,
+          "text": "Put on your hat",
+          "picture": "pic_goingout_3",
+          "audio": "vo_goingout_3"
+        },
+        {
+          "n": 4,
+          "text": "Go out to play",
+          "picture": "pic_goingout_4",
+          "audio": "vo_goingout_4"
+        }
+      ]
+    },
+    {
+      "id": "carwash",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "A muddy car",
+          "picture": "pic_carwash_1",
+          "audio": "vo_carwash_1"
+        },
+        {
+          "n": 2,
+          "text": "Spray it with water",
+          "picture": "pic_carwash_2",
+          "audio": "vo_carwash_2"
+        },
+        {
+          "n": 3,
+          "text": "Scrub it with soap",
+          "picture": "pic_carwash_3",
+          "audio": "vo_carwash_3"
+        },
+        {
+          "n": 4,
+          "text": "A shiny clean car",
+          "picture": "pic_carwash_4",
+          "audio": "vo_carwash_4"
+        }
+      ]
+    },
+    {
+      "id": "day",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "The sun comes up",
+          "picture": "pic_day_1",
+          "audio": "vo_day_1"
+        },
+        {
+          "n": 2,
+          "text": "The sun is high",
+          "picture": "pic_day_2",
+          "audio": "vo_day_2"
+        },
+        {
+          "n": 3,
+          "text": "The sun goes down",
+          "picture": "pic_day_3",
+          "audio": "vo_day_3"
+        },
+        {
+          "n": 4,
+          "text": "Night time",
+          "picture": "pic_day_4",
+          "audio": "vo_day_4"
+        }
+      ]
+    },
+    {
+      "id": "slide",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Climb the ladder",
+          "picture": "pic_slide_1",
+          "audio": "vo_slide_1"
+        },
+        {
+          "n": 2,
+          "text": "Sit at the top",
+          "picture": "pic_slide_2",
+          "audio": "vo_slide_2"
+        },
+        {
+          "n": 3,
+          "text": "Slide down",
+          "picture": "pic_slide_3",
+          "audio": "vo_slide_3"
+        },
+        {
+          "n": 4,
+          "text": "Land at the bottom",
+          "picture": "pic_slide_4",
+          "audio": "vo_slide_4"
+        }
+      ]
+    },
+    {
+      "id": "laundry",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Muddy clothes",
+          "picture": "pic_laundry_1",
+          "audio": "vo_laundry_1"
+        },
+        {
+          "n": 2,
+          "text": "Wash them in the machine",
+          "picture": "pic_laundry_2",
+          "audio": "vo_laundry_2"
+        },
+        {
+          "n": 3,
+          "text": "Hang them up to dry",
+          "picture": "pic_laundry_3",
+          "audio": "vo_laundry_3"
+        },
+        {
+          "n": 4,
+          "text": "Fold them away",
+          "picture": "pic_laundry_4",
+          "audio": "vo_laundry_4"
+        }
+      ]
+    },
+    {
+      "id": "picnic",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Pack the basket",
+          "picture": "pic_picnic_1",
+          "audio": "vo_picnic_1"
+        },
+        {
+          "n": 2,
+          "text": "Spread the blanket",
+          "picture": "pic_picnic_2",
+          "audio": "vo_picnic_2"
+        },
+        {
+          "n": 3,
+          "text": "Eat the picnic",
+          "picture": "pic_picnic_3",
+          "audio": "vo_picnic_3"
+        },
+        {
+          "n": 4,
+          "text": "Pack up the rubbish",
+          "picture": "pic_picnic_4",
+          "audio": "vo_picnic_4"
+        }
+      ]
+    },
+    {
+      "id": "letter",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Draw a picture",
+          "picture": "pic_letter_1",
+          "audio": "vo_letter_1"
+        },
+        {
+          "n": 2,
+          "text": "Put it in an envelope",
+          "picture": "pic_letter_2",
+          "audio": "vo_letter_2"
+        },
+        {
+          "n": 3,
+          "text": "Post it",
+          "picture": "pic_letter_3",
+          "audio": "vo_letter_3"
+        },
+        {
+          "n": 4,
+          "text": "Granny opens it",
+          "picture": "pic_letter_4",
+          "audio": "vo_letter_4"
+        }
+      ]
+    },
+    {
+      "id": "growing",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "A baby",
+          "picture": "pic_growing_1",
+          "audio": "vo_growing_1"
+        },
+        {
+          "n": 2,
+          "text": "A child",
+          "picture": "pic_growing_2",
+          "audio": "vo_growing_2"
+        },
+        {
+          "n": 3,
+          "text": "A grown-up",
+          "picture": "pic_growing_3",
+          "audio": "vo_growing_3"
+        },
+        {
+          "n": 4,
+          "text": "A granny",
+          "picture": "pic_growing_4",
+          "audio": "vo_growing_4"
+        }
+      ]
+    },
+    {
+      "id": "house",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Dig the ground",
+          "picture": "pic_house_1",
+          "audio": "vo_house_1"
+        },
+        {
+          "n": 2,
+          "text": "Build the walls",
+          "picture": "pic_house_2",
+          "audio": "vo_house_2"
+        },
+        {
+          "n": 3,
+          "text": "Put on the roof",
+          "picture": "pic_house_3",
+          "audio": "vo_house_3"
+        },
+        {
+          "n": 4,
+          "text": "Move in",
+          "picture": "pic_house_4",
+          "audio": "vo_house_4"
+        }
+      ]
+    },
+    {
+      "id": "rocket",
+      "band": "stage2",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Climb into the rocket",
+          "picture": "pic_rocket_1",
+          "audio": "vo_rocket_1"
+        },
+        {
+          "n": 2,
+          "text": "Count down: three, two, one",
+          "picture": "pic_rocket_2",
+          "audio": "vo_rocket_2"
+        },
+        {
+          "n": 3,
+          "text": "Blast off",
+          "picture": "pic_rocket_3",
+          "audio": "vo_rocket_3"
+        },
+        {
+          "n": 4,
+          "text": "Land on the moon",
+          "picture": "pic_rocket_4",
+          "audio": "vo_rocket_4"
+        }
+      ]
     }
   ]
 }
