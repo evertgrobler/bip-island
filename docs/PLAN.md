@@ -28,7 +28,7 @@ The game starts each child at a level set by age, then moves them by mastery: th
 
 ## Letters & Sounds
 
-Letters are taught by their sound first, never by name or song: the letter s is “sss”, not “ess”. The order follows synthetic phonics (the Jolly Phonics groups used in many UK and South African schools), so kids can blend real words after the first six sounds.
+Letters are taught by their sound first, never by name or song: the letter s is “sss”, not “ess”. The order follows the UK Letters and Sounds synthetic phonics sequence, which matches the Cambridge Primary curriculum, so kids can blend real words after the first six sounds. The full 9-group progression is in `docs/CURRICULUM.md` and `Content/phonics/graphemes.json`.
 
 | Group | Sounds | First words it unlocks |
 | --- | --- | --- |

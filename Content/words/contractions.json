@@ -1,0 +1,45 @@
+{
+  "note": "Stage 3 contractions (3Rw.02). Tricky Word Memory pairs the long form with the short form; the apostrophe stands for the missing letters.",
+  "pairs": [
+    {
+      "long": "can not",
+      "short": "can't"
+    },
+    {
+      "long": "do not",
+      "short": "don't"
+    },
+    {
+      "long": "did not",
+      "short": "didn't"
+    },
+    {
+      "long": "is not",
+      "short": "isn't"
+    },
+    {
+      "long": "it is",
+      "short": "it's"
+    },
+    {
+      "long": "I am",
+      "short": "I'm"
+    },
+    {
+      "long": "we are",
+      "short": "we're"
+    },
+    {
+      "long": "you are",
+      "short": "you're"
+    },
+    {
+      "long": "I will",
+      "short": "I'll"
+    },
+    {
+      "long": "let us",
+      "short": "let's"
+    }
+  ]
+}

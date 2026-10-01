@@ -1,0 +1,88 @@
+{
+  "note": "Pattern Party pattern rules (1Nc.06, 2Nc.06, 2Sp.01, 3Nc.06). The game picks items (colours, shapes, animals) at random and builds the pattern from the rule; the child supplies the next 1-3 items.",
+  "itemSets": {
+    "colours": [
+      "red",
+      "blue",
+      "yellow",
+      "green",
+      "purple"
+    ],
+    "shapes": [
+      "circle",
+      "square",
+      "triangle",
+      "star",
+      "heart"
+    ],
+    "animals": [
+      "duck",
+      "frog",
+      "fish",
+      "bee",
+      "cat"
+    ]
+  },
+  "rules": [
+    {
+      "id": "AB",
+      "band": "foundation",
+      "unit": "AB",
+      "show": 6,
+      "ask": 1
+    },
+    {
+      "id": "AAB",
+      "band": "foundation",
+      "unit": "AAB",
+      "show": 6,
+      "ask": 1
+    },
+    {
+      "id": "ABB",
+      "band": "foundation",
+      "unit": "ABB",
+      "show": 6,
+      "ask": 1
+    },
+    {
+      "id": "ABC",
+      "band": "stage1",
+      "unit": "ABC",
+      "show": 6,
+      "ask": 2
+    },
+    {
+      "id": "AABB",
+      "band": "stage1",
+      "unit": "AABB",
+      "show": 8,
+      "ask": 2
+    },
+    {
+      "id": "ABAC",
+      "band": "stage2",
+      "unit": "ABAC",
+      "show": 8,
+      "ask": 2
+    },
+    {
+      "id": "fix",
+      "band": "stage2",
+      "unit": "any",
+      "show": 8,
+      "ask": 0,
+      "mode": "find the mistake"
+    },
+    {
+      "id": "grow",
+      "band": "stage3",
+      "mode": "growing",
+      "start": 1,
+      "step": 2,
+      "show": 3,
+      "ask": 1,
+      "note": "Towers of 1, 3, 5 blocks: build the next tower (3Nc.06)."
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "note": "Silly Sentences: child reads the sentence and picks the picture that matches it. Every word is decodable at decodableFromGroup or a known tricky word.",
+  "sentences": [
+    {
+      "id": "sent_01",
+      "text": "A cat sat on a mat.",
+      "decodableFromGroup": 2,
+      "audio": "vo_sent_01",
+      "pictureRight": "pic_sent_01_a",
+      "pictureRightBrief": "A cat sitting on a mat",
+      "pictureWrong": "pic_sent_01_b",
+      "pictureWrongBrief": "A cat sitting on a hat",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_02",
+      "text": "A pig in a wig.",
+      "decodableFromGroup": 5,
+      "audio": "vo_sent_02",
+      "pictureRight": "pic_sent_02_a",
+      "pictureRightBrief": "A pig wearing a wig",
+      "pictureWrong": "pic_sent_02_b",
+      "pictureWrongBrief": "A pig in a box",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_03",
+      "text": "The duck has a red hat.",
+      "decodableFromGroup": 4,
+      "audio": "vo_sent_03",
+      "pictureRight": "pic_sent_03_a",
+      "pictureRightBrief": "A duck in a red hat",
+      "pictureWrong": "pic_sent_03_b",
+      "pictureWrongBrief": "A duck in a red sock",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_04",
+      "text": "A fox sits in a box.",
+      "decodableFromGroup": 5,
+      "audio": "vo_sent_04",
+      "pictureRight": "pic_sent_04_a",
+      "pictureRightBrief": "A fox sitting in a box",
+      "pictureWrong": "pic_sent_04_b",
+      "pictureWrongBrief": "A box sitting on a fox",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_05",
+      "text": "The frog is on a log.",
+      "decodableFromGroup": 4,
+      "audio": "vo_sent_05",
+      "pictureRight": "pic_sent_05_a",
+      "pictureRightBrief": "A frog on a log",
+      "pictureWrong": "pic_sent_05_b",
+      "pictureWrongBrief": "A frog on a dog",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_06",
+      "text": "Six fish in a dish.",
+      "decodableFromGroup": 6,
+      "audio": "vo_sent_06",
+      "pictureRight": "pic_sent_06_a",
+      "pictureRightBrief": "Six fish in a dish",
+      "pictureWrong": "pic_sent_06_b",
+      "pictureWrongBrief": "Six fish in a cup",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_07",
+      "text": "A goat in a boat.",
+      "decodableFromGroup": 7,
+      "audio": "vo_sent_07",
+      "pictureRight": "pic_sent_07_a",
+      "pictureRightBrief": "A goat in a boat",
+      "pictureWrong": "pic_sent_07_b",
+      "pictureWrongBrief": "A goat on a bus",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_08",
+      "text": "The hen has ten chicks.",
+      "decodableFromGroup": 6,
+      "audio": "vo_sent_08",
+      "pictureRight": "pic_sent_08_a",
+      "pictureRightBrief": "A hen with ten chicks",
+      "pictureWrong": "pic_sent_08_b",
+      "pictureWrongBrief": "A hen with ten ducks",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_09",
+      "text": "A bug on a bun.",
+      "decodableFromGroup": 4,
+      "audio": "vo_sent_09",
+      "pictureRight": "pic_sent_09_a",
+      "pictureRightBrief": "A bug sitting on a bun",
+      "pictureWrong": "pic_sent_09_b",
+      "pictureWrongBrief": "A bun sitting on a bug",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_10",
+      "text": "The sheep is in the tree.",
+      "decodableFromGroup": 7,
+      "audio": "vo_sent_10",
+      "pictureRight": "pic_sent_10_a",
+      "pictureRightBrief": "A sheep sitting in a tree",
+      "pictureWrong": "pic_sent_10_b",
+      "pictureWrongBrief": "A sheep under a tree",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_11",
+      "text": "A snail on a train.",
+      "decodableFromGroup": 7,
+      "audio": "vo_sent_11",
+      "pictureRight": "pic_sent_11_a",
+      "pictureRightBrief": "A snail riding a train",
+      "pictureWrong": "pic_sent_11_b",
+      "pictureWrongBrief": "A snail in the rain",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_12",
+      "text": "The moon is in the sea.",
+      "decodableFromGroup": 9,
+      "audio": "vo_sent_12",
+      "pictureRight": "pic_sent_12_a",
+      "pictureRightBrief": "The moon in the sea",
+      "pictureWrong": "pic_sent_12_b",
+      "pictureWrongBrief": "The moon in a cup",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_13",
+      "text": "A cow in a car.",
+      "decodableFromGroup": 8,
+      "audio": "vo_sent_13",
+      "pictureRight": "pic_sent_13_a",
+      "pictureRightBrief": "A cow driving a car",
+      "pictureWrong": "pic_sent_13_b",
+      "pictureWrongBrief": "A cow on a farm",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_14",
+      "text": "The king has a fork.",
+      "decodableFromGroup": 8,
+      "audio": "vo_sent_14",
+      "pictureRight": "pic_sent_14_a",
+      "pictureRightBrief": "A king holding a fork",
+      "pictureWrong": "pic_sent_14_b",
+      "pictureWrongBrief": "A king holding a ring",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_15",
+      "text": "A snake on a cake.",
+      "decodableFromGroup": 9,
+      "audio": "vo_sent_15",
+      "pictureRight": "pic_sent_15_a",
+      "pictureRightBrief": "A snake curled on a cake",
+      "pictureWrong": "pic_sent_15_b",
+      "pictureWrongBrief": "A snake on a bike",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_16",
+      "text": "The bird is in my shirt.",
+      "decodableFromGroup": 9,
+      "audio": "vo_sent_16",
+      "pictureRight": "pic_sent_16_a",
+      "pictureRightBrief": "A bird peeping out of a shirt",
+      "pictureWrong": "pic_sent_16_b",
+      "pictureWrongBrief": "A bird in a nest",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    }
+  ]
+}

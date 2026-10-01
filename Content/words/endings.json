@@ -1,0 +1,121 @@
+{
+  "note": "Word endings with no change to the root word (1Rw.04, 1Ww.04, 2Ww.05). Doubling (hop -> hopping) is Stage 3 and left out.",
+  "plurals_s": [
+    {
+      "word": "cat",
+      "plural": "cats"
+    },
+    {
+      "word": "dog",
+      "plural": "dogs"
+    },
+    {
+      "word": "duck",
+      "plural": "ducks"
+    },
+    {
+      "word": "hen",
+      "plural": "hens"
+    },
+    {
+      "word": "ship",
+      "plural": "ships"
+    },
+    {
+      "word": "pig",
+      "plural": "pigs"
+    },
+    {
+      "word": "star",
+      "plural": "stars"
+    },
+    {
+      "word": "coin",
+      "plural": "coins"
+    },
+    {
+      "word": "tree",
+      "plural": "trees"
+    },
+    {
+      "word": "book",
+      "plural": "books"
+    }
+  ],
+  "plurals_es": [
+    {
+      "word": "box",
+      "plural": "boxes"
+    },
+    {
+      "word": "fox",
+      "plural": "foxes"
+    },
+    {
+      "word": "dish",
+      "plural": "dishes"
+    },
+    {
+      "word": "bus",
+      "plural": "buses"
+    },
+    {
+      "word": "bench",
+      "plural": "benches"
+    },
+    {
+      "word": "lunch",
+      "plural": "lunches"
+    }
+  ],
+  "verbs": [
+    {
+      "word": "look",
+      "s": "looks",
+      "ed": "looked",
+      "ing": "looking"
+    },
+    {
+      "word": "play",
+      "s": "plays",
+      "ed": "played",
+      "ing": "playing"
+    },
+    {
+      "word": "turn",
+      "s": "turns",
+      "ed": "turned",
+      "ing": "turning"
+    },
+    {
+      "word": "kick",
+      "s": "kicks",
+      "ed": "kicked",
+      "ing": "kicking"
+    },
+    {
+      "word": "boil",
+      "s": "boils",
+      "ed": "boiled",
+      "ing": "boiling"
+    },
+    {
+      "word": "burn",
+      "s": "burns",
+      "ed": "burned",
+      "ing": "burning"
+    },
+    {
+      "word": "rain",
+      "s": "rains",
+      "ed": "rained",
+      "ing": "raining"
+    },
+    {
+      "word": "sing",
+      "s": "sings",
+      "ing": "singing",
+      "note": "past tense is sang: never offer singed"
+    }
+  ]
+}

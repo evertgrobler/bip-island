@@ -1,0 +1,292 @@
+{
+  "note": "Number ranges and objects for the Numbers island, by band. Counting objects need artwork pic_<id>. Money uses South African rand; coin and note artwork must be the game's own hand-drawn style, never photographs.",
+  "bands": {
+    "foundation": {
+      "ages": "4-5",
+      "countTo": 10,
+      "subitiseTo": 5,
+      "bondsTo": 5,
+      "objectives": [
+        "1Nc.01",
+        "1Nc.02",
+        "1Ni.01"
+      ]
+    },
+    "stage1": {
+      "ages": "5-6",
+      "countTo": 20,
+      "subitiseTo": 10,
+      "bondsTo": 10,
+      "addSubWithin": 20,
+      "doublesTo": 10,
+      "stepCounts": [
+        1,
+        2,
+        10
+      ],
+      "ordinalsTo": 10,
+      "objectives": [
+        "1Nc.01",
+        "1Nc.02",
+        "1Nc.04",
+        "1Nc.05",
+        "1Ni.01",
+        "1Ni.02",
+        "1Ni.03",
+        "1Ni.04",
+        "1Ni.05",
+        "1Ni.06",
+        "1Np.03",
+        "1Np.04",
+        "1Nm.01"
+      ]
+    },
+    "stage2": {
+      "ages": "6-7",
+      "countTo": 100,
+      "subitiseTo": 10,
+      "subitiseUnfamiliarPatterns": true,
+      "complementsOf": 20,
+      "addSubTwoDigitNoRegroup": true,
+      "stepCounts": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "timesTables": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "objectives": [
+        "2Nc.01",
+        "2Nc.02",
+        "2Nc.04",
+        "2Nc.05",
+        "2Nc.06",
+        "2Ni.01",
+        "2Ni.03",
+        "2Ni.04",
+        "2Ni.07",
+        "2Np.02",
+        "2Np.03",
+        "2Nm.01",
+        "2Nm.02"
+      ]
+    },
+    "stage3": {
+      "ages": "7-8",
+      "countTo": 1000,
+      "sequenceRules": [
+        "+n",
+        "-n"
+      ],
+      "growingPatterns": true,
+      "unknownsAsObjects": true,
+      "moneyWithChange": true,
+      "objectives": [
+        "3Nc.04",
+        "3Nc.05",
+        "3Nc.06",
+        "3Nm.01",
+        "3Nm.02"
+      ]
+    }
+  },
+  "countingObjects": [
+    {
+      "id": "duck",
+      "picture": "pic_duck",
+      "audioPlural": "word_ducks"
+    },
+    {
+      "id": "sheep",
+      "picture": "pic_sheep",
+      "audioPlural": "word_sheeps"
+    },
+    {
+      "id": "ladybird",
+      "picture": "pic_ladybird",
+      "audioPlural": "word_ladybirds"
+    },
+    {
+      "id": "apple",
+      "picture": "pic_apple",
+      "audioPlural": "word_apples"
+    },
+    {
+      "id": "star",
+      "picture": "pic_star",
+      "audioPlural": "word_stars"
+    },
+    {
+      "id": "shell",
+      "picture": "pic_shell",
+      "audioPlural": "word_shells"
+    },
+    {
+      "id": "fish",
+      "picture": "pic_fish",
+      "audioPlural": "word_fishs"
+    },
+    {
+      "id": "bee",
+      "picture": "pic_bee",
+      "audioPlural": "word_bees"
+    },
+    {
+      "id": "frog",
+      "picture": "pic_frog",
+      "audioPlural": "word_frogs"
+    },
+    {
+      "id": "biscuit",
+      "picture": "pic_biscuit",
+      "audioPlural": "word_biscuits"
+    }
+  ],
+  "currency": {
+    "name": "South African rand",
+    "symbol": "R",
+    "coins": [
+      {
+        "id": "c10",
+        "label": "10c",
+        "cents": 10
+      },
+      {
+        "id": "c20",
+        "label": "20c",
+        "cents": 20
+      },
+      {
+        "id": "c50",
+        "label": "50c",
+        "cents": 50
+      },
+      {
+        "id": "r1",
+        "label": "R1",
+        "cents": 100
+      },
+      {
+        "id": "r2",
+        "label": "R2",
+        "cents": 200
+      },
+      {
+        "id": "r5",
+        "label": "R5",
+        "cents": 500
+      }
+    ],
+    "notes": [
+      {
+        "id": "r10",
+        "label": "R10",
+        "cents": 1000
+      },
+      {
+        "id": "r20",
+        "label": "R20",
+        "cents": 2000
+      },
+      {
+        "id": "r50",
+        "label": "R50",
+        "cents": 5000
+      }
+    ],
+    "byBand": {
+      "stage1": {
+        "use": [
+          "r1",
+          "r2",
+          "r5"
+        ],
+        "maxTotal": "R10",
+        "objectives": [
+          "1Nm.01"
+        ]
+      },
+      "stage2": {
+        "use": [
+          "c50",
+          "r1",
+          "r2",
+          "r5",
+          "r10"
+        ],
+        "maxTotal": "R20",
+        "compareCombinations": true,
+        "objectives": [
+          "2Nm.01",
+          "2Nm.02"
+        ]
+      },
+      "stage3": {
+        "use": [
+          "c10",
+          "c20",
+          "c50",
+          "r1",
+          "r2",
+          "r5",
+          "r10",
+          "r20",
+          "r50"
+        ],
+        "maxTotal": "R100",
+        "giveChange": true,
+        "objectives": [
+          "3Nm.01",
+          "3Nm.02"
+        ]
+      }
+    },
+    "shopItems": [
+      {
+        "id": "apple",
+        "picture": "pic_apple"
+      },
+      {
+        "id": "banana",
+        "picture": "pic_banana"
+      },
+      {
+        "id": "lollipop",
+        "picture": "pic_lollipop"
+      },
+      {
+        "id": "pencil",
+        "picture": "pic_pencil"
+      },
+      {
+        "id": "ball",
+        "picture": "pic_ball"
+      },
+      {
+        "id": "teddy",
+        "picture": "pic_teddy"
+      },
+      {
+        "id": "kite",
+        "picture": "pic_kite"
+      },
+      {
+        "id": "book",
+        "picture": "pic_book"
+      },
+      {
+        "id": "juice",
+        "picture": "pic_juice"
+      },
+      {
+        "id": "sandwich",
+        "picture": "pic_sandwich"
+      }
+    ]
+  }
+}

@@ -1,0 +1,586 @@
+{
+  "note": "Every mini-game, the skills it practises, the Cambridge objectives those skills cover, and the content file it draws rounds from. buildPhase matches docs/GAMES.md.",
+  "games": [
+    {
+      "id": "meet_the_sound",
+      "island": "letters",
+      "name": "Meet the Sound",
+      "ages": "4-6",
+      "skills": [
+        "snd_g1",
+        "snd_g2",
+        "snd_g3",
+        "snd_g4",
+        "snd_g5",
+        "snd_g6",
+        "snd_g7",
+        "snd_g8",
+        "snd_g9"
+      ],
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01",
+        "1Ww.02",
+        "2Rw.01",
+        "2Rw.02",
+        "2Ww.01",
+        "2Ww.02"
+      ],
+      "content": "phonics/graphemes.json",
+      "buildPhase": 1
+    },
+    {
+      "id": "sound_hunt",
+      "island": "letters",
+      "name": "Sound Hunt",
+      "ages": "4-6",
+      "skills": [
+        "snd_g1",
+        "snd_g2",
+        "snd_g3",
+        "snd_g4",
+        "snd_g5",
+        "snd_g6"
+      ],
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01",
+        "1Ww.02"
+      ],
+      "content": "words/words.json (picturable, firstSound)",
+      "buildPhase": 1
+    },
+    {
+      "id": "bubble_pop",
+      "island": "letters",
+      "name": "Bubble Pop",
+      "ages": "4-7",
+      "skills": [
+        "snd_g1",
+        "snd_g2",
+        "snd_g3",
+        "snd_g4",
+        "snd_g5",
+        "snd_g6",
+        "snd_g7",
+        "snd_g8",
+        "snd_g9",
+        "letter_names"
+      ],
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01",
+        "1Ww.02",
+        "2Rw.01",
+        "2Rw.02",
+        "2Ww.01",
+        "2Ww.02"
+      ],
+      "content": "phonics/graphemes.json",
+      "buildPhase": 1
+    },
+    {
+      "id": "letter_trace",
+      "island": "letters",
+      "name": "Letter Trace",
+      "ages": "4-6",
+      "skills": [
+        "letter_form"
+      ],
+      "objectives": [
+        "1Ww.01"
+      ],
+      "content": "phonics/graphemes.json (handwritingFamily)",
+      "buildPhase": 2
+    },
+    {
+      "id": "feed_the_monster",
+      "island": "letters",
+      "name": "Feed the Monster",
+      "ages": "4-7",
+      "skills": [
+        "snd_g1",
+        "snd_g2",
+        "snd_g3",
+        "snd_g4",
+        "snd_g5",
+        "snd_g6"
+      ],
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01",
+        "1Ww.02"
+      ],
+      "content": "words/words.json (picturable, firstSound)",
+      "buildPhase": 2
+    },
+    {
+      "id": "letter_fishing",
+      "island": "letters",
+      "name": "Letter Fishing",
+      "ages": "5-8",
+      "skills": [
+        "snd_g5",
+        "snd_g6",
+        "snd_g7",
+        "snd_g8",
+        "snd_g9"
+      ],
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.02",
+        "2Rw.01",
+        "2Rw.02",
+        "2Ww.01",
+        "2Ww.02"
+      ],
+      "content": "phonics/graphemes.json",
+      "buildPhase": 3
+    },
+    {
+      "id": "sound_detective",
+      "island": "letters",
+      "name": "Sound Detective",
+      "ages": "5-8",
+      "skills": [
+        "snd_g4",
+        "snd_g5",
+        "snd_g6",
+        "blend_ccvc"
+      ],
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02"
+      ],
+      "content": "words/words.json (tags = scene)",
+      "buildPhase": 3
+    },
+    {
+      "id": "count_and_tap",
+      "island": "numbers",
+      "name": "Count & Tap",
+      "ages": "4-5",
+      "skills": [
+        "count_10",
+        "count_20"
+      ],
+      "objectives": [
+        "1Nc.01",
+        "1Ni.01",
+        "1Np.01"
+      ],
+      "content": "numbers/numbers.json (countingObjects)",
+      "buildPhase": 2
+    },
+    {
+      "id": "quick_look",
+      "island": "numbers",
+      "name": "Quick Look",
+      "ages": "4-6",
+      "skills": [
+        "subitise_5",
+        "subitise_10",
+        "estimate"
+      ],
+      "objectives": [
+        "1Nc.02",
+        "1Nc.03",
+        "2Nc.02"
+      ],
+      "content": "numbers/numbers.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "feed_the_monster_numbers",
+      "island": "numbers",
+      "name": "Feed the Monster: Numbers",
+      "ages": "4-6",
+      "skills": [
+        "count_10",
+        "count_20",
+        "add_sub_20",
+        "missing_number"
+      ],
+      "objectives": [
+        "1Nc.01",
+        "1Ni.01",
+        "1Ni.02",
+        "1Ni.03",
+        "1Ni.05",
+        "1Np.01",
+        "3Nc.04"
+      ],
+      "content": "numbers/numbers.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "number_train",
+      "island": "numbers",
+      "name": "Number Train",
+      "ages": "5-7",
+      "skills": [
+        "order_20",
+        "ordinals",
+        "count_steps",
+        "even_odd",
+        "sequences",
+        "count_100"
+      ],
+      "objectives": [
+        "1Nc.04",
+        "1Nc.05",
+        "1Np.03",
+        "1Np.04",
+        "2Nc.01",
+        "2Nc.04",
+        "2Nc.05",
+        "2Nc.06",
+        "2Ni.01",
+        "2Ni.07",
+        "2Np.01",
+        "2Np.02",
+        "2Np.03",
+        "2Np.04",
+        "3Nc.05"
+      ],
+      "content": "numbers/numbers.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "more_or_less",
+      "island": "numbers",
+      "name": "More or Less",
+      "ages": "4-7",
+      "skills": [
+        "compare",
+        "add_sub_20",
+        "add_sub_100"
+      ],
+      "objectives": [
+        "1Ni.02",
+        "1Ni.03",
+        "1Ni.05",
+        "1Np.03",
+        "1Ss.03",
+        "2Ni.02",
+        "2Ni.04"
+      ],
+      "content": "numbers/numbers.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "ten_frame_garden",
+      "island": "numbers",
+      "name": "Ten-Frame Garden",
+      "ages": "6-8",
+      "skills": [
+        "bonds_10",
+        "bonds_20",
+        "doubles"
+      ],
+      "objectives": [
+        "1Ni.04",
+        "1Ni.06",
+        "1Np.02",
+        "2Ni.03"
+      ],
+      "content": "numbers/numbers.json",
+      "buildPhase": 3
+    },
+    {
+      "id": "corner_shop",
+      "island": "numbers",
+      "name": "Corner Shop",
+      "ages": "6-8",
+      "skills": [
+        "money_1",
+        "money_2",
+        "money_3"
+      ],
+      "objectives": [
+        "1Nm.01",
+        "2Nm.01",
+        "2Nm.02",
+        "3Nm.01",
+        "3Nm.02"
+      ],
+      "content": "numbers/numbers.json (currency)",
+      "buildPhase": 4
+    },
+    {
+      "id": "sound_buttons",
+      "island": "words",
+      "name": "Sound Buttons",
+      "ages": "4-6",
+      "skills": [
+        "blend_cvc",
+        "blend_ccvc",
+        "read_longer"
+      ],
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Rw.06",
+        "2Rw.05",
+        "2Rw.06"
+      ],
+      "content": "words/words.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "word_builder",
+      "island": "words",
+      "name": "Word Builder",
+      "ages": "5-7",
+      "skills": [
+        "spell_cvc",
+        "spell_digraph",
+        "endings"
+      ],
+      "objectives": [
+        "1Rw.04",
+        "1Ww.02",
+        "1Ww.04",
+        "1Ww.05",
+        "2Ww.05"
+      ],
+      "content": "words/words.json + words/endings.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "missing_letter",
+      "island": "words",
+      "name": "Missing Letter",
+      "ages": "5-7",
+      "skills": [
+        "spell_cvc",
+        "spell_digraph"
+      ],
+      "objectives": [
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "content": "words/words.json (picturable)",
+      "buildPhase": 2
+    },
+    {
+      "id": "rhyme_time",
+      "island": "words",
+      "name": "Rhyme Time",
+      "ages": "4-7",
+      "skills": [
+        "rhyme"
+      ],
+      "objectives": [
+        "1Ww.03",
+        "2Ww.03"
+      ],
+      "content": "words/words.json (rime)",
+      "buildPhase": 2
+    },
+    {
+      "id": "tricky_word_memory",
+      "island": "words",
+      "name": "Tricky Word Memory",
+      "ages": "6-8",
+      "skills": [
+        "tricky_s1",
+        "tricky_s2",
+        "contractions"
+      ],
+      "objectives": [
+        "1Rw.07",
+        "1Ww.06",
+        "2Rw.04",
+        "2Rw.07",
+        "2Ww.09",
+        "3Rw.01",
+        "3Rw.02"
+      ],
+      "content": "words/tricky_words.json + words/contractions.json",
+      "buildPhase": 3
+    },
+    {
+      "id": "silly_sentences",
+      "island": "words",
+      "name": "Silly Sentences",
+      "ages": "6-8",
+      "skills": [
+        "read_sentence"
+      ],
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ],
+      "content": "words/sentences.json",
+      "buildPhase": 3
+    },
+    {
+      "id": "word_rocket",
+      "island": "words",
+      "name": "Word Rocket",
+      "ages": "7-8",
+      "skills": [
+        "spell_typed",
+        "tricky_s2",
+        "endings",
+        "homophones"
+      ],
+      "objectives": [
+        "1Rw.04",
+        "1Ww.04",
+        "1Ww.06",
+        "2Rw.04",
+        "2Rw.07",
+        "2Ww.05",
+        "2Ww.08",
+        "2Ww.09",
+        "3Rw.01",
+        "3Ww.04"
+      ],
+      "content": "words/words.json + words/tricky_words.json + words/homophones.json",
+      "buildPhase": 4
+    },
+    {
+      "id": "pattern_party",
+      "island": "coding",
+      "name": "Pattern Party",
+      "ages": "4-5",
+      "skills": [
+        "patterns",
+        "growing_patterns"
+      ],
+      "objectives": [
+        "1Nc.06",
+        "2Sp.01",
+        "3Nc.06"
+      ],
+      "content": "coding/patterns.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "morning_order",
+      "island": "coding",
+      "name": "Morning Order",
+      "ages": "4-5",
+      "skills": [
+        "sequencing"
+      ],
+      "objectives": [
+        "1CT.01",
+        "1CT.05",
+        "1CT.06"
+      ],
+      "content": "coding/sequences.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "bips_path",
+      "island": "coding",
+      "name": "Bip's Path",
+      "ages": "4-6",
+      "skills": [
+        "directions",
+        "programs",
+        "turns"
+      ],
+      "objectives": [
+        "1CT.03",
+        "1CT.04",
+        "1Gp.01",
+        "1P.02",
+        "1P.03",
+        "1P.05",
+        "2CT.05",
+        "2CT.06",
+        "2Gp.01",
+        "2P.08"
+      ],
+      "content": "coding/levels.json",
+      "buildPhase": 2
+    },
+    {
+      "id": "fix_it",
+      "island": "coding",
+      "name": "Fix-It",
+      "ages": "5-7",
+      "skills": [
+        "debugging"
+      ],
+      "objectives": [
+        "1CT.02",
+        "1P.04",
+        "1P.06",
+        "1P.07",
+        "2CT.02",
+        "2P.07",
+        "3P.09"
+      ],
+      "content": "coding/levels.json (fixit)",
+      "buildPhase": 2
+    },
+    {
+      "id": "repeat_robot",
+      "island": "coding",
+      "name": "Repeat Robot",
+      "ages": "6-8",
+      "skills": [
+        "loops"
+      ],
+      "objectives": [
+        "2P.03",
+        "3CT.02",
+        "3CT.03",
+        "3P.01"
+      ],
+      "content": "coding/levels.json (repeat)",
+      "buildPhase": 3
+    },
+    {
+      "id": "puddle_rules",
+      "island": "coding",
+      "name": "Puddle Rules",
+      "ages": "7-8",
+      "skills": [
+        "conditions"
+      ],
+      "objectives": [
+        "3CT.05",
+        "3CT.07",
+        "3CT.08"
+      ],
+      "content": "coding/levels.json (puddleRules)",
+      "buildPhase": 4
+    },
+    {
+      "id": "dance_party",
+      "island": "coding",
+      "name": "Bip's Dance Party",
+      "ages": "5-8",
+      "skills": [
+        "creative",
+        "loops"
+      ],
+      "objectives": [
+        "1CT.07",
+        "2P.03",
+        "2P.04",
+        "3CT.02",
+        "3CT.03",
+        "3P.01",
+        "3P.03",
+        "3P.04"
+      ],
+      "content": "free play: no levels",
+      "buildPhase": 3
+    }
+  ]
+}

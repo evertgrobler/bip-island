@@ -1,0 +1,138 @@
+{
+  "note": "Stage 3 homophones (3Ww.04). The narrator says the word inside its sentence; the child picks the right spelling. Sentences use the word as the blank.",
+  "sets": [
+    {
+      "words": [
+        "to",
+        "two",
+        "too"
+      ],
+      "sentences": [
+        {
+          "text": "I have ___ cats.",
+          "answer": "two"
+        },
+        {
+          "text": "We went ___ the park.",
+          "answer": "to"
+        },
+        {
+          "text": "Can I come ___?",
+          "answer": "too"
+        }
+      ]
+    },
+    {
+      "words": [
+        "see",
+        "sea"
+      ],
+      "sentences": [
+        {
+          "text": "Fish swim in the ___.",
+          "answer": "sea"
+        },
+        {
+          "text": "I can ___ the moon.",
+          "answer": "see"
+        }
+      ]
+    },
+    {
+      "words": [
+        "right",
+        "write"
+      ],
+      "sentences": [
+        {
+          "text": "Can you ___ your name?",
+          "answer": "write"
+        },
+        {
+          "text": "That answer is ___.",
+          "answer": "right"
+        }
+      ]
+    },
+    {
+      "words": [
+        "one",
+        "won"
+      ],
+      "sentences": [
+        {
+          "text": "I have ___ hat.",
+          "answer": "one"
+        },
+        {
+          "text": "Our team ___ the game.",
+          "answer": "won"
+        }
+      ]
+    },
+    {
+      "words": [
+        "for",
+        "four"
+      ],
+      "sentences": [
+        {
+          "text": "A dog has ___ legs.",
+          "answer": "four"
+        },
+        {
+          "text": "This cake is ___ you.",
+          "answer": "for"
+        }
+      ]
+    },
+    {
+      "words": [
+        "here",
+        "hear"
+      ],
+      "sentences": [
+        {
+          "text": "Come and sit ___.",
+          "answer": "here"
+        },
+        {
+          "text": "I can ___ the birds.",
+          "answer": "hear"
+        }
+      ]
+    },
+    {
+      "words": [
+        "blue",
+        "blew"
+      ],
+      "sentences": [
+        {
+          "text": "The sky is ___.",
+          "answer": "blue"
+        },
+        {
+          "text": "The wind ___ my hat off.",
+          "answer": "blew"
+        }
+      ]
+    },
+    {
+      "words": [
+        "no",
+        "know"
+      ],
+      "sentences": [
+        {
+          "text": "I ___ the answer.",
+          "answer": "know"
+        },
+        {
+          "text": "There is ___ milk left.",
+          "answer": "no"
+        }
+      ]
+    }
+  ]
+}

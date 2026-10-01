@@ -1,0 +1,5108 @@
+{
+  "note": "Decodable word bank. 'graphemes' lists grapheme ids from phonics/graphemes.json in reading order; split digraphs (a_e etc.) sit where the vowel sound is heard. A word may only be used at a child's level once every grapheme's group is unlocked (decodableFromGroup). Rhyme families share 'rime'. Every picturable word needs pic_<word> artwork and every word needs word_<word> audio.",
+  "words": [
+    {
+      "word": "sat",
+      "graphemes": [
+        "s",
+        "a",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "at",
+      "audio": "word_sat",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "tap",
+      "graphemes": [
+        "t",
+        "a",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "ap",
+      "audio": "word_tap",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_tap",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "pin",
+      "graphemes": [
+        "p",
+        "i",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "in",
+      "audio": "word_pin",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_pin",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "tin",
+      "graphemes": [
+        "t",
+        "i",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "in",
+      "audio": "word_tin",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_tin",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "pan",
+      "graphemes": [
+        "p",
+        "a",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "an",
+      "audio": "word_pan",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_pan",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "ant",
+      "graphemes": [
+        "a",
+        "n",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "a",
+      "rime": "ant",
+      "audio": "word_ant",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_ant",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "nap",
+      "graphemes": [
+        "n",
+        "a",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "n",
+      "rime": "ap",
+      "audio": "word_nap",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "sit",
+      "graphemes": [
+        "s",
+        "i",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "it",
+      "audio": "word_sit",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "tip",
+      "graphemes": [
+        "t",
+        "i",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "ip",
+      "audio": "word_tip",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "sip",
+      "graphemes": [
+        "s",
+        "i",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "ip",
+      "audio": "word_sip",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "pat",
+      "graphemes": [
+        "p",
+        "a",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "at",
+      "audio": "word_pat",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "tan",
+      "graphemes": [
+        "t",
+        "a",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "an",
+      "audio": "word_tan",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "snap",
+      "graphemes": [
+        "s",
+        "n",
+        "a",
+        "p"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "ap",
+      "audio": "word_snap",
+      "picturable": false,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "spin",
+      "graphemes": [
+        "s",
+        "p",
+        "i",
+        "n"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "in",
+      "audio": "word_spin",
+      "picturable": false,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "ants",
+      "graphemes": [
+        "a",
+        "n",
+        "t",
+        "s"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "a",
+      "rime": "ants",
+      "audio": "word_ants",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_ants",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "pins",
+      "graphemes": [
+        "p",
+        "i",
+        "n",
+        "s"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 1,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "ins",
+      "audio": "word_pins",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_pins",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "cat",
+      "graphemes": [
+        "c",
+        "a",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "c",
+      "rime": "at",
+      "audio": "word_cat",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_cat",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "dog",
+      "graphemes": [
+        "d",
+        "o",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "og",
+      "audio": "word_dog",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_dog",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "pig",
+      "graphemes": [
+        "p",
+        "i",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "ig",
+      "audio": "word_pig",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_pig",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "map",
+      "graphemes": [
+        "m",
+        "a",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "m",
+      "rime": "ap",
+      "audio": "word_map",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_map",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "mop",
+      "graphemes": [
+        "m",
+        "o",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "m",
+      "rime": "op",
+      "audio": "word_mop",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_mop",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "man",
+      "graphemes": [
+        "m",
+        "a",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "m",
+      "rime": "an",
+      "audio": "word_man",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_man",
+      "tags": [
+        "person"
+      ]
+    },
+    {
+      "word": "mat",
+      "graphemes": [
+        "m",
+        "a",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "m",
+      "rime": "at",
+      "audio": "word_mat",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_mat",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "cap",
+      "graphemes": [
+        "c",
+        "a",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "c",
+      "rime": "ap",
+      "audio": "word_cap",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_cap",
+      "tags": [
+        "clothes"
+      ]
+    },
+    {
+      "word": "can",
+      "graphemes": [
+        "c",
+        "a",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "c",
+      "rime": "an",
+      "audio": "word_can",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_can",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "pot",
+      "graphemes": [
+        "p",
+        "o",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "ot",
+      "audio": "word_pot",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_pot",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "top",
+      "graphemes": [
+        "t",
+        "o",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "op",
+      "audio": "word_top",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_top",
+      "tags": [
+        "toy"
+      ]
+    },
+    {
+      "word": "dot",
+      "graphemes": [
+        "d",
+        "o",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "ot",
+      "audio": "word_dot",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "kid",
+      "graphemes": [
+        "k",
+        "i",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "k",
+      "rime": "id",
+      "audio": "word_kid",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_kid",
+      "tags": [
+        "person"
+      ]
+    },
+    {
+      "word": "dig",
+      "graphemes": [
+        "d",
+        "i",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "ig",
+      "audio": "word_dig",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "dad",
+      "graphemes": [
+        "d",
+        "a",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "ad",
+      "audio": "word_dad",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_dad",
+      "tags": [
+        "person"
+      ]
+    },
+    {
+      "word": "cot",
+      "graphemes": [
+        "c",
+        "o",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "c",
+      "rime": "ot",
+      "audio": "word_cot",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_cot",
+      "tags": [
+        "furniture"
+      ]
+    },
+    {
+      "word": "pod",
+      "graphemes": [
+        "p",
+        "o",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "od",
+      "audio": "word_pod",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_pod",
+      "tags": [
+        "plant"
+      ]
+    },
+    {
+      "word": "dip",
+      "graphemes": [
+        "d",
+        "i",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "ip",
+      "audio": "word_dip",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "gap",
+      "graphemes": [
+        "g",
+        "a",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "g",
+      "rime": "ap",
+      "audio": "word_gap",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "tag",
+      "graphemes": [
+        "t",
+        "a",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "ag",
+      "audio": "word_tag",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "pad",
+      "graphemes": [
+        "p",
+        "a",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "ad",
+      "audio": "word_pad",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "sad",
+      "graphemes": [
+        "s",
+        "a",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "ad",
+      "audio": "word_sad",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "nod",
+      "graphemes": [
+        "n",
+        "o",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "n",
+      "rime": "od",
+      "audio": "word_nod",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "not",
+      "graphemes": [
+        "n",
+        "o",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "n",
+      "rime": "ot",
+      "audio": "word_not",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "got",
+      "graphemes": [
+        "g",
+        "o",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "g",
+      "rime": "ot",
+      "audio": "word_got",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "and",
+      "graphemes": [
+        "a",
+        "n",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "a",
+      "rime": "and",
+      "audio": "word_and",
+      "picturable": false,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "stop",
+      "graphemes": [
+        "s",
+        "t",
+        "o",
+        "p"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "op",
+      "audio": "word_stop",
+      "picturable": false,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "spot",
+      "graphemes": [
+        "s",
+        "p",
+        "o",
+        "t"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "ot",
+      "audio": "word_spot",
+      "picturable": false,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "skip",
+      "graphemes": [
+        "s",
+        "k",
+        "i",
+        "p"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "ip",
+      "audio": "word_skip",
+      "picturable": false,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "camp",
+      "graphemes": [
+        "c",
+        "a",
+        "m",
+        "p"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 2,
+      "band": "foundation",
+      "firstSound": "c",
+      "rime": "amp",
+      "audio": "word_camp",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_camp",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "duck",
+      "graphemes": [
+        "d",
+        "u",
+        "ck"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "uck",
+      "audio": "word_duck",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_duck",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "sock",
+      "graphemes": [
+        "s",
+        "o",
+        "ck"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "ock",
+      "audio": "word_sock",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_sock",
+      "tags": [
+        "clothes"
+      ]
+    },
+    {
+      "word": "rock",
+      "graphemes": [
+        "r",
+        "o",
+        "ck"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "r",
+      "rime": "ock",
+      "audio": "word_rock",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_rock",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "sun",
+      "graphemes": [
+        "s",
+        "u",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "un",
+      "audio": "word_sun",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_sun",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "red",
+      "graphemes": [
+        "r",
+        "e",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "r",
+      "rime": "ed",
+      "audio": "word_red",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "run",
+      "graphemes": [
+        "r",
+        "u",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "r",
+      "rime": "un",
+      "audio": "word_run",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "rug",
+      "graphemes": [
+        "r",
+        "u",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "r",
+      "rime": "ug",
+      "audio": "word_rug",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_rug",
+      "tags": [
+        "furniture"
+      ]
+    },
+    {
+      "word": "cup",
+      "graphemes": [
+        "c",
+        "u",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "c",
+      "rime": "up",
+      "audio": "word_cup",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_cup",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "nut",
+      "graphemes": [
+        "n",
+        "u",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "n",
+      "rime": "ut",
+      "audio": "word_nut",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_nut",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "mud",
+      "graphemes": [
+        "m",
+        "u",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "m",
+      "rime": "ud",
+      "audio": "word_mud",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_mud",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "pen",
+      "graphemes": [
+        "p",
+        "e",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "en",
+      "audio": "word_pen",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_pen",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "ten",
+      "graphemes": [
+        "t",
+        "e",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "en",
+      "audio": "word_ten",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "net",
+      "graphemes": [
+        "n",
+        "e",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "n",
+      "rime": "et",
+      "audio": "word_net",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_net",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "neck",
+      "graphemes": [
+        "n",
+        "e",
+        "ck"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "n",
+      "rime": "eck",
+      "audio": "word_neck",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_neck",
+      "tags": [
+        "body"
+      ]
+    },
+    {
+      "word": "kick",
+      "graphemes": [
+        "k",
+        "i",
+        "ck"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "k",
+      "rime": "ick",
+      "audio": "word_kick",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "pup",
+      "graphemes": [
+        "p",
+        "u",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "up",
+      "audio": "word_pup",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_pup",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "rat",
+      "graphemes": [
+        "r",
+        "a",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "r",
+      "rime": "at",
+      "audio": "word_rat",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_rat",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "mug",
+      "graphemes": [
+        "m",
+        "u",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "m",
+      "rime": "ug",
+      "audio": "word_mug",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_mug",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "gum",
+      "graphemes": [
+        "g",
+        "u",
+        "m"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "g",
+      "rime": "um",
+      "audio": "word_gum",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "mum",
+      "graphemes": [
+        "m",
+        "u",
+        "m"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "m",
+      "rime": "um",
+      "audio": "word_mum",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_mum",
+      "tags": [
+        "person"
+      ]
+    },
+    {
+      "word": "up",
+      "graphemes": [
+        "u",
+        "p"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "u",
+      "rime": "up",
+      "audio": "word_up",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "tent",
+      "graphemes": [
+        "t",
+        "e",
+        "n",
+        "t"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "ent",
+      "audio": "word_tent",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_tent",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "nest",
+      "graphemes": [
+        "n",
+        "e",
+        "s",
+        "t"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "n",
+      "rime": "est",
+      "audio": "word_nest",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_nest",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "drum",
+      "graphemes": [
+        "d",
+        "r",
+        "u",
+        "m"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "um",
+      "audio": "word_drum",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_drum",
+      "tags": [
+        "toy"
+      ]
+    },
+    {
+      "word": "crab",
+      "graphemes": [
+        "c",
+        "r",
+        "a",
+        "b"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "c",
+      "rime": "ab",
+      "audio": "word_crab",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_crab",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "trap",
+      "graphemes": [
+        "t",
+        "r",
+        "a",
+        "p"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "ap",
+      "audio": "word_trap",
+      "picturable": false,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "step",
+      "graphemes": [
+        "s",
+        "t",
+        "e",
+        "p"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "s",
+      "rime": "ep",
+      "audio": "word_step",
+      "picturable": false,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "truck",
+      "graphemes": [
+        "t",
+        "r",
+        "u",
+        "ck"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "t",
+      "rime": "uck",
+      "audio": "word_truck",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_truck",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "hat",
+      "graphemes": [
+        "h",
+        "a",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "h",
+      "rime": "at",
+      "audio": "word_hat",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_hat",
+      "tags": [
+        "clothes"
+      ]
+    },
+    {
+      "word": "hen",
+      "graphemes": [
+        "h",
+        "e",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "h",
+      "rime": "en",
+      "audio": "word_hen",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_hen",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "hut",
+      "graphemes": [
+        "h",
+        "u",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "h",
+      "rime": "ut",
+      "audio": "word_hut",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_hut",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "hop",
+      "graphemes": [
+        "h",
+        "o",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "h",
+      "rime": "op",
+      "audio": "word_hop",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "bed",
+      "graphemes": [
+        "b",
+        "e",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "ed",
+      "audio": "word_bed",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bed",
+      "tags": [
+        "furniture"
+      ]
+    },
+    {
+      "word": "bag",
+      "graphemes": [
+        "b",
+        "a",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "ag",
+      "audio": "word_bag",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bag",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "bat",
+      "graphemes": [
+        "b",
+        "a",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "at",
+      "audio": "word_bat",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bat",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "bus",
+      "graphemes": [
+        "b",
+        "u",
+        "s"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "us",
+      "audio": "word_bus",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bus",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "bin",
+      "graphemes": [
+        "b",
+        "i",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "in",
+      "audio": "word_bin",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bin",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "fan",
+      "graphemes": [
+        "f",
+        "a",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "f",
+      "rime": "an",
+      "audio": "word_fan",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_fan",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "fin",
+      "graphemes": [
+        "f",
+        "i",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "f",
+      "rime": "in",
+      "audio": "word_fin",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_fin",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "fog",
+      "graphemes": [
+        "f",
+        "o",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "f",
+      "rime": "og",
+      "audio": "word_fog",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_fog",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "leg",
+      "graphemes": [
+        "l",
+        "e",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "l",
+      "rime": "eg",
+      "audio": "word_leg",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_leg",
+      "tags": [
+        "body"
+      ]
+    },
+    {
+      "word": "log",
+      "graphemes": [
+        "l",
+        "o",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "l",
+      "rime": "og",
+      "audio": "word_log",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_log",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "lip",
+      "graphemes": [
+        "l",
+        "i",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "l",
+      "rime": "ip",
+      "audio": "word_lip",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_lip",
+      "tags": [
+        "body"
+      ]
+    },
+    {
+      "word": "lid",
+      "graphemes": [
+        "l",
+        "i",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "l",
+      "rime": "id",
+      "audio": "word_lid",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_lid",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "bell",
+      "graphemes": [
+        "b",
+        "e",
+        "ll"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "ell",
+      "audio": "word_bell",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bell",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "doll",
+      "graphemes": [
+        "d",
+        "o",
+        "ll"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "oll",
+      "audio": "word_doll",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_doll",
+      "tags": [
+        "toy"
+      ]
+    },
+    {
+      "word": "hill",
+      "graphemes": [
+        "h",
+        "i",
+        "ll"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "h",
+      "rime": "ill",
+      "audio": "word_hill",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_hill",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "puff",
+      "graphemes": [
+        "p",
+        "u",
+        "ff"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "uff",
+      "audio": "word_puff",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "kiss",
+      "graphemes": [
+        "k",
+        "i",
+        "ss"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "k",
+      "rime": "iss",
+      "audio": "word_kiss",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "cliff",
+      "graphemes": [
+        "c",
+        "l",
+        "i",
+        "ff"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "c",
+      "rime": "iff",
+      "audio": "word_cliff",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_cliff",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "frog",
+      "graphemes": [
+        "f",
+        "r",
+        "o",
+        "g"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "f",
+      "rime": "og",
+      "audio": "word_frog",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_frog",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "flag",
+      "graphemes": [
+        "f",
+        "l",
+        "a",
+        "g"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "f",
+      "rime": "ag",
+      "audio": "word_flag",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_flag",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "belt",
+      "graphemes": [
+        "b",
+        "e",
+        "l",
+        "t"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "elt",
+      "audio": "word_belt",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_belt",
+      "tags": [
+        "clothes"
+      ]
+    },
+    {
+      "word": "lamp",
+      "graphemes": [
+        "l",
+        "a",
+        "m",
+        "p"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "l",
+      "rime": "amp",
+      "audio": "word_lamp",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_lamp",
+      "tags": [
+        "furniture"
+      ]
+    },
+    {
+      "word": "hand",
+      "graphemes": [
+        "h",
+        "a",
+        "n",
+        "d"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "h",
+      "rime": "and",
+      "audio": "word_hand",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_hand",
+      "tags": [
+        "body"
+      ]
+    },
+    {
+      "word": "milk",
+      "graphemes": [
+        "m",
+        "i",
+        "l",
+        "k"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "m",
+      "rime": "ilk",
+      "audio": "word_milk",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_milk",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "plum",
+      "graphemes": [
+        "p",
+        "l",
+        "u",
+        "m"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "p",
+      "rime": "um",
+      "audio": "word_plum",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_plum",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "desk",
+      "graphemes": [
+        "d",
+        "e",
+        "s",
+        "k"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 3,
+      "band": "foundation",
+      "firstSound": "d",
+      "rime": "esk",
+      "audio": "word_desk",
+      "picturable": true,
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_desk",
+      "tags": [
+        "furniture"
+      ]
+    },
+    {
+      "word": "bun",
+      "graphemes": [
+        "b",
+        "u",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "un",
+      "audio": "word_bun",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bun",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "bug",
+      "graphemes": [
+        "b",
+        "u",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "b",
+      "rime": "ug",
+      "audio": "word_bug",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bug",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "fun",
+      "graphemes": [
+        "f",
+        "u",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "f",
+      "rime": "un",
+      "audio": "word_fun",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "lot",
+      "graphemes": [
+        "l",
+        "o",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 4,
+      "band": "foundation",
+      "firstSound": "l",
+      "rime": "ot",
+      "audio": "word_lot",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "jam",
+      "graphemes": [
+        "j",
+        "a",
+        "m"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "j",
+      "rime": "am",
+      "audio": "word_jam",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_jam",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "jet",
+      "graphemes": [
+        "j",
+        "e",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "j",
+      "rime": "et",
+      "audio": "word_jet",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_jet",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "jug",
+      "graphemes": [
+        "j",
+        "u",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "j",
+      "rime": "ug",
+      "audio": "word_jug",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_jug",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "van",
+      "graphemes": [
+        "v",
+        "a",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "v",
+      "rime": "an",
+      "audio": "word_van",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_van",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "vet",
+      "graphemes": [
+        "v",
+        "e",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "v",
+      "rime": "et",
+      "audio": "word_vet",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_vet",
+      "tags": [
+        "person"
+      ]
+    },
+    {
+      "word": "web",
+      "graphemes": [
+        "w",
+        "e",
+        "b"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "w",
+      "rime": "eb",
+      "audio": "word_web",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_web",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "wig",
+      "graphemes": [
+        "w",
+        "i",
+        "g"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "w",
+      "rime": "ig",
+      "audio": "word_wig",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_wig",
+      "tags": [
+        "clothes"
+      ]
+    },
+    {
+      "word": "box",
+      "graphemes": [
+        "b",
+        "o",
+        "x"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "b",
+      "rime": "ox",
+      "audio": "word_box",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_box",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "fox",
+      "graphemes": [
+        "f",
+        "o",
+        "x"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "f",
+      "rime": "ox",
+      "audio": "word_fox",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_fox",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "six",
+      "graphemes": [
+        "s",
+        "i",
+        "x"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "ix",
+      "audio": "word_six",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "yes",
+      "graphemes": [
+        "y",
+        "e",
+        "s"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "y",
+      "rime": "es",
+      "audio": "word_yes",
+      "picturable": false,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "yak",
+      "graphemes": [
+        "y",
+        "a",
+        "k"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "y",
+      "rime": "ak",
+      "audio": "word_yak",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_yak",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "zip",
+      "graphemes": [
+        "z",
+        "i",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "z",
+      "rime": "ip",
+      "audio": "word_zip",
+      "picturable": true,
+      "objectives": [
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_zip",
+      "tags": [
+        "clothes"
+      ]
+    },
+    {
+      "word": "buzz",
+      "graphemes": [
+        "b",
+        "u",
+        "zz"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "b",
+      "rime": "uzz",
+      "audio": "word_buzz",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "quack",
+      "graphemes": [
+        "qu",
+        "a",
+        "ck"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "qu",
+      "rime": "ack",
+      "audio": "word_quack",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "quiz",
+      "graphemes": [
+        "qu",
+        "i",
+        "z"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 5,
+      "band": "stage1",
+      "firstSound": "qu",
+      "rime": "iz",
+      "audio": "word_quiz",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "chip",
+      "graphemes": [
+        "ch",
+        "i",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "ch",
+      "rime": "ip",
+      "audio": "word_chip",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_chip",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "chin",
+      "graphemes": [
+        "ch",
+        "i",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "ch",
+      "rime": "in",
+      "audio": "word_chin",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_chin",
+      "tags": [
+        "body"
+      ]
+    },
+    {
+      "word": "chick",
+      "graphemes": [
+        "ch",
+        "i",
+        "ck"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "ch",
+      "rime": "ick",
+      "audio": "word_chick",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_chick",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "ship",
+      "graphemes": [
+        "sh",
+        "i",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "sh",
+      "rime": "ip",
+      "audio": "word_ship",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_ship",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "shop",
+      "graphemes": [
+        "sh",
+        "o",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "sh",
+      "rime": "op",
+      "audio": "word_shop",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_shop",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "fish",
+      "graphemes": [
+        "f",
+        "i",
+        "sh"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "f",
+      "rime": "ish",
+      "audio": "word_fish",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_fish",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "dish",
+      "graphemes": [
+        "d",
+        "i",
+        "sh"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "d",
+      "rime": "ish",
+      "audio": "word_dish",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_dish",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "shell",
+      "graphemes": [
+        "sh",
+        "e",
+        "ll"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "sh",
+      "rime": "ell",
+      "audio": "word_shell",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_shell",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "thin",
+      "graphemes": [
+        "th",
+        "i",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "th",
+      "rime": "in",
+      "audio": "word_thin",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "moth",
+      "graphemes": [
+        "m",
+        "o",
+        "th"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "m",
+      "rime": "oth",
+      "audio": "word_moth",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_moth",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "this",
+      "graphemes": [
+        "th_voiced",
+        "i",
+        "s"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "th_voiced",
+      "rime": "is",
+      "audio": "word_this",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "that",
+      "graphemes": [
+        "th_voiced",
+        "a",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "th_voiced",
+      "rime": "at",
+      "audio": "word_that",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "then",
+      "graphemes": [
+        "th_voiced",
+        "e",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "th_voiced",
+      "rime": "en",
+      "audio": "word_then",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "ring",
+      "graphemes": [
+        "r",
+        "i",
+        "ng"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "r",
+      "rime": "ing",
+      "audio": "word_ring",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_ring",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "king",
+      "graphemes": [
+        "k",
+        "i",
+        "ng"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "k",
+      "rime": "ing",
+      "audio": "word_king",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_king",
+      "tags": [
+        "person"
+      ]
+    },
+    {
+      "word": "wing",
+      "graphemes": [
+        "w",
+        "i",
+        "ng"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "w",
+      "rime": "ing",
+      "audio": "word_wing",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_wing",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "sing",
+      "graphemes": [
+        "s",
+        "i",
+        "ng"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "ing",
+      "audio": "word_sing",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "long",
+      "graphemes": [
+        "l",
+        "o",
+        "ng"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "l",
+      "rime": "ong",
+      "audio": "word_long",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "lunch",
+      "graphemes": [
+        "l",
+        "u",
+        "n",
+        "ch"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "l",
+      "rime": "unch",
+      "audio": "word_lunch",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_lunch",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "much",
+      "graphemes": [
+        "m",
+        "u",
+        "ch"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "m",
+      "rime": "uch",
+      "audio": "word_much",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "bench",
+      "graphemes": [
+        "b",
+        "e",
+        "n",
+        "ch"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "b",
+      "rime": "ench",
+      "audio": "word_bench",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bench",
+      "tags": [
+        "furniture"
+      ]
+    },
+    {
+      "word": "shed",
+      "graphemes": [
+        "sh",
+        "e",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "sh",
+      "rime": "ed",
+      "audio": "word_shed",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_shed",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "chop",
+      "graphemes": [
+        "ch",
+        "o",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 6,
+      "band": "stage1",
+      "firstSound": "ch",
+      "rime": "op",
+      "audio": "word_chop",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "rain",
+      "graphemes": [
+        "r",
+        "ai",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "r",
+      "rime": "ain",
+      "audio": "word_rain",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_rain",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "tail",
+      "graphemes": [
+        "t",
+        "ai",
+        "l"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "t",
+      "rime": "ail",
+      "audio": "word_tail",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_tail",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "snail",
+      "graphemes": [
+        "s",
+        "n",
+        "ai",
+        "l"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "ail",
+      "audio": "word_snail",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_snail",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "train",
+      "graphemes": [
+        "t",
+        "r",
+        "ai",
+        "n"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "t",
+      "rime": "ain",
+      "audio": "word_train",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_train",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "bee",
+      "graphemes": [
+        "b",
+        "ee"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "b",
+      "rime": "ee",
+      "audio": "word_bee",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_bee",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "tree",
+      "graphemes": [
+        "t",
+        "r",
+        "ee"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "t",
+      "rime": "ee",
+      "audio": "word_tree",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_tree",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "feet",
+      "graphemes": [
+        "f",
+        "ee",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "f",
+      "rime": "eet",
+      "audio": "word_feet",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_feet",
+      "tags": [
+        "body"
+      ]
+    },
+    {
+      "word": "sheep",
+      "graphemes": [
+        "sh",
+        "ee",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "sh",
+      "rime": "eep",
+      "audio": "word_sheep",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_sheep",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "three",
+      "graphemes": [
+        "th",
+        "r",
+        "ee"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "th",
+      "rime": "ee",
+      "audio": "word_three",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "light",
+      "graphemes": [
+        "l",
+        "igh",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "l",
+      "rime": "ight",
+      "audio": "word_light",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_light",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "night",
+      "graphemes": [
+        "n",
+        "igh",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "n",
+      "rime": "ight",
+      "audio": "word_night",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_night",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "high",
+      "graphemes": [
+        "h",
+        "igh"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "h",
+      "rime": "igh",
+      "audio": "word_high",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "boat",
+      "graphemes": [
+        "b",
+        "oa",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "b",
+      "rime": "oat",
+      "audio": "word_boat",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_boat",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "goat",
+      "graphemes": [
+        "g",
+        "oa",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "g",
+      "rime": "oat",
+      "audio": "word_goat",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_goat",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "soap",
+      "graphemes": [
+        "s",
+        "oa",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "oap",
+      "audio": "word_soap",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_soap",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "coat",
+      "graphemes": [
+        "c",
+        "oa",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "c",
+      "rime": "oat",
+      "audio": "word_coat",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_coat",
+      "tags": [
+        "clothes"
+      ]
+    },
+    {
+      "word": "moon",
+      "graphemes": [
+        "m",
+        "oo",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "m",
+      "rime": "oon",
+      "audio": "word_moon",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_moon",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "spoon",
+      "graphemes": [
+        "s",
+        "p",
+        "oo",
+        "n"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "oon",
+      "audio": "word_spoon",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_spoon",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "food",
+      "graphemes": [
+        "f",
+        "oo",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "f",
+      "rime": "ood",
+      "audio": "word_food",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "zoo",
+      "graphemes": [
+        "z",
+        "oo"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "z",
+      "rime": "oo",
+      "audio": "word_zoo",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_zoo",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "book",
+      "graphemes": [
+        "b",
+        "oo_short",
+        "k"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "b",
+      "rime": "ook",
+      "audio": "word_book",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_book",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "look",
+      "graphemes": [
+        "l",
+        "oo_short",
+        "k"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "l",
+      "rime": "ook",
+      "audio": "word_look",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "foot",
+      "graphemes": [
+        "f",
+        "oo_short",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "f",
+      "rime": "oot",
+      "audio": "word_foot",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_foot",
+      "tags": [
+        "body"
+      ]
+    },
+    {
+      "word": "wood",
+      "graphemes": [
+        "w",
+        "oo_short",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "w",
+      "rime": "ood",
+      "audio": "word_wood",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_wood",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "hook",
+      "graphemes": [
+        "h",
+        "oo_short",
+        "k"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "h",
+      "rime": "ook",
+      "audio": "word_hook",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_hook",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "green",
+      "graphemes": [
+        "g",
+        "r",
+        "ee",
+        "n"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "g",
+      "rime": "een",
+      "audio": "word_green",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "sleep",
+      "graphemes": [
+        "s",
+        "l",
+        "ee",
+        "p"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 7,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "eep",
+      "audio": "word_sleep",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "car",
+      "graphemes": [
+        "c",
+        "ar"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "c",
+      "rime": "ar",
+      "audio": "word_car",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_car",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "star",
+      "graphemes": [
+        "s",
+        "t",
+        "ar"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "ar",
+      "audio": "word_star",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_star",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "farm",
+      "graphemes": [
+        "f",
+        "ar",
+        "m"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "f",
+      "rime": "arm",
+      "audio": "word_farm",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_farm",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "park",
+      "graphemes": [
+        "p",
+        "ar",
+        "k"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "p",
+      "rime": "ark",
+      "audio": "word_park",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_park",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "fork",
+      "graphemes": [
+        "f",
+        "or",
+        "k"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "f",
+      "rime": "ork",
+      "audio": "word_fork",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_fork",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "corn",
+      "graphemes": [
+        "c",
+        "or",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "c",
+      "rime": "orn",
+      "audio": "word_corn",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_corn",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "storm",
+      "graphemes": [
+        "s",
+        "t",
+        "or",
+        "m"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "orm",
+      "audio": "word_storm",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_storm",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "burn",
+      "graphemes": [
+        "b",
+        "ur",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "b",
+      "rime": "urn",
+      "audio": "word_burn",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "turn",
+      "graphemes": [
+        "t",
+        "ur",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "t",
+      "rime": "urn",
+      "audio": "word_turn",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "surf",
+      "graphemes": [
+        "s",
+        "ur",
+        "f"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "urf",
+      "audio": "word_surf",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "cow",
+      "graphemes": [
+        "c",
+        "ow"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "c",
+      "rime": "ow",
+      "audio": "word_cow",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_cow",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "owl",
+      "graphemes": [
+        "ow",
+        "l"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "ow",
+      "rime": "owl",
+      "audio": "word_owl",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_owl",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "town",
+      "graphemes": [
+        "t",
+        "ow",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "t",
+      "rime": "own",
+      "audio": "word_town",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_town",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "coin",
+      "graphemes": [
+        "c",
+        "oi",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "c",
+      "rime": "oin",
+      "audio": "word_coin",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_coin",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "oil",
+      "graphemes": [
+        "oi",
+        "l"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "oi",
+      "rime": "oil",
+      "audio": "word_oil",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "boil",
+      "graphemes": [
+        "b",
+        "oi",
+        "l"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "b",
+      "rime": "oil",
+      "audio": "word_boil",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ]
+    },
+    {
+      "word": "letter",
+      "graphemes": [
+        "l",
+        "e",
+        "tt",
+        "er"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "l",
+      "rime": "etter",
+      "audio": "word_letter",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_letter",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "hammer",
+      "graphemes": [
+        "h",
+        "a",
+        "mm",
+        "er"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "h",
+      "rime": "ammer",
+      "audio": "word_hammer",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_hammer",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "ladder",
+      "graphemes": [
+        "l",
+        "a",
+        "dd",
+        "er"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "l",
+      "rime": "adder",
+      "audio": "word_ladder",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_ladder",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "sister",
+      "graphemes": [
+        "s",
+        "i",
+        "s",
+        "t",
+        "er"
+      ],
+      "soundCount": 5,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "s",
+      "rime": "ister",
+      "audio": "word_sister",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "picture": "pic_sister",
+      "tags": [
+        "person"
+      ]
+    },
+    {
+      "word": "dinner",
+      "graphemes": [
+        "d",
+        "i",
+        "nn",
+        "er"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 8,
+      "band": "stage1",
+      "firstSound": "d",
+      "rime": "inner",
+      "audio": "word_dinner",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05"
+      ],
+      "picture": "pic_dinner",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "cake",
+      "graphemes": [
+        "c",
+        "a_e",
+        "k"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "c",
+      "rime": "ake",
+      "audio": "word_cake",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_cake",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "snake",
+      "graphemes": [
+        "s",
+        "n",
+        "a_e",
+        "k"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "s",
+      "rime": "ake",
+      "audio": "word_snake",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_snake",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "gate",
+      "graphemes": [
+        "g",
+        "a_e",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "g",
+      "rime": "ate",
+      "audio": "word_gate",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_gate",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "kite",
+      "graphemes": [
+        "k",
+        "i_e",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "k",
+      "rime": "ite",
+      "audio": "word_kite",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_kite",
+      "tags": [
+        "toy"
+      ]
+    },
+    {
+      "word": "bike",
+      "graphemes": [
+        "b",
+        "i_e",
+        "k"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "b",
+      "rime": "ike",
+      "audio": "word_bike",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_bike",
+      "tags": [
+        "vehicle"
+      ]
+    },
+    {
+      "word": "five",
+      "graphemes": [
+        "f",
+        "i_e",
+        "v"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "f",
+      "rime": "ive",
+      "audio": "word_five",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ]
+    },
+    {
+      "word": "nine",
+      "graphemes": [
+        "n",
+        "i_e",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "n",
+      "rime": "ine",
+      "audio": "word_nine",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ]
+    },
+    {
+      "word": "bone",
+      "graphemes": [
+        "b",
+        "o_e",
+        "n"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "b",
+      "rime": "one",
+      "audio": "word_bone",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_bone",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "rope",
+      "graphemes": [
+        "r",
+        "o_e",
+        "p"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "r",
+      "rime": "ope",
+      "audio": "word_rope",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_rope",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "home",
+      "graphemes": [
+        "h",
+        "o_e",
+        "m"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "h",
+      "rime": "ome",
+      "audio": "word_home",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_home",
+      "tags": [
+        "place"
+      ]
+    },
+    {
+      "word": "cube",
+      "graphemes": [
+        "c",
+        "u_e",
+        "b"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "c",
+      "rime": "ube",
+      "audio": "word_cube",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_cube",
+      "tags": [
+        "toy"
+      ]
+    },
+    {
+      "word": "tube",
+      "graphemes": [
+        "t",
+        "u_e",
+        "b"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "t",
+      "rime": "ube",
+      "audio": "word_tube",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_tube",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "tray",
+      "graphemes": [
+        "t",
+        "r",
+        "ay"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "t",
+      "rime": "ay",
+      "audio": "word_tray",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_tray",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "play",
+      "graphemes": [
+        "p",
+        "l",
+        "ay"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "p",
+      "rime": "ay",
+      "audio": "word_play",
+      "picturable": false,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ]
+    },
+    {
+      "word": "leaf",
+      "graphemes": [
+        "l",
+        "ea",
+        "f"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "l",
+      "rime": "eaf",
+      "audio": "word_leaf",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_leaf",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "sea",
+      "graphemes": [
+        "s",
+        "ea"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "s",
+      "rime": "ea",
+      "audio": "word_sea",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_sea",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "pie",
+      "graphemes": [
+        "p",
+        "ie"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "p",
+      "rime": "ie",
+      "audio": "word_pie",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_pie",
+      "tags": [
+        "food"
+      ]
+    },
+    {
+      "word": "snow",
+      "graphemes": [
+        "s",
+        "n",
+        "ow_long"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "s",
+      "rime": "ow",
+      "audio": "word_snow",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_snow",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "bowl",
+      "graphemes": [
+        "b",
+        "ow_long",
+        "l"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "b",
+      "rime": "owl",
+      "audio": "word_bowl",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_bowl",
+      "tags": [
+        "kitchen"
+      ]
+    },
+    {
+      "word": "cloud",
+      "graphemes": [
+        "c",
+        "l",
+        "ou",
+        "d"
+      ],
+      "soundCount": 4,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "c",
+      "rime": "oud",
+      "audio": "word_cloud",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.03",
+        "1Rw.05",
+        "1Ww.02",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_cloud",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "word": "mouth",
+      "graphemes": [
+        "m",
+        "ou",
+        "th"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "m",
+      "rime": "outh",
+      "audio": "word_mouth",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_mouth",
+      "tags": [
+        "body"
+      ]
+    },
+    {
+      "word": "bird",
+      "graphemes": [
+        "b",
+        "ir",
+        "d"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "b",
+      "rime": "ird",
+      "audio": "word_bird",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_bird",
+      "tags": [
+        "animal"
+      ]
+    },
+    {
+      "word": "girl",
+      "graphemes": [
+        "g",
+        "ir",
+        "l"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "g",
+      "rime": "irl",
+      "audio": "word_girl",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_girl",
+      "tags": [
+        "person"
+      ]
+    },
+    {
+      "word": "shirt",
+      "graphemes": [
+        "sh",
+        "ir",
+        "t"
+      ],
+      "soundCount": 3,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "sh",
+      "rime": "irt",
+      "audio": "word_shirt",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_shirt",
+      "tags": [
+        "clothes"
+      ]
+    },
+    {
+      "word": "saw",
+      "graphemes": [
+        "s",
+        "aw"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "s",
+      "rime": "aw",
+      "audio": "word_saw",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_saw",
+      "tags": [
+        "object"
+      ]
+    },
+    {
+      "word": "paw",
+      "graphemes": [
+        "p",
+        "aw"
+      ],
+      "soundCount": 2,
+      "decodableFromGroup": 9,
+      "band": "stage2",
+      "firstSound": "p",
+      "rime": "aw",
+      "audio": "word_paw",
+      "picturable": true,
+      "objectives": [
+        "1Rw.02",
+        "1Rw.05",
+        "1Ww.05",
+        "2Rw.02",
+        "2Ww.02"
+      ],
+      "picture": "pic_paw",
+      "tags": [
+        "animal"
+      ]
+    }
+  ]
+}

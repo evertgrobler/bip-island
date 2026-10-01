@@ -1,0 +1,738 @@
+{
+  "note": "The game's skill map. Each skill links to Cambridge objective codes and unlocks after its prerequisites. Bands: foundation = age 4-5 (Cambridge Early Years, working towards Stage 1), stage1 = 5-6, stage2 = 6-7, stage3 = 7-8.",
+  "mastery": {
+    "moveUp": "3 correct in a row at the current level",
+    "dropBack": "2 misses in a row",
+    "mastered": "80% correct over the last 10 attempts, on at least 2 different days",
+    "review": "mastered skills come back for review after 2, 5 and 14 days (spaced repetition)"
+  },
+  "startingBand": {
+    "4": "foundation",
+    "5": "foundation",
+    "6": "stage1",
+    "7": "stage2",
+    "8": "stage3"
+  },
+  "skills": [
+    {
+      "id": "snd_g1",
+      "island": "letters",
+      "band": "foundation",
+      "name": "Sounds group 1 (s a t p i n)",
+      "objectives": [
+        "1Rw.01",
+        "1Ww.01"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "snd_g2",
+      "island": "letters",
+      "band": "foundation",
+      "name": "Sounds group 2 (m d g o c k)",
+      "objectives": [
+        "1Rw.01",
+        "1Ww.01"
+      ],
+      "prerequisites": [
+        "snd_g1"
+      ]
+    },
+    {
+      "id": "snd_g3",
+      "island": "letters",
+      "band": "foundation",
+      "name": "Sounds group 3 (ck e u r)",
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01"
+      ],
+      "prerequisites": [
+        "snd_g2"
+      ]
+    },
+    {
+      "id": "snd_g4",
+      "island": "letters",
+      "band": "foundation",
+      "name": "Sounds group 4 (h b f l ff ll ss)",
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02"
+      ],
+      "prerequisites": [
+        "snd_g3"
+      ]
+    },
+    {
+      "id": "snd_g5",
+      "island": "letters",
+      "band": "stage1",
+      "name": "Sounds group 5 (j v w x y z zz qu)",
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02"
+      ],
+      "prerequisites": [
+        "snd_g4"
+      ]
+    },
+    {
+      "id": "snd_g6",
+      "island": "letters",
+      "band": "stage1",
+      "name": "Digraphs ch sh th ng",
+      "objectives": [
+        "1Rw.02",
+        "1Ww.02"
+      ],
+      "prerequisites": [
+        "snd_g5"
+      ]
+    },
+    {
+      "id": "snd_g7",
+      "island": "letters",
+      "band": "stage1",
+      "name": "Vowel digraphs ai ee igh oa oo",
+      "objectives": [
+        "1Rw.02"
+      ],
+      "prerequisites": [
+        "snd_g6"
+      ]
+    },
+    {
+      "id": "snd_g8",
+      "island": "letters",
+      "band": "stage1",
+      "name": "Vowel digraphs ar or ur ow oi er",
+      "objectives": [
+        "1Rw.02"
+      ],
+      "prerequisites": [
+        "snd_g7"
+      ]
+    },
+    {
+      "id": "snd_g9",
+      "island": "letters",
+      "band": "stage2",
+      "name": "Split digraphs and alternative spellings",
+      "objectives": [
+        "2Rw.01",
+        "2Rw.02",
+        "2Ww.01",
+        "2Ww.02"
+      ],
+      "prerequisites": [
+        "snd_g8"
+      ]
+    },
+    {
+      "id": "letter_names",
+      "island": "letters",
+      "band": "stage1",
+      "name": "Letter names",
+      "objectives": [
+        "1Rw.01"
+      ],
+      "prerequisites": [
+        "snd_g5"
+      ]
+    },
+    {
+      "id": "letter_form",
+      "island": "letters",
+      "band": "foundation",
+      "name": "Forming letters",
+      "objectives": [
+        "1Ww.01"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "blend_cvc",
+      "island": "words",
+      "band": "foundation",
+      "name": "Blending 3-sound words",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.06"
+      ],
+      "prerequisites": [
+        "snd_g1"
+      ]
+    },
+    {
+      "id": "blend_ccvc",
+      "island": "words",
+      "band": "stage1",
+      "name": "Blending words with adjacent consonants",
+      "objectives": [
+        "1Rw.03",
+        "1Rw.05"
+      ],
+      "prerequisites": [
+        "blend_cvc",
+        "snd_g4"
+      ]
+    },
+    {
+      "id": "spell_cvc",
+      "island": "words",
+      "band": "foundation",
+      "name": "Spelling 3-sound words",
+      "objectives": [
+        "1Ww.05"
+      ],
+      "prerequisites": [
+        "blend_cvc"
+      ]
+    },
+    {
+      "id": "spell_digraph",
+      "island": "words",
+      "band": "stage1",
+      "name": "Spelling words with digraphs",
+      "objectives": [
+        "1Ww.02",
+        "1Ww.05"
+      ],
+      "prerequisites": [
+        "spell_cvc",
+        "snd_g6"
+      ]
+    },
+    {
+      "id": "rhyme",
+      "island": "words",
+      "band": "foundation",
+      "name": "Rhyme",
+      "objectives": [
+        "1Ww.03",
+        "2Ww.03"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "endings",
+      "island": "words",
+      "band": "stage1",
+      "name": "Word endings: -s, -es, -ed, -ing",
+      "objectives": [
+        "1Rw.04",
+        "1Ww.04",
+        "2Ww.05"
+      ],
+      "prerequisites": [
+        "blend_ccvc"
+      ]
+    },
+    {
+      "id": "read_longer",
+      "island": "words",
+      "band": "stage2",
+      "name": "Reading longer words",
+      "objectives": [
+        "2Rw.05",
+        "2Rw.06"
+      ],
+      "prerequisites": [
+        "blend_ccvc",
+        "snd_g8"
+      ]
+    },
+    {
+      "id": "homophones",
+      "island": "words",
+      "band": "stage3",
+      "name": "Words that sound the same",
+      "objectives": [
+        "3Ww.04"
+      ],
+      "prerequisites": [
+        "tricky_s2"
+      ]
+    },
+    {
+      "id": "contractions",
+      "island": "words",
+      "band": "stage3",
+      "name": "Short forms: can't, don't",
+      "objectives": [
+        "3Rw.02"
+      ],
+      "prerequisites": [
+        "tricky_s1"
+      ]
+    },
+    {
+      "id": "tricky_s1",
+      "island": "words",
+      "band": "stage1",
+      "name": "Stage 1 tricky words",
+      "objectives": [
+        "1Rw.07",
+        "1Ww.06"
+      ],
+      "prerequisites": [
+        "blend_cvc"
+      ]
+    },
+    {
+      "id": "tricky_s2",
+      "island": "words",
+      "band": "stage2",
+      "name": "Stage 2 tricky words",
+      "objectives": [
+        "2Rw.04",
+        "2Rw.07",
+        "2Ww.09",
+        "3Rw.01"
+      ],
+      "prerequisites": [
+        "tricky_s1"
+      ]
+    },
+    {
+      "id": "read_sentence",
+      "island": "words",
+      "band": "stage1",
+      "name": "Reading short sentences",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ],
+      "prerequisites": [
+        "blend_cvc",
+        "tricky_s1"
+      ]
+    },
+    {
+      "id": "spell_typed",
+      "island": "words",
+      "band": "stage2",
+      "name": "Typing spellings",
+      "objectives": [
+        "1Ww.06",
+        "2Ww.08"
+      ],
+      "prerequisites": [
+        "spell_digraph"
+      ]
+    },
+    {
+      "id": "count_10",
+      "island": "numbers",
+      "band": "foundation",
+      "name": "Counting to 10",
+      "objectives": [
+        "1Nc.01",
+        "1Ni.01",
+        "1Np.01"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "estimate",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Estimating, then checking",
+      "objectives": [
+        "1Nc.03"
+      ],
+      "prerequisites": [
+        "count_20"
+      ]
+    },
+    {
+      "id": "add_sub_100",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Adding and taking away two-digit numbers",
+      "objectives": [
+        "2Ni.02",
+        "2Ni.04"
+      ],
+      "prerequisites": [
+        "add_sub_20",
+        "count_100"
+      ]
+    },
+    {
+      "id": "missing_number",
+      "island": "numbers",
+      "band": "stage3",
+      "name": "Finding the hidden number",
+      "objectives": [
+        "3Nc.04"
+      ],
+      "prerequisites": [
+        "add_sub_20"
+      ]
+    },
+    {
+      "id": "subitise_5",
+      "island": "numbers",
+      "band": "foundation",
+      "name": "Seeing up to 5 at a glance",
+      "objectives": [
+        "1Nc.02"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "count_20",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Counting to 20",
+      "objectives": [
+        "1Nc.01",
+        "1Ni.01"
+      ],
+      "prerequisites": [
+        "count_10"
+      ]
+    },
+    {
+      "id": "subitise_10",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Seeing up to 10 at a glance",
+      "objectives": [
+        "1Nc.02",
+        "2Nc.02"
+      ],
+      "prerequisites": [
+        "subitise_5"
+      ]
+    },
+    {
+      "id": "order_20",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Ordering numbers to 20",
+      "objectives": [
+        "1Np.03",
+        "1Nc.04"
+      ],
+      "prerequisites": [
+        "count_10"
+      ]
+    },
+    {
+      "id": "ordinals",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "1st to 10th",
+      "objectives": [
+        "1Np.04",
+        "2Np.04"
+      ],
+      "prerequisites": [
+        "order_20"
+      ]
+    },
+    {
+      "id": "compare",
+      "island": "numbers",
+      "band": "foundation",
+      "name": "More and less",
+      "objectives": [
+        "1Np.03",
+        "1Ss.03"
+      ],
+      "prerequisites": [
+        "count_10"
+      ]
+    },
+    {
+      "id": "bonds_10",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Pairs that make 10",
+      "objectives": [
+        "1Ni.04",
+        "1Np.02"
+      ],
+      "prerequisites": [
+        "count_10"
+      ]
+    },
+    {
+      "id": "add_sub_20",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Adding and taking away within 20",
+      "objectives": [
+        "1Ni.02",
+        "1Ni.03",
+        "1Ni.05"
+      ],
+      "prerequisites": [
+        "bonds_10"
+      ]
+    },
+    {
+      "id": "doubles",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Doubles to 10",
+      "objectives": [
+        "1Ni.06"
+      ],
+      "prerequisites": [
+        "count_20"
+      ]
+    },
+    {
+      "id": "count_steps",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Counting in 2s, 5s and 10s",
+      "objectives": [
+        "1Nc.04",
+        "2Nc.04",
+        "2Ni.07"
+      ],
+      "prerequisites": [
+        "count_20"
+      ]
+    },
+    {
+      "id": "even_odd",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Even and odd",
+      "objectives": [
+        "1Nc.05",
+        "2Nc.05"
+      ],
+      "prerequisites": [
+        "count_20"
+      ]
+    },
+    {
+      "id": "count_100",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Numbers to 100",
+      "objectives": [
+        "2Nc.01",
+        "2Ni.01",
+        "2Np.01",
+        "2Np.02",
+        "2Np.03"
+      ],
+      "prerequisites": [
+        "count_20"
+      ]
+    },
+    {
+      "id": "bonds_20",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Pairs that make 20",
+      "objectives": [
+        "2Ni.03"
+      ],
+      "prerequisites": [
+        "bonds_10"
+      ]
+    },
+    {
+      "id": "sequences",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Number sequences",
+      "objectives": [
+        "2Nc.06",
+        "3Nc.05"
+      ],
+      "prerequisites": [
+        "count_steps"
+      ]
+    },
+    {
+      "id": "money_1",
+      "island": "numbers",
+      "band": "stage1",
+      "name": "Knowing our coins",
+      "objectives": [
+        "1Nm.01"
+      ],
+      "prerequisites": [
+        "count_10"
+      ]
+    },
+    {
+      "id": "money_2",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Adding up coins",
+      "objectives": [
+        "2Nm.01",
+        "2Nm.02"
+      ],
+      "prerequisites": [
+        "money_1",
+        "add_sub_20"
+      ]
+    },
+    {
+      "id": "money_3",
+      "island": "numbers",
+      "band": "stage3",
+      "name": "Paying and getting change",
+      "objectives": [
+        "3Nm.01",
+        "3Nm.02"
+      ],
+      "prerequisites": [
+        "money_2"
+      ]
+    },
+    {
+      "id": "patterns",
+      "island": "coding",
+      "band": "foundation",
+      "name": "Patterns",
+      "objectives": [
+        "1Nc.06",
+        "2Sp.01"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "growing_patterns",
+      "island": "coding",
+      "band": "stage3",
+      "name": "Growing patterns",
+      "objectives": [
+        "3Nc.06"
+      ],
+      "prerequisites": [
+        "patterns"
+      ]
+    },
+    {
+      "id": "sequencing",
+      "island": "coding",
+      "band": "foundation",
+      "name": "Putting steps in order",
+      "objectives": [
+        "1CT.01",
+        "1CT.05",
+        "1CT.06"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "directions",
+      "island": "coding",
+      "band": "foundation",
+      "name": "Arrow directions",
+      "objectives": [
+        "1CT.03",
+        "1Gp.01"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "programs",
+      "island": "coding",
+      "band": "stage1",
+      "name": "Writing programs for Bip",
+      "objectives": [
+        "1CT.04",
+        "1P.02",
+        "1P.03",
+        "1P.05",
+        "2CT.05",
+        "2CT.06"
+      ],
+      "prerequisites": [
+        "directions",
+        "sequencing"
+      ]
+    },
+    {
+      "id": "turns",
+      "island": "coding",
+      "band": "stage2",
+      "name": "Forward and turns",
+      "objectives": [
+        "1CT.03",
+        "2P.08",
+        "2Gp.01"
+      ],
+      "prerequisites": [
+        "programs"
+      ]
+    },
+    {
+      "id": "debugging",
+      "island": "coding",
+      "band": "stage1",
+      "name": "Finding and fixing bugs",
+      "objectives": [
+        "1CT.02",
+        "1P.04",
+        "1P.06",
+        "1P.07",
+        "2CT.02",
+        "2P.07",
+        "3P.09"
+      ],
+      "prerequisites": [
+        "programs"
+      ]
+    },
+    {
+      "id": "loops",
+      "island": "coding",
+      "band": "stage2",
+      "name": "Repeat blocks",
+      "objectives": [
+        "2P.03",
+        "3CT.02",
+        "3CT.03",
+        "3P.01"
+      ],
+      "prerequisites": [
+        "programs"
+      ]
+    },
+    {
+      "id": "conditions",
+      "island": "coding",
+      "band": "stage3",
+      "name": "If-then rules",
+      "objectives": [
+        "3CT.07",
+        "3CT.08",
+        "3CT.05"
+      ],
+      "prerequisites": [
+        "loops"
+      ]
+    },
+    {
+      "id": "creative",
+      "island": "coding",
+      "band": "stage1",
+      "name": "Making Bip dance",
+      "objectives": [
+        "1CT.07",
+        "2P.04",
+        "3P.03",
+        "3P.04"
+      ],
+      "prerequisites": [
+        "programs"
+      ]
+    }
+  ]
+}

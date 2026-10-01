@@ -1,0 +1,844 @@
+{
+  "note": "Order follows the UK 'Letters and Sounds' synthetic phonics progression, which fits Cambridge Primary English Stage 1-2 (1Rw.01, 1Rw.02, 2Rw.01, 2Rw.02). Teach sounds first; letter names (letterName) only after all group 1-5 sounds are known. Handwriting families group letters by their starting stroke for Letter Trace.",
+  "groups": [
+    {
+      "group": 1,
+      "band": "foundation",
+      "ages": "4-5",
+      "objectives": [
+        "1Rw.01",
+        "1Ww.01"
+      ],
+      "note": "First six sounds: enough to read sat, tap, pin, ant."
+    },
+    {
+      "group": 2,
+      "band": "foundation",
+      "ages": "4-5",
+      "objectives": [
+        "1Rw.01",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 3,
+      "band": "foundation",
+      "ages": "4-5",
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 4,
+      "band": "foundation",
+      "ages": "4-5",
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 5,
+      "band": "stage1",
+      "ages": "5-6",
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 6,
+      "band": "stage1",
+      "ages": "5-6",
+      "objectives": [
+        "1Rw.02",
+        "1Ww.02"
+      ]
+    },
+    {
+      "group": 7,
+      "band": "stage1",
+      "ages": "5-6",
+      "objectives": [
+        "1Rw.02",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 8,
+      "band": "stage1",
+      "ages": "5-6",
+      "objectives": [
+        "1Rw.02",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 9,
+      "band": "stage2",
+      "ages": "6-7",
+      "objectives": [
+        "2Rw.01",
+        "2Rw.02",
+        "2Ww.01",
+        "2Ww.02"
+      ]
+    }
+  ],
+  "graphemes": [
+    {
+      "id": "s",
+      "grapheme": "s",
+      "group": 1,
+      "ipa": "s",
+      "kind": "stretchy",
+      "audio": "snd_s",
+      "mnemonicWord": "sun",
+      "mnemonicPicture": "pic_sun",
+      "letterName": "ess",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Hold the sound for about a second: 'ssss'. Never the letter name."
+    },
+    {
+      "id": "a",
+      "grapheme": "a",
+      "group": 1,
+      "ipa": "æ",
+      "kind": "vowel",
+      "audio": "snd_a",
+      "mnemonicWord": "ant",
+      "mnemonicPicture": "pic_ant",
+      "letterName": "ay",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "The short vowel sound as in 'ant', not the letter name."
+    },
+    {
+      "id": "t",
+      "grapheme": "t",
+      "group": 1,
+      "ipa": "t",
+      "kind": "bouncy",
+      "audio": "snd_t",
+      "mnemonicWord": "tap",
+      "mnemonicPicture": "pic_tap",
+      "letterName": "tee",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Short and clipped, with no 'uh' after it. Generate the word 'tap' and trim to its first sound if needed."
+    },
+    {
+      "id": "p",
+      "grapheme": "p",
+      "group": 1,
+      "ipa": "p",
+      "kind": "bouncy",
+      "audio": "snd_p",
+      "mnemonicWord": "pan",
+      "mnemonicPicture": "pic_pan",
+      "letterName": "pee",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Short and clipped, with no 'uh' after it. Generate the word 'pan' and trim to its first sound if needed."
+    },
+    {
+      "id": "i",
+      "grapheme": "i",
+      "group": 1,
+      "ipa": "ɪ",
+      "kind": "vowel",
+      "audio": "snd_i",
+      "mnemonicWord": "ink",
+      "mnemonicPicture": "pic_ink",
+      "letterName": "eye",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "The short vowel sound as in 'ink', not the letter name."
+    },
+    {
+      "id": "n",
+      "grapheme": "n",
+      "group": 1,
+      "ipa": "n",
+      "kind": "stretchy",
+      "audio": "snd_n",
+      "mnemonicWord": "net",
+      "mnemonicPicture": "pic_net",
+      "letterName": "en",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Hold the sound for about a second: 'nnnn'. Never the letter name."
+    },
+    {
+      "id": "m",
+      "grapheme": "m",
+      "group": 2,
+      "ipa": "m",
+      "kind": "stretchy",
+      "audio": "snd_m",
+      "mnemonicWord": "map",
+      "mnemonicPicture": "pic_map",
+      "letterName": "em",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Hold the sound for about a second: 'mmmm'. Never the letter name."
+    },
+    {
+      "id": "d",
+      "grapheme": "d",
+      "group": 2,
+      "ipa": "d",
+      "kind": "bouncy",
+      "audio": "snd_d",
+      "mnemonicWord": "dog",
+      "mnemonicPicture": "pic_dog",
+      "letterName": "dee",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Short and clipped, with no 'uh' after it. Generate the word 'dog' and trim to its first sound if needed."
+    },
+    {
+      "id": "g",
+      "grapheme": "g",
+      "group": 2,
+      "ipa": "g",
+      "kind": "bouncy",
+      "audio": "snd_g",
+      "mnemonicWord": "goat",
+      "mnemonicPicture": "pic_goat",
+      "letterName": "jee",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Short and clipped, with no 'uh' after it. Generate the word 'goat' and trim to its first sound if needed."
+    },
+    {
+      "id": "o",
+      "grapheme": "o",
+      "group": 2,
+      "ipa": "ɒ",
+      "kind": "vowel",
+      "audio": "snd_o",
+      "mnemonicWord": "octopus",
+      "mnemonicPicture": "pic_octopus",
+      "letterName": "oh",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "The short vowel sound as in 'octopus', not the letter name."
+    },
+    {
+      "id": "c",
+      "grapheme": "c",
+      "group": 2,
+      "ipa": "k",
+      "kind": "bouncy",
+      "audio": "snd_c",
+      "mnemonicWord": "cat",
+      "mnemonicPicture": "pic_cat",
+      "letterName": "see",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Short and clipped, with no 'uh' after it. Generate the word 'cat' and trim to its first sound if needed."
+    },
+    {
+      "id": "k",
+      "grapheme": "k",
+      "group": 2,
+      "ipa": "k",
+      "kind": "bouncy",
+      "audio": "snd_k",
+      "mnemonicWord": "kite",
+      "mnemonicPicture": "pic_kite",
+      "letterName": "kay",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Short and clipped, with no 'uh' after it. Generate the word 'kite' and trim to its first sound if needed."
+    },
+    {
+      "id": "ck",
+      "grapheme": "ck",
+      "group": 3,
+      "ipa": "k",
+      "kind": "digraph",
+      "audio": "snd_ck",
+      "mnemonicWord": "duck",
+      "mnemonicPicture": "pic_duck",
+      "narratorHint": "Same clipped 'k' sound as c and k: two letters, one sound."
+    },
+    {
+      "id": "e",
+      "grapheme": "e",
+      "group": 3,
+      "ipa": "e",
+      "kind": "vowel",
+      "audio": "snd_e",
+      "mnemonicWord": "egg",
+      "mnemonicPicture": "pic_egg",
+      "letterName": "ee",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "The short vowel sound as in 'egg', not the letter name."
+    },
+    {
+      "id": "u",
+      "grapheme": "u",
+      "group": 3,
+      "ipa": "ʌ",
+      "kind": "vowel",
+      "audio": "snd_u",
+      "mnemonicWord": "umbrella",
+      "mnemonicPicture": "pic_umbrella",
+      "letterName": "you",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "The short vowel sound as in 'umbrella', not the letter name."
+    },
+    {
+      "id": "r",
+      "grapheme": "r",
+      "group": 3,
+      "ipa": "r",
+      "kind": "stretchy",
+      "audio": "snd_r",
+      "mnemonicWord": "rabbit",
+      "mnemonicPicture": "pic_rabbit",
+      "letterName": "ar",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Hold the sound for about a second: 'rrrr'. Never the letter name."
+    },
+    {
+      "id": "h",
+      "grapheme": "h",
+      "group": 4,
+      "ipa": "h",
+      "kind": "bouncy",
+      "audio": "snd_h",
+      "mnemonicWord": "hat",
+      "mnemonicPicture": "pic_hat",
+      "letterName": "aitch",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "A soft breathy 'h', with no vowel after it."
+    },
+    {
+      "id": "b",
+      "grapheme": "b",
+      "group": 4,
+      "ipa": "b",
+      "kind": "bouncy",
+      "audio": "snd_b",
+      "mnemonicWord": "bus",
+      "mnemonicPicture": "pic_bus",
+      "letterName": "bee",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Short and clipped, with no 'uh' after it. Generate the word 'bus' and trim to its first sound if needed."
+    },
+    {
+      "id": "f",
+      "grapheme": "f",
+      "group": 4,
+      "ipa": "f",
+      "kind": "stretchy",
+      "audio": "snd_f",
+      "mnemonicWord": "fish",
+      "mnemonicPicture": "pic_fish",
+      "letterName": "ef",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Hold the sound for about a second: 'ffff'. Never the letter name."
+    },
+    {
+      "id": "l",
+      "grapheme": "l",
+      "group": 4,
+      "ipa": "l",
+      "kind": "stretchy",
+      "audio": "snd_l",
+      "mnemonicWord": "leg",
+      "mnemonicPicture": "pic_leg",
+      "letterName": "el",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Hold the sound for about a second: 'llll'. Never the letter name."
+    },
+    {
+      "id": "ff",
+      "grapheme": "ff",
+      "group": 4,
+      "ipa": "f",
+      "kind": "digraph",
+      "audio": "snd_ff",
+      "mnemonicWord": "cliff",
+      "mnemonicPicture": "pic_cliff",
+      "narratorHint": "Same stretchy 'fff' as f: two letters, one sound."
+    },
+    {
+      "id": "ll",
+      "grapheme": "ll",
+      "group": 4,
+      "ipa": "l",
+      "kind": "digraph",
+      "audio": "snd_ll",
+      "mnemonicWord": "bell",
+      "mnemonicPicture": "pic_bell",
+      "narratorHint": "Same 'lll' as l: two letters, one sound."
+    },
+    {
+      "id": "ss",
+      "grapheme": "ss",
+      "group": 4,
+      "ipa": "s",
+      "kind": "digraph",
+      "audio": "snd_ss",
+      "mnemonicWord": "kiss",
+      "mnemonicPicture": "pic_kiss",
+      "narratorHint": "Same 'sss' as s: two letters, one sound."
+    },
+    {
+      "id": "j",
+      "grapheme": "j",
+      "group": 5,
+      "ipa": "dʒ",
+      "kind": "bouncy",
+      "audio": "snd_j",
+      "mnemonicWord": "jam",
+      "mnemonicPicture": "pic_jam",
+      "letterName": "jay",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Short and clipped, with no 'uh' after it. Generate the word 'jam' and trim to its first sound if needed."
+    },
+    {
+      "id": "v",
+      "grapheme": "v",
+      "group": 5,
+      "ipa": "v",
+      "kind": "stretchy",
+      "audio": "snd_v",
+      "mnemonicWord": "van",
+      "mnemonicPicture": "pic_van",
+      "letterName": "vee",
+      "handwritingFamily": "zigzag",
+      "narratorHint": "Hold the sound for about a second: 'vvvv'. Never the letter name."
+    },
+    {
+      "id": "w",
+      "grapheme": "w",
+      "group": 5,
+      "ipa": "w",
+      "kind": "stretchy",
+      "audio": "snd_w",
+      "mnemonicWord": "web",
+      "mnemonicPicture": "pic_web",
+      "letterName": "double-you",
+      "handwritingFamily": "zigzag",
+      "narratorHint": "Hold the sound for about a second: 'wwww'. Never the letter name."
+    },
+    {
+      "id": "x",
+      "grapheme": "x",
+      "group": 5,
+      "ipa": "ks",
+      "kind": "bouncy",
+      "audio": "snd_x",
+      "mnemonicWord": "box",
+      "mnemonicPicture": "pic_box",
+      "letterName": "ex",
+      "handwritingFamily": "zigzag",
+      "narratorHint": "'ks' as at the end of box, not the letter name 'ex'."
+    },
+    {
+      "id": "y",
+      "grapheme": "y",
+      "group": 5,
+      "ipa": "j",
+      "kind": "stretchy",
+      "audio": "snd_y",
+      "mnemonicWord": "yak",
+      "mnemonicPicture": "pic_yak",
+      "letterName": "why",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Hold the sound for about a second: 'yyyy'. Never the letter name."
+    },
+    {
+      "id": "z",
+      "grapheme": "z",
+      "group": 5,
+      "ipa": "z",
+      "kind": "stretchy",
+      "audio": "snd_z",
+      "mnemonicWord": "zip",
+      "mnemonicPicture": "pic_zip",
+      "letterName": "zed",
+      "handwritingFamily": "zigzag",
+      "narratorHint": "Hold the sound for about a second: 'zzzz'. Never the letter name."
+    },
+    {
+      "id": "zz",
+      "grapheme": "zz",
+      "group": 5,
+      "ipa": "z",
+      "kind": "digraph",
+      "audio": "snd_zz",
+      "mnemonicWord": "buzz",
+      "mnemonicPicture": "pic_buzz",
+      "narratorHint": "Same 'zzz' as z: two letters, one sound."
+    },
+    {
+      "id": "qu",
+      "grapheme": "qu",
+      "group": 5,
+      "ipa": "kw",
+      "kind": "digraph",
+      "audio": "snd_qu",
+      "mnemonicWord": "queen",
+      "mnemonicPicture": "pic_queen",
+      "narratorHint": "'kw' as at the start of queen."
+    },
+    {
+      "id": "ch",
+      "grapheme": "ch",
+      "group": 6,
+      "ipa": "tʃ",
+      "kind": "digraph",
+      "audio": "snd_ch",
+      "mnemonicWord": "chip",
+      "mnemonicPicture": "pic_chip",
+      "narratorHint": "The single sound these letters make together, as in 'chip'."
+    },
+    {
+      "id": "sh",
+      "grapheme": "sh",
+      "group": 6,
+      "ipa": "ʃ",
+      "kind": "digraph",
+      "audio": "snd_sh",
+      "mnemonicWord": "ship",
+      "mnemonicPicture": "pic_ship",
+      "narratorHint": "Hold it: 'shhhh'."
+    },
+    {
+      "id": "th",
+      "grapheme": "th",
+      "group": 6,
+      "ipa": "θ",
+      "kind": "digraph",
+      "audio": "snd_th",
+      "mnemonicWord": "thumb",
+      "mnemonicPicture": "pic_thumb",
+      "narratorHint": "Unvoiced 'th' as in thumb. Hold it gently."
+    },
+    {
+      "id": "th_voiced",
+      "grapheme": "th",
+      "group": 6,
+      "ipa": "ð",
+      "kind": "digraph",
+      "audio": "snd_th_voiced",
+      "mnemonicWord": "this",
+      "mnemonicPicture": "pic_this",
+      "narratorHint": "Voiced 'th' as in this."
+    },
+    {
+      "id": "ng",
+      "grapheme": "ng",
+      "group": 6,
+      "ipa": "ŋ",
+      "kind": "digraph",
+      "audio": "snd_ng",
+      "mnemonicWord": "ring",
+      "mnemonicPicture": "pic_ring",
+      "narratorHint": "The 'ng' at the end of ring, held."
+    },
+    {
+      "id": "ai",
+      "grapheme": "ai",
+      "group": 7,
+      "ipa": "eɪ",
+      "kind": "digraph",
+      "audio": "snd_ai",
+      "mnemonicWord": "rain",
+      "mnemonicPicture": "pic_rain",
+      "narratorHint": "The single sound these letters make together, as in 'rain'."
+    },
+    {
+      "id": "ee",
+      "grapheme": "ee",
+      "group": 7,
+      "ipa": "iː",
+      "kind": "digraph",
+      "audio": "snd_ee",
+      "mnemonicWord": "bee",
+      "mnemonicPicture": "pic_bee",
+      "narratorHint": "The single sound these letters make together, as in 'bee'."
+    },
+    {
+      "id": "igh",
+      "grapheme": "igh",
+      "group": 7,
+      "ipa": "aɪ",
+      "kind": "digraph",
+      "audio": "snd_igh",
+      "mnemonicWord": "light",
+      "mnemonicPicture": "pic_light",
+      "narratorHint": "Three letters, one sound, as in light."
+    },
+    {
+      "id": "oa",
+      "grapheme": "oa",
+      "group": 7,
+      "ipa": "əʊ",
+      "kind": "digraph",
+      "audio": "snd_oa",
+      "mnemonicWord": "goat",
+      "mnemonicPicture": "pic_goat",
+      "narratorHint": "The single sound these letters make together, as in 'goat'."
+    },
+    {
+      "id": "oo",
+      "grapheme": "oo",
+      "group": 7,
+      "ipa": "uː",
+      "kind": "digraph",
+      "audio": "snd_oo",
+      "mnemonicWord": "moon",
+      "mnemonicPicture": "pic_moon",
+      "narratorHint": "The long 'oo' as in moon."
+    },
+    {
+      "id": "oo_short",
+      "grapheme": "oo",
+      "group": 7,
+      "ipa": "ʊ",
+      "kind": "digraph",
+      "audio": "snd_oo_short",
+      "mnemonicWord": "book",
+      "mnemonicPicture": "pic_book",
+      "narratorHint": "The short 'oo' as in book."
+    },
+    {
+      "id": "ar",
+      "grapheme": "ar",
+      "group": 8,
+      "ipa": "ɑː",
+      "kind": "digraph",
+      "audio": "snd_ar",
+      "mnemonicWord": "car",
+      "mnemonicPicture": "pic_car",
+      "narratorHint": "The single sound these letters make together, as in 'car'."
+    },
+    {
+      "id": "or",
+      "grapheme": "or",
+      "group": 8,
+      "ipa": "ɔː",
+      "kind": "digraph",
+      "audio": "snd_or",
+      "mnemonicWord": "fork",
+      "mnemonicPicture": "pic_fork",
+      "narratorHint": "The single sound these letters make together, as in 'fork'."
+    },
+    {
+      "id": "ur",
+      "grapheme": "ur",
+      "group": 8,
+      "ipa": "ɜː",
+      "kind": "digraph",
+      "audio": "snd_ur",
+      "mnemonicWord": "turn",
+      "mnemonicPicture": "pic_turn",
+      "narratorHint": "The single sound these letters make together, as in 'turn'."
+    },
+    {
+      "id": "ow",
+      "grapheme": "ow",
+      "group": 8,
+      "ipa": "aʊ",
+      "kind": "digraph",
+      "audio": "snd_ow",
+      "mnemonicWord": "cow",
+      "mnemonicPicture": "pic_cow",
+      "narratorHint": "The single sound these letters make together, as in 'cow'."
+    },
+    {
+      "id": "oi",
+      "grapheme": "oi",
+      "group": 8,
+      "ipa": "ɔɪ",
+      "kind": "digraph",
+      "audio": "snd_oi",
+      "mnemonicWord": "coin",
+      "mnemonicPicture": "pic_coin",
+      "narratorHint": "The single sound these letters make together, as in 'coin'."
+    },
+    {
+      "id": "er",
+      "grapheme": "er",
+      "group": 8,
+      "ipa": "ə",
+      "kind": "digraph",
+      "audio": "snd_er",
+      "mnemonicWord": "ladder",
+      "mnemonicPicture": "pic_ladder",
+      "narratorHint": "The soft 'uh' at the end of ladder (South African English, no 'r')."
+    },
+    {
+      "id": "a_e",
+      "grapheme": "a-e",
+      "group": 9,
+      "ipa": "eɪ",
+      "kind": "digraph",
+      "audio": "snd_a_e",
+      "mnemonicWord": "cake",
+      "mnemonicPicture": "pic_cake",
+      "narratorHint": "The 'ay' sound as in cake."
+    },
+    {
+      "id": "i_e",
+      "grapheme": "i-e",
+      "group": 9,
+      "ipa": "aɪ",
+      "kind": "digraph",
+      "audio": "snd_i_e",
+      "mnemonicWord": "kite",
+      "mnemonicPicture": "pic_kite",
+      "narratorHint": "The 'eye' sound as in kite."
+    },
+    {
+      "id": "o_e",
+      "grapheme": "o-e",
+      "group": 9,
+      "ipa": "əʊ",
+      "kind": "digraph",
+      "audio": "snd_o_e",
+      "mnemonicWord": "bone",
+      "mnemonicPicture": "pic_bone",
+      "narratorHint": "The 'oh' sound as in bone."
+    },
+    {
+      "id": "u_e",
+      "grapheme": "u-e",
+      "group": 9,
+      "ipa": "juː",
+      "kind": "digraph",
+      "audio": "snd_u_e",
+      "mnemonicWord": "cube",
+      "mnemonicPicture": "pic_cube",
+      "narratorHint": "The 'yoo' sound as in cube."
+    },
+    {
+      "id": "ay",
+      "grapheme": "ay",
+      "group": 9,
+      "ipa": "eɪ",
+      "kind": "digraph",
+      "audio": "snd_ay",
+      "mnemonicWord": "tray",
+      "mnemonicPicture": "pic_tray",
+      "narratorHint": "The single sound these letters make together, as in 'tray'.",
+      "alternativeOf": "ai"
+    },
+    {
+      "id": "ea",
+      "grapheme": "ea",
+      "group": 9,
+      "ipa": "iː",
+      "kind": "digraph",
+      "audio": "snd_ea",
+      "mnemonicWord": "leaf",
+      "mnemonicPicture": "pic_leaf",
+      "narratorHint": "The single sound these letters make together, as in 'leaf'.",
+      "alternativeOf": "ee"
+    },
+    {
+      "id": "ie",
+      "grapheme": "ie",
+      "group": 9,
+      "ipa": "aɪ",
+      "kind": "digraph",
+      "audio": "snd_ie",
+      "mnemonicWord": "pie",
+      "mnemonicPicture": "pic_pie",
+      "narratorHint": "The single sound these letters make together, as in 'pie'.",
+      "alternativeOf": "igh"
+    },
+    {
+      "id": "ow_long",
+      "grapheme": "ow",
+      "group": 9,
+      "ipa": "əʊ",
+      "kind": "digraph",
+      "audio": "snd_ow_long",
+      "mnemonicWord": "snow",
+      "mnemonicPicture": "pic_snow",
+      "narratorHint": "The 'oh' sound as in snow (not cow).",
+      "alternativeOf": "oa"
+    },
+    {
+      "id": "ou",
+      "grapheme": "ou",
+      "group": 9,
+      "ipa": "aʊ",
+      "kind": "digraph",
+      "audio": "snd_ou",
+      "mnemonicWord": "cloud",
+      "mnemonicPicture": "pic_cloud",
+      "narratorHint": "The single sound these letters make together, as in 'cloud'.",
+      "alternativeOf": "ow"
+    },
+    {
+      "id": "ir",
+      "grapheme": "ir",
+      "group": 9,
+      "ipa": "ɜː",
+      "kind": "digraph",
+      "audio": "snd_ir",
+      "mnemonicWord": "bird",
+      "mnemonicPicture": "pic_bird",
+      "narratorHint": "The single sound these letters make together, as in 'bird'.",
+      "alternativeOf": "ur"
+    },
+    {
+      "id": "aw",
+      "grapheme": "aw",
+      "group": 9,
+      "ipa": "ɔː",
+      "kind": "digraph",
+      "audio": "snd_aw",
+      "mnemonicWord": "saw",
+      "mnemonicPicture": "pic_saw",
+      "narratorHint": "The single sound these letters make together, as in 'saw'.",
+      "alternativeOf": "or"
+    },
+    {
+      "id": "tt",
+      "grapheme": "tt",
+      "group": 8,
+      "ipa": "t",
+      "kind": "digraph",
+      "audio": "snd_tt",
+      "mnemonicWord": "letter",
+      "mnemonicPicture": "pic_letter",
+      "narratorHint": "Same sound as t: two letters, one sound."
+    },
+    {
+      "id": "mm",
+      "grapheme": "mm",
+      "group": 8,
+      "ipa": "m",
+      "kind": "digraph",
+      "audio": "snd_mm",
+      "mnemonicWord": "hammer",
+      "mnemonicPicture": "pic_hammer",
+      "narratorHint": "Same sound as m: two letters, one sound."
+    },
+    {
+      "id": "dd",
+      "grapheme": "dd",
+      "group": 8,
+      "ipa": "d",
+      "kind": "digraph",
+      "audio": "snd_dd",
+      "mnemonicWord": "ladder",
+      "mnemonicPicture": "pic_ladder",
+      "narratorHint": "Same sound as d: two letters, one sound."
+    },
+    {
+      "id": "nn",
+      "grapheme": "nn",
+      "group": 8,
+      "ipa": "n",
+      "kind": "digraph",
+      "audio": "snd_nn",
+      "mnemonicWord": "dinner",
+      "mnemonicPicture": "pic_dinner",
+      "narratorHint": "Same sound as n: two letters, one sound."
+    }
+  ]
+}

@@ -1,0 +1,829 @@
+{
+  "note": "Objective codes are Cambridge's. Summaries are short paraphrases written for this project, not Cambridge's wording. Stage 1 = age 5-6, Stage 2 = 6-7, Stage 3 = 7-8. Cambridge Early Years (EY2 age 4-5, EY3 age 5-6) learning statements are not publicly published, so the 'foundation' band works towards the Stage 1 objectives.",
+  "objectives": [
+    {
+      "code": "1Rw.01",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Reading: word structure",
+      "summary": "Know letter names and the most common sound each letter makes",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Rw.02",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Reading: word structure",
+      "summary": "Know the sounds of common two- and three-letter graphemes (digraphs, trigraphs)",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Rw.03",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Reading: word structure",
+      "summary": "Blend adjacent consonants when reading",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Rw.04",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Reading: word structure",
+      "summary": "Read verbs with -s, -ed and -ing endings",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Rw.05",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Reading: word structure",
+      "summary": "Use phonic knowledge to read decodable words",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Rw.06",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Reading: word structure",
+      "summary": "Sound out unfamiliar parts of words",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Rw.07",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Reading: word structure",
+      "summary": "Recognise common words and exception words on sight",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Ww.01",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Writing: word structure",
+      "summary": "Write common graphemes for English sounds",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Ww.02",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Writing: word structure",
+      "summary": "Spell words with adjacent consonants and digraphs such as th, ch, sh",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Ww.03",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Writing: word structure",
+      "summary": "Use rhyme to spot shared spelling patterns",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Ww.04",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Writing: word structure",
+      "summary": "Spell plural nouns with -s and -es",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Ww.05",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Writing: word structure",
+      "summary": "Match phonemes to graphemes to spell regular words",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Ww.06",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Writing: word structure",
+      "summary": "Spell familiar words and common exception words correctly",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Rw.01",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Reading: word structure",
+      "summary": "Know alternative pronunciations of graphemes",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Rw.02",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Reading: word structure",
+      "summary": "Read words with split digraphs (make, like)",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Rw.03",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Reading: word structure",
+      "summary": "Read words with common prefixes and suffixes",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Rw.04",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Reading: word structure",
+      "summary": "Recognise familiar words quickly and accurately",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Rw.05",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Reading: word structure",
+      "summary": "Use phonic knowledge to read unfamiliar words",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Rw.06",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Reading: word structure",
+      "summary": "Segment longer and compound words when reading",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Rw.07",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Reading: word structure",
+      "summary": "Recognise a wider range of words on sight, including homophones",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Ww.01",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Writing: word structure",
+      "summary": "Know different spellings for common phonemes",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Ww.02",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Writing: word structure",
+      "summary": "Spell words with split digraphs",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Ww.03",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Writing: word structure",
+      "summary": "Use rhyme and known patterns to spell",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Ww.05",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Writing: word structure",
+      "summary": "Add -s, -ed and -ing to verbs where the root does not change",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Ww.08",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Writing: word structure",
+      "summary": "Spell common regular words using phoneme knowledge",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "2Ww.09",
+      "framework": "english",
+      "stage": 2,
+      "strand": "Writing: word structure",
+      "summary": "Spell common exception words",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "3Rw.01",
+      "framework": "english",
+      "stage": 3,
+      "strand": "Reading: word structure",
+      "summary": "Read less common grapheme pronunciations (young, could, move)",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "3Rw.02",
+      "framework": "english",
+      "stage": 3,
+      "strand": "Reading: word structure",
+      "summary": "Read apostrophes for omission (can't, don't)",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "3Rw.03",
+      "framework": "english",
+      "stage": 3,
+      "strand": "Reading: word structure",
+      "summary": "Use effective strategies to read unfamiliar words",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "3Ww.04",
+      "framework": "english",
+      "stage": 3,
+      "strand": "Writing: word structure",
+      "summary": "Spell homophones to match meaning (to, two, too)",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "3Ww.05",
+      "framework": "english",
+      "stage": 3,
+      "strand": "Writing: word structure",
+      "summary": "Use strategies to spell unfamiliar words",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020"
+    },
+    {
+      "code": "1Nc.01",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Counting and sequences",
+      "summary": "Count objects from 0 to 20 with one-to-one matching",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Nc.02",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Counting and sequences",
+      "summary": "Recognise up to 10 objects in familiar patterns without counting",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Nc.03",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Counting and sequences",
+      "summary": "Estimate up to 20 objects, then check by counting",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Nc.04",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Counting and sequences",
+      "summary": "Count on and back in ones, twos and tens within 0 to 20",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Nc.05",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Counting and sequences",
+      "summary": "Notice even and odd numbers alternate when counting",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Nc.06",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Counting and sequences",
+      "summary": "Describe sequences of objects in everyday language",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Ni.01",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Integers and powers",
+      "summary": "Say, read and write numbers 0 to 20",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Ni.02",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Integers and powers",
+      "summary": "Understand addition as counting on or combining sets",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Ni.03",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Integers and powers",
+      "summary": "Understand subtraction as counting back, taking away or difference",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Ni.04",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Integers and powers",
+      "summary": "Recognise pairs of numbers that make 10",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Ni.05",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Integers and powers",
+      "summary": "Add and subtract within 0 to 20",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Ni.06",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Integers and powers",
+      "summary": "Know doubles up to double 10",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Nm.01",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Money",
+      "summary": "Recognise the local currency",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Np.01",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Place value",
+      "summary": "Understand zero means none",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Np.02",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Place value",
+      "summary": "Make and break numbers 10 to 20",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Np.03",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Place value",
+      "summary": "Compare and order numbers 0 to 20",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Np.04",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Place value",
+      "summary": "Use ordinal numbers 1st to 10th",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Gp.01",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Position and transformation",
+      "summary": "Describe position and direction in everyday language",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Ss.03",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Statistics",
+      "summary": "Use more, less, most and least to describe data",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Nc.01",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Counting and sequences",
+      "summary": "Count objects from 0 to 100",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Nc.02",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Counting and sequences",
+      "summary": "Recognise up to 10 objects in unfamiliar patterns without counting",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Nc.04",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Counting and sequences",
+      "summary": "Count on and back in ones, twos, fives and tens within 0 to 100",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Nc.05",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Counting and sequences",
+      "summary": "Recognise features of even and odd numbers to 100",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Nc.06",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Counting and sequences",
+      "summary": "Recognise, describe and extend number sequences",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Ni.01",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Integers and powers",
+      "summary": "Say, read and write numbers 0 to 100",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Ni.02",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Integers and powers",
+      "summary": "Explain how addition and subtraction are related",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Ni.03",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Integers and powers",
+      "summary": "Recognise complements of 20",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Ni.04",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Integers and powers",
+      "summary": "Add and subtract two-digit numbers without regrouping",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Ni.07",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Integers and powers",
+      "summary": "Know the 1, 2, 5 and 10 times tables",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Nm.01",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Money",
+      "summary": "Recognise the value and notation of local currency",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Nm.02",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Money",
+      "summary": "Compare the values of different coin and note combinations",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Np.01",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Place value",
+      "summary": "Understand two-digit place value and zero as a placeholder",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Np.02",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Place value",
+      "summary": "Make and break two-digit numbers into tens and ones",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Np.03",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Place value",
+      "summary": "Compare and order two-digit numbers",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Np.04",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Place value",
+      "summary": "Recognise and use ordinal numbers",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Gp.01",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Position and transformation",
+      "summary": "Use position and direction to describe movement",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Sp.01",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Probability",
+      "summary": "Describe regular and random patterns",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Nc.04",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Counting and sequences",
+      "summary": "Recognise objects standing for unknown numbers in calculations",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Nc.05",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Counting and sequences",
+      "summary": "Extend linear sequences and describe the rule",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Nc.06",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Counting and sequences",
+      "summary": "Extend spatial patterns that grow by a constant amount",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Nm.01",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Money",
+      "summary": "Read money notation with a decimal point",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Nm.02",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Money",
+      "summary": "Add and subtract amounts of money and work out change",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Gp.01",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Position and transformation",
+      "summary": "Describe position and direction, including compass points",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1CT.01",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Computational thinking",
+      "summary": "Follow the steps of an algorithm for an everyday task",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1CT.02",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Computational thinking",
+      "summary": "Spot a single error in an everyday algorithm",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1CT.03",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Computational thinking",
+      "summary": "Give directional instructions: forward, backward, left, right",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1CT.04",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Computational thinking",
+      "summary": "Suggest ordered instructions to complete a simple task",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1CT.05",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Computational thinking",
+      "summary": "Know an algorithm is a set of instructions that solves a problem",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1CT.06",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Computational thinking",
+      "summary": "Know that the order of instructions matters",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1CT.07",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Computational thinking",
+      "summary": "Change an algorithm to change its outcome",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1P.02",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Programming",
+      "summary": "Turn an algorithm into a program that does a simple task",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1P.03",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Programming",
+      "summary": "Predict what a program will do when run",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1P.04",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Programming",
+      "summary": "Know that programs can contain errors",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1P.05",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Programming",
+      "summary": "Run a program to test whether it works",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1P.06",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Programming",
+      "summary": "Work out why a program does not do what was wanted",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1P.07",
+      "framework": "computing",
+      "stage": 1,
+      "strand": "Programming",
+      "summary": "Know that debugging means fixing errors in a program",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "2CT.02",
+      "framework": "computing",
+      "stage": 2,
+      "strand": "Computational thinking",
+      "summary": "Find and fix a single error in an algorithm",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "2CT.05",
+      "framework": "computing",
+      "stage": 2,
+      "strand": "Computational thinking",
+      "summary": "Predict the output of an algorithm",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "2CT.06",
+      "framework": "computing",
+      "stage": 2,
+      "strand": "Computational thinking",
+      "summary": "Write precise instructions to complete a task",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "2P.03",
+      "framework": "computing",
+      "stage": 2,
+      "strand": "Programming",
+      "summary": "Use a repeat command to get the wanted result",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "2P.04",
+      "framework": "computing",
+      "stage": 2,
+      "strand": "Programming",
+      "summary": "Plan instructions for objects in a program",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "2P.07",
+      "framework": "computing",
+      "stage": 2,
+      "strand": "Programming",
+      "summary": "Debug a program until it works",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "2P.08",
+      "framework": "computing",
+      "stage": 2,
+      "strand": "Programming",
+      "summary": "Enter directional instructions into a device to reach a destination",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3CT.02",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Computational thinking",
+      "summary": "Know that efficient algorithms are concise",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3CT.03",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Computational thinking",
+      "summary": "Spot repeated steps in a task",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3CT.05",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Computational thinking",
+      "summary": "Predict the effect of changing an algorithm",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3CT.07",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Computational thinking",
+      "summary": "Identify the inputs to an algorithm",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3CT.08",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Computational thinking",
+      "summary": "Build algorithms whose outputs depend on inputs",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3P.01",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Programming",
+      "summary": "Edit programs to make them clearer and shorter",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3P.03",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Programming",
+      "summary": "Create programs with more than one algorithm running at once",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3P.04",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Programming",
+      "summary": "Create programs with several objects",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "3P.09",
+      "framework": "computing",
+      "stage": 3,
+      "strand": "Programming",
+      "summary": "Test and debug programs until they work",
+      "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    }
+  ]
+}

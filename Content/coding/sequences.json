@@ -1,0 +1,269 @@
+{
+  "note": "Morning Order card sets (sequencing, 1CT.01, 1CT.05, 1CT.06). Cards are listed in the correct order; the game shuffles them. Each card needs pic_<set>_<n> artwork and vo_<set>_<n> narration.",
+  "sets": [
+    {
+      "id": "morning",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Wake up",
+          "picture": "pic_morning_1",
+          "audio": "vo_morning_1"
+        },
+        {
+          "n": 2,
+          "text": "Brush your teeth",
+          "picture": "pic_morning_2",
+          "audio": "vo_morning_2"
+        },
+        {
+          "n": 3,
+          "text": "Eat breakfast",
+          "picture": "pic_morning_3",
+          "audio": "vo_morning_3"
+        }
+      ]
+    },
+    {
+      "id": "hands",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Wet your hands",
+          "picture": "pic_hands_1",
+          "audio": "vo_hands_1"
+        },
+        {
+          "n": 2,
+          "text": "Add soap",
+          "picture": "pic_hands_2",
+          "audio": "vo_hands_2"
+        },
+        {
+          "n": 3,
+          "text": "Rinse",
+          "picture": "pic_hands_3",
+          "audio": "vo_hands_3"
+        },
+        {
+          "n": 4,
+          "text": "Dry your hands",
+          "picture": "pic_hands_4",
+          "audio": "vo_hands_4"
+        }
+      ]
+    },
+    {
+      "id": "sandwich",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Take two slices of bread",
+          "picture": "pic_sandwich_1",
+          "audio": "vo_sandwich_1"
+        },
+        {
+          "n": 2,
+          "text": "Spread the butter",
+          "picture": "pic_sandwich_2",
+          "audio": "vo_sandwich_2"
+        },
+        {
+          "n": 3,
+          "text": "Add the cheese",
+          "picture": "pic_sandwich_3",
+          "audio": "vo_sandwich_3"
+        },
+        {
+          "n": 4,
+          "text": "Put the slices together",
+          "picture": "pic_sandwich_4",
+          "audio": "vo_sandwich_4"
+        }
+      ]
+    },
+    {
+      "id": "seed",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Plant a seed",
+          "picture": "pic_seed_1",
+          "audio": "vo_seed_1"
+        },
+        {
+          "n": 2,
+          "text": "Water it",
+          "picture": "pic_seed_2",
+          "audio": "vo_seed_2"
+        },
+        {
+          "n": 3,
+          "text": "A shoot grows",
+          "picture": "pic_seed_3",
+          "audio": "vo_seed_3"
+        },
+        {
+          "n": 4,
+          "text": "A flower opens",
+          "picture": "pic_seed_4",
+          "audio": "vo_seed_4"
+        }
+      ]
+    },
+    {
+      "id": "sandcastle",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Fill the bucket with sand",
+          "picture": "pic_sandcastle_1",
+          "audio": "vo_sandcastle_1"
+        },
+        {
+          "n": 2,
+          "text": "Pat it down",
+          "picture": "pic_sandcastle_2",
+          "audio": "vo_sandcastle_2"
+        },
+        {
+          "n": 3,
+          "text": "Turn it over",
+          "picture": "pic_sandcastle_3",
+          "audio": "vo_sandcastle_3"
+        },
+        {
+          "n": 4,
+          "text": "Lift the bucket",
+          "picture": "pic_sandcastle_4",
+          "audio": "vo_sandcastle_4"
+        },
+        {
+          "n": 5,
+          "text": "Add a shell on top",
+          "picture": "pic_sandcastle_5",
+          "audio": "vo_sandcastle_5"
+        }
+      ]
+    },
+    {
+      "id": "frog",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Frogspawn",
+          "picture": "pic_frog_1",
+          "audio": "vo_frog_1"
+        },
+        {
+          "n": 2,
+          "text": "Tadpole",
+          "picture": "pic_frog_2",
+          "audio": "vo_frog_2"
+        },
+        {
+          "n": 3,
+          "text": "Tadpole with legs",
+          "picture": "pic_frog_3",
+          "audio": "vo_frog_3"
+        },
+        {
+          "n": 4,
+          "text": "Froglet",
+          "picture": "pic_frog_4",
+          "audio": "vo_frog_4"
+        },
+        {
+          "n": 5,
+          "text": "Frog",
+          "picture": "pic_frog_5",
+          "audio": "vo_frog_5"
+        }
+      ]
+    },
+    {
+      "id": "school",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Get dressed",
+          "picture": "pic_school_1",
+          "audio": "vo_school_1"
+        },
+        {
+          "n": 2,
+          "text": "Eat breakfast",
+          "picture": "pic_school_2",
+          "audio": "vo_school_2"
+        },
+        {
+          "n": 3,
+          "text": "Pack your school bag",
+          "picture": "pic_school_3",
+          "audio": "vo_school_3"
+        },
+        {
+          "n": 4,
+          "text": "Put on your shoes",
+          "picture": "pic_school_4",
+          "audio": "vo_school_4"
+        },
+        {
+          "n": 5,
+          "text": "Walk to school",
+          "picture": "pic_school_5",
+          "audio": "vo_school_5"
+        }
+      ]
+    },
+    {
+      "id": "biscuits",
+      "band": "stage2",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Wash your hands",
+          "picture": "pic_biscuits_1",
+          "audio": "vo_biscuits_1"
+        },
+        {
+          "n": 2,
+          "text": "Mix the dough",
+          "picture": "pic_biscuits_2",
+          "audio": "vo_biscuits_2"
+        },
+        {
+          "n": 3,
+          "text": "Cut out the shapes",
+          "picture": "pic_biscuits_3",
+          "audio": "vo_biscuits_3"
+        },
+        {
+          "n": 4,
+          "text": "Bake in the oven",
+          "picture": "pic_biscuits_4",
+          "audio": "vo_biscuits_4"
+        },
+        {
+          "n": 5,
+          "text": "Let them cool",
+          "picture": "pic_biscuits_5",
+          "audio": "vo_biscuits_5"
+        },
+        {
+          "n": 6,
+          "text": "Eat a biscuit",
+          "picture": "pic_biscuits_6",
+          "audio": "vo_biscuits_6"
+        }
+      ]
+    }
+  ]
+}
