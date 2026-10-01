@@ -4,6 +4,8 @@ A full-screen native macOS learning game for children aged 4–8. Kids explore f
 
 The full game design is in `docs/PLAN.md`. Read it before starting a new phase.
 
+The mini-game catalogue, the freshness system (random rounds, skins, Bip's planner, surprises) and the plug-in architecture are in `docs/GAMES.md`. Every mini-game must follow its template: one game type file, content from data lists, rounds generated at random and validated by tests.
+
 ## Who this is for right now
 
 The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only. UK / South African spelling everywhere (colour, mum, favourite) — in code comments, UI text and docs.
