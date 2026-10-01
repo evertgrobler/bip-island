@@ -117,3 +117,9 @@
   "Free Tier disabled, unusual activity" and succeeds on retry. Batches of 6 avoid the 429 rate limit.
 - **1 Oct, night (3):** Morning Order uses the shared game levels (games.json `cards`: 3, 4, whole
   story for stage 1+). `MorningOrderGame.trimmed` cuts a story to its first N steps (never under 3).
+- **1 Oct, night:** Building play deepened. Word Builder: tiles show real graphemes (was showing ids
+  like `oo_short`), tap a tile to drop it in the next space (drag still works), each tile says its
+  sound as it lands, spare tiles come only from taught sounds that can't spell the word (`spares` in
+  games.json levels: 1, 2, 2, 3), split-digraph words left out, and a right answer is sounded out tile
+  by tile. Bip's Path: footprints show the route, an arrow shows which way Bip faces on turning
+  puzzles (`GridWalker.facings`), plus take-back and clear buttons.

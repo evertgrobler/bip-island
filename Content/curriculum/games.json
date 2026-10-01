@@ -473,7 +473,15 @@
           "soundCounts": [
             3
           ],
-          "note": "Three-sound words"
+          "spares": 1,
+          "note": "Three-sound words, one spare tile"
+        },
+        {
+          "soundCounts": [
+            3
+          ],
+          "spares": 2,
+          "note": "Two spare tiles"
         },
         {
           "band": "stage1",
@@ -481,6 +489,7 @@
             3,
             4
           ],
+          "spares": 2,
           "note": "Three and four sounds"
         },
         {
@@ -488,7 +497,8 @@
             4,
             5
           ],
-          "note": "Longer words"
+          "spares": 3,
+          "note": "Longer words, three spares"
         }
       ]
     },
