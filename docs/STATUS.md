@@ -86,6 +86,13 @@
   (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from a local feed.
   Main builds go to a public Vercel Blob store (`godot-test/`); the Swift app's feed is untouched.
 - Drawing is y-down in Godot: when porting a Swift drawing, negate y values and angles.
+- Drawing kit ported (Phase 2, part): `Buttons`, `PictureNode` (+ `PictureCard`), `EmojiPictures`
+  (Noto via `Fonts.Emoji`), `StepPictures`, `Avatars`, `Sketch.StarPoints`. Ports keep the Swift numbers
+  and seeds through `Up.cs` (`P`/`R` flip y, `Turn` negates angles, `Pen` = Sketch.Node with doubles).
+  Tap names are node metadata (`Buttons.TapMeta`), since Godot node names can't hold a colon.
+- Dev page: `--bip-scene res://Scenes/Dev/PictureGallery.tscn [--bip-gallery-page N]` shows every
+  manifest picture (6 pages; the last has buttons, avatars, Bip, stars). Screenshot with the xvfb
+  command plus `--bip-screenshot out.png`. The title counts ids "without art" (should be 0).
 
 ## Gotchas learned the hard way
 
@@ -160,3 +167,7 @@
   (Velopack portable app, ad-hoc signed, `.dmg`) install an older build and update themselves from a
   local feed with saved data intact. Velopack's Mac packer needs a `.entitlements` file and has no
   `--skipVeloAppCheck` (Windows only).
+- **1 Oct, night (4):** Ported the drawing kit to Godot (Buttons, PictureNode, EmojiPictures,
+  StepPictures, Avatars, star helper) plus the PictureGallery dev scene and `--bip-scene`. All 343
+  manifest pictures render with art; checked page by page from xvfb screenshots. Fixed `rocket_4`
+  (moon spilled off the card) in both Swift and Godot.

@@ -50,6 +50,8 @@ public static class Fonts
 
     public static Font Regular { get; private set; } = ThemeDB.FallbackFont;
     public static Font Bold { get; private set; } = ThemeDB.FallbackFont;
+    /// <summary>Picture emoji (stand-in pictures, avatars): Noto Color Emoji, the same on Mac and Windows.</summary>
+    public static Font Emoji { get; private set; } = ThemeDB.FallbackFont;
     /// <summary>Letters and words the child reads.</summary>
     public static Font Letters => Bold;
 
@@ -62,6 +64,7 @@ public static class Fonts
     {
         var emoji = ResourceLoader.Exists(EmojiPath) ? GD.Load<FontFile>(EmojiPath) : null;
         EmojiInstalled = emoji != null;
+        if (emoji != null) Emoji = emoji;
         var regular = LoadWithFallback(RegularPath, emoji);
         var bold = LoadWithFallback(BoldPath, emoji);
         IsInstalled = regular != null && bold != null;

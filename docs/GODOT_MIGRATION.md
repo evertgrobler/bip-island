@@ -133,6 +133,7 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 - [ ] Phase 0 — Godot skeleton, `godot.yml` CI, test feed, install-and-update test green on Mac and Windows
 - [ ] Phase 1 — `BipCore` in C#, 109 tests ported and passing, audio as `.ogg`
 - [ ] Phase 2 — Drawing kit, audio, coordinator, input, map, islands, profiles and charging screens
+  - [x] Drawing kit: Palette, Sketch, Bip, Buttons, PictureNode, EmojiPictures, StepPictures, Avatars (picture gallery dev scene)
 - [ ] Phase 3 — The 11 games
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
 - [ ] Phase 5 — Owner test, progress export/import, family feed switched, Swift code retired, docs updated

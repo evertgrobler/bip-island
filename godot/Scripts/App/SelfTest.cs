@@ -14,6 +14,7 @@ namespace BipIsland.App;
 ///   --bip-report &lt;file&gt;               write a JSON report (version, fonts, clips, content, save) and quit
 ///   --bip-screenshot &lt;file&gt;           save a PNG of the first screen and quit
 ///   --bip-update-test &lt;feed&gt; &lt;file&gt;  save something, update from the feed, restart, then write the report
+///   --bip-scene &lt;res://path.tscn&gt;     open that scene first (Boot), e.g. to screenshot a dev page
 /// </summary>
 public static class SelfTest
 {
