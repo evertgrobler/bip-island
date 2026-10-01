@@ -11,7 +11,7 @@ final class StickerScene: BaseScene {
     private let earned: Set<String>
     private let starCount: Int
 
-    init(coordinator: GameCoordinator) {
+    override init(coordinator: GameCoordinator) {
         let content = coordinator.content
         soundStickers = content.map { PhonicsCourse($0.phonics).allSounds } ?? []
         skillStickers = content?.skills.skills ?? []

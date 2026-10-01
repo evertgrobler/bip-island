@@ -1,5 +1,6 @@
 import BipCore
 import Combine
+import Foundation
 
 /// Play length, break length and the optional daily maximum, set by parents behind the
 /// parent gate. Stored on this Mac only.
