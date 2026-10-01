@@ -87,7 +87,7 @@ final class BipNode: SKNode {
             cheek.position = CGPoint(x: x, y: 30)
             head.addChild(cheek)
         }
-        head.addChild(Sketch.node(.arc(center: CGPoint(x: 0, y: 32), rx: 22, ry: 14, from: .pi * 1.15, to: .pi * 1.85), lineWidth: 4.5, seed: next()))
+        head.addChild(Sketch.node(.arc(center: CGPoint(x: 0, y: 32), rx: 22, ry: 14, from: CGFloat.pi * 1.15, to: CGFloat.pi * 1.85), lineWidth: 4.5, seed: next()))
     }
 
     private func startIdle() {

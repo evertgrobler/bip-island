@@ -37,7 +37,7 @@ final class MapScene: BaseScene {
             n.addChild(word)
         }
         addIsland(id: "coding", at: CGPoint(x: 400, y: -220), colour: Palette.lightTeal, open: false, seed: 660) { n in
-            for (i, angle) in [CGFloat(0), .pi / 2, 0].enumerated() {
+            for (i, angle) in [CGFloat(0), CGFloat.pi / 2, CGFloat(0)].enumerated() {
                 let arrow = Sketch.node(.polygon([CGPoint(x: -26, y: -9), CGPoint(x: 4, y: -9), CGPoint(x: 4, y: -24), CGPoint(x: 30, y: 0), CGPoint(x: 4, y: 24), CGPoint(x: 4, y: 9), CGPoint(x: -26, y: 9)]),
                                         fill: Palette.orange, lineWidth: 4, seed: 670 + UInt64(i))
                 arrow.zRotation = angle

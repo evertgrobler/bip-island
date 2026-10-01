@@ -17,7 +17,7 @@ enum PictureNode {
     private static func sun() -> SKNode {
         let n = SKNode()
         for i in 0..<10 {
-            let a = CGFloat(i) / 10 * 2 * .pi
+            let a = CGFloat(i) / 10 * 2 * CGFloat.pi
             let ray = SketchShape.polyline([
                 CGPoint(x: 72 * cos(a), y: 72 * sin(a)),
                 CGPoint(x: 100 * cos(a), y: 100 * sin(a)),
@@ -27,7 +27,7 @@ enum PictureNode {
         n.addChild(Sketch.node(.ellipse(center: .zero, rx: 60, ry: 60), fill: Palette.sun, seed: 311))
         n.addChild(dot(-20, 12, 6))
         n.addChild(dot(20, 12, 6))
-        n.addChild(Sketch.node(.arc(center: CGPoint(x: 0, y: -2), rx: 26, ry: 20, from: .pi * 1.15, to: .pi * 1.85), lineWidth: 5, seed: 312))
+        n.addChild(Sketch.node(.arc(center: CGPoint(x: 0, y: -2), rx: 26, ry: 20, from: CGFloat.pi * 1.15, to: CGFloat.pi * 1.85), lineWidth: 5, seed: 312))
         return n
     }
 
@@ -80,7 +80,7 @@ enum PictureNode {
         let n = SKNode()
         n.addChild(Sketch.node(.polyline([CGPoint(x: -115, y: -62), CGPoint(x: 115, y: -62)]), ink: Palette.sea, lineWidth: 6, seed: 350))
         var dome: [CGPoint] = (0...12).map { i in
-            let a = CGFloat(i) / 12 * .pi
+            let a = CGFloat(i) / 12 * CGFloat.pi
             return CGPoint(x: 100 * cos(a), y: -60 + 110 * sin(a))
         }
         dome.append(CGPoint(x: -100, y: -60))
@@ -90,7 +90,7 @@ enum PictureNode {
             n.addChild(Sketch.node(.polyline([CGPoint(x: -halfWidth + 6, y: height), CGPoint(x: halfWidth - 6, y: height)]), ink: Palette.sea, lineWidth: 3.5, seed: 352 + UInt64(i)))
         }
         var door: [CGPoint] = (0...8).map { i in
-            let a = CGFloat(i) / 8 * .pi
+            let a = CGFloat(i) / 8 * CGFloat.pi
             return CGPoint(x: 30 * cos(a), y: -60 + 50 * sin(a))
         }
         door.append(CGPoint(x: -30, y: -60))

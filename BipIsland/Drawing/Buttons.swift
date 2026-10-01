@@ -86,7 +86,7 @@ enum Buttons {
             dot.position = point
             dot.zPosition = 50
             parent.addChild(dot)
-            let angle = CGFloat(i) / 12 * 2 * .pi + CGFloat.random(in: -0.2...0.2)
+            let angle = CGFloat(i) / 12 * 2 * CGFloat.pi + CGFloat.random(in: -0.2...0.2)
             let distance = CGFloat.random(in: 90...170)
             let fly = SKAction.moveBy(x: distance * cos(angle), y: distance * sin(angle), duration: 0.5)
             fly.timingMode = .easeOut

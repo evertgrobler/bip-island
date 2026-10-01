@@ -20,9 +20,9 @@ enum SketchShape {
     func points(spacing: CGFloat = 18) -> [CGPoint] {
         switch self {
         case let .ellipse(c, rx, ry):
-            let count = max(14, Int(2 * .pi * max(rx, ry) / spacing))
+            let count = max(14, Int(2 * CGFloat.pi * max(rx, ry) / spacing))
             return (0..<count).map { i in
-                let a = CGFloat(i) / CGFloat(count) * 2 * .pi
+                let a = CGFloat(i) / CGFloat(count) * 2 * CGFloat.pi
                 return CGPoint(x: c.x + rx * cos(a), y: c.y + ry * sin(a))
             }
         case let .arc(c, rx, ry, from, to):
@@ -42,7 +42,7 @@ enum SketchShape {
             ]
             for (centre, start) in centres {
                 for step in 0...4 {
-                    let a = start + CGFloat(step) / 4 * (.pi / 2)
+                    let a = start + CGFloat(step) / 4 * (CGFloat.pi / 2)
                     corners.append(CGPoint(x: centre.x + r * cos(a), y: centre.y + r * sin(a)))
                 }
             }
@@ -172,7 +172,7 @@ enum Sketch {
     static func starPoints(center: CGPoint, radius: CGFloat) -> [CGPoint] {
         (0..<10).map { i in
             let r = i.isMultiple(of: 2) ? radius : radius * 0.45
-            let a = CGFloat.pi / 2 + CGFloat(i) * .pi / 5
+            let a = CGFloat.pi / 2 + CGFloat(i) * CGFloat.pi / 5
             return CGPoint(x: center.x + r * cos(a), y: center.y + r * sin(a))
         }
     }

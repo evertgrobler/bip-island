@@ -68,7 +68,7 @@ final class BipSounds {
             }
         case .whirr:
             return synth(duration: 0.45) { t in
-                let f = 300 + 900 * (t / 0.45) + 40 * sin(2 * .pi * 28 * t)
+                let f = 300 + 900 * (t / 0.45) + 40 * sin(2 * Double.pi * 28 * t)
                 return (f, Self.envelope(t, length: 0.45), 0.25)
             }
         case .boop:
@@ -109,7 +109,7 @@ final class BipSounds {
         for i in 0..<Int(frames) {
             let t = Double(i) / Self.sampleRate
             let (frequency, amplitude, squareness) = shape(t)
-            phase += 2 * .pi * frequency / Self.sampleRate
+            phase += 2 * Double.pi * frequency / Self.sampleRate
             var sample = sin(phase)
             if harmonics > 0 {
                 sample += squareness * sin(3 * phase) / 3 + squareness * sin(5 * phase) / 5
@@ -134,7 +134,7 @@ final class BipSounds {
                 let start = Double(n) * spacing
                 guard t >= start else { continue }
                 let local = t - start
-                let bell = sin(2 * .pi * frequency * local) + 0.3 * sin(2 * .pi * frequency * 2.01 * local)
+                let bell = sin(2 * Double.pi * frequency * local) + 0.3 * sin(2 * Double.pi * frequency * 2.01 * local)
                 sample += bell * Self.envelope(local, length: duration - start, attack: 0.004)
             }
             data[i] = Float(sample * 0.18)
