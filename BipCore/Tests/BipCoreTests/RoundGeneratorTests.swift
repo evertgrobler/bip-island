@@ -13,6 +13,14 @@ final class RoundGeneratorTests: XCTestCase {
         let meet: MeetTheSoundGame
         let hunt: SoundHuntGame
         let pop: BubblePopGame
+        let trace: LetterTraceGame
+        let monster: FeedMonsterGame
+        let count: CountTapGame
+        let quick: QuickLookGame
+        let buttons: SoundButtonsGame
+        let builder: WordBuilderGame
+        let order: MorningOrderGame
+        let path: BipsPathGame
     }
 
     private func fixture() throws -> Fixture {
@@ -21,7 +29,15 @@ final class RoundGeneratorTests: XCTestCase {
         return Fixture(content: content, course: course,
                        meet: try MeetTheSoundGame(content: content, course: course),
                        hunt: try SoundHuntGame(content: content, course: course),
-                       pop: try BubblePopGame(content: content, course: course))
+                       pop: try BubblePopGame(content: content, course: course),
+                       trace: try LetterTraceGame(content: content, course: course),
+                       monster: try FeedMonsterGame(content: content, course: course),
+                       count: try CountTapGame(content: content),
+                       quick: try QuickLookGame(content: content),
+                       buttons: try SoundButtonsGame(content: content, course: course),
+                       builder: try WordBuilderGame(content: content),
+                       order: try MorningOrderGame(content: content),
+                       path: try BipsPathGame(content: content))
     }
 
     /// A random child: some groups unlocked, some sounds met, sometimes a focus sound.
@@ -198,13 +214,221 @@ final class RoundGeneratorTests: XCTestCase {
         XCTAssertEqual(met.count, 6, "then the known ones, until all six have been used")
     }
 
+    // MARK: Letter Trace
+
+    func testLetterTraceRoundsAreFair() throws {
+        let f = try fixture()
+        playSessions(of: f.trace, f, rounds: Self.roundsPerGame, seed: 20) { round, learner, _ in
+            XCTAssertEqual(f.trace.correctChoices(in: round).map(\.id), [round.sound.id])
+            XCTAssertLessThanOrEqual(round.sound.group, learner.unlockedPhonicsGroup)
+            if let focus = learner.focusSoundID { XCTAssertEqual(round.sound.id, focus) }
+            XCTAssertTrue(f.content.audioIDs.contains(round.sound.soundClip))
+        }
+    }
+
+    // MARK: Feed the Monster
+
+    func testFeedMonsterRoundsAreFair() throws {
+        let f = try fixture()
+        var answerPositions = Set<Int>()
+        var targets = Set<String>()
+        playSessions(of: f.monster, f, rounds: Self.roundsPerGame, seed: 21) { round, learner, _ in
+            XCTAssertEqual(round.choices.count, FeedMonsterGame.choiceCount)
+            XCTAssertEqual(Set(round.choices.map(\.word)).count, round.choices.count, "a food twice in one round")
+
+            // Exactly one right food, by the game's own rule…
+            XCTAssertEqual(f.monster.correctChoices(in: round), [round.answer])
+            // …and checked again straight from the content: only the answer starts with the target sound.
+            let starting = round.choices.filter { firstSoundIPA(of: $0.word, f.content) == round.target.ipa }
+            XCTAssertEqual(starting.map(\.word), [round.answer.word], "\(round.target.id): \(round.choices.map(\.word))")
+
+            XCTAssertTrue(learner.knownSoundIDs.contains(round.target.id), "asked about a sound the child hasn't met")
+            XCTAssertLessThanOrEqual(round.target.group, learner.unlockedPhonicsGroup)
+            for food in round.choices {
+                let banked = try XCTUnwrap(f.content.word(food.word), "\(food.word) isn't in the word bank")
+                XCTAssertLessThanOrEqual(banked.decodableFromGroup, learner.unlockedPhonicsGroup)
+                XCTAssertTrue(f.content.pictureIDs.contains(food.picture), food.picture)
+                XCTAssertTrue(f.content.audioIDs.contains(food.audio), food.audio)
+            }
+            XCTAssertTrue(f.content.audioIDs.contains(round.target.soundClip))
+            answerPositions.insert(round.choices.firstIndex(of: round.answer)!)
+            targets.insert(round.target.id)
+        }
+        XCTAssertEqual(answerPositions, [0, 1, 2], "the answer should turn up in every position")
+        XCTAssertGreaterThan(targets.count, 5, "rounds should cover several sounds with foods")
+    }
+
+    func testFeedMonsterNeverRepeatsAFoodInASession() throws {
+        let f = try fixture()
+        var rng = SeededGenerator(seed: 22)
+        for _ in 0..<200 {
+            let learner = randomLearner(f, using: &rng)
+            var session = GameSession(gameID: FeedMonsterGame.id, skin: f.monster.skins[0], maxRounds: 500)
+            var answers: [String] = []
+            while let round = session.nextRound(of: f.monster, for: learner, using: &rng) {
+                answers.append(round.answer.word)
+            }
+            XCTAssertEqual(answers.count, Set(answers).count, "repeated: \(answers)")
+        }
+    }
+
+    // MARK: Count & Tap
+
+    func testCountTapRoundsAreFair() throws {
+        let f = try fixture()
+        var answerPositions = Set<Int>()
+        playSessions(of: f.count, f, rounds: Self.roundsPerGame, seed: 23) { round, _, _ in
+            XCTAssertEqual(round.choices.count, 3)
+            XCTAssertEqual(Set(round.choices).count, 3, "two identical numerals")
+            XCTAssertEqual(f.count.correctChoices(in: round), [round.count])
+            XCTAssertTrue((1...20).contains(round.count), "out of range: \(round.count)")
+            XCTAssertTrue(f.content.numbers.countingObjects.contains(round.object))
+            XCTAssertTrue(f.content.pictureIDs.contains(round.object.picture), round.object.picture)
+            XCTAssertTrue(f.content.audioIDs.contains(round.object.audioPlural), round.object.audioPlural)
+            XCTAssertTrue(f.content.audioIDs.contains(AudioCatalogue.numberClip(round.count)))
+            answerPositions.insert(round.choices.firstIndex(of: round.count)!)
+        }
+        XCTAssertEqual(answerPositions, [0, 1, 2], "the answer should turn up in every position")
+    }
+
+    // MARK: Quick Look
+
+    func testQuickLookRoundsAreFair() throws {
+        let f = try fixture()
+        playSessions(of: f.quick, f, rounds: Self.roundsPerGame, seed: 24) { round, _, _ in
+            XCTAssertEqual(round.choices.count, 3)
+            XCTAssertEqual(Set(round.choices).count, 3, "two identical numerals")
+            XCTAssertEqual(f.quick.correctChoices(in: round), [round.count])
+            // Random learners are foundation band: they see up to 5 at a glance.
+            XCTAssertTrue((1...5).contains(round.count), "out of range: \(round.count)")
+            XCTAssertTrue(f.content.audioIDs.contains(AudioCatalogue.numberClip(round.count)))
+        }
+    }
+
+    func testQuickLookReachesTenForOlderChildren() throws {
+        let f = try fixture()
+        var rng = SeededGenerator(seed: 25)
+        let learner = Learner(band: .stage1, unlockedPhonicsGroup: 9,
+                              knownSoundIDs: Set(f.course.allSounds.map(\.id)))
+        var seen = Set<Int>()
+        for _ in 0..<200 {
+            var session = GameSession(gameID: QuickLookGame.id, skin: f.quick.skins[0], maxRounds: 1)
+            if let round = session.nextRound(of: f.quick, for: learner, using: &rng) { seen.insert(round.count) }
+        }
+        XCTAssertEqual(seen, Set(1...10), "stage 1 sees 1 to 10")
+    }
+
+    // MARK: Sound Buttons
+
+    func testSoundButtonsRoundsAreFair() throws {
+        let f = try fixture()
+        var answerPositions = Set<Int>()
+        var answers = Set<String>()
+        playSessions(of: f.buttons, f, rounds: Self.roundsPerGame, seed: 26) { round, learner, _ in
+            XCTAssertEqual(round.choices.count, SoundButtonsGame.choiceCount)
+            XCTAssertEqual(Set(round.choices.map(\.word)).count, round.choices.count, "a picture twice in one round")
+            XCTAssertEqual(f.buttons.correctChoices(in: round).map(\.word), [round.answer.word])
+            // Random learners are foundation band: three-sound decodable words only.
+            XCTAssertEqual(round.word.soundCount, 3)
+            XCTAssertLessThanOrEqual(round.word.decodableFromGroup, learner.unlockedPhonicsGroup)
+            for choice in round.choices {
+                XCTAssertTrue(f.content.pictureIDs.contains(choice.picture), choice.picture)
+                XCTAssertTrue(f.content.audioIDs.contains(choice.audio), choice.audio)
+            }
+            answerPositions.insert(round.choices.firstIndex(of: round.answer)!)
+            answers.insert(round.answer.word)
+        }
+        XCTAssertEqual(answerPositions, [0, 1, 2], "the answer should turn up in every position")
+        XCTAssertGreaterThan(answers.count, 20, "rounds should cover many different words")
+    }
+
+    // MARK: Word Builder
+
+    func testWordBuilderRoundsAreFair() throws {
+        let f = try fixture()
+        var answers = Set<String>()
+        playSessions(of: f.builder, f, rounds: Self.roundsPerGame, seed: 27) { round, learner, _ in
+            XCTAssertEqual(round.choices.count, WordBuilderGame.choiceCount)
+            XCTAssertEqual(f.builder.correctChoices(in: round), [round.answer])
+            XCTAssertEqual(round.answer, round.word.graphemes, "the answer must spell the word")
+            XCTAssertEqual(round.word.soundCount, 3, "foundation band builds 3-sound words")
+            XCTAssertLessThanOrEqual(round.word.decodableFromGroup, learner.unlockedPhonicsGroup)
+            for choice in round.choices {
+                XCTAssertEqual(choice.sorted(), round.answer.sorted(), "\(choice) isn't made of the word's tiles")
+            }
+            XCTAssertEqual(Set(round.choices).count, round.choices.count, "two identical tile rows")
+            answers.insert(round.word.word)
+        }
+        XCTAssertGreaterThan(answers.count, 20, "rounds should cover many different words")
+    }
+
+    // MARK: Morning Order
+
+    func testMorningOrderRoundsAreFair() throws {
+        let f = try fixture()
+        var seenSets = Set<String>()
+        playSessions(of: f.order, f, rounds: Self.roundsPerGame, seed: 28) { round, learner, _ in
+            XCTAssertEqual(round.choices.count, MorningOrderGame.choiceCount)
+            XCTAssertEqual(f.order.correctChoices(in: round), [round.answer])
+            XCTAssertEqual(round.answer.map(\.n), Array(1...round.set.cards.count), "the answer must run first-to-last")
+            XCTAssertLessThanOrEqual(round.set.band, learner.band)
+            for choice in round.choices {
+                XCTAssertEqual(choice.sorted { $0.n < $1.n }, round.answer, "a choice isn't made of the set's cards")
+            }
+            XCTAssertEqual(Set(round.choices).count, round.choices.count, "two identical orders")
+            seenSets.insert(round.set.id)
+        }
+        XCTAssertGreaterThan(seenSets.count, 2, "rounds should cover several routines")
+    }
+
+    // MARK: Bip's Path
+
+    func testBipsPathRoundsAreFair() throws {
+        let f = try fixture()
+        var answerPositions = Set<Int>()
+        var seenLevels = Set<String>()
+        playSessions(of: f.path, f, rounds: Self.roundsPerGame, seed: 29) { round, learner, _ in
+            XCTAssertEqual(round.choices.count, BipsPathGame.choiceCount)
+            XCTAssertEqual(f.path.correctChoices(in: round), [round.answer])
+            XCTAssertEqual(round.answer, round.level.optimalProgram)
+            XCTAssertLessThanOrEqual(round.level.band, learner.band)
+            // Checked with the interpreter, not by trust: only the answer reaches the battery.
+            for choice in round.choices {
+                XCTAssertEqual(GridWalker.reachesGoal(program: choice, on: round.level), choice == round.answer,
+                               "\(round.level.id): \(choice)")
+            }
+            XCTAssertEqual(Set(round.choices).count, round.choices.count, "two identical programs")
+            answerPositions.insert(round.choices.firstIndex(of: round.answer)!)
+            seenLevels.insert(round.level.id)
+        }
+        XCTAssertEqual(answerPositions, [0, 1, 2], "the answer should turn up in every position")
+        XCTAssertGreaterThan(seenLevels.count, 5, "rounds should cover several levels")
+    }
+
+    func testGridWalkerBasics() throws {
+        let f = try fixture()
+        let levels = f.content.levels.levels.filter { $0.game == BipsPathGame.id }
+        XCTAssertGreaterThan(levels.count, 10)
+        for level in levels {
+            XCTAssertNotEqual(level.start, level.goal, "\(level.id) starts on its goal")
+            XCTAssertTrue(GridWalker.reachesGoal(program: level.optimalProgram, on: level),
+                          "\(level.id): the content's own solution doesn't reach the battery")
+            XCTAssertFalse(GridWalker.reachesGoal(program: [], on: level), "\(level.id): doing nothing shouldn't win")
+        }
+        let bottomRow = try XCTUnwrap(levels.first { $0.start.row == $0.grid.rows - 1 },
+                                          "no level starts on the bottom row")
+        XCTAssertFalse(GridWalker.reachesGoal(program: ["down"], on: bottomRow), "walking off the grid should fail")
+    }
+
     // MARK: The template
 
     func testEveryGameListsAtLeastThreeSkins() throws {
         let f = try fixture()
-        XCTAssertGreaterThanOrEqual(f.meet.skins.count, 3)
-        XCTAssertGreaterThanOrEqual(f.hunt.skins.count, 3)
-        XCTAssertGreaterThanOrEqual(f.pop.skins.count, 3)
+        for skins in [f.meet.skins, f.hunt.skins, f.pop.skins, f.trace.skins, f.monster.skins,
+                      f.count.skins, f.quick.skins, f.buttons.skins, f.builder.skins,
+                      f.order.skins, f.path.skins] {
+            XCTAssertGreaterThanOrEqual(skins.count, 3)
+        }
     }
 
     func testSessionsPickOnlySkinsTheAppCanDraw() throws {

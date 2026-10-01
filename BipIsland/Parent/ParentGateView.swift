@@ -70,6 +70,10 @@ struct ParentGateView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
+            if let settings = gate.playSettings {
+                PlaySettingsView(settings: settings, gate: gate)
+            }
+
             VStack(spacing: 12) {
                 Button("Back to the game") { gate.close() }
                     .keyboardShortcut(.defaultAction)
@@ -87,6 +91,35 @@ struct ParentGateView: View {
             .controlSize(.large)
             .padding(.top, 8)
         }
+    }
+}
+
+/// Play length, break length and the daily maximum. Grown-ups only.
+struct PlaySettingsView: View {
+    @ObservedObject var settings: PlayTimeSettings
+    @ObservedObject var gate: ParentGateModel
+    @State private var dailyMaxOn: Bool = false
+
+    var body: some View {
+        VStack(spacing: 10) {
+            Text("Play time")
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+            Stepper("Play for \(settings.playMinutes) minutes", value: $settings.playMinutes, in: 5...120, step: 5)
+            Stepper("Break for \(settings.breakMinutes) minutes", value: $settings.breakMinutes, in: 5...60, step: 5)
+            Toggle("Daily maximum", isOn: $dailyMaxOn)
+                .onChange(of: dailyMaxOn) { _, on in
+                    settings.dailyMaxMinutes = on ? (settings.dailyMaxMinutes ?? 60) : nil
+                }
+            if dailyMaxOn {
+                Stepper("At most \(settings.dailyMaxMinutes ?? 60) minutes a day",
+                        value: Binding(get: { settings.dailyMaxMinutes ?? 60 },
+                                       set: { settings.dailyMaxMinutes = $0 }),
+                        in: 10...240, step: 10)
+            }
+            Button("End Bip's break now") { gate.endBreakEarly() }
+        }
+        .controlSize(.large)
+        .onAppear { dailyMaxOn = settings.dailyMaxMinutes != nil }
     }
 }
 

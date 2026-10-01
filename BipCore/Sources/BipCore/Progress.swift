@@ -92,8 +92,12 @@ public struct SkillRecord: Codable, Equatable, Sendable {
 /// Everything one child has learnt: a level for each sound, and a record for each skill.
 /// Saved as JSON inside the child's profile, so new fields can be added without losing progress.
 public struct ChildProgress: Codable, Equatable, Sendable {
-    public static let currentVersion = 1
+    public static let currentVersion = 2
     static let recentGamesKept = 20
+    /// Stars in Bip's jar: one per right answer. Every 10 earn a sticker.
+    public static let starsPerSticker = 10
+    /// Bonus stars from Bip's mystery box, once a day.
+    public static let mysteryBonusStars = 5
 
     public private(set) var version: Int
     /// Sound stages (new → met → recognises → mastered), keyed by sound id.
@@ -102,12 +106,21 @@ public struct ChildProgress: Codable, Equatable, Sendable {
     public private(set) var skills: [String: SkillRecord]
     /// Game ids, most recent last, for Bip's suggestions.
     public private(set) var recentGames: [String]
+    /// Stars in Bip's jar.
+    public private(set) var stars: Int
+    /// The day Bip's mystery box was last opened (nil if never).
+    public private(set) var lastMysteryDay: Int?
+    /// Where the play-time break stands (nil until the first play session is recorded).
+    public private(set) var breaks: BreakState?
 
     public init(sounds: MasteryTracker = MasteryTracker()) {
         version = Self.currentVersion
         self.sounds = sounds
         skills = [:]
         recentGames = []
+        stars = 0
+        lastMysteryDay = nil
+        breaks = nil
     }
 
     public init(from decoder: Decoder) throws {
@@ -116,6 +129,9 @@ public struct ChildProgress: Codable, Equatable, Sendable {
         sounds = try c.decodeIfPresent(MasteryTracker.self, forKey: .sounds) ?? MasteryTracker()
         skills = try c.decodeIfPresent([String: SkillRecord].self, forKey: .skills) ?? [:]
         recentGames = try c.decodeIfPresent([String].self, forKey: .recentGames) ?? []
+        stars = try c.decodeIfPresent(Int.self, forKey: .stars) ?? 0
+        lastMysteryDay = try c.decodeIfPresent(Int.self, forKey: .lastMysteryDay)
+        breaks = try c.decodeIfPresent(BreakState.self, forKey: .breaks)
     }
 
     public func skill(_ id: String) -> SkillRecord {
@@ -150,12 +166,14 @@ public struct ChildProgress: Codable, Equatable, Sendable {
     }
 
     /// Records one answered question: against the skill (for mastery and review) and, if given,
-    /// against the sound (for its stage). Returns the sound's level change.
+    /// against the sound (for its stage). A right answer also drops a star into Bip's jar.
+    /// Returns the sound's level change.
     @discardableResult
     public mutating func recordAnswer(correct: Bool, skillID: String, soundID: String?, day: Int, rules: MasteryRules) -> MasteryChange {
         var record = skill(skillID)
         record.record(correct: correct, on: day, rules: rules)
         skills[skillID] = record
+        if correct { stars += 1 }
         guard let soundID else { return .none }
         return sounds.record(correct: correct, for: soundID, rules: rules)
     }
@@ -169,5 +187,18 @@ public struct ChildProgress: Codable, Equatable, Sendable {
         if recentGames.count > Self.recentGamesKept {
             recentGames.removeFirst(recentGames.count - Self.recentGamesKept)
         }
+    }
+
+    /// Bip's mystery box: once a day, bonus stars. Returns true when the box was full.
+    public mutating func claimMysteryBox(on day: Int) -> Bool {
+        guard lastMysteryDay != day else { return false }
+        lastMysteryDay = day
+        stars += Self.mysteryBonusStars
+        return true
+    }
+
+    /// Records play-time break progress. See PlayBreaks.
+    public mutating func setBreaks(_ state: BreakState) {
+        breaks = state
     }
 }
