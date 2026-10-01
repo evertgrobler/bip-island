@@ -45,10 +45,31 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Set up tools
+        timeout-minutes: 10
         run: |
-          sudo apt-get update -q
-          sudo apt-get install -y -q ffmpeg xvfb libgl1 libglx-mesa0 mesa-utils > /dev/null
-          dotnet tool install -g vpk --version "$VPK_VERSION"
+          # Only install what the runner image lacks; a slow package mirror once hung this step.
+          missing=""
+          command -v ffmpeg > /dev/null || missing="$missing ffmpeg"
+          command -v xvfb-run > /dev/null || missing="$missing xvfb"
+          ldconfig -p | grep -q 'libGL.so.1' || missing="$missing libgl1 libglx-mesa0"
+          if [ -n "$missing" ]; then
+            echo "Installing:$missing"
+            for attempt in 1 2 3; do
+              if timeout 180 sudo apt-get update -q -o Acquire::Retries=3 > /dev/null &&
+                 timeout 300 sudo apt-get install -y -q --no-install-recommends -o Acquire::Retries=3 $missing > /dev/null; then
+                break
+              fi
+              [ "$attempt" = 3 ] && { echo "::error::Couldn't install:$missing"; exit 1; }
+              echo "Package install attempt $attempt failed; trying again."
+              sleep 10
+            done
+          fi
+          ffmpeg -version | head -1
+          command -v xvfb-run
+
+      - name: Install Velopack
+        timeout-minutes: 5
+        run: dotnet tool install -g vpk --version "$VPK_VERSION"
 
       - name: Check game content
         run: python3 scripts/validate_content.py
