@@ -40,12 +40,12 @@ public struct WordBuilderGame: MiniGame {
 
     public init(content: ContentLibrary) throws {
         entry = try content.entry(forGame: Self.id)
-        course = PhonicsCourse(content)
-        let known = Set(course.allSounds.map(\.id))
+        let phonics = PhonicsCourse(content)
+        course = phonics
         // Split digraphs (a-e in cake) can't sit in one slot, so those words stay out.
         words = content.words.words.filter { word in
             word.picturable && word.picture != nil && word.graphemes.allSatisfy { id in
-                known.contains(id) && course.sound(id: id).map { !$0.grapheme.contains("-") } == true
+                phonics.sound(id: id).map { !$0.grapheme.contains("-") } == true
             }
         }
     }
