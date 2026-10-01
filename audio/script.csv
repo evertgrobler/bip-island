@@ -1,0 +1,38 @@
+file,text,notes,placeholder
+snd_s.m4a,sssss,"Stretchy sound. A clean hiss held for about 1 second. Never the letter name ""ess"". No vowel before or after.",sss
+snd_a.m4a,"a, as in apple","Short vowel /æ/ as in apple, ant, cat. Generate the phrase, then trim to the vowel only (about 0.4 s). Never the letter name ""ay"" and no ""uh"" after it.","a, as in apple"
+snd_t.m4a,tap,"Stop sound. Generate the word ""tap"" and trim to the first ~100 ms so only the crisp, unvoiced t burst is left. No ""tuh"", never ""tee"". If it can't be made clean, record it by hand.","t, as in tent"
+snd_p.m4a,pig,"Stop sound. Generate the word ""pig"" and trim to the first ~100 ms: a soft puff of air, unvoiced. No ""puh"", never ""pee"". Record by hand if trimming fails.","p, as in pig"
+snd_i.m4a,"i, as in igloo","Short vowel /ɪ/ as in igloo, insect, pin. Generate the phrase, trim to the vowel only (about 0.4 s). Never the letter name ""eye"".","i, as in igloo"
+snd_n.m4a,nnnnn,"Stretchy sound. A hummed n held for about 1 second, mouth closed-ish. Never the letter name ""en"" and no ""nuh"".",nnn
+word_sun.m4a,sun,"Picture word for s. Said clearly and warmly, on its own.",
+word_apple.m4a,apple,Picture word for a. Short a as in cat.,
+word_tent.m4a,tent,Picture word for t.,
+word_pig.m4a,pig,Picture word for p.,
+word_igloo.m4a,igloo,"Picture word for i. Short i at the start (ih-gloo), not ""eye"".",
+word_nest.m4a,nest,Picture word for n.,
+vo_welcome.m4a,"Hello! This is Bip, a little robot who loves sounds. Click on an island to start exploring!","Plays when the island map first opens. Narrator: warm, female South African English voice, speaking slowly and clearly for a 4-year-old.",
+vo_island_sleeping.m4a,That island is still asleep. Let's play on Letters Island!,"When a child clicks an island that isn't built yet. Gentle, not disappointed.",
+vo_letters_island.m4a,"Welcome to Letters Island! Click Bip, and let's play.",Plays when arriving on Letters Island.,
+vo_meet_new_sound.m4a,Here's a new sound. Listen!,"Start of ""Meet the sound"". Followed by the sound clip three times.",
+vo_say_it_with_me.m4a,Now you say it!,After the picture word. Leave a short pause at the end for the child to copy.,
+vo_click_to_hear_again.m4a,Click the letter to hear it again. Click the green arrow when you're ready.,"End of ""Meet the sound"".",
+vo_find_the_sound.m4a,Find the picture that starts with…,"""Sound hunt"" prompt. Followed straight away by a sound clip (e.g. snd_s), so end on a slight upward, expectant pause.",
+vo_pop_the_letter.m4a,Pop the bubble that says…,"""Pop the letter"" prompt. Followed straight away by a sound clip, so end on an expectant pause.",
+vo_level_up.m4a,Wow! You really know that sound now!,After three right answers in a row move a sound up a level. Excited.,
+vo_lets_practise_again.m4a,Let's practise that sound again together.,"After two misses in a row drop a sound back. Kind and encouraging, never disappointed.",
+vo_round_done.m4a,Great playing! Let's go back to the island.,End of a round with no level change.,
+praise_01.m4a,Well done!,Random praise after a right answer. Vary the delivery across the set.,
+praise_02.m4a,Brilliant!,,
+praise_03.m4a,You got it!,,
+praise_04.m4a,Super listening!,,
+praise_05.m4a,Lekker!,"South African for ""great"". Say it with a big smile.",
+praise_06.m4a,Fantastic!,,
+praise_07.m4a,Yes! That's the one!,,
+praise_08.m4a,Bip is so proud of you!,,
+praise_09.m4a,Amazing work!,,
+praise_10.m4a,Great job!,,
+hint_01.m4a,Listen carefully. It sounds like this:,Spoken hint after two misses on one question. Followed by the sound clip; the right answer also wiggles on screen.,
+hint_02.m4a,Here's a clue. Look for the one that's wiggling!,Followed by the sound clip.,
+hint_03.m4a,"Let's listen again, together:",Followed by the sound clip.,
+hint_04.m4a,Nearly! Have another listen:,Followed by the sound clip.,

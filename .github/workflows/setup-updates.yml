@@ -1,0 +1,129 @@
+# Run once, by hand (Actions tab → "Set up updates" → Run workflow).
+# Makes the Sparkle update keys and the Vercel project, then shows the values to save as secrets.
+# See docs/SETUP.md.
+name: Set up updates
+
+on:
+  workflow_dispatch:
+    inputs:
+      make_new_keys:
+        description: "Make NEW update keys even if SPARKLE_PRIVATE_KEY is already set (breaks updates for copies already installed)"
+        type: boolean
+        default: false
+      project_name:
+        description: "Vercel project name (becomes <name>.vercel.app)"
+        type: string
+        default: bip-island-updates
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Update signing keys
+        env:
+          HAS_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY != '' }}
+          MAKE_NEW: ${{ inputs.make_new_keys }}
+        run: |
+          openssl version
+          if [ "$HAS_KEY" = "true" ] && [ "$MAKE_NEW" != "true" ]; then
+            {
+              echo "## 1. Update signing key"
+              echo "✅ **SPARKLE_PRIVATE_KEY is already set.** Nothing to do. (New keys were *not* made, so installed copies keep updating.)"
+              echo
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          private_key="$(scripts/ci/new_sparkle_key.sh)"
+          public_key="$(printf '%s' "$private_key" | scripts/ci/sparkle_public_key.sh)"
+          {
+            echo "## 1. Update signing key"
+            echo "Add a **repository secret** named \`SPARKLE_PRIVATE_KEY\` with exactly this value:"
+            echo
+            echo '```'
+            echo "$private_key"
+            echo '```'
+            echo
+            echo "Also save it in your password manager: if it's lost, installed copies can't be updated and must be reinstalled by hand."
+            echo
+            echo "(For reference only, the public key the builds will use is \`$public_key\`. You don't need to save it.)"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Vercel project
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PROJECT_NAME: ${{ inputs.project_name }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            {
+              echo "## 2. Vercel"
+              echo "⚠️ **Add the \`VERCEL_TOKEN\` secret first** (docs/SETUP.md, step 2), then run this workflow again."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          api() {
+            method="$1"; path="$2"; body="${3:-}"
+            sep="?"; case "$path" in *\?*) sep="&" ;; esac
+            url="https://api.vercel.com$path"
+            [ -n "$team_id" ] && url="$url${sep}teamId=$team_id"
+            if [ -n "$body" ]; then
+              curl -sS -X "$method" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" -d "$body" "$url"
+            else
+              curl -sS -X "$method" -H "Authorization: Bearer $VERCEL_TOKEN" "$url"
+            fi
+          }
+
+          team_id=""
+          user="$(api GET /v2/user)"
+          team_id="$(printf '%s' "$user" | jq -r '.user.defaultTeamId // empty')"
+          org_id="${team_id:-$(printf '%s' "$user" | jq -r '.user.id // empty')}"
+          if [ -z "$org_id" ]; then
+            echo "::error::Vercel didn't accept the token. Make a new token and update the VERCEL_TOKEN secret."
+            printf '%s\n' "$user" | jq -r '.error.message // .' >&2
+            exit 1
+          fi
+
+          project="$(api GET "/v9/projects/$PROJECT_NAME")"
+          project_id="$(printf '%s' "$project" | jq -r '.id // empty')"
+          if [ -z "$project_id" ]; then
+            project="$(api POST /v11/projects "$(jq -nc --arg name "$PROJECT_NAME" '{name: $name, framework: null}')")"
+            project_id="$(printf '%s' "$project" | jq -r '.id // empty')"
+          fi
+          if [ -z "$project_id" ]; then
+            echo "::error::Couldn't create the Vercel project: $(printf '%s' "$project" | jq -r '.error.message // .')"
+            exit 1
+          fi
+          # The update feed must be public: switch off Vercel Authentication for this project.
+          api PATCH "/v9/projects/$project_id" '{"ssoProtection": null}' > /dev/null
+
+          # Publish a holding page so the project gets its web address.
+          mkdir -p "$RUNNER_TEMP/site"
+          cp site/placeholder.html "$RUNNER_TEMP/site/index.html"
+          VERCEL_ORG_ID="$org_id" VERCEL_PROJECT_ID="$project_id" \
+            npx --yes vercel@latest deploy "$RUNNER_TEMP/site" --prod --yes --token "$VERCEL_TOKEN"
+
+          feed_url="$(VERCEL_ORG_ID="$org_id" VERCEL_PROJECT_ID="$project_id" scripts/ci/resolve_feed_url.sh)"
+          {
+            echo "## 2. Vercel"
+            echo "Add two more **repository secrets**:"
+            echo
+            echo "| Name | Value |"
+            echo "| --- | --- |"
+            echo "| \`VERCEL_ORG_ID\` | \`$org_id\` |"
+            echo "| \`VERCEL_PROJECT_ID\` | \`$project_id\` |"
+            echo
+            echo "Your download page will be **${feed_url%/appcast.xml}/** (the app checks \`$feed_url\` for updates)."
+            echo
+            echo "## 3. Next"
+            echo "Once all four secrets are set: Actions → **Build** → **Run workflow** (branch \`main\`). When it's green, open the download page above."
+            echo
+            echo "Then delete this run (⋯ menu at the top right of this page → Delete workflow run), because it shows the private key."
+          } >> "$GITHUB_STEP_SUMMARY"
