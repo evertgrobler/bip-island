@@ -80,7 +80,7 @@ final class GameCoordinator: ObservableObject {
     let coding: CodingGames?
     /// The child who is playing now.
     private(set) var progress: ChildProgress
-    private let store = ProgressStore()
+    private let store: ProgressStore
     @Published private(set) var children: [ChildSummary]
     @Published private(set) var childID: UUID?
     /// One break for the whole Mac, so switching profiles can't skip it.
@@ -121,12 +121,17 @@ final class GameCoordinator: ObservableObject {
             coding = nil
         }
 
-        children = store.children()
-        let id = store.lastChildID() ?? children.first?.id
+        // Locals first: Swift doesn't allow reading self's properties until all are set.
+        let profileStore = ProgressStore()
+        let all = profileStore.children()
+        let id = profileStore.lastChildID() ?? all.first?.id
+        var loaded = ChildProgress()
+        if let id { loaded = profileStore.progress(for: id) }
+        store = profileStore
+        children = all
         childID = id
-        let loaded = id.map { store.progress(for: $0) } ?? ChildProgress()
         progress = loaded
-        breakState = store.loadBreak(carryingOver: loaded.breaks) ?? BreakState(dayStamp: DayNumber.of(Date()))
+        breakState = profileStore.loadBreak(carryingOver: loaded.breaks) ?? BreakState(dayStamp: DayNumber.of(Date()))
     }
 
     /// With more than one child, the game opens on "Who's playing?".
