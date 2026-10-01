@@ -41,3 +41,4 @@ vo_bips_path.m4a,"Snap the arrows together, then press Go to walk Bip home.",Bip
 vo_numbers_island.m4a,"Welcome to Numbers Island! Click Bip, and let's count.",Plays when arriving on Numbers Island.,Numbers Island!
 vo_words_island.m4a,"Welcome to Words Island! Click Bip, and let's read.",Plays when arriving on Words Island.,Words Island!
 vo_coding_island.m4a,"Welcome to Coding Island! Click Bip, and let's program.",Plays when arriving on Coding Island.,Coding Island!
+vo_who_is_playing.m4a,Who's playing today? Click your picture!,"Plays on the profile picker when more than one child uses the Mac. Warm and inviting, a little pause before 'Click your picture'.",Who's playing?

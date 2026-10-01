@@ -3,6 +3,7 @@ import SwiftUI
 /// The grown-ups-only panel. Children can't read it, and the maths keeps them out.
 struct ParentGateView: View {
     @ObservedObject var gate: ParentGateModel
+    @ObservedObject var coordinator: GameCoordinator
     @FocusState private var answerFocused: Bool
 
     var body: some View {
@@ -19,8 +20,8 @@ struct ParentGateView: View {
                     EmptyView()
                 }
             }
-            .padding(40)
-            .frame(width: 520)
+            .padding(gate.phase == .unlocked ? 28 : 40)
+            .frame(width: gate.phase == .unlocked ? 940 : 520)
             .background(
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
                     .fill(Color(nsColor: Palette.paper))
@@ -67,36 +68,7 @@ struct ParentGateView: View {
     }
 
     private var parentArea: some View {
-        VStack(spacing: 16) {
-            Text("Parent area")
-                .font(Fonts.ui(30, bold: true))
-            Text(gate.versionText)
-                .foregroundStyle(.secondary)
-            Text(gate.voiceText)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            if let settings = gate.playSettings {
-                PlaySettingsView(settings: settings, gate: gate)
-            }
-
-            VStack(spacing: 12) {
-                Button("Back to the game") { gate.close() }
-                    .keyboardShortcut(.defaultAction)
-                Button("Check for updates now") { gate.checkForUpdates() }
-                    .disabled(!gate.updatesConfigured)
-                if !gate.updatesConfigured {
-                    Text("Automatic updates aren't switched on in this build.")
-                        .font(Fonts.ui(13))
-                        .foregroundStyle(.secondary)
-                }
-                Button(role: .destructive) { gate.quit() } label: {
-                    Text("Quit Bip Island")
-                }
-            }
-            .controlSize(.large)
-            .padding(.top, 8)
-        }
+        ParentArea(gate: gate, coordinator: coordinator)
     }
 }
 

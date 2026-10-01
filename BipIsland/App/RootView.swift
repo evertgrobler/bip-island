@@ -16,7 +16,7 @@ struct RootView: View {
             }
 
             if gate.phase != .closed {
-                ParentGateView(gate: gate)
+                ParentGateView(gate: gate, coordinator: coordinator)
             }
         }
         .background(Color(nsColor: Palette.paper))

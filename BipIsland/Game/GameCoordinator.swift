@@ -78,10 +78,16 @@ final class GameCoordinator: ObservableObject {
     let numbers: NumbersGames?
     let words: WordsGames?
     let coding: CodingGames?
+    /// The child who is playing now.
     private(set) var progress: ChildProgress
     private let store = ProgressStore()
-    private let childID: UUID?
-    private let childAge: Int?
+    @Published private(set) var children: [ChildSummary]
+    @Published private(set) var childID: UUID?
+    /// One break for the whole Mac, so switching profiles can't skip it.
+    private var breakState: BreakState
+    /// The most play one gap between checks can add to a child's minutes (an idle app left
+    /// open overnight shouldn't count as hours of play).
+    private static let maxPlayCreditSeconds = 30 * 60
     /// Play length, break length and daily maximum, set by parents behind the parent gate.
     let playSettings = PlayTimeSettings()
     private var lastBreakCheck = Date()
@@ -115,14 +121,80 @@ final class GameCoordinator: ObservableObject {
             coding = nil
         }
 
-        let child = store.currentChild()
-        childID = child.id
-        childAge = child.age
-        progress = child.progress
+        children = store.children()
+        let id = store.lastChildID() ?? children.first?.id
+        childID = id
+        let loaded = id.map { store.progress(for: $0) } ?? ChildProgress()
+        progress = loaded
+        breakState = store.loadBreak(carryingOver: loaded.breaks) ?? BreakState(dayStamp: DayNumber.of(Date()))
     }
 
+    /// With more than one child, the game opens on "Who's playing?".
     func start() {
+        if children.count > 1 {
+            showProfiles()
+        } else {
+            showMap()
+        }
+    }
+
+    // MARK: Children
+
+    var currentChild: ChildSummary? {
+        children.first { $0.id == childID }
+    }
+
+    func showProfiles() {
+        present(ProfilesScene(coordinator: self))
+    }
+
+    /// The child picks their picture: their progress, stars and stickers load, and the map opens.
+    func choose(childID id: UUID) {
+        guard children.contains(where: { $0.id == id }) else { return }
+        currentBreakPhase() // Bank play time to the child who was playing.
+        childID = id
+        progress = store.progress(for: id)
+        store.setLastChild(id)
+        hasWelcomed = false
         showMap()
+    }
+
+    /// A parent adds a child (at most four). Returns false when they couldn't be added.
+    @discardableResult
+    func addChild(name: String, age: Int?, avatar: String?) -> Bool {
+        let added = store.addChild(name: name, age: age, avatar: avatar) != nil
+        children = store.children()
+        return added
+    }
+
+    func updateChild(_ child: ChildSummary) {
+        store.update(child)
+        children = store.children()
+    }
+
+    /// Removes a child and their progress. If they were playing, the first child takes over.
+    func deleteChild(_ id: UUID) {
+        store.delete(id)
+        children = store.children()
+        if id == childID, let first = children.first {
+            childID = first.id
+            progress = store.progress(for: first.id)
+            store.setLastChild(first.id)
+        }
+    }
+
+    /// Stars in a child's jar, for their card on "Who's playing?".
+    func starCount(for id: UUID) -> Int {
+        id == childID ? progress.stars : store.progress(for: id).stars
+    }
+
+    /// What a parent sees for one child.
+    func report(for id: UUID) -> ProgressReport? {
+        guard let content else { return nil }
+        let childProgress = id == childID ? progress : store.progress(for: id)
+        let age = children.first { $0.id == id }?.age
+        let band = age.map { content.startingBand(forAge: $0) } ?? .foundation
+        return ProgressReport(content: content, progress: childProgress, startingBand: band, today: today)
     }
 
     // MARK: Where the child is
@@ -130,7 +202,7 @@ final class GameCoordinator: ObservableObject {
     var today: Int { DayNumber.of(Date()) }
 
     var startingBand: Band {
-        guard let content, let age = childAge else { return .foundation }
+        guard let content, let age = currentChild?.age else { return .foundation }
         return content.startingBand(forAge: age)
     }
 
@@ -165,20 +237,21 @@ final class GameCoordinator: ObservableObject {
         let now = Date()
         let elapsed = Int(now.timeIntervalSince(lastBreakCheck))
         lastBreakCheck = now
-        var state = progress.breaks ?? BreakState(dayStamp: today)
-        let phase = PlayBreaks.advance(state: &state, elapsed: elapsed, now: now, day: today,
+        let wasPlaying = breakState.breakEndsAt == nil
+        let phase = PlayBreaks.advance(state: &breakState, elapsed: elapsed, now: now, day: today,
                                        settings: playSettings.breakSettings)
-        progress.setBreaks(state)
-        store.save(progress, for: childID)
+        store.saveBreak(breakState)
+        if wasPlaying {
+            progress.notePlayTime(seconds: min(elapsed, Self.maxPlayCreditSeconds), on: today)
+            store.save(progress, for: childID)
+        }
         return phase
     }
 
     /// A parent ends the break early from settings.
     func endBreakEarly() {
-        var state = progress.breaks ?? BreakState(dayStamp: today)
-        PlayBreaks.endBreakEarly(state: &state)
-        progress.setBreaks(state)
-        store.save(progress, for: childID)
+        PlayBreaks.endBreakEarly(state: &breakState)
+        store.saveBreak(breakState)
         lastBreakCheck = Date()
     }
 

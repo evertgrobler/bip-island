@@ -63,6 +63,15 @@ final class MapScene: BaseScene {
         stickers.addChild(Sketch.node(.polygon(Sketch.starPoints(center: .zero, radius: 34)), fill: Palette.orange, lineWidth: 4, seed: 681))
         addChild(stickers)
 
+        // Whose turn it is: tap the animal to go back to "Who's playing?".
+        if coordinator.children.count > 1, let child = coordinator.currentChild {
+            let badge = Avatars.badge(child.avatar, radius: 64, seed: 684)
+            badge.name = "tap:profiles"
+            badge.position = CGPoint(x: -700, y: -370)
+            badge.zPosition = 10
+            addChild(badge)
+        }
+
         if coordinator.mysteryAvailable {
             let box = SKNode()
             box.name = "tap:mystery"
@@ -164,6 +173,12 @@ final class MapScene: BaseScene {
             guard !inputLocked else { return }
             inputLocked = true
             after(0.25) { [weak self] in self?.coordinator.showStickers() }
+        case "tap:profiles":
+            guard !inputLocked else { return }
+            inputLocked = true
+            sfx.play(.tick)
+            Buttons.press(node)
+            after(0.25) { [weak self] in self?.coordinator.showProfiles() }
         case "tap:mystery":
             guard !inputLocked else { return }
             inputLocked = true

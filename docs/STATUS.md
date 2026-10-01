@@ -22,7 +22,15 @@
   `Downloads/bip-island-keyboard/` on the owner's Mac. App updates itself via Sparkle.
 - **Font:** Atkinson Hyperlegible everywhere (game text and parent area), bundled in
   `Resources/Fonts/`. Owner decision, see CLAUDE.md "Art and voice".
-- **Known open items:** profile picker (single child only), parent progress view, waves 2b/3/4
+- **Profiles:** up to 4 children. "Who's playing?" opens the game when there's more than one
+  (animal pictures, name, stars); an animal badge bottom-left on the map switches child.
+  Parents add, rename, set age and picture, or remove children in the parent area.
+- **Parent area:** Progress tab per child (stars, stickers, minutes today/this week, answers
+  this week, every skill's status by island, every phonics sound's stage, what needs practice,
+  reviews due, recent games), Children tab, Settings tab.
+- **Play-time break is shared by the whole Mac** (stored in UserDefaults `bip.breakState`), so
+  switching profiles can't skip it. Play minutes are still counted per child.
+- **Known open items:** `vo_who_is_playing` still a placeholder clip (ElevenLabs was busy), waves 2b/3/4
   games (17 left), golden rounds, real art, music, Developer ID signing.
 
 ## Locked decisions (don't relitigate)
@@ -78,3 +86,5 @@
 - **1 Oct eve:** Keyboard play for all games + coding (PR #9, build 25). Owner playtesting.
 - **1 Oct, later:** Switched all text to Atkinson Hyperlegible (bundled TTFs + OFL licence,
   `ATSApplicationFontsPath`), parent area included. CI now fails if the font is missing.
+- **1 Oct, later:** Profiles (picker scene, map badge, parent Children tab), parent Progress tab
+  (`ProgressReport` in BipCore, tested), Mac-wide break, per-child play minutes.
