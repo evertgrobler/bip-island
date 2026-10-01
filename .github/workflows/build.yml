@@ -50,6 +50,9 @@ jobs:
           "$openssl_bin" version
           echo "OPENSSL=$openssl_bin" >> "$GITHUB_ENV"
 
+      - name: Check game content
+        run: python3 scripts/validate_content.py
+
       - name: Make placeholder voice clips
         run: python3 scripts/make_placeholder_audio.py
 
