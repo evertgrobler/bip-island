@@ -8,10 +8,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var gate: ParentGateModel!
     private var updates: UpdateController!
     private var keyMonitor: Any?
+    private var screenshots: ScreenshotMode?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Holding Option while the app opens starts "parent mode": a normal window, no kid lock.
         let parentMode = NSEvent.modifierFlags.contains(.option)
+        // CI only: take screenshots for the download page, then quit (see ScreenshotMode).
+        let screenshotFolder = ScreenshotMode.outputFolder
         if !Fonts.isInstalled {
             NSLog("Bip Island: Atkinson Hyperlegible didn't load; text falls back to the system font")
         }
@@ -23,7 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             voiceText: coordinator.voice.statusText,
             updatesConfigured: updates.isConfigured
         )
-        kidLock = KidLock(enabled: !parentMode)
+        kidLock = KidLock(enabled: !parentMode && screenshotFolder == nil)
 
         gate.onOpen = { [weak self] in self?.coordinator.setPaused(true) }
         gate.onClose = { [weak self] in self?.coordinator.setPaused(false) }
@@ -39,6 +42,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         installMainMenu()
         let root = RootView(coordinator: coordinator, gate: gate)
         kidLock.install(content: NSHostingView(rootView: root))
+        if let screenshotFolder {
+            screenshots = ScreenshotMode(coordinator: coordinator, folder: screenshotFolder) { [weak self] in
+                self?.quitForReal()
+            }
+            screenshots?.run()
+            return
+        }
         installKeyMonitor()
         coordinator.start()
         updates.checkQuietlyOnLaunch()
