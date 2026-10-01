@@ -19,9 +19,12 @@ app="$(find "$work/export" -maxdepth 1 -name '*.app' | head -1)"
 exe="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
 echo "App: $app (runs $exe)"
 
+# The Mac packer's options, in the log, in case one of them changes in a Velopack update.
+vpk pack -x -H || true
+
 pack() { # pack <version> <output dir>
   vpk pack -x --packId "$PACK_ID" --packVersion "$1" --packDir "$app" --mainExe "$exe" \
-    --packTitle "Bip Island" --noInst --skipVeloAppCheck \
+    --packTitle "Bip Island" --noInst \
     --signAppIdentity "-" --signEntitlements "$root/godot/macos/entitlements.plist" \
     --outputDir "$2"
 }
