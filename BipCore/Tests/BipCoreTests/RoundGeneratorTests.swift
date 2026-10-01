@@ -388,6 +388,29 @@ final class RoundGeneratorTests: XCTestCase {
         XCTAssertGreaterThan(seenSets.count, 2, "rounds should cover several routines")
     }
 
+    /// Each level trims stories to its card count (3, then 4, then whole stories) and stays fair.
+    func testMorningOrderLevelsTrimStories() throws {
+        let f = try fixture()
+        let steps = f.order.entry.levelSteps
+        XCTAssertGreaterThan(steps.count, 1, "Morning Order should have levels")
+        var rng = SeededGenerator(seed: 31)
+        for (index, step) in steps.enumerated() {
+            var seenLengths = Set<Int>()
+            for _ in 0..<200 {
+                let child = Learner(band: .stage2, unlockedPhonicsGroup: 1, knownSoundIDs: ["s"], gameLevel: index)
+                var session = GameSession(gameID: MorningOrderGame.id, skin: f.order.skins[0], maxRounds: 8)
+                guard let round = session.nextRound(of: f.order, for: child, using: &rng) else { continue }
+                let count = round.set.cards.count
+                seenLengths.insert(count)
+                XCTAssertGreaterThanOrEqual(count, MorningOrderGame.minimumCards)
+                if let limit = step.cards { XCTAssertLessThanOrEqual(count, max(limit, MorningOrderGame.minimumCards)) }
+                XCTAssertEqual(round.answer.map(\.n), Array(1...count), "a trimmed story still starts at step 1")
+                XCTAssertEqual(f.order.correctChoices(in: round), [round.answer])
+            }
+            XCTAssertFalse(seenLengths.isEmpty, "level \(index) made no rounds")
+        }
+    }
+
     // MARK: Bip's Path
 
     func testBipsPathRoundsAreFair() throws {
