@@ -63,6 +63,23 @@ jobs:
       - name: Copy fonts, content and voice clips into the Godot project
         run: python3 scripts/godot/prepare_assets.py
 
+      - name: Update feed address (main only)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::warning::The Vercel secrets aren't set, so this build won't check for updates."
+            exit 0
+          fi
+          store="$(scripts/godot/blob_store.sh)"
+          echo "::add-mask::$(printf '%s\n' "$store" | sed -n 1p)"
+          base="$(printf '%s\n' "$store" | sed -n 2p)"
+          printf '{"feed": "%s/godot-test/"}\n' "$base" > godot/assets/update.json
+          echo "Update feed: $base/godot-test/"
+
       - name: Cache Godot
         uses: actions/cache@v4
         with:
@@ -210,3 +227,70 @@ jobs:
           path: build/godot/macos
           retention-days: 14
           compression-level: 0
+
+  publish:
+    name: Publish the test release (Vercel Blob)
+    needs: [export, windows, macos]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Get the Windows release
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-windows-${{ needs.export.outputs.version }}
+          path: release/windows
+
+      - name: Get the Mac release
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-macos-${{ needs.export.outputs.version }}
+          path: release/macos
+
+      - name: Upload to Vercel Blob
+        id: upload
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERSION: ${{ needs.export.outputs.version }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::warning::The Vercel secrets aren't set, so the test release wasn't published."
+            exit 0
+          fi
+          # Never let an older run overwrite a newer one.
+          head="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if [ -n "$head" ] && [ "$head" != "$GITHUB_SHA" ]; then
+            echo "::notice::main has moved on, so this older build isn't published."
+            exit 0
+          fi
+          store="$(scripts/godot/blob_store.sh)"
+          token="$(printf '%s\n' "$store" | sed -n 1p)"
+          echo "::add-mask::$token"
+          tools="$RUNNER_TEMP/blob-tools"
+          mkdir -p "$tools"
+          (cd "$tools" && npm init -y > /dev/null && npm install --silent @vercel/blob@2)
+          cp scripts/godot/publish_blob.mjs "$tools/"
+          BLOB_READ_WRITE_TOKEN="$token" node "$tools/publish_blob.mjs" release/windows release/macos godot-test/
+          base="$(printf '%s\n' "$store" | sed -n 2p)"
+          for os in win osx; do
+            curl -fsS "$base/godot-test/$os/releases.$os.json" | grep -q "$VERSION" || {
+              echo "::error::The $os update feed doesn't list $VERSION."
+              exit 1
+            }
+          done
+
+      - name: Summary
+        if: steps.upload.outputs.mac_url != ''
+        run: |
+          {
+            echo "### Godot test build ${{ needs.export.outputs.version }} published"
+            echo "- Mac: ${{ steps.upload.outputs.mac_url }}"
+            echo "- Windows: ${{ steps.upload.outputs.win_url }}"
+            echo
+            echo "Installed test copies download this version quietly; a grown-up approves the install."
+          } >> "$GITHUB_STEP_SUMMARY"
