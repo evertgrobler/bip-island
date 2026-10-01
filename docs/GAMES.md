@@ -118,6 +118,8 @@ The game is split into three separate parts, so adding a new game or new words n
 2. **Game types**: each mini-game follows the same template. It says which skills and ages it teaches, builds a round from the content lists at the child's level, checks the answer, and lists its skins. A new game is one new file that plugs in.
 3. **Bip's planner**: suggests what to play next from the child's progress, what's due for review, and what they haven't seen lately. It works the same for 10 games or 100.
 
+**Levels inside each game.** Each game in `Content/curriculum/games.json` can list `levels`, easiest first (for example Count & Tap counts to 5, then 10, 15 and 20; Bubble Pop adds bubbles and speed; Sound Buttons moves to four- and five-sound words; Bip's Path moves to bigger grids). A child starts at the first level marked for their band, then 3 right answers in a row move the game up a level and 2 misses in a row drop it back. The level shows as stars at the top of the screen, and every visit (8 questions) ends with a celebration of the stars earned and any new level. If a level has nothing to offer yet at the child's phonics group, the game quietly uses easier material rather than ending the visit.
+
 In code, the template is the `MiniGame` protocol in `BipCore/Sources/BipCore/Games/MiniGame.swift`; Meet the Sound, Sound Hunt and Bubble Pop are the first three game types built on it (one file each in the same folder). A game's skills, ages and island come from its entry in `Content/curriculum/games.json`.
 
 Automatic checks run on every update before it can reach your Mac:

@@ -101,6 +101,8 @@ public struct SoundHuntGame: MiniGame {
         func isPlayable(_ sound: PhonicsSound) -> Bool {
             !freshAnswers(for: sound).isEmpty && Set(others(for: sound).map(\.word)).count >= Self.choiceCount - 1
         }
+        // More pictures at higher levels, never fewer than three.
+        let wanted = max(level(for: learner).choices ?? Self.choiceCount, Self.choiceCount)
 
         let targets = course.sounds(upToGroup: learner.unlockedPhonicsGroup)
             .filter { learner.knownSoundIDs.contains($0.id) && isPlayable($0) }
@@ -116,9 +118,9 @@ public struct SoundHuntGame: MiniGame {
         }
 
         guard let answer = freshAnswers(for: target).randomElement(using: &rng) else { return nil }
-        let distractors = Self.pickDistractors(from: others(for: target), count: Self.choiceCount - 1,
+        let distractors = Self.pickDistractors(from: others(for: target), count: wanted - 1,
                                                preferFreshOver: session.usedItems, using: &rng)
-        guard distractors.count == Self.choiceCount - 1 else { return nil }
+        guard distractors.count >= Self.choiceCount - 1 else { return nil }
         return Round(target: target, choices: ([answer] + distractors).shuffled(using: &rng), answer: answer)
     }
 

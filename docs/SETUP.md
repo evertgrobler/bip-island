@@ -100,9 +100,10 @@ If the summary says **Built but not published**, one of the four secrets is miss
 
 ## How updates arrive
 
-- The app checks the update feed **every hour** in the background and downloads new versions quietly.
-- A downloaded update is **installed when the app is quit** (through the parent area). The next time it opens, it's the new version.
-- To update straight away: parent area → **Check for updates now** → **Install and Relaunch**.
+- The app checks the update feed **when it opens** and **every hour** after that. It never installs anything by itself.
+- When a new version is out, a small **Update ready** button appears in the top-right corner of the game.
+- Tap it, then enter the parent passcode (or answer the maths question). The update window opens: choose **Install Update**, and the game restarts on the new version.
+- You can also update from the parent area → Settings → **Install the update** (or **Check for updates now**).
 - The parent area shows the version and build number, so you can check which build is installed. The build number matches the run number on GitHub's Actions tab.
 - Updates never need the right-click → Open step again.
 

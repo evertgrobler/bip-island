@@ -33,10 +33,10 @@ public struct CountTapGame: MiniGame {
         numbers = content.numbers
     }
 
-    /// 1 up to what the band counts to (10, then 20). Older bands still tap to 20 here;
+    /// 1 up to the level's number (5, 10, 15, 20), or what the band counts to. At most 20 here;
     /// bigger numbers live in the later Numbers games.
     public func makeRound<G: RandomNumberGenerator>(for learner: Learner, session: GameSession, using rng: inout G) -> Round? {
-        let countTo = min(numbers.bands[learner.band.rawValue]?.countTo ?? 10, 20)
+        let countTo = min(level(for: learner).countTo ?? numbers.bands[learner.band.rawValue]?.countTo ?? 10, 20)
         guard countTo >= 1, let object = numbers.countingObjects.randomElement(using: &rng) else { return nil }
         let count = Int.random(in: 1...countTo, using: &rng)
         return Round(count: count, object: object, choices: NumeralChoices.three(around: count, using: &rng))

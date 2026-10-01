@@ -32,6 +32,11 @@ public protocol MiniGame: Sendable {
 public extension MiniGame {
     var roundsPerSession: Int? { nil }
 
+    /// The difficulty step this child plays at.
+    func level(for learner: Learner) -> GameLevel {
+        entry.level(learner.gameLevel)
+    }
+
     /// The right choices in a round. A fair round has exactly one.
     func correctChoices(in round: Round) -> [Round.Choice] {
         round.choices.filter { isCorrect($0, in: round) }
@@ -67,16 +72,23 @@ public struct Learner: Sendable {
     public let knownSoundIDs: Set<String>
     /// The sound Bip wants to practise, if any.
     public let focusSoundID: String?
+    /// The child's level in the game being played (an index into the game's `levels`).
+    public let gameLevel: Int
 
-    public init(band: Band, unlockedPhonicsGroup: Int, knownSoundIDs: Set<String>, focusSoundID: String? = nil) {
+    public init(band: Band, unlockedPhonicsGroup: Int, knownSoundIDs: Set<String>, focusSoundID: String? = nil, gameLevel: Int = 0) {
         self.band = band
         self.unlockedPhonicsGroup = unlockedPhonicsGroup
         self.knownSoundIDs = knownSoundIDs
         self.focusSoundID = focusSoundID
+        self.gameLevel = gameLevel
     }
 
     public func focusing(on soundID: String?) -> Learner {
-        Learner(band: band, unlockedPhonicsGroup: unlockedPhonicsGroup, knownSoundIDs: knownSoundIDs, focusSoundID: soundID)
+        Learner(band: band, unlockedPhonicsGroup: unlockedPhonicsGroup, knownSoundIDs: knownSoundIDs, focusSoundID: soundID, gameLevel: gameLevel)
+    }
+
+    public func at(level: Int) -> Learner {
+        Learner(band: band, unlockedPhonicsGroup: unlockedPhonicsGroup, knownSoundIDs: knownSoundIDs, focusSoundID: focusSoundID, gameLevel: level)
     }
 }
 

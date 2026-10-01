@@ -103,3 +103,11 @@
 - **1 Oct, night:** Owner: Morning Order repeats the same stories. Added 22 new stories (87 cards,
   pictures in `StepPictures.swift`). Their `vo_<set>_<n>` clips are **not recorded yet** (ElevenLabs
   account paused): cards play silence until generated. List = new `vo_` rows in `asset_manifest.json`.
+- **1 Oct late:** Optional parent passcode (Settings tab): holding Esc then asks for it instead of
+  maths; 3 wrong tries fall back to maths. Stored as a salted SHA-256 hash in UserDefaults.
+- **1 Oct, night:** Levels in every game (games.json `levels`, per-child `gameLevels` in
+  ChildProgress, level stars top-centre, 8 questions a visit, end-of-visit celebration). Morning
+  Order levels added too (`cards` 3, 4, 6; the Morning Order session wires it up).
+- **1 Oct, night:** Updates now need a grown-up: Sparkle checks on launch and hourly but never
+  installs alone (`SUAutomaticallyUpdate` off, gentle reminders in `UpdateController`). A found
+  update shows an "Update ready" button top-right; it opens the parent gate, then Sparkle's window.

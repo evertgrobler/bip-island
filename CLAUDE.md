@@ -47,7 +47,7 @@ Versioning: `CFBundleShortVersionString` = `0.MINOR.PATCH`, `CFBundleVersion` = 
 ## Kid-safety and UX rules (non-negotiable)
 
 - App opens straight into full screen with a kid lock: hide Dock and menu bar, disable process switching and Cmd-Q (`NSApplication.PresentationOptions` + `applicationShouldTerminate`).
-- Parent gate to exit or open settings: hold Esc 3 seconds, then answer an adult maths question.
+- Parent gate to exit or open settings: hold Esc 3 seconds, then answer an adult maths question, or enter the parent passcode if a parent has set one (4–8 digits, stored only as a salted hash; after 3 wrong tries it falls back to maths).
 - No network access except Sparkle's update check. No ads, analytics, accounts or data collection.
 - No time pressure inside games: no countdown timers, lives or "game over". Wrong answer → soft sound, retry, then a spoken hint after 2 misses.
 - Click targets at least 120 pt. Design for a mouse, not a trackpad. Any key = "play that sound again".

@@ -251,11 +251,11 @@ final class WordBuilderScene: BaseScene {
         case .levelUp:
             sfx.play(.whirr)
             bip.celebrate()
-            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.levelUp.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .practiseAgain:
-            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.letsPractiseAgain.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         case .roundDone:
-            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finish() })
+            voice.play([VoiceLine.roundDone.rawValue], completion: { [weak self] in self?.finishVisit { self?.finish() } })
         }
     }
 

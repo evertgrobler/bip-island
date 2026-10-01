@@ -67,6 +67,8 @@ public struct FeedMonsterGame: MiniGame {
             !freshAnswers(for: sound).isEmpty && Set(others(for: sound).map(\.word)).count >= Self.choiceCount - 1
         }
 
+        // More foods at higher levels, never fewer than three.
+        let wanted = max(level(for: learner).choices ?? Self.choiceCount, Self.choiceCount)
         let targets = course.sounds(upToGroup: learner.unlockedPhonicsGroup)
             .filter { learner.knownSoundIDs.contains($0.id) && isPlayable($0) }
         let focus = targets.first { $0.id == learner.focusSoundID }
@@ -85,11 +87,11 @@ public struct FeedMonsterGame: MiniGame {
             from: others(for: target).map { HuntPicture(word: $0.word, picture: $0.picture, audio: $0.audio,
                                                         firstSoundID: $0.firstSoundID, firstSoundIPA: $0.firstSoundIPA,
                                                         availableFromGroup: $0.availableFromGroup) },
-            count: Self.choiceCount - 1, preferFreshOver: session.usedItems, using: &rng)
-        guard distractors.count == Self.choiceCount - 1 else { return nil }
+            count: wanted - 1, preferFreshOver: session.usedItems, using: &rng)
+        guard distractors.count >= Self.choiceCount - 1 else { return nil }
         let byWord = Dictionary(uniqueKeysWithValues: available.map { ($0.word, $0) })
         let choices = ([answer] + distractors.compactMap { byWord[$0.word] }).shuffled(using: &rng)
-        guard choices.count == Self.choiceCount else { return nil }
+        guard choices.count == distractors.count + 1 else { return nil }
         return Round(target: target, choices: choices, answer: answer)
     }
 
