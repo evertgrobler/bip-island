@@ -31,7 +31,11 @@ $report = Join-Path $work 'report.json'
 Remove-Item $report -ErrorAction SilentlyContinue
 try {
     Start-Process -FilePath $exe -ArgumentList '--headless', '--', '--bip-update-test', 'http://127.0.0.1:8765/', "`"$report`""
-    for ($i = 0; $i -lt 90 -and -not ((Test-Path $report) -and (Get-Item $report).Length -gt 0)); $i++) { Start-Sleep -Seconds 2 }
+    $deadline = (Get-Date).AddMinutes(3)
+    while ((Get-Date) -lt $deadline) {
+        if ((Test-Path $report) -and ((Get-Item $report).Length -gt 0)) { break }
+        Start-Sleep -Seconds 2
+    }
     if (-not (Test-Path $report)) {
         Write-Host "::error::The installed game didn't write its report after updating."
         Get-ChildItem -Recurse (Join-Path $env:LOCALAPPDATA $PackId) -Filter '*.log' -ErrorAction SilentlyContinue |

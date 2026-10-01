@@ -136,3 +136,11 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 - [ ] Phase 3 — The 11 games
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
 - [ ] Phase 5 — Owner test, progress export/import, family feed switched, Swift code retired, docs updated
+
+## Port notes from the Swift sessions (1 Oct 2026)
+
+- **Levels:** games.json `levels` (checked by the validator). `GameEntry.startingLevel` is the last level whose band is ≤ the child's band. `ChildProgress.recordGameAnswer` goes up a level after 3 right answers in a row and back one after 2 misses, clamped to the game's range. `GameLevelTests` is the spec.
+- **Parent passcode:** `BipCore/ParentPasscode.swift`: a salted SHA-256 hash, 4–8 digits, 3 wrong tries fall back to maths. Swift stores it under the UserDefaults key `bip.parentPasscode`; migrate it with the progress export.
+- **Update prompt:** `UpdateController.swift` and `RootView`'s `UpdateReadyButton`. The gate model's `openForUpdate()` installs only after unlocking.
+- **Word Builder:** tiles show `PhonicsSound.grapheme` (not ids). Split-digraph words are left out. Spare tiles come from unlocked, non-confusable sounds, with `spares` set per level.
+- **Bip's Path:** `GridWalker.facings` drives the arrow that shows which way Bip is facing.
