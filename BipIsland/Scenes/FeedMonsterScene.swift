@@ -41,8 +41,8 @@ final class FeedMonsterScene: BaseScene {
         let mouth = Sketch.node(.ellipse(center: monsterMouth, rx: 80, ry: 62), fill: Palette.ink, lineWidth: 4, seed: 901)
         mouth.zPosition = 6
         addChild(mouth)
-        for eye in [-50, 50] {
-            let white = Sketch.node(.ellipse(center: CGPoint(x: 520 + CGFloat(eye), y: 190), rx: 30, ry: 36), fill: .white, lineWidth: 4, seed: 902 + UInt64(eye))
+        for (i, eye) in [-50, 50].enumerated() {
+            let white = Sketch.node(.ellipse(center: CGPoint(x: 520 + CGFloat(eye), y: 190), rx: 30, ry: 36), fill: .white, lineWidth: 4, seed: 902 + UInt64(i))
             white.zPosition = 6
             addChild(white)
         }

@@ -59,8 +59,8 @@ final class LettersIslandScene: BaseScene {
         monster.zPosition = 10
         monster.addChild(Sketch.node(.ellipse(center: .zero, rx: 100, ry: 100), fill: Palette.purple, lineWidth: 6, seed: 770))
         monster.addChild(Sketch.node(.ellipse(center: CGPoint(x: 0, y: -10), rx: 44, ry: 34), fill: Palette.ink, lineWidth: 4, seed: 771))
-        for eye in [-30, 30] {
-            monster.addChild(Sketch.node(.ellipse(center: CGPoint(x: CGFloat(eye), y: 44), rx: 16, ry: 20), fill: .white, lineWidth: 4, seed: 772 + UInt64(eye)))
+        for (i, eye) in [-30, 30].enumerated() {
+            monster.addChild(Sketch.node(.ellipse(center: CGPoint(x: CGFloat(eye), y: 44), rx: 16, ry: 20), fill: .white, lineWidth: 4, seed: 772 + UInt64(i)))
         }
         addChild(monster)
 
