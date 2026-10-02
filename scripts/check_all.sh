@@ -58,23 +58,31 @@ step "C# build (warnings are errors)" dotnet build godot/BipIsland.sln -warnaser
 step "Logic tests" dotnet test godot/BipCore.Tests --no-build
 step "Godot import" "$GODOT" --headless --path godot --import
 
+# Every game run here uses its own save folder, never the player's.
+saves="$out/saves"
+
 self_test() {
-  "$GODOT" --headless --path godot -- --bip-report "$out/report.json" &&
+  "$GODOT" --headless --path godot -- --bip-save-dir "$saves/report" --bip-report "$out/report.json" &&
     python3 scripts/godot/check_report.py "$out/report.json"
 }
 step "Game self-test (fonts, content, clips)" self_test
 
+walk() {
+  "$GODOT" --headless --path godot -- --bip-save-dir "$saves/walk" --bip-walk "$out/walk.json"
+}
+step "Walk-through (clicks and keys round every screen)" walk
+
 screenshots() {
   local shot=(xvfb-run -a -s "-screen 0 1600x1000x24" "$GODOT" --path godot --rendering-driver opengl3 --resolution 1600x1000)
-  "${shot[@]}" -- --bip-windowed --bip-screenshot "$out/screenshots/main.png" || return 1
+  "${shot[@]}" -- --bip-windowed --bip-save-dir "$saves/main" --bip-screenshot "$out/screenshots/main.png" || return 1
   test -s "$out/screenshots/main.png" || return 1
   # Every other screen, when Boot supports opening a scene directly.
   if grep -q -- "--bip-scene" godot/Scripts/App/Boot.cs; then
     while IFS= read -r scene; do
       local name
       name="$(echo "${scene#godot/Scenes/}" | sed 's|/|_|g; s|\.tscn$||')"
-      [ "$name" = "Main" ] && continue
-      "${shot[@]}" -- --bip-windowed --bip-scene "res://${scene#godot/}" --bip-screenshot "$out/screenshots/$name.png" ||
+      [ "$name" = "Start" ] && continue # the main screenshot above
+      "${shot[@]}" -- --bip-windowed --bip-save-dir "$saves/$name" --bip-scene "res://${scene#godot/}" --bip-screenshot "$out/screenshots/$name.png" ||
         { echo "Screenshot failed: $scene"; return 1; }
       test -s "$out/screenshots/$name.png" || { echo "No screenshot for $scene"; return 1; }
     done < <(find godot/Scenes -name '*.tscn' | sort)

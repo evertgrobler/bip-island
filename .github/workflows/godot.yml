@@ -148,6 +148,11 @@ jobs:
           "$GODOT" --headless --path . -- --bip-report ../build/godot/report-linux.json
           python3 ../scripts/godot/check_report.py ../build/godot/report-linux.json
 
+      - name: Walk-through (clicks and keys round every screen)
+        working-directory: godot
+        run: |
+          "$GODOT" --headless --path . -- --bip-save-dir "$RUNNER_TEMP/walk-saves" --bip-walk ../build/godot/walk.json
+
       - name: Screenshots
         working-directory: godot
         run: |

@@ -15,13 +15,15 @@ namespace BipIsland.App;
 ///   --bip-screenshot &lt;file&gt;           save a PNG of the first screen and quit
 ///   --bip-update-test &lt;feed&gt; &lt;file&gt;  save something, update from the feed, restart, then write the report
 ///   --bip-scene &lt;res://path.tscn&gt;     open that scene first (Boot), e.g. to screenshot a dev page
+///   --bip-walk &lt;file&gt;                 click round every screen and check each step (Dev/WalkTest.cs)
+///   --bip-save-dir &lt;folder&gt;           keep saves there instead of the player's folder
 /// </summary>
 public static class SelfTest
 {
     public const string MarkerPath = "user://selftest_marker.json";
 
     public static bool IsRequested(string[] args) =>
-        args.Any(a => a is "--bip-report" or "--bip-screenshot" or "--bip-update-test");
+        args.Any(a => a is "--bip-report" or "--bip-screenshot" or "--bip-update-test" or "--bip-walk");
 
     public static async void Run(Boot boot, string[] args)
     {
@@ -39,6 +41,12 @@ public static class SelfTest
                 var error = await Updater.UpdateNowAndRestart(feed, new[] { "--headless", "--", "--bip-report", report });
                 WriteReport(report, error);
                 boot.Quit(1);
+                return;
+            }
+            if (Value(args, "--bip-walk", 1) is { } walk)
+            {
+                var passed = await BipIsland.Dev.WalkTest.Run(boot, walk[0]);
+                boot.Quit(passed ? 0 : 1);
                 return;
             }
             if (Value(args, "--bip-screenshot", 1) is { } shot)
@@ -89,7 +97,9 @@ public static class SelfTest
         var clipCount = VoicePlayer.CountClips();
         var sampleClip = VoicePlayer.HasClip("snd_s") && GD.Load<AudioStream>(VoicePlayer.PathFor("snd_s"))?.GetLength() > 0;
         var graphemes = ReadsAsJson("res://assets/content/phonics/graphemes.json");
-        var ok = error == null && Fonts.IsInstalled && Fonts.EmojiInstalled && contentFiles > 0 && clipCount > 0
+        var game = BipIsland.Game.GameCoordinator.Instance;
+        var islandsOpen = new[] { game.LettersOpen, game.NumbersOpen, game.WordsOpen, game.CodingOpen }.Count(open => open);
+        var ok = error == null && game.Content != null && islandsOpen == 4 && Fonts.IsInstalled && Fonts.EmojiInstalled && contentFiles > 0 && clipCount > 0
                  && sampleClip && graphemes;
 
         var report = new Dictionary<string, object?>
@@ -103,6 +113,8 @@ public static class SelfTest
             ["fontsInstalled"] = Fonts.IsInstalled,
             ["emojiInstalled"] = Fonts.EmojiInstalled,
             ["contentFiles"] = contentFiles,
+            ["contentLoaded"] = game.Content != null,
+            ["islandsOpen"] = islandsOpen,
             ["graphemesReadable"] = graphemes,
             ["clipCount"] = clipCount,
             ["sampleClipPlays"] = sampleClip,

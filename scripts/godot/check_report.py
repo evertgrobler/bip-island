@@ -22,6 +22,8 @@ print(json.dumps(report, indent=2))
 problems = []
 if not report.get("ok"):
     problems.append(f"the game reported a problem: {report.get('error') or 'fonts, content or clips missing'}")
+if report.get("contentLoaded") is False or report.get("islandsOpen", 4) != 4:
+    problems.append(f"the game content didn't load fully ({report.get('islandsOpen')} of 4 islands open)")
 if report.get("clipCount", 0) < 700:
     problems.append(f"only {report.get('clipCount')} voice clips in the build")
 if args.version and report.get("installedVersion") != args.version:

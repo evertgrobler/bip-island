@@ -183,21 +183,33 @@ public static class Sketch
         return label;
     }
 
-    /// <summary>A letter in chalky handwriting with a coloured shadow behind it.</summary>
-    public static Node2D Letter(string text, int size, Color? colour = null, Color? shadow = null)
+    /// <summary>
+    /// A letter in chalky handwriting with a coloured shadow behind it (sunshine yellow unless given);
+    /// <paramref name="withShadow"/> false draws it plain (Swift: shadow: nil).
+    /// </summary>
+    public static Node2D Letter(string text, int size, Color? colour = null, Color? shadow = null, bool withShadow = true)
     {
         var container = new Node2D();
-        var shadowColour = shadow ?? Palette.Sun;
-        var back = Label(text, size, shadowColour);
-        back.Position += new Vector2(size * 0.035f, size * 0.035f);
-        container.AddChild(back);
+        if (withShadow)
+        {
+            var back = Label(text, size, shadow ?? Palette.Sun);
+            back.Position += new Vector2(size * 0.035f, size * 0.035f);
+            container.AddChild(back);
+        }
         container.AddChild(Label(text, size, colour ?? Palette.Ink));
         return container;
     }
 }
 
+/// <summary>A drawing that knows how big it is, so clicks can find what was tapped.</summary>
+public interface IHasBounds
+{
+    /// <summary>The drawn area in the node's own coordinates.</summary>
+    Rect2 LocalBounds { get; }
+}
+
 /// <summary>Draws one hand-drawn shape. The paths are worked out once, when it is made.</summary>
-public partial class SketchNode : Node2D
+public partial class SketchNode : Node2D, IHasBounds
 {
     private readonly Vector2[]? _fill;
     private readonly Color _fillColour;
@@ -226,6 +238,20 @@ public partial class SketchNode : Node2D
         {
             _line = Sketch.Path(shape, wobble, seed);
             _secondPass = Sketch.Path(shape, wobble * 1.4f, unchecked(seed + 7));
+        }
+    }
+
+    public Rect2 LocalBounds
+    {
+        get
+        {
+            var points = _line ?? _fill;
+            if (points == null || points.Length == 0) return new Rect2();
+            var box = new Rect2(points[0], Vector2.Zero);
+            foreach (var p in points) box = box.Expand(p);
+            if (_fill != null)
+                foreach (var p in _fill) box = box.Expand(p + new Vector2(2, 2));
+            return box.Grow(_lineWidth / 2);
         }
     }
 

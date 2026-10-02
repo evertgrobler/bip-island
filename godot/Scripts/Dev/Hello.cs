@@ -1,16 +1,17 @@
 using System.Collections.Generic;
+using BipIsland.App;
 using BipIsland.Audio;
 using BipIsland.Drawing;
 using Godot;
 
-namespace BipIsland.App;
+namespace BipIsland.Dev;
 
 /// <summary>
-/// Phase 0's one screen: Bip, a letter, a picture and Bip's hello, to prove the drawing, the font,
+/// The Phase 0 test screen (now a dev page: --bip-scene res://Scenes/Dev/Hello.tscn): Bip, a letter, a picture and Bip's hello, to prove the drawing, the font,
 /// the emoji pictures and the narrator clips all work on Mac and Windows. Click Bip, the letter or
 /// the picture to hear them; any key plays the last sound again.
 /// </summary>
-public partial class Main : Node2D
+public partial class Hello : Node2D
 {
     /// <summary>Every screen is laid out on this canvas around (0, 0), like the Swift app's scenes.</summary>
     public static readonly Vector2 SceneSize = new(1600, 1000);

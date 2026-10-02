@@ -8,7 +8,7 @@ config_version=5
 config/name="Bip Island"
 config/description="A learning game for children aged 4 to 8."
 config/version="0.2.0"
-run/main_scene="res://Scenes/Main.tscn"
+run/main_scene="res://Scenes/Start.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Bip Island"
 config/features=PackedStringArray("4.7", "C#")
@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Boot="*res://Scripts/App/Boot.cs"
+Game="*res://Scripts/Game/GameCoordinator.cs"
 
 [display]
 

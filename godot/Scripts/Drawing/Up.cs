@@ -64,7 +64,7 @@ public static class Up
 }
 
 /// <summary>A filled oval with no outline.</summary>
-public partial class Oval : Node2D
+public partial class Oval : Node2D, IHasBounds
 {
     private readonly float _rx;
     private readonly float _ry;
@@ -78,6 +78,8 @@ public partial class Oval : Node2D
         _ry = ry;
         _colour = colour;
     }
+
+    public Rect2 LocalBounds => new(-_rx, -_ry, _rx * 2, _ry * 2);
 
     public override void _Draw()
     {
