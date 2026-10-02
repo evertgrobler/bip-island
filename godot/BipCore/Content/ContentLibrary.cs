@@ -50,15 +50,26 @@ public sealed class ContentLibrary
 
     /// <summary>Reads every file from a Content folder.</summary>
     public ContentLibrary(string directory)
+        : this(file => System.IO.File.ReadAllText(Path.Combine(directory, file)))
+    {
+    }
+
+    /// <summary>
+    /// Reads every file through <paramref name="readFile"/> (given a path relative to the Content
+    /// folder, e.g. "phonics/graphemes.json"). The game uses this to read from inside its package,
+    /// where System.IO can't see the files.
+    /// </summary>
+    public ContentLibrary(Func<string, string> readFile)
     {
         T Load<T>(string file)
         {
             try
             {
-                return BipJson.Decode<T>(System.IO.File.ReadAllText(Path.Combine(directory, file)));
+                return BipJson.Decode<T>(readFile(file));
             }
-            catch (Exception error) when (error is IOException or JsonException or UnauthorizedAccessException)
+            catch (Exception error) when (error is not ContentLoadException)
             {
+                // Whatever the reader or the decoder threw, say which file it was.
                 throw new ContentLoadException(file, error);
             }
         }

@@ -79,7 +79,7 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
 **Phase 1 — Port the logic, about 2 sessions.**
 - `BipCore` becomes a C# library: content loader, mastery, phonics order, lesson planner, recommender, play breaks, stickers, progress report, parent gate, and the 11 game round generators plus GridWalker.
 - Port all 109 tests. The ported tests must pass, including the round-fairness tests.
-- Swap `.m4a` for `.ogg` in the audio contract, `make_placeholder_audio.py` (use `ffmpeg` / `espeak` instead of `afconvert` / `say`) and the validator.
+- Audio: keep `.m4a` as the source until the switchover; `scripts/godot/prepare_assets.py` converts to `.ogg` at build time. Swap the contract, `make_placeholder_audio.py` and the validator to `.ogg` in Phase 5.
 
 **Phase 2 — Game shell, about 3 sessions.**
 - Port the drawing kit from `BipIsland/Drawing/`: Palette, Sketch, Buttons, BipNode, PictureNode, EmojiPictures, StepPictures, Avatars.
@@ -105,6 +105,7 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
 - The last Swift update (via Sparkle) adds **"export progress"**. It writes every child's progress to a file in a shared folder, and the Godot app imports it on first launch.
 - The owner installs the Godot Mac app once by hand and removes the old one. Installing on the Windows PC is likewise a one-time step.
 - Retire the Swift code, `project.yml` and the Xcode CI.
+- Switch the audio source and contract to `.ogg` (`Resources/Audio`, `make_placeholder_audio.py`, the validator, `AudioScriptTests`).
 - Update `CLAUDE.md` (tech table, audio contract, kid-lock rules for Windows), `docs/SETUP.md`, `docs/PLAN.md` and `docs/STATUS.md`.
 - Then resume new games (waves 2b/3/4), built once in Godot.
 
@@ -130,9 +131,9 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 
 ## Checklist
 
-- [ ] Phase 0 — Godot skeleton, `godot.yml` CI, test feed, install-and-update test green on Mac and Windows
+- [x] Phase 0 — Godot skeleton, `godot.yml` CI, test feed, install-and-update test green on Mac and Windows
 - [x] Phase 1 — `BipCore` in C# (`godot/BipCore`), every Swift test ported and passing (`godot/BipCore.Tests`, 148 xUnit tests, run in CI)
-- [ ] Phase 1 — audio contract, placeholder script and validator switched to `.ogg`
+- [x] Phase 1 — audio: the source clips stay `.m4a` in `Resources/Audio` (the Swift app still uses them); `scripts/godot/prepare_assets.py` converts them to `.ogg` at build time. The source switches to `.ogg` in Phase 5.
 - [ ] Phase 2 — Drawing kit, audio, coordinator, input, map, islands, profiles and charging screens
 - [ ] Phase 3 — The 11 games
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
