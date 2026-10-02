@@ -157,12 +157,22 @@ public partial class Bip : Node2D
         tilt.TweenProperty(_head, "rotation", 0f, 0.2);
     }
 
+    /// <summary>Points one arm towards something (Swift: rotate ±1.0, y-up, so the sign flips here).</summary>
+    public void Point(bool right)
+    {
+        var arm = right ? _rightArm : _leftArm;
+        var point = CreateTween();
+        point.TweenProperty(arm, "rotation", right ? -1.0f : 1.0f, 0.2);
+        point.TweenInterval(1.2);
+        point.TweenProperty(arm, "rotation", 0f, 0.3);
+    }
+
     /// <summary>True if a point (in Bip's own space) is on him; used for clicks.</summary>
     public bool Contains(Vector2 local) => new Rect2(-100, -280, 200, 290).HasPoint(local);
 }
 
 /// <summary>A plain filled circle with an optional outline (pupils, cheeks, the chest light).</summary>
-public partial class Disc : Node2D
+public partial class Disc : Node2D, IHasBounds
 {
     private readonly float _radius;
     private readonly Color _fill;
@@ -178,6 +188,8 @@ public partial class Disc : Node2D
         _outline = outline;
         _lineWidth = lineWidth;
     }
+
+    public Rect2 LocalBounds => new Rect2(-_radius, -_radius, _radius * 2, _radius * 2).Grow(_lineWidth / 2);
 
     public override void _Draw()
     {
