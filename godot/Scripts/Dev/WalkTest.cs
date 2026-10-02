@@ -67,7 +67,13 @@ public static class WalkTest
         foreach (var island in new[] { "numbers", "words", "coding" })
         {
             if (await Tap("island:" + island)) await Expect<GameIslandScreen>($"{island} island opens");
-            if (await Tap("bip")) Check($"tapping Bip on {island} island doesn't leave it", Screen() is GameIslandScreen);
+            // Bip starts the island's first game; until that game is ported Bip stays put.
+            if (island == "numbers")
+            {
+                if (await Tap("bip")) await Expect<CountTapScreen>("tapping Bip on numbers island starts Count & Tap");
+                if (await Tap("home")) await Expect<GameIslandScreen>("home from Count & Tap goes back to numbers island");
+            }
+            else if (await Tap("bip")) Check($"tapping Bip on {island} island doesn't leave it", Screen() is GameIslandScreen);
             await Wait(2.2);
             if (await Tap("home")) await Expect<MapScreen>($"home from {island} island");
         }
