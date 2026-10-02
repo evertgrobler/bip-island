@@ -16,6 +16,8 @@ namespace BipIsland.Dev;
 public partial class ScreenPreview : Node
 {
     [Export] public string Screen { get; set; } = "map";
+    /// <summary>The grown-ups' layer on top: "gate", "progress", "children", "settings" or "update" (the button).</summary>
+    [Export] public string Parent { get; set; } = "";
 
     public override void _Ready() => Callable.From(Open).CallDeferred();
 
@@ -39,5 +41,28 @@ public partial class ScreenPreview : Node
             _ => new MapScreen(greet: false),
         };
         game.Present(screen);
+        ShowParent(game);
+    }
+
+    private void ShowParent(GameCoordinator game)
+    {
+        var layer = game.Parent;
+        switch (Parent)
+        {
+            case "update":
+                layer.ShowUpdateButtonForTest();
+                return;
+            case "":
+                return;
+        }
+        layer.Flow.Open();
+        if (Parent == "gate") return;
+        layer.Submit(layer.Flow.Challenge.Answer.ToString());
+        layer.Area?.Show(Parent switch
+        {
+            "children" => BipIsland.Parent.ParentArea.Tab.Children,
+            "settings" => BipIsland.Parent.ParentArea.Tab.Settings,
+            _ => BipIsland.Parent.ParentArea.Tab.Progress,
+        });
     }
 }

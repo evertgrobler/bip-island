@@ -109,6 +109,12 @@
   use it). One screen at a time: `--bip-scene res://Scenes/Screens/<map|profiles|letters|…>.tscn`.
   `--bip-walk out.json` clicks round every screen and fails on any wrong step. Games say
   "Coming soon!" until their screen is ported (`GameCoordinator.StartGame`).
+- Parent gate and area (Phase 4): `Scripts/Parent/` (`ParentLayer` over every screen, `ParentArea`
+  tabs built from Godot controls, `ParentUi` theme); the rules are `BipCore.ParentGateFlow` (tested).
+  Holding Esc no longer quits: quitting is a button in Settings. The game pauses (`SceneTree.Paused`)
+  while the gate is open. Previews: `Scenes/Parent/{gate,progress,children,settings,update}.tscn`.
+  `Updater.ReadyVersion`/`UpdateReady` drive the "Update ready" button; `InstallAndRestart()` only runs
+  after the gate.
 
 ## Gotchas learned the hard way
 
@@ -204,3 +210,6 @@
 - **2 Oct, later:** Godot Phase 2 game shell: saves, coordinator, map, islands, Who's playing?,
   charging, sticker book, mystery box, keyboard play, big cursor, Bip's sounds. Every screen matches
   the Swift app in screenshots; a 31-step click-through test runs in `check_all.sh`. Games are next.
+- **2 Oct, later:** Godot parent gate and parent area (Phase 4, part 1): hold Esc → maths or passcode,
+  Progress/Children/Settings tabs, "Update ready" button that installs only after the gate. The
+  click-through test now covers the gate (48 steps). Native kid lock is the next part.
