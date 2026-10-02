@@ -184,6 +184,16 @@ public static class WalkTest
         await Wait(0.5);
         Check("the game carries on after the parent area", !tree.Paused && Screen() is MapScreen);
 
+        // Games wait for Bip to finish speaking; the gate pauses the sentence rather than cutting it off.
+        var spoke = false;
+        game.Voice.Play([game.RandomPraise()], completion: () => spoke = true);
+        parent.Flow.Open();
+        await Wait(4);
+        Check("Bip's sentence waits while the gate is open", !spoke && tree.Paused);
+        parent.Close();
+        await Wait(5);
+        Check("...and finishes once the gate closes, so a game never gets stuck", spoke);
+
         var json = JsonSerializer.Serialize(steps.Select(s => new { step = s.Name, ok = s.Ok, detail = s.Detail }),
             new JsonSerializerOptions { WriteIndented = true });
         System.IO.File.WriteAllText(reportPath, json);

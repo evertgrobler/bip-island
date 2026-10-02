@@ -90,7 +90,7 @@ public partial class ParentLayer : CanvasLayer
     private void OnOpened()
     {
         _changed = false;
-        Coordinator.Voice.Stop();
+        // Bip's voice and every screen's timers pause with the tree and carry on afterwards.
         GetTree().Paused = true;
         ShowQuestion();
     }
@@ -217,8 +217,9 @@ public partial class ParentLayer : CanvasLayer
         button.AddThemeStyleboxOverride("pressed", ParentUi.Box(Palette.Sun, Palette.Ink, 3, 30, 22, 12));
         button.AddThemeFontOverride("font", Fonts.Bold);
         button.Text = "Update ready\nGrown-ups: tap here";
-        // Top centre: clear of the sticker book (top right) and the mystery box (top left).
-        button.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.CenterTop, Control.LayoutPresetMode.Minsize, 24);
+        // Bottom centre: clear of the sticker book, the mystery box and the games' level badge.
+        button.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.CenterBottom, Control.LayoutPresetMode.Minsize, 24);
+        button.GrowVertical = Control.GrowDirection.Begin;
         button.GrowHorizontal = Control.GrowDirection.Both;
         button.Pressed += Flow.OpenForUpdate;
         return button;
