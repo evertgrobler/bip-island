@@ -36,12 +36,7 @@ public abstract partial class NumeralGameScreen : GameScreen
 
     protected override void Build()
     {
-        AddHomeButton();
-        AddBip(P(-560, -400), 0.8f);
-        var replay = Buttons.Replay();
-        replay.Position = P(600, -330);
-        replay.ZIndex = 10;
-        Stage.AddChild(replay);
+        AddGameChrome(P(600, -330));
         After(StartDelay, AskQuestion);
     }
 
@@ -50,6 +45,7 @@ public abstract partial class NumeralGameScreen : GameScreen
 
     protected void ClearNumerals()
     {
+        StopHint();
         foreach (var numeral in Numerals) numeral.QueueFree();
         Numerals.Clear();
     }
@@ -77,6 +73,9 @@ public abstract partial class NumeralGameScreen : GameScreen
         Sfx.Play(BipSounds.Effect.Chime);
     }
 
+    /// <summary>Which numeral is right (for the walk-through test), or -1 before the numerals show.</summary>
+    public int RightIndex => Numerals.Count == 0 ? -1 : Enumerable.Range(0, Choices.Count).FirstOrDefault(i => IsCorrect(Choices[i]), -1);
+
     protected override void HandleTap(string name, Node2D node)
     {
         if (name == "replay")
@@ -85,41 +84,12 @@ public abstract partial class NumeralGameScreen : GameScreen
             SayPrompt();
             return;
         }
-        if (name.StartsWith("num:") && int.TryParse(name["num:".Length..], out var index)
-            && index < Choices.Count && index < Numerals.Count)
-            Answer(Choices[index], Numerals[index]);
+        if (!name.StartsWith("num:") || !int.TryParse(name["num:".Length..], out var index)
+            || index >= Choices.Count || index >= Numerals.Count) return;
+        var right = RightIndex is var r && r >= 0 && r < Numerals.Count ? Numerals[r] : null;
+        AnswerChoice(Attempt, IsCorrect(Choices[index]), Numerals[index], right, SkillId,
+                     [AudioCatalogue.NumberClip(Count)], Session, AskQuestion);
     }
-
-    private void Answer(int numeral, Node2D node)
-    {
-        var outcome = Attempt.Answer(IsCorrect(numeral));
-        switch (outcome.Kind)
-        {
-            case AnswerOutcomeKind.Correct:
-                InputLocked = true;
-                var grow = node.CreateTween();
-                grow.TweenProperty(node, "scale", Vector2.One * 1.15f, 0.15);
-                grow.TweenProperty(node, "scale", Vector2.One * 1.05f, 0.1);
-                Buttons.Sparkle(node.Position, Stage);
-                Sfx.Play(BipSounds.Effect.Chime);
-                Bip.Celebrate();
-                var change = Record(outcome.FirstTry, SkillId);
-                Voice.Play([Coordinator.RandomPraise(), AudioCatalogue.NumberClip(Count)],
-                           completion: () => AfterAnswer(change, Session, AskQuestion));
-                break;
-            default:
-                Sfx.Play(BipSounds.Effect.Boop);
-                Buttons.Shake(node);
-                Bip.Tilt();
-                if (outcome.Kind != AnswerOutcomeKind.Hint) break;
-                if (RightIndex is var right && right >= 0 && right < Numerals.Count) Buttons.HintWiggle(Numerals[right]);
-                After(0.4, () => Voice.Play([Coordinator.RandomHint(), AudioCatalogue.NumberClip(Count)]));
-                break;
-        }
-    }
-
-    /// <summary>Which numeral is right (for the walk-through test), or -1 before the numerals show.</summary>
-    public int RightIndex => Numerals.Count == 0 ? -1 : Enumerable.Range(0, Choices.Count).FirstOrDefault(i => IsCorrect(Choices[i]), -1);
 
     public override void ReplayPrompt()
     {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BipCore;
 using BipIsland.Audio;
 using BipIsland.Drawing;
@@ -52,6 +53,76 @@ public abstract partial class GameScreen : BaseScreen
         }
         Stage.AddChild(badge);
         _levelBadge = badge;
+    }
+
+    /// <summary>Home, Bip bottom left and the replay button: what every game screen shows.</summary>
+    protected void AddGameChrome(Vector2 replayAt, Vector2? bipAt = null, float bipScale = 0.8f)
+    {
+        AddHomeButton();
+        AddBip(bipAt ?? P(-560, -400), bipScale);
+        var replay = Buttons.Replay();
+        replay.Position = replayAt;
+        replay.ZIndex = 10;
+        Stage.AddChild(replay);
+    }
+
+    // Hints
+
+    private Tween? _hint;
+    private Node2D? _hinted;
+
+    /// <summary>The node wiggling for a hint, if any.</summary>
+    protected Node2D? HintedNode => _hinted;
+
+    /// <summary>Wiggles one node ("look for the one that's wiggling!") until <see cref="StopHint"/>.</summary>
+    protected void ShowHint(Node2D node)
+    {
+        StopHint();
+        _hinted = node;
+        _hint = Buttons.HintWiggle(node);
+    }
+
+    protected void StopHint()
+    {
+        _hint?.Kill();
+        _hint = null;
+        if (_hinted != null && IsInstanceValid(_hinted))
+        {
+            _hinted.Rotation = 0;
+            _hinted.Scale = Vector2.One;
+        }
+        _hinted = null;
+    }
+
+    /// <summary>
+    /// A pick-one answer (a numeral, a picture). Right: sparkle, record, praise and
+    /// <paramref name="sayWhenRight"/>, then the next question or the end. Wrong: soft boop and try
+    /// again; after two misses <paramref name="right"/> wiggles and Bip says a hint and <paramref name="sayWhenRight"/>.
+    /// </summary>
+    protected void AnswerChoice(QuestionAttempt attempt, bool correct, Node2D node, Node2D? right, string skillId,
+                                IReadOnlyList<string> sayWhenRight, GameSession session, Action next, string? soundId = null)
+    {
+        var outcome = attempt.Answer(correct);
+        if (outcome.Kind == AnswerOutcomeKind.Correct)
+        {
+            InputLocked = true;
+            StopHint();
+            var grow = node.CreateTween();
+            grow.TweenProperty(node, "scale", Vector2.One * 1.15f, 0.15);
+            grow.TweenProperty(node, "scale", Vector2.One * 1.05f, 0.1);
+            Buttons.Sparkle(node.Position, Stage);
+            Sfx.Play(BipSounds.Effect.Chime);
+            Bip.Celebrate();
+            var change = Record(outcome.FirstTry, skillId, soundId);
+            Voice.Play([Coordinator.RandomPraise(), .. sayWhenRight], completion: () => AfterAnswer(change, session, next));
+            return;
+        }
+        Sfx.Play(BipSounds.Effect.Boop);
+        Buttons.Shake(node);
+        Bip.Tilt();
+        if (outcome.Kind != AnswerOutcomeKind.Hint) return;
+        if (right != null) ShowHint(right);
+        After(0.4, () => Voice.Play([Coordinator.RandomHint(), .. sayWhenRight]));
     }
 
     protected enum Ending { LevelUp, PractiseAgain, RoundDone }
