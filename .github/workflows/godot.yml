@@ -3,10 +3,30 @@
 # until the switchover.
 name: Godot
 
+# Docs-only changes run nothing. Pull requests run the Linux job only; the Mac and Windows
+# install-and-update tests (Mac minutes are expensive) run on main and manual runs.
 on:
   pull_request:
+    paths:
+      - "godot/**"
+      - "scripts/godot/**"
+      - "scripts/check_all.sh"
+      - "scripts/validate_content.py"
+      - "Content/**"
+      - "Resources/**"
+      - "audio/**"
+      - ".github/workflows/godot.yml"
   push:
     branches: [main]
+    paths:
+      - "godot/**"
+      - "scripts/godot/**"
+      - "scripts/check_all.sh"
+      - "scripts/validate_content.py"
+      - "Content/**"
+      - "Resources/**"
+      - "audio/**"
+      - ".github/workflows/godot.yml"
   workflow_dispatch:
 
 permissions:
@@ -188,6 +208,7 @@ jobs:
   windows:
     name: Install and update test (Windows)
     needs: export
+    if: github.event_name != 'pull_request'
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
@@ -217,6 +238,7 @@ jobs:
   macos:
     name: Package, install and update test (Mac)
     needs: export
+    if: github.event_name != 'pull_request'
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
