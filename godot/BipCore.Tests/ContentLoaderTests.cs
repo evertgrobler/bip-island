@@ -89,6 +89,28 @@ public sealed class ContentLoaderTests : IDisposable
         Assert.Contains("buildPhase", error.Message);
     }
 
+    /// <summary>The game reads content from inside its package through a reader function.</summary>
+    [Fact]
+    public void TheReaderLoadsTheSameContentAsTheFolder()
+    {
+        var read = new List<string>();
+        var content = new ContentLibrary(file =>
+        {
+            read.Add(file);
+            return File.ReadAllText(Path.Combine(TestContent.Directory, file));
+        });
+        Assert.Equal(ContentLibrary.Files.ToHashSet(), read.ToHashSet());
+        Assert.Equal(TestContent.Library().Words.Words.Count, content.Words.Words.Count);
+    }
+
+    [Fact]
+    public void AReaderThatFailsNamesTheFile()
+    {
+        var error = Assert.Throws<ContentLoadException>(() => new ContentLibrary(file =>
+            file == "coding/levels.json" ? throw new FileNotFoundException(file) : File.ReadAllText(Path.Combine(TestContent.Directory, file))));
+        Assert.Contains("coding/levels.json", error.Message);
+    }
+
     [Fact]
     public void Lookups()
     {

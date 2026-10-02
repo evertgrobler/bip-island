@@ -170,3 +170,9 @@
   xUnit (`godot/BipCore.Tests`, 148 tests incl. 1,000-round fairness per game, levels, and loading a
   Swift-written save and passcode). CI runs them after the C# build. The Swift test
   `testReviewComesFirst` checked day 2 when the review is only due on day 3 (passed by luck); fixed in both.
+- **2 Oct:** Godot Phase 0 done: the first main build (0.2.8) published to the public Vercel Blob store
+  (created automatically). Test downloads (Phase 0 screen only, not the game yet):
+  Mac https://x4dwtory3rjimb1l.public.blob.vercel-storage.com/godot-test/BipIsland-mac.dmg ·
+  Windows https://x4dwtory3rjimb1l.public.blob.vercel-storage.com/godot-test/BipIsland-win-Setup.exe.
+  Update feeds: `godot-test/win/` and `godot-test/osx/`. Next: the game shell (map, islands, profiles,
+  saves, input), then the 11 games.
