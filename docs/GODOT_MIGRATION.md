@@ -131,7 +131,8 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 ## Checklist
 
 - [ ] Phase 0 — Godot skeleton, `godot.yml` CI, test feed, install-and-update test green on Mac and Windows
-- [ ] Phase 1 — `BipCore` in C#, 109 tests ported and passing, audio as `.ogg`
+- [x] Phase 1 — `BipCore` in C# (`godot/BipCore`), every Swift test ported and passing (`godot/BipCore.Tests`, 148 xUnit tests, run in CI)
+- [ ] Phase 1 — audio contract, placeholder script and validator switched to `.ogg`
 - [ ] Phase 2 — Drawing kit, audio, coordinator, input, map, islands, profiles and charging screens
   - [x] Drawing kit: Palette, Sketch, Bip, Buttons, PictureNode, EmojiPictures, StepPictures, Avatars (picture gallery dev scene)
 - [ ] Phase 3 — The 11 games

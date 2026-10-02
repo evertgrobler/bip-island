@@ -93,6 +93,12 @@
 - Dev page: `--bip-scene res://Scenes/Dev/PictureGallery.tscn [--bip-gallery-page N]` shows every
   manifest picture (6 pages; the last has buttons, avatars, Bip, stars). Screenshot with the xvfb
   command plus `--bip-screenshot out.png`. The title counts ids "without art" (should be 0).
+- Game logic: `godot/BipCore` (plain C# library, no Godot; namespace `BipCore`), referenced by
+  `BipIsland.csproj`. Tests: `dotnet test godot/BipCore.Tests` (runs on Linux in a cloud session, about
+  10 seconds). Saves use `BipJson` (camelCase, the same JSON as the Swift app's Codable, dates as
+  seconds since 2001), so Swift-written progress, breaks and passcodes load unchanged. The Swift names
+  map across (`makeRound(for:session:using:)` → `MakeRound(learner, session, rng)`, `SoundHuntGame.id`
+  → `SoundHuntGame.GameId`, `Word.word` → `Word.Text`, `Grapheme.grapheme` → `Grapheme.Text`).
 
 ## Gotchas learned the hard way
 
@@ -171,3 +177,7 @@
   StepPictures, Avatars, star helper) plus the PictureGallery dev scene and `--bip-scene`. All 343
   manifest pictures render with art; checked page by page from xvfb screenshots. Fixed `rocket_4`
   (moon spilled off the card) in both Swift and Godot.
+- **2 Oct:** Godot Phase 1: all of BipCore ported to C# (`godot/BipCore`) with every Swift test as
+  xUnit (`godot/BipCore.Tests`, 148 tests incl. 1,000-round fairness per game, levels, and loading a
+  Swift-written save and passcode). CI runs them after the C# build. The Swift test
+  `testReviewComesFirst` checked day 2 when the review is only due on day 3 (passed by luck); fixed in both.

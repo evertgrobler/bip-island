@@ -5,6 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BipIsland", "BipIsland.csproj", "{8CE4824F-DE59-4A4B-86F4-018E8BFEBDAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BipCore", "BipCore\BipCore.csproj", "{9444967F-AC0F-4405-9F81-D4FD453B9D2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BipCore.Tests", "BipCore.Tests\BipCore.Tests.csproj", "{00D37F8D-0792-4D66-8E2E-1CE1BF14E245}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{8CE4824F-DE59-4A4B-86F4-018E8BFEBDAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CE4824F-DE59-4A4B-86F4-018E8BFEBDAB}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{8CE4824F-DE59-4A4B-86F4-018E8BFEBDAB}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{9444967F-AC0F-4405-9F81-D4FD453B9D2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9444967F-AC0F-4405-9F81-D4FD453B9D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9444967F-AC0F-4405-9F81-D4FD453B9D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9444967F-AC0F-4405-9F81-D4FD453B9D2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00D37F8D-0792-4D66-8E2E-1CE1BF14E245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00D37F8D-0792-4D66-8E2E-1CE1BF14E245}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00D37F8D-0792-4D66-8E2E-1CE1BF14E245}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00D37F8D-0792-4D66-8E2E-1CE1BF14E245}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

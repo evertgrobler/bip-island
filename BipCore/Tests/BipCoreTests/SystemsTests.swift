@@ -24,8 +24,9 @@ final class SystemsTests: XCTestCase {
         XCTAssertTrue(progress.isMastered("snd_g1"))
         var rng = SeededGenerator(seed: 40)
         let recommender = PlayRecommender(content: content)
-        // Day 2: the first review is due (reviewAfterDays starts at 2).
-        let suggestion = try XCTUnwrap(recommender.suggest(progress: progress, startingBand: .foundation, day: 2,
+        // Mastered on day 1, so the first review (2 days later) is due on day 3.
+        XCTAssertTrue(progress.isDueForReview("snd_g1", on: 3, rules: rules))
+        let suggestion = try XCTUnwrap(recommender.suggest(progress: progress, startingBand: .foundation, day: 3,
                                                            rules: rules, using: &rng))
         let game = try XCTUnwrap(content.game(id: suggestion.gameID))
         XCTAssertTrue(game.skills.contains("snd_g1"), "review should practise the due skill, not \(suggestion.gameID)")
