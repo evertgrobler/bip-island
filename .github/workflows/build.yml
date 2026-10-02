@@ -2,10 +2,35 @@
 # publishes it to Vercel, where the installed app picks it up via Sparkle.
 name: Build
 
+# Only when the Swift app, or something it ships, changes: Mac machines use GitHub minutes fast.
 on:
   pull_request:
+    paths:
+      - "BipIsland/**"
+      - "BipCore/**"
+      - "Resources/**"
+      - "Content/**"
+      - "audio/**"
+      - "site/**"
+      - "project.yml"
+      - "scripts/ci/**"
+      - "scripts/validate_content.py"
+      - "scripts/make_placeholder_audio.py"
+      - ".github/workflows/build.yml"
   push:
     branches: [main]
+    paths:
+      - "BipIsland/**"
+      - "BipCore/**"
+      - "Resources/**"
+      - "Content/**"
+      - "audio/**"
+      - "site/**"
+      - "project.yml"
+      - "scripts/ci/**"
+      - "scripts/validate_content.py"
+      - "scripts/make_placeholder_audio.py"
+      - ".github/workflows/build.yml"
   workflow_dispatch:
 
 permissions:

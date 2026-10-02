@@ -81,5 +81,12 @@ Audio file-name contract (`Resources/Audio/`):
 ## Working rules for sessions
 
 - Work on a branch, open a PR, and merge to `main` only when the CI build is green — `main` is what ships to the family Mac.
+- **Until 1 November 2026 GitHub Actions minutes are used up** (owner decision: no paying for more). Merges still go ahead, but only when all of these hold:
+  1. `scripts/check_all.sh` passes on the PR branch with the latest `main` merged in, and its summary is pasted into the PR. It runs everything CI ran except the real Mac/Windows install test, for free, in the session.
+  2. Every screenshot it saves in `build/check/screenshots/` has been opened and looked at.
+  3. Another session reviewed the PR (`/code-review` at high effort, findings on the PR) and every blocking finding is fixed.
+  4. Swift changes (bug fixes only) are small and reviewed line by line, since Swift can't be compiled on Linux; a logic change also changes its C# twin in `godot/BipCore`, with a test.
+  Merging publishes nothing until minutes return. From November, GitHub CI is the gate again.
+- Save GitHub minutes: pushing a branch is free; opening or updating a PR starts CI, so batch pushes. Docs-only changes start nothing; Godot PRs run only the Linux job.
 - Write unit tests for game logic (mastery tracking, phonics ordering, coding-puzzle interpreter) — they run in CI.
 - Update `docs/PLAN.md` "Build phases" status when a phase finishes.
