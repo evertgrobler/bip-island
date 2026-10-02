@@ -134,7 +134,7 @@ public partial class LettersIslandScreen : BaseScreen
             Buttons.Press(node);
             InputLocked = true;
             Voice.Play([sound.SoundClip]);
-            After(0.5, () => StartGame(MeetTheSoundGame.GameId));
+            After(0.5, () => StartGame(MeetTheSoundGame.GameId, sound));
         }
     }
 
@@ -145,7 +145,12 @@ public partial class LettersIslandScreen : BaseScreen
         if (InputLocked) return;
         InputLocked = true;
         Bip.Celebrate();
-        After(0.5, () => StartGame(SoundHuntGame.GameId));
+        // Bip's suggestion: meet a new sound, hunt for a met one, or pop a recognised one.
+        After(0.5, () =>
+        {
+            if (Coordinator.NextActivity() is { } next) StartGame(next.Kind.GameId(), next.Sound);
+            else StartGame(SoundHuntGame.GameId);
+        });
     }
 
     public override void ReplayPrompt()

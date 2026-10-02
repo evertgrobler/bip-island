@@ -121,6 +121,8 @@
 - Godot 4.7.2 **segfaults now and then importing on worker threads** (dmesg: `WorkerThread … segfault`,
   log stops at `reimport | NotoColorEmoji.ttf`; about 1 run in 4). `project.godot` sets
   `editor/import/use_multiple_threads=false`: 0 crashes in 18 fresh imports, still about 7 s.
+- Godot: **commit the `.uid` file of every new C# script** (run `--headless --import` once to make
+  them), or every check run leaves untracked files behind.
 - `UInt64(negativeInt)` **traps at runtime** (crashed Letters Island, build 17). Use enumerated indices.
 - `Sketch.node` requires an explicit `seed:` (no default). `CGPoint + CGPoint` doesn't exist.
 - Cross-module: `internal` memberwise inits are invisible to `BipIsland` (add `public init`).
@@ -220,3 +222,7 @@
 - **2 Oct, later:** Godot parent gate and parent area (Phase 4, part 1): hold Esc → maths or passcode,
   Progress/Children/Settings tabs, "Update ready" button that installs only after the gate. The
   click-through test now covers the gate (48 steps). Native kid lock is the next part.
+- **2 Oct, later still:** Godot Phase 3 finished: Words (Sound Buttons, Word Builder), Coding
+  (Morning Order, Bip's Path) and Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter Trace, Feed
+  the Monster), all 11 games on the shared frame. The walk-through plays every game (112 steps).
+  Phase 3 ticked in `GODOT_MIGRATION.md`.
