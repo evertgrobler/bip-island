@@ -115,6 +115,11 @@
   while the gate is open. Previews: `Scenes/Parent/{gate,progress,children,settings,update}.tscn`.
   `Updater.ReadyVersion`/`UpdateReady` drive the "Update ready" button; `InstallAndRestart()` only runs
   after the gate.
+- Kid lock (Phase 4): `Scripts/App/KidLock.cs`, rules in `BipCore.KidLockRules` (tested). The project
+  starts windowed; `Boot` calls `KidLock.Install`, which covers the screen and locks it (Mac), or goes
+  exclusive full screen with a keyboard hook (Windows). Off when headless, with `--bip-windowed`, on
+  Linux, or with Option/Alt held at launch (parent mode). Quitting or updating lifts it first. It
+  can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
 
 ## Gotchas learned the hard way
 
@@ -213,3 +218,7 @@
 - **2 Oct, later:** Godot parent gate and parent area (Phase 4, part 1): hold Esc → maths or passcode,
   Progress/Children/Settings tabs, "Update ready" button that installs only after the gate. The
   click-through test now covers the gate (48 steps). Native kid lock is the next part.
+- **2 Oct, later:** Godot kid lock (Phase 4, part 2) written: Mac presentation options as in Swift plus
+  quit-on-power-off (the Godot build would otherwise block shutdown), Windows exclusive full screen and
+  a keyboard hook, parent mode with Option/Alt. Unproven on real machines until the CI Mac/Windows jobs
+  run (minutes out until 1 Nov, or a brief public window).

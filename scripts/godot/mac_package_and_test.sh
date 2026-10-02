@@ -62,6 +62,25 @@ fi
 sleep 2
 python3 "$root/scripts/godot/check_report.py" "$report" --version "$VERSION" --expect-save
 
+# The kid lock, on a real Mac window (not headless): the updated game opens locked, asks macOS
+# whether the Dock/menu bar/Cmd-Tab lock took hold, then lifts it and quits. Reported as a warning
+# for now: it's the first time it runs on a runner's screen.
+lock_report="$work/kidlock.json"
+rm -f "$lock_report"
+"$installed_app/Contents/MacOS/$exe" -- --bip-kidlock-check "$lock_report" >"$work/kidlock.log" 2>&1 &
+game=$!
+for _ in $(seq 1 30); do
+  [ -s "$lock_report" ] && break
+  sleep 2
+done
+kill "$game" 2>/dev/null || true
+if grep -q '"locked":true' "$lock_report" 2>/dev/null; then
+  echo "Kid lock: $(cat "$lock_report")"
+else
+  echo "::warning::The Mac kid lock didn't confirm: $(cat "$lock_report" 2>/dev/null || echo 'no report')"
+  tail -n 40 "$work/kidlock.log" || true
+fi
+
 # The .dmg: this version's app plus a shortcut to Applications, to drag across.
 stage="$work/dmg"
 mkdir -p "$stage"

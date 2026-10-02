@@ -17,13 +17,14 @@ namespace BipIsland.App;
 ///   --bip-scene &lt;res://path.tscn&gt;     open that scene first (Boot), e.g. to screenshot a dev page
 ///   --bip-walk &lt;file&gt;                 click round every screen and check each step (Dev/WalkTest.cs)
 ///   --bip-save-dir &lt;folder&gt;           keep saves there instead of the player's folder
+///   --bip-kidlock-check &lt;file&gt;        (not headless) write whether the kid lock really took hold, then quit
 /// </summary>
 public static class SelfTest
 {
     public const string MarkerPath = "user://selftest_marker.json";
 
     public static bool IsRequested(string[] args) =>
-        args.Any(a => a is "--bip-report" or "--bip-screenshot" or "--bip-update-test" or "--bip-walk");
+        args.Any(a => a is "--bip-report" or "--bip-screenshot" or "--bip-update-test" or "--bip-walk" or "--bip-kidlock-check");
 
     public static async void Run(Boot boot, string[] args)
     {
@@ -41,6 +42,22 @@ public static class SelfTest
                 var error = await Updater.UpdateNowAndRestart(feed, new[] { "--headless", "--", "--bip-report", report });
                 WriteReport(report, error);
                 boot.Quit(1);
+                return;
+            }
+            if (Value(args, "--bip-kidlock-check", 1) is { } lockCheck)
+            {
+                // Give the window and the operating system a moment to settle, then ask it.
+                for (var i = 0; i < 60; i++) await boot.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+                var state = KidLock.Check();
+                var locked = state is "mac lock on" or "windows hook on";
+                System.IO.File.WriteAllText(lockCheck[0], JsonSerializer.Serialize(new Dictionary<string, object>
+                {
+                    ["os"] = OS.GetName(),
+                    ["kidLock"] = state,
+                    ["locked"] = locked,
+                }));
+                GD.Print($"Bip Island: kid lock check: {state}");
+                boot.Quit(locked ? 0 : 1);
                 return;
             }
             if (Value(args, "--bip-walk", 1) is { } walk)
@@ -120,6 +137,7 @@ public static class SelfTest
             ["sampleClipPlays"] = sampleClip,
             ["saveMarker"] = FileAccess.FileExists(MarkerPath) ? FileAccess.GetFileAsString(MarkerPath) : null,
             ["userDataDir"] = OS.GetUserDataDir(),
+            ["kidLock"] = KidLock.Check(),
         };
         var json = JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true });
         System.IO.File.WriteAllText(path, json);

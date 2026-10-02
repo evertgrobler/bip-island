@@ -142,7 +142,7 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
   - [x] Profiles, saves, breaks, stickers, mystery box, recommendations (with the Phase 2 shell)
   - [x] Parent gate (hold Esc → maths or passcode), parent area (Progress, Children, Settings), "Update ready" button that installs only after the gate
-  - [ ] Native kid lock: Mac (hide Dock and menu bar, no Cmd-Tab) and Windows (no Windows key or Alt-Tab)
+  - [x] Native kid lock: Mac (borderless cover window + presentation options; quits when the Mac powers off) and Windows (exclusive full screen + keyboard hook for the Windows key, Alt-Tab, Alt/Ctrl-Esc). Option/Alt at launch = parent mode. First proof on real machines: the `--bip-kidlock-check` step in the Mac/Windows CI jobs (a warning until it has passed once).
 - [ ] Phase 5 — Owner test, progress export/import, family feed switched, Swift code retired, docs updated
 
 ## Port notes from the Swift sessions (1 Oct 2026)

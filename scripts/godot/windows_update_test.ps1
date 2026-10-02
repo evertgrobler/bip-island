@@ -48,3 +48,19 @@ try {
 }
 python "$root/scripts/godot/check_report.py" $report --version $Version --expect-save
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# The kid lock, in a real window (not headless): the updated game opens in exclusive full screen
+# with its keyboard hook, reports whether the hook took hold, then removes it and quits. Reported
+# as a warning for now: it's the first time it runs on a runner's desktop.
+$lockReport = Join-Path $work 'kidlock.json'
+Remove-Item $lockReport -ErrorAction SilentlyContinue
+$game = Start-Process -FilePath $exe -ArgumentList '--', '--bip-kidlock-check', "`"$lockReport`"" -PassThru
+$deadline = (Get-Date).AddMinutes(1)
+while ((Get-Date) -lt $deadline -and -not (Test-Path $lockReport)) { Start-Sleep -Seconds 2 }
+Stop-Process -Id $game.Id -Force -ErrorAction SilentlyContinue
+if ((Test-Path $lockReport) -and ((Get-Content $lockReport -Raw) -match '"locked":true')) {
+    Write-Host "Kid lock: $(Get-Content $lockReport -Raw)"
+} else {
+    $found = if (Test-Path $lockReport) { Get-Content $lockReport -Raw } else { 'no report' }
+    Write-Host "::warning::The Windows kid lock didn't confirm: $found"
+}
