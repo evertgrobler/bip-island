@@ -144,4 +144,55 @@ public sealed class SaveStoreTests : IDisposable
         store.AddChild("Sam", 6, null);
         Assert.Empty(Directory.GetFiles(_folder, "*.tmp"));
     }
+
+    [Fact]
+    public void ALockedSaveIsNeverWrittenOver()
+    {
+        var first = Open();
+        first.AddChild("Sam", 6, null);
+        var before = File.ReadAllText(first.FilePath);
+
+        var locked = new SaveStore(_folder, readFile: _ => throw new IOException("in use by another process"));
+        Assert.True(locked.SavingPaused);
+        Assert.Contains("couldn't open", locked.LoadError ?? "");
+        Assert.Single(locked.Children()); // The game still plays, as Player 1.
+        locked.AddChild("Lily", 5, null);
+        Assert.False(locked.Save());
+        Assert.Equal(before, File.ReadAllText(first.FilePath));
+
+        Assert.Equal(2, Open().Children().Count); // Next launch reads it again.
+    }
+
+    [Fact]
+    public void WhenNoCopyCanBeKeptABrokenSaveIsLeftAlone()
+    {
+        Directory.CreateDirectory(_folder);
+        var path = Path.Combine(_folder, SaveStore.FileName);
+        File.WriteAllText(path, "{ broken");
+        var now = DateTimeOffset.FromUnixTimeSeconds(1_800_000_000);
+        // A folder where the copy would go makes keeping the copy fail.
+        Directory.CreateDirectory(Path.Combine(_folder, $"unreadable-save-{now.ToUnixTimeSeconds()}.json"));
+
+        var store = new SaveStore(_folder, () => now);
+        Assert.True(store.SavingPaused);
+        Assert.False(store.Save());
+        Assert.Equal("{ broken", File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void NullsInASaveAreTreatedAsEmpty()
+    {
+        Directory.CreateDirectory(_folder);
+        var id = Guid.NewGuid();
+        File.WriteAllText(Path.Combine(_folder, SaveStore.FileName),
+            $$"""{"version":1,"children":[{"id":"{{id}}","name":null,"progress":null},null],"settings":null}""");
+        var store = Open();
+        Assert.Null(store.LoadError);
+        Assert.Equal(id, Assert.Single(store.Children()).Id);
+        Assert.Equal(0, store.Progress(id).Stars);
+        Assert.Equal(20, store.Settings.PlayMinutes);
+
+        File.WriteAllText(store.FilePath, """{"version":1,"children":null}""");
+        Assert.Equal("Player 1", Assert.Single(Open().Children()).Name);
+    }
 }

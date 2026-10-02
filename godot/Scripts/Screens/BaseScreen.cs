@@ -177,7 +177,7 @@ public abstract partial class BaseScreen : Node2D
     }
 
     /// <summary>Higher z first; among equals, the one drawn later (on top).</summary>
-    private static (int, int) Depth(Node2D node)
+    private static DepthKey Depth(Node2D node)
     {
         var z = 0;
         for (Node? n = node; n is CanvasItem c; n = n.GetParent())
@@ -185,14 +185,29 @@ public abstract partial class BaseScreen : Node2D
             z += c.ZIndex;
             if (!c.ZAsRelative) break;
         }
-        return (z, DrawOrder(node));
+        return new DepthKey(z, DrawOrder(node));
     }
 
-    private static int DrawOrder(Node node)
+    /// <summary>The child index at each level from the root down: later in the tree is drawn on top.</summary>
+    private static List<int> DrawOrder(Node node)
     {
-        var order = 0;
-        for (Node? n = node; n?.GetParent() is { } parent; n = parent) order = order * 64 + n.GetIndex();
-        return order;
+        var path = new List<int>();
+        for (Node? n = node; n?.GetParent() != null; n = n.GetParent()) path.Add(n.GetIndex());
+        path.Reverse();
+        return path;
+    }
+
+    private sealed record DepthKey(int Z, List<int> Path) : IComparable<DepthKey>
+    {
+        public int CompareTo(DepthKey? other)
+        {
+            if (other == null) return 1;
+            if (Z != other.Z) return Z.CompareTo(other.Z);
+            for (var i = 0; i < Math.Min(Path.Count, other.Path.Count); i++)
+                if (Path[i] != other.Path[i]) return Path[i].CompareTo(other.Path[i]);
+            // A child is drawn after its parent.
+            return Path.Count.CompareTo(other.Path.Count);
+        }
     }
 
     // Keyboard play: left/right moves the glow, Enter or Space chooses, 1-3 chooses directly.

@@ -94,9 +94,7 @@ public partial class ProfilesScreen : BaseScreen
 /// </summary>
 public partial class ChargingScreen : BaseScreen
 {
-    private const int MaxChecks = 240; // About 20 minutes, in case the clock jumps.
     private Node2D? _batteryFill;
-    private int _checks;
 
     protected override void Build()
     {
@@ -128,8 +126,8 @@ public partial class ChargingScreen : BaseScreen
 
     private void Check()
     {
-        _checks++;
-        if (Coordinator.CurrentBreakPhase() == BreakPhase.Playing || _checks >= MaxChecks)
+        // The break follows the wall clock, so a clock change ends it here too.
+        if (Coordinator.CurrentBreakPhase() == BreakPhase.Playing)
         {
             Coordinator.ShowMap();
             return;

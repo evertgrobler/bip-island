@@ -96,6 +96,8 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
 **Phase 4 — Systems and parent area, about 2 sessions.**
 - Profiles (up to 4), saves, play breaks, sticker book, mystery box, recommendations and nudge.
 - Parent gate: hold Esc for 3 seconds, then a maths question, or the optional parent passcode (salted SHA-256; 3 wrong tries fall back to maths).
+  - Today `Boot` quits straight after the 3-second Esc hold (Phase 0 stand-in); this must go before the switchover.
+- Sticker book: the two **th**, **oo** and **ow** stickers look identical (same in Swift); add the mnemonic picture under each.
 - "Update ready" button: installs a downloaded update only after the parent gate.
 - Parent area tabs (Progress, Children, Settings), rebuilt with Godot's UI controls.
 

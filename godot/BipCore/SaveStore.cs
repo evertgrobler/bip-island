@@ -46,9 +46,12 @@ public sealed class SavedChild
 /// <summary>
 /// Loads and saves the save file (the Godot version of the Swift app's ProgressStore). Writes go to a
 /// temporary file that then replaces the real one, so a crash or power cut can't leave half a save.
-/// If the file can't be read, a copy is kept next to it before anything new is saved over it, so a
-/// child's progress is never thrown away silently. If the folder can't be written, the game still
-/// runs; progress just isn't kept.
+/// The save is never written over unless it was read, or a copy of it was kept first:
+/// - a file that isn't valid JSON is copied next to it, then the game starts fresh;
+/// - a file that can't be opened at all (locked by antivirus or OneDrive, no permission) is left
+///   alone: the game plays but saves nothing this time (<see cref="SavingPaused"/>), and the next
+///   launch reads it again.
+/// If the folder can't be written, the game still runs; progress just isn't kept.
 /// </summary>
 public sealed class SaveStore
 {
@@ -56,17 +59,22 @@ public sealed class SaveStore
 
     private readonly string _folder;
     private readonly Func<DateTimeOffset> _now;
+    private readonly Func<string, string> _readFile;
     private readonly SaveFile _file;
 
     /// <summary>Why the last save failed (null when it worked), for the log.</summary>
     public string? LastError { get; private set; }
     /// <summary>Why the save file couldn't be read at start-up (null when it was fine or new), for the log.</summary>
     public string? LoadError { get; private set; }
+    /// <summary>True when the save file couldn't be read and no copy could be kept: nothing is written this run.</summary>
+    public bool SavingPaused { get; private set; }
 
-    public SaveStore(string folder, Func<DateTimeOffset>? now = null)
+    /// <param name="readFile">Reads a file's text; tests pass one that fails like a locked file.</param>
+    public SaveStore(string folder, Func<DateTimeOffset>? now = null, Func<string, string>? readFile = null)
     {
         _folder = folder;
         _now = now ?? (() => DateTimeOffset.Now);
+        _readFile = readFile ?? File.ReadAllText;
         _file = Load();
         if (_file.Children.Count == 0)
         {
@@ -178,34 +186,72 @@ public sealed class SaveStore
         string json;
         try
         {
-            json = File.ReadAllText(FilePath);
+            json = ReadWithRetries();
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {
-            LoadError = error.Message;
+            // Probably fine, just locked: leave it untouched and try again next launch.
+            SavingPaused = true;
+            LoadError = $"couldn't open {FileName}, so nothing will be saved until the game is reopened: {error.Message}";
             return new SaveFile();
         }
         try
         {
             var file = BipJson.Decode<SaveFile>(json);
-            file.Children.RemoveAll(c => c.Id == Guid.Empty);
-            foreach (var child in file.Children) child.Avatar = ProfileRules.ValidAvatar(child.Avatar);
+            // A hand-edited or half-written file can have nulls where lists belong.
+            file.Children ??= [];
+            file.Children.RemoveAll(c => c is null || c.Id == Guid.Empty);
+            file.Settings ??= new PlayTimeSettings();
+            foreach (var child in file.Children)
+            {
+                child.Name ??= "";
+                child.Progress ??= new ChildProgress();
+                child.Avatar = ProfileRules.ValidAvatar(child.Avatar);
+            }
             return file;
         }
         catch (JsonException error)
         {
-            // Keep the unreadable file so it can be recovered by hand, then start fresh.
+            // Keep the unreadable text so it can be recovered by hand, then start fresh.
             var backup = Path.Combine(_folder, $"unreadable-save-{_now().ToUnixTimeSeconds()}.json");
-            try { File.Copy(FilePath, backup, overwrite: true); }
-            catch (Exception copyError) when (copyError is IOException or UnauthorizedAccessException) { }
-            LoadError = $"couldn't read {FileName} (copy kept at {backup}): {error.Message}";
+            try
+            {
+                File.WriteAllText(backup, json);
+                LoadError = $"couldn't read {FileName} (copy kept at {backup}): {error.Message}";
+            }
+            catch (Exception copyError) when (copyError is IOException or UnauthorizedAccessException)
+            {
+                SavingPaused = true;
+                LoadError = $"couldn't read {FileName} or keep a copy, so nothing will be saved: {error.Message}; {copyError.Message}";
+            }
             return new SaveFile();
+        }
+    }
+
+    /// <summary>Antivirus and sync tools often hold a file for a moment, so try a few times.</summary>
+    private string ReadWithRetries()
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return _readFile(FilePath);
+            }
+            catch (IOException) when (attempt < 3)
+            {
+                Thread.Sleep(150);
+            }
         }
     }
 
     /// <summary>Writes the whole file. Returns false (and sets <see cref="LastError"/>) when it couldn't.</summary>
     public bool Save()
     {
+        if (SavingPaused)
+        {
+            LastError = $"not saved: {FileName} couldn't be read at start-up, so it is left as it was";
+            return false;
+        }
         try
         {
             Directory.CreateDirectory(_folder);
