@@ -44,20 +44,21 @@ public partial class CountTapScreen : NumeralGameScreen
         ResetKeys();
         _round = next;
 
-        // Five to a row up to 10; seven to a row (a little smaller) above that, so up to 20 still
-        // leaves room for the numerals underneath.
-        var perRow = next.Count <= 10 ? 5 : 7;
-        var spacing = perRow == 5 ? 200 : 170;
-        var scale = perRow == 5 ? 0.55f : 0.5f;
+        // Five to a row up to 10, seven to a row (a little smaller) above that, so up to 20 still
+        // leaves room for the numerals underneath. Pictures are bigger than the Mac app's (about
+        // 160 pt rather than 80) so they are easy to see and tap.
+        var big = next.Count <= 10;
+        var perRow = big ? 5 : 7;
+        var (spacing, rowGap, scale) = big ? (200, 190, 1f) : (170, 160, 0.8f);
         for (var i = 0; i < next.Count; i++)
         {
             var picture = PictureNode.Make(next.Object.Picture, next.Object.Id);
             picture.Scale = Vector2.One * scale;
             var holder = Buttons.Tappable(new Node2D(), $"beast:{i}");
-            holder.Position = P((i % perRow - (perRow - 1) / 2.0) * spacing, 270 - i / perRow * 170);
+            holder.Position = P((i % perRow - (perRow - 1) / 2.0) * spacing, 270 - i / perRow * rowGap);
             holder.ZIndex = 10;
             holder.AddChild(picture);
-            Hit.SetArea(holder, new Rect2(-80, -80, 160, 160));
+            Hit.SetArea(holder, new Rect2(-spacing / 2f + 5, -rowGap / 2f + 5, spacing - 10, rowGap - 10));
             Stage.AddChild(holder);
             _beasts.Add(holder);
         }
