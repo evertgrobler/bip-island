@@ -93,7 +93,8 @@ diff_hygiene() {
     echo "Build output or a secret is in the diff (listed above)."
     return 1
   fi
-  if git diff "$base" | grep -E '^\+.*(vercel_blob_rw_|BEGIN (RSA|OPENSSH|PRIVATE)|ghp_[A-Za-z0-9]{20})'; then
+  # Patterns match real-looking secrets only (so this line doesn't match itself).
+  if git diff "$base" | grep -E '^\+.*(vercel_blob_rw_[A-Za-z0-9]{8,}_|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{36})'; then
     echo "Something that looks like a secret is in the diff."
     return 1
   fi
