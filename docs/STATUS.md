@@ -103,6 +103,12 @@
   seconds since 2001), so Swift-written progress, breaks and passcodes load unchanged. The Swift names
   map across (`makeRound(for:session:using:)` → `MakeRound(learner, session, rng)`, `SoundHuntGame.id`
   → `SoundHuntGame.GameId`, `Word.word` → `Word.Text`, `Grapheme.grapheme` → `Grapheme.Text`).
+- Game shell (Phase 2): `Scenes/Start.tscn` is the main scene; the `Game` autoload
+  (`Scripts/Game/GameCoordinator.cs`) opens saves and shows screens (`Scripts/Screens/`). Saves are one
+  JSON file through `BipCore.SaveStore`; `--bip-save-dir <folder>` points them elsewhere (tests always
+  use it). One screen at a time: `--bip-scene res://Scenes/Screens/<map|profiles|letters|…>.tscn`.
+  `--bip-walk out.json` clicks round every screen and fails on any wrong step. Games say
+  "Coming soon!" until their screen is ported (`GameCoordinator.StartGame`).
 
 ## Gotchas learned the hard way
 
@@ -195,3 +201,6 @@
   C# build, tests, Godot self-test, screenshots of every scene, Mac + Windows export, Setup.exe pack,
   diff hygiene) as the merge gate until November, plus a cross-session review. Trimmed CI for when it
   returns: Swift build only on Swift/app changes, Godot PRs Linux-only, docs-only changes run nothing.
+- **2 Oct, later:** Godot Phase 2 game shell: saves, coordinator, map, islands, Who's playing?,
+  charging, sticker book, mystery box, keyboard play, big cursor, Bip's sounds. Every screen matches
+  the Swift app in screenshots; a 31-step click-through test runs in `check_all.sh`. Games are next.

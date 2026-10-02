@@ -136,6 +136,7 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 - [x] Phase 1 — audio: the source clips stay `.m4a` in `Resources/Audio` (the Swift app still uses them); `scripts/godot/prepare_assets.py` converts them to `.ogg` at build time. The source switches to `.ogg` in Phase 5.
 - [ ] Phase 2 — Drawing kit, audio, coordinator, input, map, islands, profiles and charging screens
   - [x] Drawing kit: Palette, Sketch, Bip, Buttons, PictureNode, EmojiPictures, StepPictures, Avatars (picture gallery dev scene)
+  - [x] Game shell: SaveStore (one JSON save), GameCoordinator, BaseScreen (clicks, keys, timers), big cursor, Bip's sounds, map, four islands, Who's playing?, charging, sticker book, mystery box; a click-through walk test (`--bip-walk`) in `check_all.sh` and CI. Games show "Coming soon!" until Phase 3.
 - [ ] Phase 3 — The 11 games
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
 - [ ] Phase 5 — Owner test, progress export/import, family feed switched, Swift code retired, docs updated
