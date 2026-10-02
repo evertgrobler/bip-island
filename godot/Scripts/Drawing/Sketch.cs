@@ -148,6 +148,20 @@ public static class Sketch
                                   float lineWidth = 5, float wobble = 2.2f) =>
         new(shape, seed, fill, ink ?? Palette.Ink, lineWidth, wobble);
 
+    /// <summary>A five-pointed star outline (ten points, tips and dips), pointing up on screen.</summary>
+    public static Vector2[] StarPoints(Vector2 center, float radius)
+    {
+        var points = new Vector2[10];
+        for (var i = 0; i < 10; i++)
+        {
+            var r = i % 2 == 0 ? radius : radius * 0.45f;
+            // The Swift app's angles, mirrored for y-down: start at the top and go round.
+            var a = -(Mathf.Pi / 2 + i * Mathf.Pi / 5);
+            points[i] = new Vector2(center.X + r * Mathf.Cos(a), center.Y + r * Mathf.Sin(a));
+        }
+        return points;
+    }
+
     /// <summary>A label in the game font, centred on its position.</summary>
     public static Label Label(string text, int size, Color colour, Font? font = null)
     {

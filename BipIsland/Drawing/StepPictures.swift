@@ -197,7 +197,7 @@ enum StepPictures {
                                           glyph("🚀", 96, 0, -40, turn: .pi / 4))
         case "pic_rocket_3": return scene(glyph("🚀", 100, 0, 30, turn: .pi / 4), glyph("🔥", 50, 0, -46), glyph("💨", 50, -54, -70),
                                           glyph("💨", 50, 54, -70, turn: .pi))
-        case "pic_rocket_4": return scene(glyph("⭐", 30, -70, 70), glyph("⭐", 24, 70, 40), glyph("🌕", 180, 0, -110), glyph("🚀", 76, 0, 46, turn: .pi / 4))
+        case "pic_rocket_4": return scene(glyph("⭐", 30, -70, 70), glyph("⭐", 24, 70, 40), glyph("🌕", 140, 0, -50), glyph("🚀", 76, 0, 56, turn: .pi / 4))
         default: return nil
         }
     }

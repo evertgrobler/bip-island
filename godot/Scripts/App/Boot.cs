@@ -41,6 +41,10 @@ public partial class Boot : Node
 
     public override void _Ready()
     {
+        // "--bip-scene res://…tscn" opens that scene instead of the main screen (dev pages, screenshots).
+        var scene = System.Array.IndexOf(UserArgs, "--bip-scene");
+        if (scene >= 0 && scene + 1 < UserArgs.Length)
+            GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, UserArgs[scene + 1]);
         if (SelfTest.IsRequested(UserArgs))
             SelfTest.Run(this, UserArgs);
         else
