@@ -139,6 +139,7 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
   - [x] Drawing kit: Palette, Sketch, Bip, Buttons, PictureNode, EmojiPictures, StepPictures, Avatars (picture gallery dev scene)
   - [x] Game shell: SaveStore (one JSON save), GameCoordinator, BaseScreen (clicks, keys, timers), big cursor, Bip's sounds, map, four islands, Who's playing?, charging, sticker book, mystery box; a click-through walk test (`--bip-walk`) in `check_all.sh` and CI. Games show "Coming soon!" until Phase 3.
 - [ ] Phase 3 — The 11 games
+  - [x] Numbers: Count & Tap, Quick Look, on a shared game frame (`Scripts/Games/GameScreen.cs`)
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
   - [x] Profiles, saves, breaks, stickers, mystery box, recommendations (with the Phase 2 shell)
   - [x] Parent gate (hold Esc → maths or passcode), parent area (Progress, Children, Settings), "Update ready" button that installs only after the gate

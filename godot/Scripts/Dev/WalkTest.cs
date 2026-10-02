@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BipIsland.App;
 using BipCore;
 using BipIsland.Game;
+using BipIsland.Games;
 using BipIsland.Parent;
 using BipIsland.Screens;
 using Godot;
@@ -24,9 +25,9 @@ public static class WalkTest
 
     public static async Task<bool> Run(Node host, string reportPath)
     {
-        var tree = host.GetTree();
+        SceneTree tree = host.GetTree();
         var game = GameCoordinator.Instance;
-        var steps = new List<Step>();
+        List<Step> steps = new List<Step>();
 
         async Task Wait(double seconds) => await host.ToSignal(tree.CreateTimer(seconds), SceneTreeTimer.SignalName.Timeout);
         BaseScreen? Screen() => tree.CurrentScene as BaseScreen;
@@ -68,10 +69,18 @@ public static class WalkTest
         foreach (var island in new[] { "numbers", "words", "coding" })
         {
             if (await Tap("island:" + island)) await Expect<GameIslandScreen>($"{island} island opens");
-            if (await Tap("bip")) Check($"tapping Bip on {island} island doesn't leave it", Screen() is GameIslandScreen);
+            // Bip starts the island's first game; until that game is ported Bip stays put.
+            if (island == "numbers")
+            {
+                if (await Tap("bip")) await Expect<CountTapScreen>("tapping Bip on numbers island starts Count & Tap");
+                if (await Tap("home")) await Expect<GameIslandScreen>("home from Count & Tap goes back to numbers island");
+            }
+            else if (await Tap("bip")) Check($"tapping Bip on {island} island doesn't leave it", Screen() is GameIslandScreen);
             await Wait(2.2);
             if (await Tap("home")) await Expect<MapScreen>($"home from {island} island");
         }
+
+        await PlayNumbers();
 
         if (await Tap("stickers")) await Expect<StickerScreen>("the sticker book opens");
         if (await Tap("page")) Check("the sticker page turns", Screen() is StickerScreen);
@@ -117,10 +126,78 @@ public static class WalkTest
         game.ForceBreakForTest();
         game.ShowMap();
         await Expect<ChargingScreen>("during a break the map shows Bip charging");
+        var playedBefore = game.Progress.RecentGames.Count;
+        game.StartGame(BipCore.QuickLookGame.GameId);
+        await Expect<ChargingScreen>("during a break a game shows Bip charging instead");
+        Check("...and doesn't count as played", game.Progress.RecentGames.Count == playedBefore && game.CurrentGameId == null);
         game.EndBreakEarly();
         game.ShowMap();
         await Expect<MapScreen>("after the break the map opens again");
 
+        // Phase 3 games: one round of each, through the real clicks.
+
+        async Task<bool> WaitFor(Func<bool> ready, double seconds)
+        {
+            for (var waited = 0.0; waited < seconds; waited += 0.1)
+            {
+                if (ready()) return true;
+                await Wait(0.1);
+            }
+            return ready();
+        }
+
+        async Task<bool> TapNumeral(bool right)
+        {
+            if (Screen() is not NumeralGameScreen screen || screen.RightIndex < 0) return false;
+            var index = right ? screen.RightIndex : (screen.RightIndex + 1) % 3;
+            return await Tap($"num:{index}");
+        }
+
+        async Task PlayNumbers()
+        {
+            if (await Tap("island:numbers")) await Expect<GameIslandScreen>("numbers island opens for a game");
+            var starsBefore = game.Progress.Stars;
+            if (await Tap("count")) await Expect<CountTapScreen>("Count & Tap opens from the island");
+            Check("Count & Tap shows its level badge", Screen()?.FindChild("LevelBadge", true, false) != null);
+            Check("Count & Tap shows animals to count", await WaitFor(() => Screen()?.FindTappable("beast:0") != null, 3));
+            for (var i = 0; Screen()?.FindTappable($"beast:{i}") is { } beast && Hit.GlobalArea(beast) is { } area; i++)
+            {
+                Screen()!.Tap(area.GetCenter());
+                await Wait(0.05);
+            }
+            Check("counting every animal brings up three numerals",
+                  await WaitFor(() => Screen() is NumeralGameScreen { RightIndex: >= 0 }, 3));
+            if (await TapNumeral(right: true))
+            {
+                Check("the right numeral earns a star", game.Progress.Stars == starsBefore + 1, $"stars {starsBefore} → {game.Progress.Stars}");
+                Check("the answer is saved", game.Store.Progress(game.ChildId).Stars == game.Progress.Stars);
+                Check("the game's level is tracked", game.Progress.GameLevels.ContainsKey(BipCore.CountTapGame.GameId));
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home in a game goes back to its island");
+
+            // Quick Look: a wrong answer first (no star), then a whole visit to the end.
+            starsBefore = game.Progress.Stars;
+            if (await Tap("quick")) await Expect<QuickLookScreen>("Quick Look opens from the island");
+            Check("Quick Look's dots flash, then the numerals show",
+                  await WaitFor(() => Screen() is NumeralGameScreen { RightIndex: >= 0 }, 5));
+            if (await TapNumeral(right: false))
+                Check("a wrong numeral stays on the question", Screen() is QuickLookScreen { InputLocked: false, RightIndex: >= 0 });
+            if (await TapNumeral(right: true))
+                Check("right after a miss: no star, but the answer still counts", game.Progress.Stars == starsBefore
+                      && game.Progress.Skill("subitise_5").TotalAttempts + game.Progress.Skill("subitise_10").TotalAttempts > 0);
+            for (var round = 2; round <= 8; round++)
+            {
+                if (!await WaitFor(() => Screen() is NumeralGameScreen { RightIndex: >= 0, InputLocked: false }, 6)) break;
+                await TapNumeral(right: true);
+            }
+            Check("eight questions make a visit: the stars are counted and Bip goes back to the island",
+                  await WaitFor(() => Screen() is GameIslandScreen, 15), $"showing {Screen()?.GetType().Name}");
+            Check("seven first-try answers, seven stars", game.Progress.Stars == starsBefore + 7, $"stars {starsBefore} → {game.Progress.Stars}");
+            Check("both games are in the recent games", game.Progress.RecentGames.TakeLast(2).SequenceEqual(
+                [BipCore.CountTapGame.GameId, BipCore.QuickLookGame.GameId]));
+            await Wait(0.5);
+            if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
+        }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.
         var parent = game.Parent;
         void Escape(bool down) => Input.ParseInputEvent(new InputEventKey { Keycode = Key.Escape, PhysicalKeycode = Key.Escape, Pressed = down });

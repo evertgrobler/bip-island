@@ -9,7 +9,7 @@ namespace BipIsland.Dev;
 
 /// <summary>
 /// Opens one screen directly, for screenshots (scripts/check_all.sh opens every scene in
-/// Scenes/Screens with --bip-scene). With a test save folder (--bip-save-dir) it adds sample
+/// Scenes/Screens and Scenes/Games with --bip-scene). With a test save folder (--bip-save-dir) it adds sample
 /// children first, so "Who's playing?" and the map's child badge have something to show; it never
 /// touches a real save.
 /// </summary>
@@ -29,6 +29,9 @@ public partial class ScreenPreview : Node
             game.AddChildProfile("Lily", 5, "penguin");
             game.AddChildProfile("Sam", 7, "tortoise");
         }
+        // A game opens the way an island opens it, with its first question straight away.
+        BipIsland.Games.GameScreen.StartDelay = 0;
+        if (game.StartGame(Screen)) return;
         BaseScreen screen = Screen switch
         {
             "profiles" => new ProfilesScreen(),

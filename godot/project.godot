@@ -35,6 +35,10 @@ window/subwindows/embed_subwindows=true
 
 project/assembly_name="BipIsland"
 
+[editor]
+
+import/use_multiple_threads=false
+
 [input_devices]
 
 pointing/emulate_touch_from_mouse=false

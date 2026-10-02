@@ -118,6 +118,9 @@
 
 ## Gotchas learned the hard way
 
+- Godot 4.7.2 **segfaults now and then importing on worker threads** (dmesg: `WorkerThread … segfault`,
+  log stops at `reimport | NotoColorEmoji.ttf`; about 1 run in 4). `project.godot` sets
+  `editor/import/use_multiple_threads=false`: 0 crashes in 18 fresh imports, still about 7 s.
 - `UInt64(negativeInt)` **traps at runtime** (crashed Letters Island, build 17). Use enumerated indices.
 - `Sketch.node` requires an explicit `seed:` (no default). `CGPoint + CGPoint` doesn't exist.
 - Cross-module: `internal` memberwise inits are invisible to `BipIsland` (add `public init`).
@@ -210,6 +213,10 @@
 - **2 Oct, later:** Godot Phase 2 game shell: saves, coordinator, map, islands, Who's playing?,
   charging, sticker book, mystery box, keyboard play, big cursor, Bip's sounds. Every screen matches
   the Swift app in screenshots; a 31-step click-through test runs in `check_all.sh`. Games are next.
+- **2 Oct, afternoon:** Godot Phase 3, Numbers Island: Count & Tap and Quick Look, on a shared game
+  frame (`Scripts/Games/GameScreen.cs`: level stars, answers saved as they happen, the end-of-visit
+  star count, back to the island). The walk-through now plays both games, including a whole
+  8-question Quick Look visit. Words, Coding and Letters games follow, one PR per island.
 - **2 Oct, later:** Godot parent gate and parent area (Phase 4, part 1): hold Esc → maths or passcode,
   Progress/Children/Settings tabs, "Update ready" button that installs only after the gate. The
   click-through test now covers the gate (48 steps). Native kid lock is the next part.
