@@ -288,6 +288,12 @@ public partial class GameCoordinator : Node
     public bool StartGame(string gameId)
     {
         if (Content == null) return false;
+        // While Bip charges no game starts (or counts as played): the charging screen shows instead.
+        if (!PlayAllowed())
+        {
+            ShowCharging();
+            return true;
+        }
         GameScreen? screen = gameId switch
         {
             CountTapGame.GameId when NumbersOpen => new CountTapScreen(new CountTapGame(Content)),

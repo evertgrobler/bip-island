@@ -124,6 +124,10 @@ public static class WalkTest
         game.ForceBreakForTest();
         game.ShowMap();
         await Expect<ChargingScreen>("during a break the map shows Bip charging");
+        var playedBefore = game.Progress.RecentGames.Count;
+        game.StartGame(BipCore.QuickLookGame.GameId);
+        await Expect<ChargingScreen>("during a break a game shows Bip charging instead");
+        Check("...and doesn't count as played", game.Progress.RecentGames.Count == playedBefore && game.CurrentGameId == null);
         game.EndBreakEarly();
         game.ShowMap();
         await Expect<MapScreen>("after the break the map opens again");

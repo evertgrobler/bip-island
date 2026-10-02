@@ -55,7 +55,9 @@ public partial class CountTapScreen : NumeralGameScreen
             var picture = PictureNode.Make(next.Object.Picture, next.Object.Id);
             picture.Scale = Vector2.One * scale;
             var holder = Buttons.Tappable(new Node2D(), $"beast:{i}");
-            holder.Position = P((i % perRow - (perRow - 1) / 2.0) * spacing, 270 - i / perRow * rowGap);
+            // Each row is centred on its own, so a short last row (or 2 animals) sits in the middle.
+            var inRow = System.Math.Min(perRow, next.Count - i / perRow * perRow);
+            holder.Position = P((i % perRow - (inRow - 1) / 2.0) * spacing, 270 - i / perRow * rowGap);
             holder.ZIndex = 10;
             holder.AddChild(picture);
             Hit.SetArea(holder, new Rect2(-spacing / 2f + 5, -rowGap / 2f + 5, spacing - 10, rowGap - 10));
