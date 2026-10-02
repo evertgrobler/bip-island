@@ -285,7 +285,7 @@ public static class StepPictures
         n.AddChild(Pen(RoundRect(R(-50, -50, 100, 100), 6), fill: Palette.Sun, lineWidth: 4.5, seed: 1198));
         foreach (var (i, (x, y, r)) in Indexed(((float)(-20), (float)(18), (float)(10)), (22, -14, 12), (-14, -26, 7), (26, 26, 6)))
         {
-            n.AddChild(Pen(Ellipse(P(x, y), r, r), fill: Palette.Orange.WithAlpha(0.6), lineWidth: 2.5, seed: (ulong)(1199 + i) * 3));
+            n.AddChild(Pen(Ellipse(P(x, y), r, r), fill: Palette.Orange.WithAlpha(0.6), lineWidth: 2.5, seed: 1199 + (ulong)i * 3));
         }
         n.Rotation = Turn(0.18);
         n.Position = P(6, 6);
@@ -633,7 +633,7 @@ public static class StepPictures
     private static Node2D Block(double x, double y, Color colour, ulong seed, double turn = 0)
     {
         var n = Pen(RoundRect(R(-32, -32, 64, 64), 8), fill: colour, seed: seed);
-        n.AddChild(Pen(Ellipse(Vector2.Zero, 12, 12), fill: Palette.White, lineWidth: 3, seed: seed &+ 20));
+        n.AddChild(Pen(Ellipse(Vector2.Zero, 12, 12), fill: Palette.White, lineWidth: 3, seed: seed + 20));
         n.Position = P(x, y);
         n.Rotation = Turn(turn);
         return n;
