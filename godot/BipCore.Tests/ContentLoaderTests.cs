@@ -107,7 +107,7 @@ public sealed class ContentLoaderTests : IDisposable
     public void AReaderThatFailsNamesTheFile()
     {
         var error = Assert.Throws<ContentLoadException>(() => new ContentLibrary(file =>
-            file == "coding/levels.json" ? throw new FileNotFoundException(file) : File.ReadAllText(Path.Combine(TestContent.Directory, file))));
+            file == "coding/levels.json" ? throw new InvalidOperationException("not in the package") : File.ReadAllText(Path.Combine(TestContent.Directory, file))));
         Assert.Contains("coding/levels.json", error.Message);
     }
 

@@ -42,6 +42,16 @@ export PATH="$PATH:$HOME/.dotnet/tools"
 command -v vpk > /dev/null || dotnet tool install -g vpk --version 1.2.161 > /dev/null
 
 cd "$root"
+# The checks test the working tree, and the summary names a commit: they must be the same thing.
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Uncommitted changes (below). Commit them first, so the summary describes what was checked."
+  git status --short
+  exit 2
+fi
+# Rule 1: the latest main must be merged in.
+git fetch -q origin main || { echo "Couldn't fetch origin/main."; exit 2; }
+git rev-parse -q --verify origin/main > /dev/null || { echo "origin/main doesn't resolve."; exit 2; }
+step "Latest main merged in" git merge-base --is-ancestor origin/main HEAD
 step "Content" python3 scripts/validate_content.py
 step "Copy assets into Godot" python3 scripts/godot/prepare_assets.py
 step "C# build (warnings are errors)" dotnet build godot/BipIsland.sln -warnaserror
@@ -86,7 +96,7 @@ step "Pack the Windows installer" vpk "[win]" pack -x --packId BipIslandCheck --
 
 diff_hygiene() {
   local base
-  base="$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD)"
+  base="$(git merge-base HEAD origin/main)" || return 1
   git diff --check "$base" -- . ':!*.uid' || return 1
   # Nothing that should never be committed.
   if git diff --name-only "$base" | grep -E '(^|/)(build|bin|obj|\.godot|assets)/|\.key$|sparkle_private|\.env'; then
@@ -105,7 +115,12 @@ summary="$out/summary.md"
 {
   echo "### Local checks ($(date -u '+%d %b %Y %H:%M UTC'), $(git rev-parse --short HEAD))"
   printf '%s\n' "${results[@]}" | sed 's/^/- /'
-  echo "- Screenshots: $(find "$out/screenshots" -name '*.png' | wc -l | tr -d ' ') in build/check/screenshots (looked at by the session)"
+  shots="$(find "$out/screenshots" -name '*.png' | wc -l | tr -d ' ')"
+  if grep -q -- "--bip-scene" godot/Scripts/App/Boot.cs; then
+    echo "- Screenshots: $shots (every scene) in build/check/screenshots, looked at by the session"
+  else
+    echo "- Screenshots: $shots (main screen only: Boot can't open other scenes yet) in build/check/screenshots, looked at by the session"
+  fi
 } > "$summary"
 echo
 cat "$summary"

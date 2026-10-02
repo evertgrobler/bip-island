@@ -67,8 +67,9 @@ public sealed class ContentLibrary
             {
                 return BipJson.Decode<T>(readFile(file));
             }
-            catch (Exception error) when (error is IOException or JsonException or UnauthorizedAccessException)
+            catch (Exception error) when (error is not ContentLoadException)
             {
+                // Whatever the reader or the decoder threw, say which file it was.
                 throw new ContentLoadException(file, error);
             }
         }
