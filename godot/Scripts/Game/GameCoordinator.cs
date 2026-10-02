@@ -5,6 +5,7 @@ using BipCore;
 using BipIsland.App;
 using BipIsland.Audio;
 using BipIsland.Drawing;
+using BipIsland.Parent;
 using BipIsland.Screens;
 using Godot;
 
@@ -33,6 +34,8 @@ public partial class GameCoordinator : Node
     public SoundHuntGame? Hunt { get; private set; }
 
     public SaveStore Store { get; private set; } = null!;
+    /// <summary>The grown-ups' layer: the parent gate, the parent area and the "Update ready" button.</summary>
+    public ParentLayer Parent { get; private set; } = null!;
     public List<ChildSummary> Children { get; private set; } = [];
     public Guid ChildId { get; private set; }
     /// <summary>The child who is playing now.</summary>
@@ -62,6 +65,8 @@ public partial class GameCoordinator : Node
 
         LoadContent();
         OpenSaves(SaveFolder());
+        Parent = new ParentLayer { Name = "Parent" };
+        AddChild(Parent);
         if (DisplayServer.GetName() != "headless") BigCursor.Install();
     }
 
@@ -158,6 +163,42 @@ public partial class GameCoordinator : Node
         var added = Store.AddChild(name, age, avatar) != null;
         Children = Store.Children();
         return added;
+    }
+
+    /// <summary>A parent changes a child's name, age or picture.</summary>
+    public void UpdateChild(ChildSummary child)
+    {
+        Store.Update(child);
+        Children = Store.Children();
+    }
+
+    /// <summary>Removes a child and their progress. If they were playing, the first child takes over.</summary>
+    public void DeleteChild(Guid id)
+    {
+        CurrentBreakPhase(); // Bank play time to the child who was playing, as Choose does.
+        Store.Delete(id);
+        Children = Store.Children();
+        if (Children.Any(c => c.Id == ChildId) || Children.Count == 0) return;
+        ChildId = Children[0].Id;
+        Progress = Store.Progress(ChildId);
+        Store.SetLastChild(ChildId);
+    }
+
+    /// <summary>What a parent sees for one child, or null when the content didn't load.</summary>
+    public ProgressReport? Report(Guid id)
+    {
+        if (Content == null) return null;
+        var childProgress = id == ChildId ? Progress : Store.Progress(id);
+        var band = Children.FirstOrDefault(c => c.Id == id)?.Age is { } age ? Content.StartingBand(age) : Band.Foundation;
+        try
+        {
+            return new ProgressReport(Content, childProgress, band, Today);
+        }
+        catch (Exception error)
+        {
+            GD.PrintErr($"Bip Island: the progress report couldn't be made: {error.Message}");
+            return null;
+        }
     }
 
     /// <summary>Stars in a child's jar, for their card on "Who's playing?".</summary>

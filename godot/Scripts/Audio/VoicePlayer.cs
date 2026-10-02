@@ -19,7 +19,14 @@ public partial class VoicePlayer : Node
     private readonly AudioStreamPlayer _player = new();
     private int _sequence;
 
-    public override void _Ready() => AddChild(_player);
+    public override void _Ready()
+    {
+        // Pauses with the game (the parent gate pauses the tree): the clip and the wait for the next
+        // one both stop where they are and carry on afterwards, so a game waiting for the end of a
+        // sentence never gets stuck.
+        ProcessMode = ProcessModeEnum.Pausable;
+        AddChild(_player);
+    }
 
     public static string PathFor(string clip) => AudioFolder + clip + ".ogg";
 
@@ -77,7 +84,7 @@ public partial class VoicePlayer : Node
             GD.Print($"Bip Island: no clip {name} in this build, playing silence instead");
         }
 
-        GetTree().CreateTimer(length + GapBetweenClips).Timeout +=
+        GetTree().CreateTimer(length + GapBetweenClips, processAlways: false).Timeout +=
             () => PlayClip(index + 1, clips, id, onClipStart, completion);
     }
 }
