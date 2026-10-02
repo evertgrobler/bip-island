@@ -7,6 +7,14 @@
     <LangVersion>12</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <!-- The game logic lives in its own plain C# library (no Godot), tested by BipCore.Tests.
+         Keep their sources out of this project's default file globbing so nothing compiles twice. -->
+    <Compile Remove="BipCore/**;BipCore.Tests/**" />
+    <None Remove="BipCore/**;BipCore.Tests/**" />
+    <EmbeddedResource Remove="BipCore/**;BipCore.Tests/**" />
+    <ProjectReference Include="BipCore/BipCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <!-- Auto-updates on Mac and Windows from the static feed on Vercel. -->
     <PackageReference Include="Velopack" Version="1.2.161" />
   </ItemGroup>

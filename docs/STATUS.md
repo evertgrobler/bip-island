@@ -86,6 +86,12 @@
   (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from a local feed.
   Main builds go to a public Vercel Blob store (`godot-test/`); the Swift app's feed is untouched.
 - Drawing is y-down in Godot: when porting a Swift drawing, negate y values and angles.
+- Game logic: `godot/BipCore` (plain C# library, no Godot; namespace `BipCore`), referenced by
+  `BipIsland.csproj`. Tests: `dotnet test godot/BipCore.Tests` (runs on Linux in a cloud session, about
+  10 seconds). Saves use `BipJson` (camelCase, the same JSON as the Swift app's Codable, dates as
+  seconds since 2001), so Swift-written progress, breaks and passcodes load unchanged. The Swift names
+  map across (`makeRound(for:session:using:)` → `MakeRound(learner, session, rng)`, `SoundHuntGame.id`
+  → `SoundHuntGame.GameId`, `Word.word` → `Word.Text`, `Grapheme.grapheme` → `Grapheme.Text`).
 
 ## Gotchas learned the hard way
 
@@ -160,3 +166,7 @@
   (Velopack portable app, ad-hoc signed, `.dmg`) install an older build and update themselves from a
   local feed with saved data intact. Velopack's Mac packer needs a `.entitlements` file and has no
   `--skipVeloAppCheck` (Windows only).
+- **2 Oct:** Godot Phase 1: all of BipCore ported to C# (`godot/BipCore`) with every Swift test as
+  xUnit (`godot/BipCore.Tests`, 148 tests incl. 1,000-round fairness per game, levels, and loading a
+  Swift-written save and passcode). CI runs them after the C# build. The Swift test
+  `testReviewComesFirst` checked day 2 when the review is only due on day 3 (passed by luck); fixed in both.
