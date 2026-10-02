@@ -96,7 +96,6 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
 **Phase 4 — Systems and parent area, about 2 sessions.**
 - Profiles (up to 4), saves, play breaks, sticker book, mystery box, recommendations and nudge.
 - Parent gate: hold Esc for 3 seconds, then a maths question, or the optional parent passcode (salted SHA-256; 3 wrong tries fall back to maths).
-  - Today `Boot` quits straight after the 3-second Esc hold (Phase 0 stand-in); this must go before the switchover.
 - Sticker book: the two **th**, **oo** and **ow** stickers look identical (same in Swift); add the mnemonic picture under each.
 - "Update ready" button: installs a downloaded update only after the parent gate.
 - Parent area tabs (Progress, Children, Settings), rebuilt with Godot's UI controls.
@@ -142,6 +141,9 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 - [ ] Phase 3 — The 11 games
   - [x] Numbers: Count & Tap, Quick Look, on a shared game frame (`Scripts/Games/GameScreen.cs`)
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
+  - [x] Profiles, saves, breaks, stickers, mystery box, recommendations (with the Phase 2 shell)
+  - [x] Parent gate (hold Esc → maths or passcode), parent area (Progress, Children, Settings), "Update ready" button that installs only after the gate
+  - [ ] Native kid lock: Mac (hide Dock and menu bar, no Cmd-Tab) and Windows (no Windows key or Alt-Tab)
 - [ ] Phase 5 — Owner test, progress export/import, family feed switched, Swift code retired, docs updated
 
 ## Port notes from the Swift sessions (1 Oct 2026)

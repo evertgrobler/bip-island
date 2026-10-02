@@ -11,13 +11,22 @@ namespace BipIsland.App;
 /// The feed address comes from res://assets/update.json, written by CI; local and pull-request
 /// builds have none and never check. A new version is downloaded quietly in the background, but
 /// updates need a grown-up (owner rule, as in the Swift app): it is only installed after the parent
-/// gate (the "Update ready" button arrives in Phase 4 with the gate).
+/// gate, from the "Update ready" button or the parent area's Settings tab.
 /// The feed has one folder per computer (feed/win/ and feed/osx/), because Velopack names its packages
 /// the same on both.
 /// </summary>
 public static class Updater
 {
     public const string ConfigPath = "res://assets/update.json";
+
+    private static UpdateManager? _manager;
+    private static UpdateInfo? _downloaded;
+
+    /// <summary>The version downloaded and waiting for a grown-up, or null.</summary>
+    public static string? ReadyVersion => _downloaded?.TargetFullRelease.Version.ToString();
+
+    /// <summary>A new version finished downloading (its version number). Raised on the main thread.</summary>
+    public static event Action<string>? UpdateReady;
 
     /// <summary>The feed this build checks, or null for builds that don't update.</summary>
     public static string? FeedUrl { get; } = ReadFeedUrl();
@@ -60,23 +69,53 @@ public static class Updater
         }
     }
 
-    /// <summary>Checks the feed and downloads a newer version, if there is one. Never throws.</summary>
-    public static async Task CheckAndDownloadInBackground()
+    /// <summary>
+    /// Checks the feed and downloads a newer version, if there is one. Never throws; returns a short
+    /// sentence for the parent area's Settings tab.
+    /// </summary>
+    public static async Task<string> CheckAndDownloadInBackground()
     {
-        if (PlatformFeedUrl is not { } feed) return;
+        if (PlatformFeedUrl is not { } feed) return "Automatic updates aren't switched on in this build.";
         try
         {
             var manager = new UpdateManager(feed);
-            if (!manager.IsInstalled) return;
+            if (!manager.IsInstalled) return "This copy isn't installed, so it can't update itself.";
+            if (ReadyVersion is { } waiting) return $"Version {waiting} is ready to install.";
             var update = await manager.CheckForUpdatesAsync();
-            if (update == null) return;
+            if (update == null) return "This is the newest version.";
             await manager.DownloadUpdatesAsync(update);
-            GD.Print($"Bip Island: version {update.TargetFullRelease.Version} downloaded; it installs once a grown-up says yes.");
+            _manager = manager;
+            _downloaded = update;
+            var version = update.TargetFullRelease.Version.ToString();
+            GD.Print($"Bip Island: version {version} downloaded; it installs once a grown-up says yes.");
+            Callable.From(() => UpdateReady?.Invoke(version)).CallDeferred();
+            return $"Version {version} is ready to install.";
         }
         catch (Exception e)
         {
             // No internet, or the feed is down: try again next launch. Children never see this.
             GD.Print($"Bip Island: update check failed: {e.Message}");
+            return "Couldn't check for updates (no internet?). It tries again next time the game opens.";
+        }
+    }
+
+    /// <summary>
+    /// Installs the downloaded version and restarts the game. Only call this after the parent gate.
+    /// Returns an error message if it couldn't (on success the game quits and never returns).
+    /// </summary>
+    public static string InstallAndRestart()
+    {
+        if (_manager == null || _downloaded == null) return "no update has been downloaded";
+        try
+        {
+            Boot.Instance.AllowQuit();
+            _manager.ApplyUpdatesAndRestart(_downloaded.TargetFullRelease);
+            return "ApplyUpdatesAndRestart returned without restarting";
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr($"Bip Island: installing the update failed: {e.Message}");
+            return $"installing the update failed: {e.Message}";
         }
     }
 

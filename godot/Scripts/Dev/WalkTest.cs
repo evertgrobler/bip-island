@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using BipIsland.App;
+using BipCore;
 using BipIsland.Game;
 using BipIsland.Games;
+using BipIsland.Parent;
 using BipIsland.Screens;
 using Godot;
 
@@ -196,6 +198,78 @@ public static class WalkTest
             await Wait(0.5);
             if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
         }
+        // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.
+        var parent = game.Parent;
+        void Escape(bool down) => Input.ParseInputEvent(new InputEventKey { Keycode = Key.Escape, PhysicalKeycode = Key.Escape, Pressed = down });
+        Escape(true);
+        await Wait(1.5);
+        Check("a short Esc press doesn't open the gate", !parent.IsOpen);
+        await Wait(2.0);
+        Check("holding Esc for 3 seconds opens the gate", parent.Flow.Phase == GatePhase.Question);
+        Check("the game is paused behind the gate", tree.Paused);
+        Escape(false);
+        await Wait(0.2);
+        parent.Submit("1");
+        Check("a wrong answer keeps the gate shut", parent.Flow.Phase == GatePhase.Question && parent.Flow.LastAnswerWasWrong);
+        parent.Submit(parent.Flow.Challenge.Answer.ToString());
+        await Wait(0.2);
+        Check("the right answer opens the parent area", parent.Area != null);
+        if (parent.Area is { } area)
+        {
+            Check("a passcode needs two matching boxes", area.SetPasscode("1234", "1243") != null && game.Store.Passcode == null);
+            Check("a parent can set a passcode", area.SetPasscode("1234", "1234") == null && game.Store.Passcode != null);
+            area.Show(ParentArea.Tab.Children);
+            var before = game.Children.Count;
+            Check("a parent can add a child", area.AddChild("Mia", 6) && game.Children.Count == before + 1);
+            if (game.Children.FirstOrDefault(c => c.Name == "Mia") is { } mia)
+            {
+                area.RemoveChild(mia.Id);
+                Check("a parent can remove a child", game.Children.All(c => c.Id != mia.Id));
+            }
+            area.Show(ParentArea.Tab.Settings);
+            area.Show(ParentArea.Tab.Progress);
+            await Wait(0.2);
+            Check("every parent tab opens", area.Showing == ParentArea.Tab.Progress);
+        }
+        Escape(true);
+        await Wait(0.2);
+        Escape(false);
+        await Wait(1.0);
+        Check("a fresh Esc press goes back to the game", !parent.IsOpen && !tree.Paused, $"phase {parent.Flow.Phase}, paused {tree.Paused}");
+        await Expect<MapScreen>("the map is back after the parent area");
+
+        parent.Flow.Open();
+        Check("with a passcode set the gate asks for it", parent.Flow.UsingPasscode);
+        parent.Submit("1234");
+        Check("the passcode opens the parent area", parent.Area != null);
+        parent.Close();
+
+        parent.ShowUpdateButtonForTest();
+        await Wait(0.2);
+        if (parent.UpdateButton is { } update)
+        {
+            update.EmitSignal(BaseButton.SignalName.Pressed);
+            Check("the update button asks the grown-up question first", parent.Flow.Phase == GatePhase.Question);
+            parent.Submit("1234");
+            await Wait(0.2);
+            // No update was really downloaded, so installing fails and Settings says why.
+            Check("after the gate the update installs (or Settings says why not)", parent.Area?.Showing == ParentArea.Tab.Settings);
+            parent.Close();
+        }
+        else Check("the update button shows when an update is ready", false);
+        game.Store.Passcode = null;
+        await Wait(0.5);
+        Check("the game carries on after the parent area", !tree.Paused && Screen() is MapScreen);
+
+        // Games wait for Bip to finish speaking; the gate pauses the sentence rather than cutting it off.
+        var spoke = false;
+        game.Voice.Play([game.RandomPraise()], completion: () => spoke = true);
+        parent.Flow.Open();
+        await Wait(4);
+        Check("Bip's sentence waits while the gate is open", !spoke && tree.Paused);
+        parent.Close();
+        await Wait(5);
+        Check("...and finishes once the gate closes, so a game never gets stuck", spoke);
 
         var json = JsonSerializer.Serialize(steps.Select(s => new { step = s.Name, ok = s.Ok, detail = s.Detail }),
             new JsonSerializerOptions { WriteIndented = true });

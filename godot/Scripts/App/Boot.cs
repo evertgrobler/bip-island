@@ -11,15 +11,11 @@ namespace BipIsland.App;
 /// </summary>
 public partial class Boot : Node
 {
-    /// <summary>How long Esc must be held to leave. (Phase 4 adds the grown-up maths question after it.)</summary>
-    private const double EscHoldSeconds = 3;
-
     public static Boot Instance { get; private set; } = null!;
     /// <summary>Arguments after "--" on the command line (the self-tests use these).</summary>
     public static string[] UserArgs { get; private set; } = System.Array.Empty<string>();
 
     private bool _allowQuit;
-    private double _escHeld;
 
     public override void _EnterTree()
     {
@@ -33,7 +29,7 @@ public partial class Boot : Node
         UserArgs = OS.GetCmdlineUserArgs();
         Fonts.Load();
 
-        // Kid lock: the window close button, Cmd-Q and Alt-F4 do nothing; only the parent gate quits.
+        // Kid lock: the window close button, Cmd-Q and Alt-F4 do nothing; only the parent area's Quit button quits.
         GetTree().AutoAcceptQuit = false;
         if (UserArgs.Contains("--bip-windowed"))
             DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
@@ -57,18 +53,8 @@ public partial class Boot : Node
             GD.Print("Bip Island: quitting needs the parent gate (hold Esc).");
     }
 
-    public override void _Process(double delta)
-    {
-        if (Input.IsKeyPressed(Key.Escape))
-        {
-            _escHeld += delta;
-            if (_escHeld >= EscHoldSeconds) Quit();
-        }
-        else
-        {
-            _escHeld = 0;
-        }
-    }
+    /// <summary>Lets the window close (an update about to restart the game).</summary>
+    public void AllowQuit() => _allowQuit = true;
 
     /// <summary>The only way out: the parent gate, a self-test finishing, or an update restarting the game.</summary>
     public void Quit(int exitCode = 0)

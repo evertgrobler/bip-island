@@ -109,10 +109,13 @@ public abstract partial class BaseScreen : Node2D
         After(1.9, () => InputLocked = false);
     }
 
-    /// <summary>Runs <paramref name="action"/> after a delay, unless the screen has gone by then.</summary>
+    /// <summary>
+    /// Runs <paramref name="action"/> after a delay, unless the screen has gone by then. The wait
+    /// pauses while the game is paused (the parent gate).
+    /// </summary>
     protected void After(double seconds, Action action)
     {
-        GetTree().CreateTimer(seconds).Timeout += () =>
+        GetTree().CreateTimer(seconds, processAlways: false).Timeout += () =>
         {
             // The screen may have been closed (and freed) while the timer ran.
             if (IsInstanceValid(this) && IsInsideTree()) action();

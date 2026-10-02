@@ -87,7 +87,7 @@ public partial class Hello : Node2D
         _targets.Add((picture, new Rect2(390, -90, 300, 340), new[] { "word_sun" }));
 
         var version = Updater.InstalledVersion ?? ProjectSettings.GetSetting("application/config/version").AsString();
-        var footer = Sketch.Label($"Godot test build {version}. Hold Esc for 3 seconds to leave.", 26, new Color(Palette.Ink, 0.6f), Fonts.Regular);
+        var footer = Sketch.Label($"Godot test build {version}. Hold Esc for 3 seconds for the grown-ups' area.", 26, new Color(Palette.Ink, 0.6f), Fonts.Regular);
         footer.Position += new Vector2(0, 450);
         _stage.AddChild(footer);
     }
