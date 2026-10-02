@@ -142,7 +142,7 @@ public partial class ParentArea : VBoxContainer
         var sounds = ParentUi.Section(_body, "Letters and sounds");
         var legend = ParentUi.Row(14);
         foreach (var stage in Enum.GetValues<SoundStage>())
-            legend.AddChild(ParentUi.Row(5, ParentUi.Pill(" ", StageColour(stage), 12, 4, 18), ParentUi.Text(StageText(stage), 13, colour: ParentUi.Secondary)));
+            legend.AddChild(ParentUi.Row(5, ParentUi.Pill(" ", StageColour(stage), 12, 4, 18), ParentUi.Text(StageText(stage), 15, colour: ParentUi.Secondary)));
         sounds.AddChild(legend);
         foreach (var group in report.Phonics)
         {
@@ -186,7 +186,7 @@ public partial class ParentArea : VBoxContainer
         var big = ParentUi.Text(value, 22, bold: true);
         big.HorizontalAlignment = HorizontalAlignment.Center;
         big.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
-        var small = ParentUi.Text(label, 13, colour: ParentUi.Secondary, wrap: true);
+        var small = ParentUi.Text(label, 15, colour: ParentUi.Secondary, wrap: true);
         small.HorizontalAlignment = HorizontalAlignment.Center;
         column.AddChild(big);
         column.AddChild(small);
@@ -201,17 +201,17 @@ public partial class ParentArea : VBoxContainer
         name.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
         var row = ParentUi.Row(10, name);
         if (line.RecentPercent is { } percent)
-            row.AddChild(ParentUi.Text($"{line.RecentRight} of last {line.RecentTotal} right ({percent}%)", 13, colour: ParentUi.Secondary));
+            row.AddChild(ParentUi.Text($"{line.RecentRight} of last {line.RecentTotal} right ({percent}%)", 15, colour: ParentUi.Secondary));
         if (line.MasteredOnDay is { } day)
-            row.AddChild(ParentUi.Text($"since {DayNumber.Date(day):d MMM}", 13, colour: ParentUi.Secondary));
+            row.AddChild(ParentUi.Text($"since {DayNumber.Date(day):d MMM}", 15, colour: ParentUi.Secondary));
         row.AddChild(Badge(line.Status));
         return row;
     }
 
     private static Control Badge(SkillStatus status)
     {
-        var holder = new HBoxContainer { CustomMinimumSize = new Vector2(150, 0), Alignment = AlignmentMode.End };
-        holder.AddChild(ParentUi.Pill(StatusText(status), new Color(StatusColour(status), 0.45f), 12));
+        var holder = new HBoxContainer { CustomMinimumSize = new Vector2(170, 0), Alignment = AlignmentMode.End };
+        holder.AddChild(ParentUi.Pill(StatusText(status), new Color(StatusColour(status), 0.45f), 15));
         return holder;
     }
 
@@ -315,7 +315,7 @@ public partial class ParentArea : VBoxContainer
         age.ItemSelected += _ => Change(child with { Age = AgeFrom(age) });
 
         var row = ParentUi.Row(12, avatar, name, save, age);
-        if (child.Id == Coordinator.ChildId) row.AddChild(ParentUi.Text("playing now", 13, colour: ParentUi.Secondary));
+        if (child.Id == Coordinator.ChildId) row.AddChild(ParentUi.Text("playing now", 15, colour: ParentUi.Secondary));
         row.AddChild(ParentUi.Spacer());
         var remove = ParentUi.Button("Remove", () => ConfirmRemove(child), danger: true);
         remove.Disabled = !canRemove;

@@ -175,6 +175,7 @@ public partial class GameCoordinator : Node
     /// <summary>Removes a child and their progress. If they were playing, the first child takes over.</summary>
     public void DeleteChild(Guid id)
     {
+        CurrentBreakPhase(); // Bank play time to the child who was playing, as Choose does.
         Store.Delete(id);
         Children = Store.Children();
         if (Children.Any(c => c.Id == ChildId) || Children.Count == 0) return;
