@@ -204,3 +204,7 @@
 - **2 Oct, later:** Godot Phase 2 game shell: saves, coordinator, map, islands, Who's playing?,
   charging, sticker book, mystery box, keyboard play, big cursor, Bip's sounds. Every screen matches
   the Swift app in screenshots; a 31-step click-through test runs in `check_all.sh`. Games are next.
+- **2 Oct, afternoon:** Godot Phase 3, Numbers Island: Count & Tap and Quick Look, on a shared game
+  frame (`Scripts/Games/GameScreen.cs`: level stars, answers saved as they happen, the end-of-visit
+  star count, back to the island). The walk-through now plays both games, including a whole
+  8-question Quick Look visit. Words, Coding and Letters games follow, one PR per island.
