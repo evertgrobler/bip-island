@@ -118,6 +118,9 @@ jobs:
           dotnet build -warnaserror
           "$GODOT" --headless --path . --import
 
+      - name: Test the game logic (BipCore)
+        run: dotnet test godot/BipCore.Tests
+
       - name: Self-test (fonts, content, clips)
         working-directory: godot
         run: |
