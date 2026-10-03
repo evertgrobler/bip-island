@@ -9,9 +9,13 @@
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** all 11 live across the 4 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+- **Games:** 14 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
   Trace, Feed the Monster), Numbers (Count & Tap, Quick Look), Words (Sound Buttons, Word Builder),
-  Coding (Morning Order, Bip's Path). Levels inside every game, 8-question visits, star celebration.
+  Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
+  game, 8-question visits, star celebration.
+- **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
+  in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
+  Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
 - **Systems:** profiles (up to 4, "Who's playing?"), Bip's recommendations and nudge, wall-clock play
   breaks with Bip charging, sticker book, daily mystery box, keyboard play, big cursor, Bip's sounds.
 - **Parent side:** hold Esc 3 s → maths or passcode → parent area (Progress, Children, Settings: play
@@ -19,8 +23,7 @@
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
-- **Voice:** all narrator clips recorded (ElevenLabs "Bip Island Narrator") except `vo_who_is_playing`,
-  which plays silence until recorded.
+- **Voice:** all narrator clips recorded (ElevenLabs "Bip Island Narrator"), `vo_who_is_playing` included.
 - **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
   123 Morning Order step scenes.
 - **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
@@ -29,7 +32,7 @@
   screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
 - **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
   review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
-- **Known open items:** record `vo_who_is_playing`; cover second screens in the kid lock; Windows exe
+- **Known open items:** cover second screens in the kid lock; Windows exe
   icon; more games (waves 2b/3/4), real art, music; paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
@@ -240,6 +243,14 @@
   the Sparkle scripts and the placeholder-voice script removed. The real app icon moved to
   `godot/icons/` (Mac export uses it). CLAUDE.md, SETUP.md, PLAN.md and this file now describe the
   Godot setup only. "Set up updates" became "Set up the download site" (Vercel project only).
+- **3 Oct:** Art Island (owner request: art with shapes, colour mixing and symmetry, kept on the Cambridge
+  curriculum). Shape Builder (7 levels, 1Gg.01 to 3Gg.01), Paint Pots (4 levels, real paint mixes, label
+  pictures on every pot), Mirror Magic (6 levels, 1Nf.01, 2Gg.09, 3Gg.09). Validator checks shape geometry,
+  pot mixes and mirror lines; ArtGameTests play every level; the walk-through plays one round of each.
+  38 narrator clips made with the ElevenLabs connector (about 1,000 credits; the account had 3,391 before),
+  including the real `vo_who_is_playing`. ElevenLabs refuses some requests with "unusual activity":
+  three at a time and retrying works. Review fixes: a replay mid-turn no longer stacks shape turns; a wrong
+  mix only empties its own paint from the bowl.
 - **3 Oct, evening:** Charging screen explains itself. For the child: Bip asleep, plugged into a
   battery whose five bars fill with the real break, and a spoken reason (`vo_bip_charging`; silent
   until the clip is generated). For grown-ups: "Games open again at 10:45 (in 12 minutes)" and "hold

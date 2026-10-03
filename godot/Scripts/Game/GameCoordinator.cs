@@ -31,6 +31,7 @@ public partial class GameCoordinator : Node
     public bool NumbersOpen { get; private set; }
     public bool WordsOpen { get; private set; }
     public bool CodingOpen { get; private set; }
+    public bool ArtOpen { get; private set; }
     public PhonicsCourse? Course { get; private set; }
     public SoundHuntGame? Hunt { get; private set; }
 
@@ -107,6 +108,7 @@ public partial class GameCoordinator : Node
         NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); });
         WordsOpen = Try("Words", () => { _ = new SoundButtonsGame(Content, new PhonicsCourse(Content)); _ = new WordBuilderGame(Content); });
         CodingOpen = Try("Coding", () => { _ = new MorningOrderGame(Content); _ = new BipsPathGame(Content); });
+        ArtOpen = Try("Art", () => { _ = new ShapeBuilderGame(Content); _ = new PaintPotsGame(Content); _ = new MirrorMagicGame(Content); });
     }
 
     private static bool Try(string island, Action build)
@@ -329,6 +331,7 @@ public partial class GameCoordinator : Node
             Island.Numbers => NumbersOpen,
             Island.Words => WordsOpen,
             Island.Coding => CodingOpen,
+            Island.Art => ArtOpen,
             _ => false,
         };
         if (!open)
@@ -336,7 +339,12 @@ public partial class GameCoordinator : Node
             ShowMap();
             return;
         }
-        Present(island == Island.Letters ? new LettersIslandScreen(greet) : new GameIslandScreen(island, greet));
+        Present(island switch
+        {
+            Island.Letters => new LettersIslandScreen(greet),
+            Island.Art => new ArtIslandScreen(greet),
+            _ => new GameIslandScreen(island, greet),
+        });
     }
 
     /// <summary>
@@ -373,6 +381,9 @@ public partial class GameCoordinator : Node
             WordBuilderGame.GameId when WordsOpen => new WordBuilderScreen(new WordBuilderGame(Content)),
             MorningOrderGame.GameId when CodingOpen => new MorningOrderScreen(new MorningOrderGame(Content)),
             BipsPathGame.GameId when CodingOpen => new BipsPathScreen(new BipsPathGame(Content)),
+            ShapeBuilderGame.GameId when ArtOpen => new ShapeBuilderScreen(new ShapeBuilderGame(Content)),
+            PaintPotsGame.GameId when ArtOpen => new PaintPotsScreen(new PaintPotsGame(Content)),
+            MirrorMagicGame.GameId when ArtOpen => new MirrorMagicScreen(new MirrorMagicGame(Content)),
             _ => null,
         };
         if (screen == null) return false;
@@ -429,7 +440,7 @@ public partial class GameCoordinator : Node
     public static readonly IReadOnlySet<string> DrawnSkins = new HashSet<string>
     {
         "paper_desk", "treasure_chests", "bubbles", "sparkles", "monster_blue",
-        "ducks", "dice", "buttons", "tiles", "picture_cards", "island",
+        "ducks", "dice", "buttons", "tiles", "picture_cards", "island", "studio", "pegs",
     };
 
     /// <summary>The child's level in a game (games.json "levels"), starting where their band does.</summary>

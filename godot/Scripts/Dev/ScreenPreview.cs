@@ -80,6 +80,7 @@ public partial class ScreenPreview : Node
             "coding" => new GameIslandScreen(Island.Coding, greet: false),
             "charging" => ChargingPreview(game, dayDone: false),
             "day_done" => ChargingPreview(game, dayDone: true),
+            "art" => new ArtIslandScreen(greet: false),
             "stickers" => new StickerScreen(),
             _ => new MapScreen(greet: false),
         };

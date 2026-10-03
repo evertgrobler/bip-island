@@ -12,7 +12,7 @@ namespace BipCore;
 /// <summary>The four child bands, youngest first.</summary>
 public enum Band { Foundation, Stage1, Stage2, Stage3 }
 
-public enum Island { Letters, Numbers, Words, Coding }
+public enum Island { Letters, Numbers, Words, Coding, Art }
 
 public static class BandExtensions
 {
@@ -30,7 +30,7 @@ public static class BandExtensions
 
 public static class IslandExtensions
 {
-    public static readonly IReadOnlyList<Island> All = [Island.Letters, Island.Numbers, Island.Words, Island.Coding];
+    public static readonly IReadOnlyList<Island> All = [Island.Letters, Island.Numbers, Island.Words, Island.Coding, Island.Art];
 }
 
 /// <summary>An age range written as "4-6" in the content.</summary>
@@ -187,6 +187,14 @@ public sealed record GameLevel
     public int? Cards { get; init; }
     /// <summary>Word Builder: spare tiles in the bank that aren't in the word.</summary>
     public int? Spares { get; init; }
+    /// <summary>Art Island: the kinds of question a level mixes (e.g. "find", "fill").</summary>
+    public List<string>? Modes { get; init; }
+    /// <summary>Shape Builder: the shapes this level uses (ids in art/shapes.json).</summary>
+    public List<string>? Shapes { get; init; }
+    /// <summary>Paint Pots: the paint pots on the table (colour ids in art/paints.json).</summary>
+    public List<string>? Pots { get; init; }
+    /// <summary>Mirror Magic: "vertical" (left and right match) or "horizontal" (top and bottom).</summary>
+    public string? Mirror { get; init; }
     /// <summary>For people reading the file.</summary>
     public string? Note { get; init; }
 
@@ -594,4 +602,135 @@ public sealed record PictureAsset
 {
     public required string Id { get; init; }
     public required string Brief { get; init; }
+}
+
+// MARK: - art/shapes.json
+
+public sealed record ShapesFile
+{
+    public string? Note { get; init; }
+    public required List<ArtShape> Shapes { get; init; }
+    public required List<ShapePicture> Pictures { get; init; }
+}
+
+/// <summary>A flat shape. Its outline sits in a box from -1 to 1 (y up), stretched to <see cref="Card"/>.</summary>
+public sealed record ArtShape
+{
+    public required string Id { get; init; }
+    /// <summary>What Bip calls it ("triangle"); wonky shapes share their family's name.</summary>
+    public required string Name { get; init; }
+    public required Band Band { get; init; }
+    public required ShapeOutline Outline { get; init; }
+    /// <summary>Width and height (as a ratio) the shape shows at on its own.</summary>
+    public required List<double> Card { get; init; }
+    public required int StraightSides { get; init; }
+    public required bool Curved { get; init; }
+    /// <summary>All sides and corners equal. Only polygons say.</summary>
+    public bool? Regular { get; init; }
+    /// <summary>How many times it looks the same in one full turn (0: every way round, like a circle).</summary>
+    public required int LookSameTurns { get; init; }
+
+    /// <summary>The word clip that says the shape's name.</summary>
+    [JsonIgnore]
+    public string Audio => AudioCatalogue.WordClip(Name.Replace(' ', '_'));
+
+    /// <summary>Looks the same after a quarter turn (a square, a circle).</summary>
+    [JsonIgnore]
+    public bool SameAfterQuarterTurn => LookSameTurns % 4 == 0;
+}
+
+public sealed record ShapeOutline
+{
+    /// <summary>"polygon", "ellipse" or "semicircle" (flat side down).</summary>
+    public required string Kind { get; init; }
+    /// <summary>Polygon corners, [x, y] from -1 to 1.</summary>
+    public List<List<double>>? Points { get; init; }
+}
+
+/// <summary>A picture built from shapes, in a 600 x 420 frame centred on 0,0.</summary>
+public sealed record ShapePicture
+{
+    public required string Id { get; init; }
+    public required string Name { get; init; }
+    public required List<ShapePiece> Pieces { get; init; }
+}
+
+public sealed record ShapePiece
+{
+    public required string Shape { get; init; }
+    public required int X { get; init; }
+    public required int Y { get; init; }
+    public required int W { get; init; }
+    public required int H { get; init; }
+    /// <summary>A palette colour name ("sun", "red", "teal").</summary>
+    public required string Colour { get; init; }
+    /// <summary>Degrees, anticlockwise.</summary>
+    public int? Rotation { get; init; }
+    /// <summary>Too small to tap, so never the missing piece.</summary>
+    public bool? Fixed { get; init; }
+}
+
+// MARK: - art/paints.json
+
+public sealed record PaintsFile
+{
+    public string? Note { get; init; }
+    public required List<PaintColour> Colours { get; init; }
+    public required List<PaintPot> Pots { get; init; }
+    public required List<PaintMix> Mixes { get; init; }
+}
+
+public sealed record PaintColour
+{
+    public required string Id { get; init; }
+    public required string Name { get; init; }
+    /// <summary>#RRGGBB.</summary>
+    public required string Hex { get; init; }
+
+    [JsonIgnore]
+    public string Audio => AudioCatalogue.WordClip(Id);
+}
+
+/// <summary>A paint pot: its colour and a label picture (an apple on the red pot).</summary>
+public sealed record PaintPot
+{
+    public required string Colour { get; init; }
+    public required string Label { get; init; }
+}
+
+/// <summary>Paint <see cref="A"/> and paint <see cref="B"/> make <see cref="Makes"/>.</summary>
+public sealed record PaintMix
+{
+    public required string A { get; init; }
+    public required string B { get; init; }
+    public required string Makes { get; init; }
+}
+
+// MARK: - art/mirror.json
+
+public sealed record MirrorFile
+{
+    public string? Note { get; init; }
+    /// <summary>Paint letter → colour id in art/paints.json.</summary>
+    public required Dictionary<string, string> Paints { get; init; }
+    public required List<MirrorPicture> Pictures { get; init; }
+    public required PegBoard Pegs { get; init; }
+}
+
+/// <summary>A square peg picture, top row first; "." is an empty hole.</summary>
+public sealed record MirrorPicture
+{
+    public required string Id { get; init; }
+    /// <summary>"vertical" or "horizontal": the one line it folds onto itself along.</summary>
+    public required string Mirror { get; init; }
+    public required List<string> Rows { get; init; }
+}
+
+/// <summary>The peg board for "finish the pattern" rounds.</summary>
+public sealed record PegBoard
+{
+    public required int Size { get; init; }
+    public required int Fewest { get; init; }
+    public required int Most { get; init; }
+    public required string Colour { get; init; }
 }
