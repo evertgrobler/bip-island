@@ -234,9 +234,16 @@ public partial class ChargingScreen : BaseScreen
     {
         if (_waking) return;
         // The break follows the wall clock, so a clock change (or a grown-up ending it) shows here too.
-        if (Coordinator.CurrentBreakPhase() == BreakPhase.Playing)
+        var phase = Coordinator.CurrentBreakPhase();
+        if (phase == BreakPhase.Playing)
         {
             WakeUp();
+            return;
+        }
+        if ((phase == BreakPhase.DayDone) != _dayDone)
+        {
+            // A break ran into the daily limit, or a new day started a break: rebuild in the right mode.
+            Coordinator.ShowCharging();
             return;
         }
         ShowTimes();

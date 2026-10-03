@@ -133,12 +133,18 @@ public static class WalkTest
         }
 
         // The daily maximum: the night screen, not the battery.
+        // A break is showing when the day's play runs out: the screen switches to night by itself.
         game.Store.Settings = game.Store.Settings with { DailyMaxMinutes = 10 };
-        game.ForceDayDoneForTest();
+        game.ForceBreakForTest();
         game.ShowMap();
+        await Expect<ChargingScreen>("with a daily maximum, a break still shows the battery first");
+        Check("...in charging mode", Screen() is ChargingScreen { DayDone: false });
+        game.ForceDayDoneForTest();
+        await WaitFor(() => Screen() is ChargingScreen { DayDone: true }, 10);
         await Expect<ChargingScreen>("when the day's play is used up, the map shows Bip asleep");
-        Check("...with its own words: games open again tomorrow",
-              Screen() is ChargingScreen { DayDone: true, GrownUpText: "Games open again tomorrow." });
+        Check("...with its own words: games open again tomorrow, even if a break was showing",
+              Screen() is ChargingScreen { DayDone: true, GrownUpText: "Games open again tomorrow." },
+              (Screen() as ChargingScreen)?.GrownUpText ?? Screen()?.GetType().Name ?? "no screen");
         game.Store.Settings = game.Store.Settings with { DailyMaxMinutes = null, PlayMinutes = 20, BreakMinutes = 20 };
         game.ShowMap();
         await Expect<MapScreen>("with no daily maximum the map opens again");
