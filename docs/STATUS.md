@@ -40,12 +40,11 @@
   reviews due, recent games), Children tab, Settings tab.
 - **Play-time break is shared by the whole Mac** (stored in UserDefaults `bip.breakState`), so
   switching profiles can't skip it. Play minutes are still counted per child.
-- **Download page** (`site/index.html`): intro, the four islands with screenshots, parents section with a
-  parent-area screenshot, and two download cards (Mac `.dmg`, Windows `Setup.exe`) for the **Godot** game.
-  Published by `godot.yml`'s publish job on main (`scripts/ci/deploy_site.sh`): fills in version, date and
-  the Blob store links, adds screenshots from `scripts/ci/site_screenshots.sh` (Godot `--bip-scene` shots
-  under xvfb), and carries the Swift app's live `appcast.xml` + zip into the deploy so installed Swift
-  copies keep updating. `build.yml` no longer deploys anything.
+- **Download page** (`site/index.html`): intro, the four islands with screenshots, parents section (kid lock,
+  breaks, parent area with a screenshot, 4 children, privacy, Cambridge), and two download cards (Mac `.dmg`,
+  Windows `Setup.exe`) for the Godot game, with the Option/Alt windowed-start tip. Published by `godot.yml`'s
+  publish job on main (`scripts/ci/deploy_site.sh`): fills in version, date and the Blob store links and adds
+  screenshots from `scripts/ci/site_screenshots.sh`. No Swift update feed any more (Swift app retired).
 - **Known open items:** `vo_who_is_playing` still a placeholder clip (ElevenLabs was busy), waves 2b/3/4
   games (17 left), golden rounds, real art, music, Developer ID signing.
 
@@ -258,3 +257,7 @@
   Still to do when PR #26 (kid lock) merges: drop the "kid lock still being built" line, bring back the
   "Kid lock" parent card, add the Option/Alt windowed start. `BipIsland/App/ScreenshotMode.swift` is now
   unused; it goes with the rest of the Swift app.
+- **3 Oct, afternoon:** Kid lock merged (#26), so the download page brings back the "Kid lock" card (Mac: Dock,
+  menu bar, Cmd-Tab, Cmd-Q blocked; Windows: Windows key, Alt-Tab blocked; shutting down and Ctrl-Alt-Del
+  always work) and adds the Option/Alt windowed-start tip. Swift app retired: `deploy_site.sh` no longer
+  carries `appcast.xml` and the Swift zip into the deploy (it still uses `resolve_feed_url.sh` for the site address).
