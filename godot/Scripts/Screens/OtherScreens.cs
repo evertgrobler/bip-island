@@ -102,6 +102,7 @@ public partial class ChargingScreen : BaseScreen
 
     private readonly List<Node2D> _bars = [];
     private Node2D? _battery;
+    private Node2D? _when;
     private Label? _grownUps;
     private bool _dayDone;
     private bool _waking;
@@ -130,10 +131,8 @@ public partial class ChargingScreen : BaseScreen
             $"Grown-ups: hold Esc for {ParentGateFlow.HoldSeconds:0} seconds to {(_dayDone ? "change the daily limit" : "end the break early")}.",
             24, Palette.Ink.WithAlpha(0.6)));
         Stage.AddChild(hint);
-        var when = new Node2D { Position = P(0, -340) };
-        _grownUps = Sketch.Label("", 34, Palette.Ink);
-        when.AddChild(_grownUps);
-        Stage.AddChild(when);
+        _when = new Node2D { Position = P(0, -340) };
+        Stage.AddChild(_when);
         ShowTimes();
 
         Sfx.Play(BipSounds.Effect.Whirr);
@@ -207,19 +206,28 @@ public partial class ChargingScreen : BaseScreen
         }
     }
 
+    /// <summary>A label is centred for the text it's made with, so a new line gets a new label.</summary>
+    private void SetGrownUpLine(string text)
+    {
+        if (_when == null || _grownUps?.Text == text) return;
+        _grownUps?.QueueFree();
+        _grownUps = Sketch.Label(text, 34, Palette.Ink);
+        _when.AddChild(_grownUps);
+    }
+
     /// <summary>Lights the battery bars for the time gone and updates the grown-up line.</summary>
     private void ShowTimes()
     {
         if (_dayDone)
         {
-            if (_grownUps != null) _grownUps.Text = "Games open again tomorrow.";
+            SetGrownUpLine("Games open again tomorrow.");
             return;
         }
         var lit = (int)Math.Floor(Coordinator.BreakProgress() * Bars + 0.0001);
         for (var i = 0; i < _bars.Count; i++) _bars[i].Modulate = new Color(1, 1, 1, i < lit ? 1f : 0.18f);
-        if (_grownUps == null || Coordinator.BreakEndsAt is not { } ends) return;
+        if (Coordinator.BreakEndsAt is not { } ends) return;
         var minutes = Coordinator.BreakMinutesLeft();
-        _grownUps.Text = $"Games open again at {ends.ToLocalTime():HH:mm} (in {minutes} minute{(minutes == 1 ? "" : "s")}).";
+        SetGrownUpLine($"Games open again at {ends.ToLocalTime():HH:mm} (in {minutes} minute{(minutes == 1 ? "" : "s")}).");
     }
 
     private void Check()
@@ -250,7 +258,7 @@ public partial class ChargingScreen : BaseScreen
     {
         _waking = true;
         foreach (var bar in _bars) bar.Modulate = Colors.White;
-        if (_grownUps != null) _grownUps.Text = "Charged! Off we go.";
+        SetGrownUpLine("Charged! Off we go.");
         Bip.Sleep(false);
         Bip.Celebrate();
         Sfx.Play(BipSounds.Effect.Chime);
