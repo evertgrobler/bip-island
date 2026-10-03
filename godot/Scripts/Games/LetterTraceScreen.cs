@@ -26,7 +26,6 @@ public partial class LetterTraceScreen : GameScreen
         [.. Enumerable.Range(0, 8).Select(i => P(170 * Math.Cos(i / 8.0 * Math.Tau), 60 + 170 * Math.Sin(i / 8.0 * Math.Tau))), P(0, 60)];
     private readonly HashSet<int> _touched = [];
     private bool _started;
-    private bool _drawing;
 
     public LetterTraceScreen(LetterTraceGame game, PhonicsSound sound)
     {
@@ -64,10 +63,9 @@ public partial class LetterTraceScreen : GameScreen
     {
         switch (@event)
         {
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left } button:
-                _drawing = button.Pressed;
-                break;
-            case InputEventMouseMotion motion when _drawing || motion.ButtonMask.HasFlag(MouseButtonMask.Left):
+            // Only while the button is held, so a release we didn't see (outside the window, or
+            // behind the parent gate) stops the trail too.
+            case InputEventMouseMotion motion when motion.ButtonMask.HasFlag(MouseButtonMask.Left):
                 GetViewport().SetInputAsHandled();
                 Trace(Stage.ToLocal(motion.GlobalPosition));
                 return;
