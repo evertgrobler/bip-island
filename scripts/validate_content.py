@@ -36,6 +36,9 @@ patterns = load("coding/patterns.json")
 levels_doc = load("coding/levels.json")
 skills_doc = load("curriculum/skills.json")
 games = load("curriculum/games.json")["games"]
+shapes_doc = load("art/shapes.json")
+paints_doc = load("art/paints.json")
+mirror_doc = load("art/mirror.json")
 
 # --- objectives referenced anywhere must exist
 def check_objs(where, codes):
@@ -133,7 +136,8 @@ if not isinstance(games_doc.get("session", {}).get("roundsPerSession"), int) or 
     err("games.json: session.roundsPerSession must be a whole number of at least 1")
 game_ids = [gm["id"] for gm in games]
 if len(game_ids) != len(set(game_ids)): err("games.json: duplicate game id")
-LEVEL_KEYS = {"band", "countTo", "choices", "flashTenths", "bubbles", "speedPercent", "soundCounts", "gridBand", "cards", "spares", "note"}
+LEVEL_KEYS = {"band", "countTo", "choices", "flashTenths", "bubbles", "speedPercent", "soundCounts", "gridBand", "cards", "spares",
+              "modes", "shapes", "pots", "mirror", "note"}
 BANDS = ["foundation", "stage1", "stage2", "stage3"]
 for gm in games:
     levels = gm.get("levels", [])
@@ -161,6 +165,118 @@ for gm in games:
     for s in gm["skills"]:
         if s not in SK: err(f"game {gm['id']}: unknown skill {s}")
     check_objs(f"game {gm['id']}", gm["objectives"])
+
+
+# --- Art Island: shapes, paints and mirror pictures
+import math
+ISLANDS = {"letters", "numbers", "words", "coding", "art"}
+for gm in games:
+    if gm["island"] not in ISLANDS: err(f"game {gm['id']}: unknown island {gm['island']}")
+for s_ in skills_doc["skills"]:
+    if s_["island"] not in ISLANDS: err(f"skill {s_['id']}: unknown island {s_['island']}")
+GAME_MODES = {"shape_builder": {"find", "fill", "sides", "turn", "count", "regular"},
+              "paint_pots": {"make", "predict"}, "mirror_magic": {"same", "finish", "pegs", "line"}}
+SHAPES = {sh["id"]: sh for sh in shapes_doc["shapes"]}
+COLOURS = {c["id"]: c for c in paints_doc["colours"]}
+POTS = {pt["colour"]: pt for pt in paints_doc["pots"]}
+ART_COLOURS = {"sun", "red", "orange", "brown", "sky", "ink", "white", "teal", "leaf", "sand", "pink", "purple"}
+
+def outline_points(sh, n=360):
+    """The shape's outline at its card size, as points (curves sampled)."""
+    w, h = sh["card"]
+    o = sh["outline"]
+    if o["kind"] == "polygon": return [(x * w, y * h) for x, y in o["points"]]
+    if o["kind"] == "ellipse": return [(w * math.cos(2 * math.pi * i / n), h * math.sin(2 * math.pi * i / n)) for i in range(n)]
+    if o["kind"] == "semicircle":  # flat side down, centred on its bounding box
+        return [(w * math.cos(math.pi * i / n), h * (2 * math.sin(math.pi * i / n) - 1)) for i in range(n + 1)]
+    err(f"shape {sh['id']}: unknown outline kind {o['kind']}"); return []
+
+def same_after_turn(pts, angle):
+    cx = sum(x for x, _ in pts) / len(pts); cy = sum(y for _, y in pts) / len(pts)
+    moved = [((x - cx) * math.cos(angle) - (y - cy) * math.sin(angle), (x - cx) * math.sin(angle) + (y - cy) * math.cos(angle)) for x, y in pts]
+    rel = [(x - cx, y - cy) for x, y in pts]
+    return all(min(math.hypot(mx - x, my - y) for x, y in rel) < 0.02 for mx, my in moved)
+
+for sh in SHAPES.values():
+    where = f"shape {sh['id']}"
+    if sh["band"] not in BANDS: err(f"{where}: unknown band")
+    pts = outline_points(sh)
+    if not pts: continue
+    kind = sh["outline"]["kind"]
+    if kind == "polygon":
+        sides = [math.dist(pts[i], pts[(i + 1) % len(pts)]) for i in range(len(pts))]
+        if sh["straightSides"] != len(pts) or sh["curved"]: err(f"{where}: a polygon with {len(pts)} straight sides and no curves")
+        regular = max(sides) - min(sides) < 0.02 and same_after_turn(pts, 2 * math.pi / len(pts))
+        if sh.get("regular") != regular: err(f"{where}: regular should be {regular}")
+    else:
+        want = {"ellipse": 0, "semicircle": 1}[kind]
+        if sh["straightSides"] != want or not sh["curved"] or sh.get("regular") is not None:
+            err(f"{where}: a curved shape has {want} straight sides, curved true and no regular")
+    turns = 0 if kind == "ellipse" and sh["card"][0] == sh["card"][1] else \
+        max(k for k in range(1, 13) if same_after_turn(pts, 2 * math.pi / k))
+    if sh["lookSameTurns"] != turns: err(f"{where}: looks the same {turns} times in a full turn, not {sh['lookSameTurns']}")
+for pic in shapes_doc["pictures"]:
+    where = f"shape picture {pic['id']}"
+    if not any(not pc.get("fixed") for pc in pic["pieces"]): err(f"{where}: needs a piece that can go missing")
+    for pc in pic["pieces"]:
+        if pc["shape"] not in SHAPES: err(f"{where}: unknown shape {pc['shape']}")
+        if pc["colour"] not in ART_COLOURS: err(f"{where}: unknown colour {pc['colour']}")
+        if not pc.get("fixed") and min(pc["w"], pc["h"]) < 60: err(f"{where}: a {pc['shape']} that can go missing must be at least 60 pt")
+        if abs(pc["x"]) + pc["w"] / 2 > 330 or abs(pc["y"]) + pc["h"] / 2 > 240: err(f"{where}: {pc['shape']} sticks out of the frame")
+for cid, col in COLOURS.items():
+    if not (col["hex"].startswith("#") and len(col["hex"]) == 7): err(f"colour {cid}: hex must look like #RRGGBB")
+MIX = {}
+for mx in paints_doc["mixes"]:
+    for k in ("a", "b", "makes"):
+        if mx[k] not in COLOURS: err(f"mix {mx}: unknown colour {mx[k]}")
+    MIX[frozenset((mx["a"], mx["b"]))] = mx["makes"]
+for pt in POTS.values():
+    if pt["colour"] not in COLOURS: err(f"pot {pt['colour']}: unknown colour")
+pal = mirror_doc["paints"]
+for letter, cid in pal.items():
+    if cid not in COLOURS: err(f"mirror paint {letter}: unknown colour {cid}")
+for pic in mirror_doc["pictures"]:
+    where = f"mirror picture {pic['id']}"
+    r = pic["rows"]; n = len(r)
+    if any(len(row) != n for row in r): err(f"{where}: must be square"); continue
+    if any(ch != "." and ch not in pal for row in r for ch in row): err(f"{where}: unknown paint letter")
+    lines = {"vertical": all(row == row[::-1] for row in r), "horizontal": r == r[::-1],
+             "diagonal": all(r[i][j] == r[j][i] for i in range(n) for j in range(n)),
+             "other diagonal": all(r[i][j] == r[n - 1 - j][n - 1 - i] for i in range(n) for j in range(n))}
+    if [k for k, v in lines.items() if v] != [pic["mirror"]]: err(f"{where}: must fold only along its {pic['mirror']} line, folds along {[k for k, v in lines.items() if v]}")
+pegs = mirror_doc["pegs"]
+if pegs["size"] % 2 or not 1 <= pegs["fewest"] <= pegs["most"] <= pegs["size"] * pegs["size"] // 2: err("mirror pegs: even size, and fewest/most must fit half the board")
+if pegs["colour"] not in COLOURS: err("mirror pegs: unknown colour")
+for gm in games:
+    modes = GAME_MODES.get(gm["id"])
+    for i, lv in enumerate(gm.get("levels", [])):
+        where = f"game {gm['id']} level {i + 1}"
+        if ("modes" in lv) != (modes is not None): err(f"{where}: modes are for Art Island games only"); continue
+        if modes is None: continue
+        if not lv["modes"] or not set(lv["modes"]) <= modes: err(f"{where}: modes must be some of {sorted(modes)}")
+        if gm["id"] == "shape_builder":
+            shs = lv.get("shapes", [])
+            if any(x not in SHAPES for x in shs): err(f"{where}: unknown shape")
+            if len(shs) < 3: err(f"{where}: needs at least 3 shapes to choose from")
+            if "fill" in lv["modes"] and not any(all(pc["shape"] in shs or pc.get("fixed") for pc in pic["pieces"]) for pic in shapes_doc["pictures"]):
+                err(f"{where}: no picture uses only these shapes")
+            if "turn" in lv["modes"]:
+                same = [x for x in shs if SHAPES[x]["lookSameTurns"] % 4 == 0]
+                if not same or len(shs) - len(same) < 2: err(f"{where}: turn rounds need shapes that do and don't survive a quarter turn")
+            if "count" in lv["modes"] and any(SHAPES[x]["lookSameTurns"] < 2 for x in shs): err(f"{where}: count rounds need shapes that look the same at least twice")
+            if "regular" in lv["modes"]:
+                reg = [x for x in shs if SHAPES[x].get("regular")]; irr = [x for x in shs if SHAPES[x].get("regular") is False]
+                if not reg or len(irr) < 2: err(f"{where}: regular rounds need regular shapes and at least two irregular ones")
+        elif gm["id"] == "paint_pots":
+            pots = lv.get("pots", [])
+            if len(pots) < 3 or any(x not in POTS for x in pots): err(f"{where}: needs at least 3 known pots")
+            made = [MIX.get(frozenset((x, y))) for i2, x in enumerate(pots) for y in pots[i2 + 1:]]
+            if None in made: err(f"{where}: some pairs of these pots have no mix")
+            elif len(made) != len(set(made)): err(f"{where}: two pairs of pots make the same colour")
+        elif gm["id"] == "mirror_magic":
+            if lv["modes"] != ["line"] and lv.get("mirror", "vertical") not in ("vertical", "horizontal"): err(f"{where}: mirror is vertical or horizontal")
+            if "finish" in lv["modes"] and sum(p["mirror"] == lv.get("mirror", "vertical") for p in mirror_doc["pictures"]) < 3:
+                err(f"{where}: needs at least 3 pictures with a {lv.get('mirror', 'vertical')} mirror line")
 
 # --- coding levels: solvable, optimal, bugs really are bugs
 DIRS = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
@@ -271,6 +387,13 @@ for it in cur["shopItems"]:
 for st in seqs:
     for c in st["cards"]:
         a(c["audio"], c["text"]); p(c["picture"], f"{st['id']} step {c['n']}: {c['text']}")
+
+for sh in SHAPES.values():
+    a(f"word_{sh['name'].replace(' ', '_')}", sh["name"])
+for col in COLOURS.values():
+    a(f"word_{col['id']}", col["name"])
+for pt in POTS.values():
+    p(pt["label"], f"label for the {pt['colour']} paint pot")
 
 manifest = {"note": "Generated by scripts/validate_content.py. Every voice clip uses the official narrator (ElevenLabs 'Bip Island Narrator'). Game instructions (vo_find_the_sound etc.), praise and hints are added by each game, not listed here.",
             "audio": sorted(audio.values(), key=lambda x: x["id"]),

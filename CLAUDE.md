@@ -4,7 +4,7 @@
 decisions, the workflow that works on this machine, and gotchas. When you finish a
 session, update it (dated log entry + current state) and commit it with your changes.
 
-A full-screen learning game for children aged 4–8, for Mac and Windows, built with Godot (C#). Kids explore four islands — Letters & Sounds, Numbers, Words & Spelling, Coding — guided by a robot companion called Bip. Every instruction is spoken, so no reading is needed to play.
+A full-screen learning game for children aged 4–8, for Mac and Windows, built with Godot (C#). Kids explore five islands — Letters & Sounds, Numbers, Words & Spelling, Coding, Art — guided by a robot companion called Bip. Every instruction is spoken, so no reading is needed to play.
 
 The full game design is in `docs/PLAN.md`. Read it before starting a new phase.
 

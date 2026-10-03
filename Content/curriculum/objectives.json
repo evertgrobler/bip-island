@@ -824,6 +824,86 @@
       "strand": "Programming",
       "summary": "Test and debug programs until they work",
       "source": "Cambridge Primary Computing curriculum framework (0059), 2021"
+    },
+    {
+      "code": "1Gg.01",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Geometry: shapes",
+      "summary": "Sort and describe flat (2D) shapes by their sides: how many, curved or straight",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Gg.07",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Geometry: shapes",
+      "summary": "Notice when a shape looks the same as it turns",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "1Nf.01",
+      "framework": "mathematics",
+      "stage": 1,
+      "strand": "Number: fractions",
+      "summary": "A shape or object can be split into two equal or two unequal parts",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Gg.01",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Geometry: shapes",
+      "summary": "Name, sort and sketch 2D shapes (including pentagons and hexagons) by sides and corners, in any position",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Gg.09",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Geometry: shapes",
+      "summary": "Find a vertical or horizontal line of symmetry in shapes and patterns",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Gg.10",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Geometry: shapes",
+      "summary": "Predict and check how many times a shape looks the same in one full turn",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Gg.01",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Geometry: shapes",
+      "summary": "Classify 2D shapes and tell regular polygons (equal sides) from irregular ones",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Gg.09",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Geometry: shapes",
+      "summary": "Find horizontal and vertical lines of symmetry in shapes and patterns",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "AD1.colour",
+      "framework": "art",
+      "stage": 1,
+      "strand": "Making (code to be confirmed)",
+      "summary": "Mix two primary colours to make secondary colours",
+      "source": "Cambridge Primary Art & Design curriculum framework (0067), 2019"
+    },
+    {
+      "code": "AD2.colour",
+      "framework": "art",
+      "stage": 2,
+      "strand": "Making (code to be confirmed)",
+      "summary": "Make colours lighter with white and darker with black",
+      "source": "Cambridge Primary Art & Design curriculum framework (0067), 2019"
     }
   ]
 }

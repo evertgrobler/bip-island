@@ -62,6 +62,7 @@ public partial class ScreenPreview : Node
             "numbers" => new GameIslandScreen(Island.Numbers, greet: false),
             "words" => new GameIslandScreen(Island.Words, greet: false),
             "coding" => new GameIslandScreen(Island.Coding, greet: false),
+            "art" => new ArtIslandScreen(greet: false),
             "charging" => new ChargingScreen(),
             "stickers" => new StickerScreen(),
             _ => new MapScreen(greet: false),

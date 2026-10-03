@@ -1912,6 +1912,16 @@
       "notes": ""
     },
     {
+      "id": "word_black",
+      "text": "black",
+      "notes": ""
+    },
+    {
+      "id": "word_blue",
+      "text": "blue",
+      "notes": ""
+    },
+    {
       "id": "word_boat",
       "text": "boat",
       "notes": ""
@@ -2102,6 +2112,11 @@
       "notes": ""
     },
     {
+      "id": "word_circle",
+      "text": "circle",
+      "notes": ""
+    },
+    {
       "id": "word_class",
       "text": "class",
       "notes": ""
@@ -2239,6 +2254,21 @@
     {
       "id": "word_dad",
       "text": "dad",
+      "notes": ""
+    },
+    {
+      "id": "word_dark_blue",
+      "text": "dark blue",
+      "notes": ""
+    },
+    {
+      "id": "word_dark_red",
+      "text": "dark red",
+      "notes": ""
+    },
+    {
+      "id": "word_dark_yellow",
+      "text": "dark yellow",
       "notes": ""
     },
     {
@@ -2512,6 +2542,11 @@
       "notes": ""
     },
     {
+      "id": "word_grey",
+      "text": "grey",
+      "notes": ""
+    },
+    {
       "id": "word_gum",
       "text": "gum",
       "notes": ""
@@ -2559,6 +2594,11 @@
     {
       "id": "word_here",
       "text": "here",
+      "notes": ""
+    },
+    {
+      "id": "word_hexagon",
+      "text": "hexagon",
       "notes": ""
     },
     {
@@ -2754,6 +2794,16 @@
     {
       "id": "word_light",
       "text": "light",
+      "notes": ""
+    },
+    {
+      "id": "word_light_blue",
+      "text": "light blue",
+      "notes": ""
+    },
+    {
+      "id": "word_light_yellow",
+      "text": "light yellow",
       "notes": ""
     },
     {
@@ -3002,8 +3052,18 @@
       "notes": ""
     },
     {
+      "id": "word_orange",
+      "text": "orange",
+      "notes": ""
+    },
+    {
       "id": "word_our",
       "text": "our",
+      "notes": ""
+    },
+    {
+      "id": "word_oval",
+      "text": "oval",
       "notes": ""
     },
     {
@@ -3062,6 +3122,11 @@
       "notes": ""
     },
     {
+      "id": "word_pentagon",
+      "text": "pentagon",
+      "notes": ""
+    },
+    {
       "id": "word_people",
       "text": "people",
       "notes": ""
@@ -3084,6 +3149,11 @@
     {
       "id": "word_pin",
       "text": "pin",
+      "notes": ""
+    },
+    {
+      "id": "word_pink",
+      "text": "pink",
       "notes": ""
     },
     {
@@ -3162,6 +3232,11 @@
       "notes": ""
     },
     {
+      "id": "word_purple",
+      "text": "purple",
+      "notes": ""
+    },
+    {
       "id": "word_push",
       "text": "push",
       "notes": ""
@@ -3214,6 +3289,11 @@
     {
       "id": "word_rat",
       "text": "rat",
+      "notes": ""
+    },
+    {
+      "id": "word_rectangle",
+      "text": "rectangle",
       "notes": ""
     },
     {
@@ -3279,6 +3359,11 @@
     {
       "id": "word_sea",
       "text": "sea",
+      "notes": ""
+    },
+    {
+      "id": "word_semicircle",
+      "text": "semicircle",
       "notes": ""
     },
     {
@@ -3429,6 +3514,11 @@
     {
       "id": "word_spot",
       "text": "spot",
+      "notes": ""
+    },
+    {
+      "id": "word_square",
+      "text": "square",
       "notes": ""
     },
     {
@@ -3612,6 +3702,11 @@
       "notes": ""
     },
     {
+      "id": "word_triangle",
+      "text": "triangle",
+      "notes": ""
+    },
+    {
       "id": "word_truck",
       "text": "truck",
       "notes": ""
@@ -3697,6 +3792,11 @@
       "notes": ""
     },
     {
+      "id": "word_white",
+      "text": "white",
+      "notes": ""
+    },
+    {
       "id": "word_who",
       "text": "who",
       "notes": ""
@@ -3734,6 +3834,11 @@
     {
       "id": "word_yak",
       "text": "yak",
+      "notes": ""
+    },
+    {
+      "id": "word_yellow",
+      "text": "yellow",
       "notes": ""
     },
     {

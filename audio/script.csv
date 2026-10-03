@@ -43,3 +43,19 @@ vo_numbers_island.m4a,"Welcome to Numbers Island! Click Bip, and let's count.",P
 vo_words_island.m4a,"Welcome to Words Island! Click Bip, and let's read.",Plays when arriving on Words Island.,Words Island!
 vo_coding_island.m4a,"Welcome to Coding Island! Click Bip, and let's program.",Plays when arriving on Coding Island.,Coding Island!
 vo_who_is_playing.m4a,Who's playing today? Click your picture!,"Plays on the profile picker when more than one child uses the Mac. Warm and inviting, a little pause before 'Click your picture'.",Who's playing?
+vo_art_island.m4a,"Welcome to Art Island! Let's play with shapes, paint and mirrors.",Art Island.,"Welcome to Art Island! Let's play with shapes, paint and mirrors."
+vo_find_the_shape.m4a,Can you find the,"Followed straight away by a shape name (""circle""). Rising, unfinished intonation.",Can you find the
+vo_which_shape_fits.m4a,Which shape fits in the gap?,Art Island.,Which shape fits in the gap?
+vo_shape_sides.m4a,Which shape has,"Followed by a number and then ""straight sides?"". Unfinished intonation.",Which shape has
+vo_straight_sides.m4a,straight sides?,"Ends the question ""Which shape has 3 straight sides?""",straight sides?
+vo_shape_curved.m4a,Which shape has a curved side?,Art Island.,Which shape has a curved side?
+vo_shape_turn.m4a,Watch the shapes turn. Which one still looks the same?,Art Island.,Watch the shapes turn. Which one still looks the same?
+vo_shape_count_turns.m4a,Watch the shape turn all the way round. How many times does it look the same?,Art Island.,Watch the shape turn all the way round. How many times does it look the same?
+vo_shape_regular.m4a,Which shape has all its sides the same length?,Art Island.,Which shape has all its sides the same length?
+vo_paint_make.m4a,Mix two paint pots to make,"Followed straight away by a colour name (""orange""). Unfinished intonation.",Mix two paint pots to make
+vo_paint_predict.m4a,What colour will these two make?,Art Island.,What colour will these two make?
+vo_make.m4a,make,"Middle of ""red and yellow make orange"". Just the one word, even tone.",make
+vo_mirror_same.m4a,Which picture is the same on both sides?,Art Island.,Which picture is the same on both sides?
+vo_mirror_finish.m4a,Which piece finishes the picture?,Art Island.,Which piece finishes the picture?
+vo_mirror_pegs.m4a,Put pegs on the other side of the mirror to finish the pattern.,Art Island.,Put pegs on the other side of the mirror to finish the pattern.
+vo_mirror_line.m4a,Where is the mirror line? Find the line that folds the picture into two matching halves.,Art Island.,Where is the mirror line? Find the line that folds the picture into two matching halves.

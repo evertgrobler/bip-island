@@ -19,7 +19,7 @@ public partial class MapScreen : BaseScreen
     public MapScreen(bool greet) => _greet = greet;
 
     protected override IReadOnlyList<Node2D> KeyOptions =>
-        new[] { Island.Letters, Island.Numbers, Island.Words, Island.Coding }.Select(i => _islands[i]).ToList();
+        new[] { Island.Letters, Island.Numbers, Island.Art, Island.Words, Island.Coding }.Select(i => _islands[i]).ToList();
 
     protected override void Build()
     {
@@ -58,7 +58,26 @@ public partial class MapScreen : BaseScreen
             }
         });
 
-        AddBip(P(-110, -40), 0.75f);
+        // Art Island sits in the middle, a little smaller: a paint palette with three blobs and a triangle.
+        _islands[Island.Art] = AddIsland("art", P(0, -10), Palette.Pink.Blend(0.5, Palette.Purple), Coordinator.ArtOpen, 690, n =>
+        {
+            n.AddChild(Pen(Ellipse(P(0, 25), 130, 70), 695, fill: Palette.Card, lineWidth: 5));
+            foreach (var (i, (x, y, colour)) in Indexed((-70.0, 45.0, Palette.Red), (-10.0, 65.0, Palette.Sun), (50.0, 45.0, Palette.Teal)))
+                n.AddChild(Pen(Ellipse(P(x, y), 24, 20), (ulong)(696 + i), fill: colour, lineWidth: 3.5, wobble: 2));
+            n.AddChild(Pen(Polygon(P(20, 10), P(70, 10), P(45, -30)), 699, fill: Palette.Orange, lineWidth: 3.5));
+            n.AddChild(Pen(Ellipse(P(-30, 5), 18, 14), 689, fill: Palette.Sand, lineWidth: 3));
+        });
+        // Shrink what's drawn, not the island itself: tapping and pulsing scale the island back to 1.
+        var art = _islands[Island.Art];
+        var inner = new Node2D { Scale = Vector2.One * 0.7f };
+        foreach (var part in art.GetChildren())
+        {
+            art.RemoveChild(part);
+            inner.AddChild(part);
+        }
+        art.AddChild(inner);
+
+        AddBip(P(0, -360), 0.7f);
 
         var stickers = Buttons.Tappable(Group(
             Pen(Ellipse(Vector2.Zero, 64, 64), 680, fill: Palette.Sun, lineWidth: 5),
@@ -159,6 +178,9 @@ public partial class MapScreen : BaseScreen
                 break;
             case "island:coding" when Coordinator.CodingOpen:
                 OpenIsland(node, Island.Coding);
+                break;
+            case "island:art" when Coordinator.ArtOpen:
+                OpenIsland(node, Island.Art);
                 break;
             case "stickers":
                 Sfx.Play(BipSounds.Effect.Tick);

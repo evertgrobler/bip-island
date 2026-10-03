@@ -1,0 +1,154 @@
+{
+  "note": "Paint Pots (Art Island). Mixes follow real paint, not screen light: red and yellow make orange. Every pair of pots a level offers must have a mix here, and the pairs a level offers must make different colours (checked by scripts/validate_content.py). Each pot carries a label picture so children who find some colours hard to tell apart can still pick the right pot; Bip always says the colour's name too.",
+  "colours": [
+    {
+      "id": "red",
+      "name": "red",
+      "hex": "#D8392B"
+    },
+    {
+      "id": "yellow",
+      "name": "yellow",
+      "hex": "#F6C42B"
+    },
+    {
+      "id": "blue",
+      "name": "blue",
+      "hex": "#2F6CC9"
+    },
+    {
+      "id": "white",
+      "name": "white",
+      "hex": "#FFFDF5"
+    },
+    {
+      "id": "black",
+      "name": "black",
+      "hex": "#26221F"
+    },
+    {
+      "id": "orange",
+      "name": "orange",
+      "hex": "#F08A24"
+    },
+    {
+      "id": "green",
+      "name": "green",
+      "hex": "#3E9B4F"
+    },
+    {
+      "id": "purple",
+      "name": "purple",
+      "hex": "#7E4AA8"
+    },
+    {
+      "id": "pink",
+      "name": "pink",
+      "hex": "#F2A3B3"
+    },
+    {
+      "id": "light_yellow",
+      "name": "light yellow",
+      "hex": "#FAE9A0"
+    },
+    {
+      "id": "light_blue",
+      "name": "light blue",
+      "hex": "#9CC5EE"
+    },
+    {
+      "id": "dark_red",
+      "name": "dark red",
+      "hex": "#7E1F17"
+    },
+    {
+      "id": "dark_yellow",
+      "name": "dark yellow",
+      "hex": "#8A7417"
+    },
+    {
+      "id": "dark_blue",
+      "name": "dark blue",
+      "hex": "#1B2F63"
+    },
+    {
+      "id": "grey",
+      "name": "grey",
+      "hex": "#8E8B87"
+    }
+  ],
+  "pots": [
+    {
+      "colour": "red",
+      "label": "pic_apple"
+    },
+    {
+      "colour": "yellow",
+      "label": "pic_banana"
+    },
+    {
+      "colour": "blue",
+      "label": "pic_sea"
+    },
+    {
+      "colour": "white",
+      "label": "pic_cloud"
+    },
+    {
+      "colour": "black",
+      "label": "pic_night"
+    }
+  ],
+  "mixes": [
+    {
+      "a": "red",
+      "b": "yellow",
+      "makes": "orange"
+    },
+    {
+      "a": "yellow",
+      "b": "blue",
+      "makes": "green"
+    },
+    {
+      "a": "red",
+      "b": "blue",
+      "makes": "purple"
+    },
+    {
+      "a": "red",
+      "b": "white",
+      "makes": "pink"
+    },
+    {
+      "a": "yellow",
+      "b": "white",
+      "makes": "light_yellow"
+    },
+    {
+      "a": "blue",
+      "b": "white",
+      "makes": "light_blue"
+    },
+    {
+      "a": "red",
+      "b": "black",
+      "makes": "dark_red"
+    },
+    {
+      "a": "yellow",
+      "b": "black",
+      "makes": "dark_yellow"
+    },
+    {
+      "a": "blue",
+      "b": "black",
+      "makes": "dark_blue"
+    },
+    {
+      "a": "white",
+      "b": "black",
+      "makes": "grey"
+    }
+  ]
+}
