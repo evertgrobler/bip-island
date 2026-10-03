@@ -240,3 +240,9 @@
   the Sparkle scripts and the placeholder-voice script removed. The real app icon moved to
   `godot/icons/` (Mac export uses it). CLAUDE.md, SETUP.md, PLAN.md and this file now describe the
   Godot setup only. "Set up updates" became "Set up the download site" (Vercel project only).
+- **3 Oct, evening:** Charging screen explains itself. For the child: Bip asleep, plugged into a
+  battery whose five bars fill with the real break, and a spoken reason (`vo_bip_charging`; silent
+  until the clip is generated). For grown-ups: "Games open again at 10:45 (in 12 minutes)" and "hold
+  Esc for 3 seconds to end the break early". The daily limit has its own night screen (`vo_day_done`).
+  When the break ends with the screen open, Bip wakes up and the map opens. Previews:
+  `Scenes/Screens/charging.tscn` and `day_done.tscn`.
