@@ -24,8 +24,9 @@
 - **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
   123 Morning Order step scenes.
 - **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
-  installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands, parents section with the kid lock card,
-  two download cards with the Option/Alt tip, Godot screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
+  installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
+  parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
+  screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
 - **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
   review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
 - **Known open items:** record `vo_who_is_playing`; cover second screens in the kid lock; Windows exe
