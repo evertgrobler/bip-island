@@ -1,0 +1,897 @@
+{
+  "note": "Shape Builder (Art Island). Outlines are drawn in a box from -1 to 1 (y up) and stretched to the size given. 'card' is the width:height a shape shows at on its own. straightSides, curved, regular and lookSameTurns (how many times a shape looks the same in one full turn; 0 = every way round, like a circle) are checked against the outline by scripts/validate_content.py. Pictures sit in a 600 x 420 frame centred on 0,0; pieces marked fixed are never the missing piece (too small to tap).",
+  "shapes": [
+    {
+      "id": "circle",
+      "name": "circle",
+      "band": "foundation",
+      "outline": {
+        "kind": "ellipse"
+      },
+      "card": [
+        1,
+        1
+      ],
+      "straightSides": 0,
+      "curved": true,
+      "regular": null,
+      "lookSameTurns": 0
+    },
+    {
+      "id": "square",
+      "name": "square",
+      "band": "foundation",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            -1,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "card": [
+        1,
+        1
+      ],
+      "straightSides": 4,
+      "curved": false,
+      "regular": true,
+      "lookSameTurns": 4
+    },
+    {
+      "id": "triangle",
+      "name": "triangle",
+      "band": "foundation",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "card": [
+        1,
+        0.866
+      ],
+      "straightSides": 3,
+      "curved": false,
+      "regular": true,
+      "lookSameTurns": 3
+    },
+    {
+      "id": "rectangle",
+      "name": "rectangle",
+      "band": "foundation",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            -1,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            -1
+          ],
+          [
+            -1,
+            -1
+          ]
+        ]
+      },
+      "card": [
+        1,
+        0.55
+      ],
+      "straightSides": 4,
+      "curved": false,
+      "regular": false,
+      "lookSameTurns": 2
+    },
+    {
+      "id": "oval",
+      "name": "oval",
+      "band": "stage1",
+      "outline": {
+        "kind": "ellipse"
+      },
+      "card": [
+        1,
+        0.62
+      ],
+      "straightSides": 0,
+      "curved": true,
+      "regular": null,
+      "lookSameTurns": 2
+    },
+    {
+      "id": "semicircle",
+      "name": "semicircle",
+      "band": "stage1",
+      "outline": {
+        "kind": "semicircle"
+      },
+      "card": [
+        1,
+        0.5
+      ],
+      "straightSides": 1,
+      "curved": true,
+      "regular": null,
+      "lookSameTurns": 1
+    },
+    {
+      "id": "pentagon",
+      "name": "pentagon",
+      "band": "stage2",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            -0.951,
+            0.309
+          ],
+          [
+            -0.588,
+            -0.809
+          ],
+          [
+            0.588,
+            -0.809
+          ],
+          [
+            0.951,
+            0.309
+          ]
+        ]
+      },
+      "card": [
+        1,
+        1
+      ],
+      "straightSides": 5,
+      "curved": false,
+      "regular": true,
+      "lookSameTurns": 5
+    },
+    {
+      "id": "hexagon",
+      "name": "hexagon",
+      "band": "stage2",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            -0.866,
+            0.5
+          ],
+          [
+            -0.866,
+            -0.5
+          ],
+          [
+            -0.0,
+            -1.0
+          ],
+          [
+            0.866,
+            -0.5
+          ],
+          [
+            0.866,
+            0.5
+          ]
+        ]
+      },
+      "card": [
+        1,
+        1
+      ],
+      "straightSides": 6,
+      "curved": false,
+      "regular": true,
+      "lookSameTurns": 6
+    },
+    {
+      "id": "tall_triangle",
+      "name": "triangle",
+      "band": "stage3",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            0,
+            1
+          ],
+          [
+            0.5,
+            -1
+          ],
+          [
+            -0.5,
+            -1
+          ]
+        ]
+      },
+      "card": [
+        1,
+        1
+      ],
+      "straightSides": 3,
+      "curved": false,
+      "regular": false,
+      "lookSameTurns": 1
+    },
+    {
+      "id": "kite",
+      "name": "kite",
+      "band": "stage3",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            0,
+            1
+          ],
+          [
+            0.65,
+            0.25
+          ],
+          [
+            0,
+            -1
+          ],
+          [
+            -0.65,
+            0.25
+          ]
+        ]
+      },
+      "card": [
+        1,
+        1
+      ],
+      "straightSides": 4,
+      "curved": false,
+      "regular": false,
+      "lookSameTurns": 1
+    },
+    {
+      "id": "wonky_pentagon",
+      "name": "pentagon",
+      "band": "stage3",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            -0.2,
+            1
+          ],
+          [
+            0.9,
+            0.45
+          ],
+          [
+            0.75,
+            -0.9
+          ],
+          [
+            -0.6,
+            -1
+          ],
+          [
+            -1,
+            0.15
+          ]
+        ]
+      },
+      "card": [
+        1,
+        1
+      ],
+      "straightSides": 5,
+      "curved": false,
+      "regular": false,
+      "lookSameTurns": 1
+    },
+    {
+      "id": "wonky_hexagon",
+      "name": "hexagon",
+      "band": "stage3",
+      "outline": {
+        "kind": "polygon",
+        "points": [
+          [
+            -0.35,
+            1
+          ],
+          [
+            0.85,
+            0.7
+          ],
+          [
+            1,
+            -0.35
+          ],
+          [
+            0.25,
+            -1
+          ],
+          [
+            -0.8,
+            -0.75
+          ],
+          [
+            -1,
+            0.3
+          ]
+        ]
+      },
+      "card": [
+        1,
+        1
+      ],
+      "straightSides": 6,
+      "curved": false,
+      "regular": false,
+      "lookSameTurns": 1
+    }
+  ],
+  "pictures": [
+    {
+      "id": "house",
+      "name": "a house",
+      "pieces": [
+        {
+          "shape": "square",
+          "x": 0,
+          "y": -70,
+          "w": 240,
+          "h": 240,
+          "colour": "sun"
+        },
+        {
+          "shape": "triangle",
+          "x": 0,
+          "y": 115,
+          "w": 300,
+          "h": 130,
+          "colour": "red"
+        },
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": -130,
+          "w": 70,
+          "h": 120,
+          "colour": "brown"
+        },
+        {
+          "shape": "circle",
+          "x": -65,
+          "y": -15,
+          "w": 70,
+          "h": 70,
+          "colour": "sky",
+          "fixed": true
+        }
+      ]
+    },
+    {
+      "id": "car",
+      "name": "a car",
+      "pieces": [
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": -20,
+          "w": 440,
+          "h": 120,
+          "colour": "red"
+        },
+        {
+          "shape": "rectangle",
+          "x": -20,
+          "y": 85,
+          "w": 240,
+          "h": 90,
+          "colour": "red"
+        },
+        {
+          "shape": "circle",
+          "x": -130,
+          "y": -95,
+          "w": 110,
+          "h": 110,
+          "colour": "ink"
+        },
+        {
+          "shape": "circle",
+          "x": 130,
+          "y": -95,
+          "w": 110,
+          "h": 110,
+          "colour": "ink"
+        }
+      ]
+    },
+    {
+      "id": "snowman",
+      "name": "a snowman",
+      "pieces": [
+        {
+          "shape": "circle",
+          "x": 0,
+          "y": -100,
+          "w": 210,
+          "h": 210,
+          "colour": "white"
+        },
+        {
+          "shape": "circle",
+          "x": 0,
+          "y": 55,
+          "w": 150,
+          "h": 150,
+          "colour": "white"
+        },
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": 150,
+          "w": 120,
+          "h": 70,
+          "colour": "ink"
+        },
+        {
+          "shape": "triangle",
+          "x": 0,
+          "y": 55,
+          "w": 40,
+          "h": 30,
+          "colour": "orange",
+          "rotation": -90,
+          "fixed": true
+        }
+      ]
+    },
+    {
+      "id": "rocket",
+      "name": "a rocket",
+      "pieces": [
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": -30,
+          "w": 130,
+          "h": 240,
+          "colour": "teal"
+        },
+        {
+          "shape": "triangle",
+          "x": 0,
+          "y": 140,
+          "w": 130,
+          "h": 100,
+          "colour": "red"
+        },
+        {
+          "shape": "circle",
+          "x": 0,
+          "y": 20,
+          "w": 70,
+          "h": 70,
+          "colour": "sky",
+          "fixed": true
+        },
+        {
+          "shape": "triangle",
+          "x": -95,
+          "y": -120,
+          "w": 80,
+          "h": 80,
+          "colour": "orange"
+        },
+        {
+          "shape": "triangle",
+          "x": 95,
+          "y": -120,
+          "w": 80,
+          "h": 80,
+          "colour": "orange"
+        }
+      ]
+    },
+    {
+      "id": "tree",
+      "name": "a tree",
+      "pieces": [
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": -130,
+          "w": 70,
+          "h": 130,
+          "colour": "brown"
+        },
+        {
+          "shape": "circle",
+          "x": 0,
+          "y": 40,
+          "w": 260,
+          "h": 260,
+          "colour": "leaf"
+        }
+      ]
+    },
+    {
+      "id": "ice_cream",
+      "name": "an ice cream",
+      "pieces": [
+        {
+          "shape": "triangle",
+          "x": 0,
+          "y": -85,
+          "w": 170,
+          "h": 220,
+          "colour": "sand",
+          "rotation": 180
+        },
+        {
+          "shape": "circle",
+          "x": 0,
+          "y": 85,
+          "w": 180,
+          "h": 180,
+          "colour": "pink"
+        }
+      ]
+    },
+    {
+      "id": "robot",
+      "name": "a robot",
+      "pieces": [
+        {
+          "shape": "square",
+          "x": 0,
+          "y": 85,
+          "w": 180,
+          "h": 180,
+          "colour": "teal"
+        },
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": -95,
+          "w": 230,
+          "h": 150,
+          "colour": "teal"
+        },
+        {
+          "shape": "circle",
+          "x": -40,
+          "y": 95,
+          "w": 40,
+          "h": 40,
+          "colour": "white",
+          "fixed": true
+        },
+        {
+          "shape": "circle",
+          "x": 40,
+          "y": 95,
+          "w": 40,
+          "h": 40,
+          "colour": "white",
+          "fixed": true
+        },
+        {
+          "shape": "square",
+          "x": -155,
+          "y": -95,
+          "w": 70,
+          "h": 70,
+          "colour": "orange"
+        },
+        {
+          "shape": "square",
+          "x": 155,
+          "y": -95,
+          "w": 70,
+          "h": 70,
+          "colour": "orange"
+        }
+      ]
+    },
+    {
+      "id": "boat",
+      "name": "a boat",
+      "pieces": [
+        {
+          "shape": "semicircle",
+          "x": 0,
+          "y": -110,
+          "w": 360,
+          "h": 140,
+          "colour": "brown",
+          "rotation": 180
+        },
+        {
+          "shape": "triangle",
+          "x": 30,
+          "y": 60,
+          "w": 220,
+          "h": 220,
+          "colour": "white"
+        },
+        {
+          "shape": "rectangle",
+          "x": -95,
+          "y": 30,
+          "w": 20,
+          "h": 250,
+          "colour": "brown",
+          "fixed": true
+        }
+      ]
+    },
+    {
+      "id": "fish",
+      "name": "a fish",
+      "pieces": [
+        {
+          "shape": "oval",
+          "x": -40,
+          "y": 0,
+          "w": 320,
+          "h": 190,
+          "colour": "orange"
+        },
+        {
+          "shape": "triangle",
+          "x": 165,
+          "y": 0,
+          "w": 140,
+          "h": 150,
+          "colour": "orange",
+          "rotation": 90
+        },
+        {
+          "shape": "circle",
+          "x": -130,
+          "y": 25,
+          "w": 34,
+          "h": 34,
+          "colour": "ink",
+          "fixed": true
+        }
+      ]
+    },
+    {
+      "id": "sun",
+      "name": "the sun",
+      "pieces": [
+        {
+          "shape": "circle",
+          "x": 0,
+          "y": 0,
+          "w": 200,
+          "h": 200,
+          "colour": "sun"
+        },
+        {
+          "shape": "triangle",
+          "x": 0,
+          "y": 150,
+          "w": 70,
+          "h": 70,
+          "colour": "orange"
+        },
+        {
+          "shape": "triangle",
+          "x": 0,
+          "y": -150,
+          "w": 70,
+          "h": 70,
+          "colour": "orange",
+          "rotation": 180
+        },
+        {
+          "shape": "triangle",
+          "x": 150,
+          "y": 0,
+          "w": 70,
+          "h": 70,
+          "colour": "orange",
+          "rotation": -90
+        },
+        {
+          "shape": "triangle",
+          "x": -150,
+          "y": 0,
+          "w": 70,
+          "h": 70,
+          "colour": "orange",
+          "rotation": 90
+        }
+      ]
+    },
+    {
+      "id": "birdhouse",
+      "name": "a bird box",
+      "pieces": [
+        {
+          "shape": "pentagon",
+          "x": 0,
+          "y": 10,
+          "w": 300,
+          "h": 300,
+          "colour": "sun"
+        },
+        {
+          "shape": "circle",
+          "x": 0,
+          "y": 10,
+          "w": 90,
+          "h": 90,
+          "colour": "ink"
+        },
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": -160,
+          "w": 200,
+          "h": 40,
+          "colour": "brown",
+          "fixed": true
+        }
+      ]
+    },
+    {
+      "id": "beehive",
+      "name": "a honeycomb",
+      "pieces": [
+        {
+          "shape": "hexagon",
+          "x": -120,
+          "y": -70,
+          "w": 160,
+          "h": 160,
+          "colour": "sun"
+        },
+        {
+          "shape": "hexagon",
+          "x": 0,
+          "y": 0,
+          "w": 160,
+          "h": 160,
+          "colour": "sun"
+        },
+        {
+          "shape": "hexagon",
+          "x": 120,
+          "y": -70,
+          "w": 160,
+          "h": 160,
+          "colour": "sun"
+        },
+        {
+          "shape": "hexagon",
+          "x": 0,
+          "y": 140,
+          "w": 160,
+          "h": 160,
+          "colour": "sun"
+        },
+        {
+          "shape": "circle",
+          "x": 0,
+          "y": 0,
+          "w": 40,
+          "h": 40,
+          "colour": "orange",
+          "fixed": true
+        }
+      ]
+    },
+    {
+      "id": "umbrella",
+      "name": "an umbrella",
+      "pieces": [
+        {
+          "shape": "semicircle",
+          "x": 0,
+          "y": 40,
+          "w": 380,
+          "h": 190,
+          "colour": "purple"
+        },
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": -80,
+          "w": 24,
+          "h": 230,
+          "colour": "ink",
+          "fixed": true
+        }
+      ]
+    },
+    {
+      "id": "pumpkin",
+      "name": "a pumpkin",
+      "pieces": [
+        {
+          "shape": "oval",
+          "x": 0,
+          "y": -30,
+          "w": 330,
+          "h": 230,
+          "colour": "orange"
+        },
+        {
+          "shape": "rectangle",
+          "x": 0,
+          "y": 105,
+          "w": 40,
+          "h": 60,
+          "colour": "leaf",
+          "fixed": true
+        },
+        {
+          "shape": "triangle",
+          "x": -60,
+          "y": 0,
+          "w": 60,
+          "h": 60,
+          "colour": "ink",
+          "fixed": true
+        },
+        {
+          "shape": "triangle",
+          "x": 60,
+          "y": 0,
+          "w": 60,
+          "h": 60,
+          "colour": "ink",
+          "fixed": true
+        }
+      ]
+    }
+  ]
+}

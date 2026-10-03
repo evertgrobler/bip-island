@@ -1,0 +1,147 @@
+{
+  "note": "Mirror Magic (Art Island). Pictures are 8 x 8 peg grids, top row first; '.' is an empty hole and each letter is a paint from 'paints'. 'mirror' says the one line each picture folds onto itself along (vertical = left and right halves match, horizontal = top and bottom match); scripts/validate_content.py checks it is the only one, diagonals included.",
+  "paints": {
+    "R": "red",
+    "Y": "yellow",
+    "B": "blue",
+    "G": "green",
+    "O": "orange",
+    "P": "purple",
+    "K": "black",
+    "W": "white"
+  },
+  "pictures": [
+    {
+      "id": "butterfly",
+      "mirror": "vertical",
+      "rows": [
+        "PP....PP",
+        "PYP..PYP",
+        "PYYPPYYP",
+        "PPPKKPPP",
+        "..PKKP..",
+        ".OPKKPO.",
+        "OOP..POO",
+        ".O....O."
+      ]
+    },
+    {
+      "id": "heart",
+      "mirror": "vertical",
+      "rows": [
+        ".RR..RR.",
+        "RRRRRRRR",
+        "RRRRRRRR",
+        "RRRRRRRR",
+        ".RRRRRR.",
+        "..RRRR..",
+        "...RR...",
+        "........"
+      ]
+    },
+    {
+      "id": "house",
+      "mirror": "vertical",
+      "rows": [
+        "...RR...",
+        "..RRRR..",
+        ".RRRRRR.",
+        "RRRRRRRR",
+        ".YYYYYY.",
+        ".YBYYBY.",
+        ".YYKKYY.",
+        ".YYKKYY."
+      ]
+    },
+    {
+      "id": "flower",
+      "mirror": "vertical",
+      "rows": [
+        "..PPPP..",
+        ".PPYYPP.",
+        "..PPPP..",
+        "...GG...",
+        "G..GG..G",
+        "GG.GG.GG",
+        "...GG...",
+        "...GG..."
+      ]
+    },
+    {
+      "id": "rocket",
+      "mirror": "vertical",
+      "rows": [
+        "...RR...",
+        "..RBBR..",
+        "..WWWW..",
+        "..WBBW..",
+        "..WWWW..",
+        ".RWWWWR.",
+        "RR.OO.RR",
+        "...OO..."
+      ]
+    },
+    {
+      "id": "face",
+      "mirror": "vertical",
+      "rows": [
+        ".YYYYYY.",
+        "YYYYYYYY",
+        "YKYYYYKY",
+        "YYYYYYYY",
+        "YYYRRYYY",
+        "YRYYYYRY",
+        ".YRRRRY.",
+        "..YYYY.."
+      ]
+    },
+    {
+      "id": "fish",
+      "mirror": "horizontal",
+      "rows": [
+        "........",
+        "..OOO..O",
+        ".OOOOOOO",
+        "OKOOOOO.",
+        "OKOOOOO.",
+        ".OOOOOOO",
+        "..OOO..O",
+        "........"
+      ]
+    },
+    {
+      "id": "arrow",
+      "mirror": "horizontal",
+      "rows": [
+        "....G...",
+        "....GG..",
+        "GGGGGGG.",
+        "GGGGGGGG",
+        "GGGGGGGG",
+        "GGGGGGG.",
+        "....GG..",
+        "....G..."
+      ]
+    },
+    {
+      "id": "leaf",
+      "mirror": "horizontal",
+      "rows": [
+        "........",
+        "...GGG..",
+        ".GGGGGG.",
+        "KKKKKKKG",
+        "KKKKKKKG",
+        ".GGGGGG.",
+        "...GGG..",
+        "........"
+      ]
+    }
+  ],
+  "pegs": {
+    "size": 6,
+    "fewest": 3,
+    "most": 5,
+    "colour": "purple"
+  }
+}
