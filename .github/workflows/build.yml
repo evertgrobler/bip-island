@@ -1,5 +1,5 @@
-# Builds and tests every pull request. Every push to main also signs the update and
-# publishes it to Vercel, where the installed app picks it up via Sparkle.
+# Builds and tests the Swift Mac app (being retired for the Godot version). It no longer publishes:
+# the download page and the carried-over Sparkle feed are deployed by godot.yml (scripts/ci/deploy_site.sh).
 name: Build
 
 # Only when the Swift app, or something it ships, changes: Mac machines use GitHub minutes fast.
@@ -11,7 +11,6 @@ on:
       - "Resources/**"
       - "Content/**"
       - "audio/**"
-      - "site/**"
       - "project.yml"
       - "scripts/ci/**"
       - "scripts/validate_content.py"
@@ -25,7 +24,6 @@ on:
       - "Resources/**"
       - "Content/**"
       - "audio/**"
-      - "site/**"
       - "project.yml"
       - "scripts/ci/**"
       - "scripts/validate_content.py"
@@ -172,23 +170,6 @@ jobs:
             exit 1
           }
 
-      # Opens the built game in screenshot mode for the download page. Never blocks a release:
-      # without screenshots the page shows empty frames.
-      - name: Take screenshots for the download page
-        continue-on-error: true
-        timeout-minutes: 6
-        run: scripts/ci/take_screenshots.sh
-
-      - name: Keep the screenshots
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshots-${{ github.run_number }}
-          path: build/screenshots
-          if-no-files-found: ignore
-          retention-days: 14
-
       - name: Find Sparkle's tools
         run: |
           tool="$(find "$PACKAGES/artifacts" -type f -name generate_appcast 2>/dev/null | head -1)"
@@ -214,26 +195,6 @@ jobs:
           name: BipIsland-${{ steps.package.outputs.version }}-${{ steps.package.outputs.build }}
           path: ${{ env.OUT_DIR }}
           retention-days: 14
-
-      - name: Publish to Vercel
-        if: steps.release.outputs.publish == 'true'
-        env:
-          FEED_URL: ${{ steps.release.outputs.feed_url }}
-          ZIP_NAME: ${{ steps.package.outputs.zip_name }}
-          VERSION: ${{ steps.package.outputs.version }}
-          BUILD: ${{ steps.package.outputs.build }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          scripts/ci/deploy_vercel.sh
-          site="${FEED_URL%/*}/"
-          {
-            echo "### ✅ Published version $VERSION (build $BUILD)"
-            echo "Download page: $site"
-            echo
-            echo "Installed copies will update themselves."
-          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Remove the signing key
         if: always()
