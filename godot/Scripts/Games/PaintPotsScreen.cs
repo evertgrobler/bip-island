@@ -234,7 +234,9 @@ public partial class PaintPotsScreen : GameScreen
         {
             // Show what this pair made for a moment, then empty the bowl for another go.
             if (made != null) Voice.Play([made.Audio]);
-            After(1.4, () => { if (_round == round) EmptyBowl(); });
+            // Only if the bowl still holds this mix (not a pot poured in since).
+            var wrongMix = _bowlPaint;
+            After(1.4, () => { if (_round == round && _bowlPaint == wrongMix) EmptyBowl(); });
         }
     }
 

@@ -24,6 +24,8 @@ public partial class ShapeBuilderScreen : GameScreen
     private QuestionAttempt _attempt = new();
     private readonly List<Node2D> _cards = [];
     private readonly List<Node2D> _turning = [];
+    private readonly List<float> _turnStarts = [];
+    private readonly List<Tween> _tweens = [];
     private Node2D? _picture;
     private Node2D? _gap;
     private Node2D? _bigShape;
@@ -55,6 +57,8 @@ public partial class ShapeBuilderScreen : GameScreen
         foreach (var node in _cards.Concat(_turning)) node.QueueFree();
         _cards.Clear();
         _turning.Clear();
+        _turnStarts.Clear();
+        _tweens.Clear();
         _picture?.QueueFree();
         _picture = null;
         _gap = null;
@@ -97,7 +101,11 @@ public partial class ShapeBuilderScreen : GameScreen
                 var turn = fits ? next.Picture!.Pieces[next.Missing].Rotation ?? 0 : next.Mode == ShapeBuilderGame.Mode.Fill ? 0 : next.Turns?[i] ?? 0;
                 var drawn = ArtDrawing.Shape(shape, w, h, colours[i % colours.Count], Seed(10 + i), turn);
                 card.AddChild(drawn);
-                if (next.Mode == ShapeBuilderGame.Mode.Turn) _turning.Add(drawn);
+                if (next.Mode == ShapeBuilderGame.Mode.Turn)
+                {
+                    _turning.Add(drawn);
+                    _turnStarts.Add(drawn.Rotation);
+                }
             }
             card.Position = P((i - (next.Choices.Count - 1) / 2.0) * (lowCards ? 330 : 400), lowCards ? -300 : -40);
             card.ZIndex = 10;
@@ -157,26 +165,39 @@ public partial class ShapeBuilderScreen : GameScreen
         SpinFull();
     }
 
+    /// <summary>Stops any turn still running (a replay mid-turn), so turns never stack up.</summary>
+    private void StopTurns()
+    {
+        foreach (var tween in _tweens) tween.Kill();
+        _tweens.Clear();
+    }
+
     private void SpinFull()
     {
         if (_bigShape is not { } shape) return;
+        StopTurns();
         shape.Rotation = 0;
         var spin = shape.CreateTween();
         spin.TweenInterval(1.2);
         spin.TweenProperty(shape, "rotation", Mathf.Tau, 6.0);
+        _tweens.Add(spin);
     }
 
     /// <summary>Turn rounds: every shape makes a slow quarter turn and back.</summary>
     private void TurnQuarter()
     {
-        foreach (var shape in _turning)
+        StopTurns();
+        for (var i = 0; i < _turning.Count; i++)
         {
-            var start = shape.Rotation;
+            var shape = _turning[i];
+            var start = _turnStarts[i];
+            shape.Rotation = start;
             var turn = shape.CreateTween();
             turn.TweenInterval(1.5);
             turn.TweenProperty(shape, "rotation", start - Mathf.Pi / 2, 1.6);
             turn.TweenInterval(1.4);
             turn.TweenProperty(shape, "rotation", start, 0.6);
+            _tweens.Add(turn);
         }
     }
 
