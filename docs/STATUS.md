@@ -251,3 +251,11 @@
   including the real `vo_who_is_playing`. ElevenLabs refuses some requests with "unusual activity":
   three at a time and retrying works. Review fixes: a replay mid-turn no longer stacks shape turns; a wrong
   mix only empties its own paint from the bowl.
+- **3 Oct, evening:** Audit of main (agent, report in the session): content, phonics order, coding levels,
+  safety rules all correct. Fixed from it: Bip's Path blocks 120 pt and a hint that doesn't trail off,
+  "1 star", play time paused while the parent gate is open and not banked after the daily maximum (a new
+  day starts with a full battery), the monster button waits for group 4 foods, false rhyme pairs split.
+  Voice: 22 word clips trimmed (stray noise or long silence), b d g dd j h shortened, new f/ff/th, puff,
+  hook (eleven_v3; ElevenLabs then blocked the free tier, so no more clips until the plan is upgraded).
+  25 pictures a child could name another way are now hand-drawn (`WordPictures.cs`; parts get an orange
+  arrow). The gallery takes `--bip-gallery-ids` for close-ups.
