@@ -226,3 +226,7 @@
   (Morning Order, Bip's Path) and Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter Trace, Feed
   the Monster), all 11 games on the shared frame. The walk-through plays every game (112 steps).
   Phase 3 ticked in `GODOT_MIGRATION.md`.
+- **3 Oct:** Download page offers Windows too: a "Test version" card beside the Mac one, linking the
+  Godot `Setup.exe` in the Vercel Blob store (`godot-test/BipIsland-win-Setup.exe`, fixed address, latest
+  build). Says plainly that the Windows kid lock isn't built yet, with the SmartScreen "Run anyway" step
+  and how to quit (Esc → gate → Settings → Quit). Mac download unchanged.
