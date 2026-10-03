@@ -21,7 +21,7 @@ else
   echo "::warning title=No screenshots::The download page was published without screenshots."
 fi
 
-# The site's address, for the "is it live" check at the end.
+# The page's own address, for the live check below.
 feed_url="$("$root/scripts/ci/resolve_feed_url.sh")"
 base="${feed_url%/*}"
 

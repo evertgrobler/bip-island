@@ -152,7 +152,7 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
   - [x] Profiles, saves, breaks, stickers, mystery box, recommendations (with the Phase 2 shell)
   - [x] Parent gate (hold Esc → maths or passcode), parent area (Progress, Children, Settings), "Update ready" button that installs only after the gate
   - [x] Native kid lock: Mac (borderless cover window + presentation options; quits when the Mac powers off) and Windows (exclusive full screen + keyboard hook for the Windows key, Alt-Tab, Alt/Ctrl-Esc). Option/Alt at launch = parent mode. First proof on real machines: the `--bip-kidlock-check` step in the Mac/Windows CI jobs (a warning until it has passed once).
-- [ ] Phase 5 — Owner test (owner tried the Godot build and prefers it), family feed switched, Swift code retired, docs updated (no progress export: owner decision)
+- [x] Phase 5 — Owner test (owner tried the Godot build and prefers it), Swift code, its build and the Sparkle feed retired, docs updated. No progress export (owner decision, 3 Oct 2026): the family installs the Godot app fresh. Audio source stays `.m4a`, converted at build time; switching it to `.ogg` is optional.
 
 ## Port notes from the Swift sessions (1 Oct 2026)
 

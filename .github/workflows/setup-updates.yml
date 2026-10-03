@@ -1,15 +1,11 @@
-# Run once, by hand (Actions tab → "Set up updates" → Run workflow).
-# Makes the Sparkle update keys and the Vercel project, then shows the values to save as secrets.
-# See docs/SETUP.md.
-name: Set up updates
+# Run once, by hand (Actions tab → "Set up the download site" → Run workflow).
+# Makes the Vercel project for the download page, then shows the values to save as secrets.
+# Only needed again if the Vercel project is lost. See docs/SETUP.md.
+name: Set up the download site
 
 on:
   workflow_dispatch:
     inputs:
-      make_new_keys:
-        description: "Make NEW update keys even if SPARKLE_PRIVATE_KEY is already set (breaks updates for copies already installed)"
-        type: boolean
-        default: false
       project_name:
         description: "Vercel project name (becomes <name>.vercel.app)"
         type: string
@@ -26,36 +22,6 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
 
-      - name: Update signing keys
-        env:
-          HAS_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY != '' }}
-          MAKE_NEW: ${{ inputs.make_new_keys }}
-        run: |
-          openssl version
-          if [ "$HAS_KEY" = "true" ] && [ "$MAKE_NEW" != "true" ]; then
-            {
-              echo "## 1. Update signing key"
-              echo "✅ **SPARKLE_PRIVATE_KEY is already set.** Nothing to do. (New keys were *not* made, so installed copies keep updating.)"
-              echo
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          private_key="$(scripts/ci/new_sparkle_key.sh)"
-          public_key="$(printf '%s' "$private_key" | scripts/ci/sparkle_public_key.sh)"
-          {
-            echo "## 1. Update signing key"
-            echo "Add a **repository secret** named \`SPARKLE_PRIVATE_KEY\` with exactly this value:"
-            echo
-            echo '```'
-            echo "$private_key"
-            echo '```'
-            echo
-            echo "Also save it in your password manager: if it's lost, installed copies can't be updated and must be reinstalled by hand."
-            echo
-            echo "(For reference only, the public key the builds will use is \`$public_key\`. You don't need to save it.)"
-            echo
-          } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Vercel project
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -63,7 +29,7 @@ jobs:
         run: |
           if [ -z "$VERCEL_TOKEN" ]; then
             {
-              echo "## 2. Vercel"
+              echo "## Vercel"
               echo "⚠️ **Add the \`VERCEL_TOKEN\` secret first** (docs/SETUP.md, step 2), then run this workflow again."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -112,7 +78,7 @@ jobs:
 
           feed_url="$(VERCEL_ORG_ID="$org_id" VERCEL_PROJECT_ID="$project_id" scripts/ci/resolve_feed_url.sh)"
           {
-            echo "## 2. Vercel"
+            echo "## Vercel"
             echo "Add two more **repository secrets**:"
             echo
             echo "| Name | Value |"
@@ -120,10 +86,8 @@ jobs:
             echo "| \`VERCEL_ORG_ID\` | \`$org_id\` |"
             echo "| \`VERCEL_PROJECT_ID\` | \`$project_id\` |"
             echo
-            echo "Your download page will be **${feed_url%/appcast.xml}/** (the app checks \`$feed_url\` for updates)."
+            echo "Your download page will be **${feed_url%/appcast.xml}/**."
             echo
-            echo "## 3. Next"
-            echo "Once all four secrets are set: Actions → **Build** → **Run workflow** (branch \`main\`). When it's green, open the download page above."
-            echo
-            echo "Then delete this run (⋯ menu at the top right of this page → Delete workflow run), because it shows the private key."
+            echo "## Next"
+            echo "Once both are set: Actions → **Godot** → **Run workflow** (branch \`main\`). When it's green, open the download page above."
           } >> "$GITHUB_STEP_SUMMARY"
