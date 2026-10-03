@@ -237,3 +237,6 @@
   quit-on-power-off (the Godot build would otherwise block shutdown), Windows exclusive full screen and
   a keyboard hook, parent mode with Option/Alt. Unproven on real machines until the CI Mac/Windows jobs
   run (minutes out until 1 Nov, or a brief public window).
+- **3 Oct:** Owner decision: no progress export. The owner installs the Godot app fresh (children
+  start again) and has tried the Godot build and finds it much better. Repo made public briefly so
+  CI could build: Godot on main (test downloads), Swift on main, Godot on the kid-lock branch.
