@@ -138,7 +138,9 @@ public static class KidLock
         [DllImport(ObjC)] private static extern IntPtr sel_registerName(string name);
         [DllImport(ObjC)] private static extern IntPtr objc_allocateClassPair(IntPtr superclass, string name, IntPtr extraBytes);
         [DllImport(ObjC)] private static extern void objc_registerClassPair(IntPtr cls);
-        [DllImport(ObjC)] private static extern bool class_addMethod(IntPtr cls, IntPtr selector, IntPtr implementation, string types);
+        [DllImport(ObjC)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        private static extern bool class_addMethod(IntPtr cls, IntPtr selector, IntPtr implementation, string types);
         [DllImport(ObjC, EntryPoint = "objc_msgSend")] private static extern IntPtr Send(IntPtr receiver, IntPtr selector);
         [DllImport(ObjC, EntryPoint = "objc_msgSend")] private static extern ulong SendULong(IntPtr receiver, IntPtr selector);
         [DllImport(ObjC, EntryPoint = "objc_msgSend")] private static extern void SendULongArg(IntPtr receiver, IntPtr selector, ulong value);
@@ -182,7 +184,14 @@ public static class KidLock
             var selector = sel_registerName("bipWillPowerOff:");
             if (observerClass != IntPtr.Zero)
             {
-                _powerOffHandler = (_, _, _) => Callable.From(() => Boot.Instance.Quit()).CallDeferred();
+                _powerOffHandler = (_, _, _) =>
+                {
+                    // AppKit posts this on the main thread. Allow quitting straight away, so the quit
+                    // request that follows a logout is accepted even if it arrives before the
+                    // deferred Quit runs (otherwise macOS says "Bip Island interrupted log out").
+                    Boot.Instance.AllowQuit();
+                    Callable.From(() => Boot.Instance.Quit()).CallDeferred();
+                };
                 class_addMethod(observerClass, selector, Marshal.GetFunctionPointerForDelegate(_powerOffHandler), "v@:@");
                 objc_registerClassPair(observerClass);
             }
@@ -228,28 +237,68 @@ public static class KidLock
         [DllImport("user32.dll")] private static extern short GetAsyncKeyState(int virtualKey);
         [DllImport("kernel32.dll")] private static extern IntPtr GetModuleHandleW(IntPtr name);
 
+        [DllImport("user32.dll")] private static extern int GetMessageW(out Message message, IntPtr window, uint first, uint last);
+        [DllImport("user32.dll")] private static extern bool PostThreadMessageW(uint threadId, uint message, IntPtr wParam, IntPtr lParam);
+        [DllImport("kernel32.dll")] private static extern uint GetCurrentThreadId();
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Message
+        {
+            public IntPtr Window;
+            public uint Id;
+            public IntPtr WParam;
+            public IntPtr LParam;
+            public uint Time;
+            public int X;
+            public int Y;
+        }
+
+        private const uint WmQuit = 0x0012;
+
         // Kept alive for as long as the hook is installed: Windows calls it through a raw pointer.
         private static HookHandler? _handler;
         private static IntPtr _hook;
         private static IntPtr _gameWindow;
+        private static uint _hookThreadId;
 
         public static bool HookInstalled => _hook != IntPtr.Zero;
 
         public static bool AltKeyHeld() => GetAsyncKeyState(VkMenu) < 0;
 
+        /// <summary>
+        /// The hook lives on its own thread with its own message loop. On the game's main thread a
+        /// long frame would hold up every key on the computer, and Windows quietly removes hooks that
+        /// keep timing out.
+        /// </summary>
         public static void Lock()
         {
             DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
             _gameWindow = new IntPtr(DisplayServer.WindowGetNativeHandle(DisplayServer.HandleType.WindowHandle));
             _handler = OnKey;
-            _hook = SetWindowsHookExW(WhKeyboardLowLevel, _handler, GetModuleHandleW(IntPtr.Zero), 0);
-            if (_hook == IntPtr.Zero) throw new InvalidOperationException($"keyboard hook refused (error {Marshal.GetLastWin32Error()})");
+            var ready = new System.Threading.ManualResetEventSlim();
+            var error = 0;
+            var thread = new System.Threading.Thread(() =>
+            {
+                _hookThreadId = GetCurrentThreadId();
+                _hook = SetWindowsHookExW(WhKeyboardLowLevel, _handler, GetModuleHandleW(IntPtr.Zero), 0);
+                if (_hook == IntPtr.Zero) error = Marshal.GetLastWin32Error();
+                ready.Set();
+                if (_hook == IntPtr.Zero) return;
+                // Keys are delivered to the hook while this loop waits; WM_QUIT (from Unlock) ends it.
+                while (GetMessageW(out _, IntPtr.Zero, 0, 0) > 0) { }
+                UnhookWindowsHookEx(_hook);
+                _hook = IntPtr.Zero;
+            })
+            { IsBackground = true, Name = "Bip Island kid lock" };
+            thread.Start();
+            if (!ready.Wait(TimeSpan.FromSeconds(2))) throw new InvalidOperationException("keyboard hook thread didn't start");
+            if (_hook == IntPtr.Zero) throw new InvalidOperationException($"keyboard hook refused (error {error})");
         }
 
         public static void Unlock()
         {
-            if (_hook != IntPtr.Zero) UnhookWindowsHookEx(_hook);
-            _hook = IntPtr.Zero;
+            if (_hookThreadId != 0) PostThreadMessageW(_hookThreadId, WmQuit, IntPtr.Zero, IntPtr.Zero);
+            _hookThreadId = 0;
         }
 
         /// <summary>Runs for every key press on the computer, so it does as little as possible.</summary>

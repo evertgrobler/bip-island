@@ -120,6 +120,8 @@
   exclusive full screen with a keyboard hook (Windows). Off when headless, with `--bip-windowed`, on
   Linux, or with Option/Alt held at launch (parent mode). Quitting or updating lifts it first. It
   can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
+  Known gap vs Swift: second screens aren't covered with paper windows yet (a click there could reach
+  another app). Fine on a one-screen Mac; add cover windows if the family Mac gets a second display.
 
 ## Gotchas learned the hard way
 
