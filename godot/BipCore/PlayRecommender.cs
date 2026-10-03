@@ -1,7 +1,7 @@
 namespace BipCore;
 
 /// <summary>
-/// Bip's suggestion of what to play next, across all four islands. The child always picks
+/// Bip's suggestion of what to play next, across every island. The child always picks
 /// freely — one island glows, and Bip nudges towards another island when one island
 /// dominates recent play. Never forced.
 /// </summary>
