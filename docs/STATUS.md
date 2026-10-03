@@ -226,6 +226,12 @@
   (Morning Order, Bip's Path) and Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter Trace, Feed
   the Monster), all 11 games on the shared frame. The walk-through plays every game (112 steps).
   Phase 3 ticked in `GODOT_MIGRATION.md`.
+- **3 Oct:** Owner: offer only the new version. The download page now has one card, "Bip Island for Windows
+  and Mac" (Test version), linking the Godot builds in the Vercel Blob store (`godot-test/BipIsland-win-Setup.exe`,
+  `godot-test/BipIsland-mac.dmg`, fixed addresses, latest build). The old Swift Mac download is gone from the
+  page, but `deploy_vercel.sh` still publishes its zip + `appcast.xml`, so installed Swift copies keep updating.
+  Page says plainly the kid lock isn't built yet; Mac step explains Replace / Keep Both (both apps are called
+  Bip Island; progress isn't moved across yet). The builds there are already 0.2.31 (Godot run 31, #27).
 - **3 Oct:** Owner made the repo public, so Actions minutes are free again; merge rule back to green CI
   plus a session review. History scanned for secrets: none. Godot run 31 (#27) had already published
   0.2.31 (all 11 games) to `godot-test/`; its last check failed only because the overwritten feed is
