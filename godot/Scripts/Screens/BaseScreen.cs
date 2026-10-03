@@ -89,12 +89,12 @@ public abstract partial class BaseScreen : Node2D
     }
 
     /// <summary>
-    /// Starts a game, or (until its screen is ported in Phase 3 of the Godot move) shows a "coming
-    /// soon" card for the test build and unlocks the screen again.
+    /// Starts a game, or (if it can't start, e.g. its content didn't load) shows a "coming soon"
+    /// card and unlocks the screen again.
     /// </summary>
-    protected void StartGame(string gameId)
+    protected void StartGame(string gameId, BipCore.PhonicsSound? focus = null)
     {
-        if (Coordinator.StartGame(gameId)) return;
+        if (Coordinator.StartGame(gameId, focus)) return;
         var card = new Node2D { ZIndex = 80, Scale = Vector2.One * 0.01f };
         card.AddChild(Sketch.Node(new SketchShape.RoundedRect(new Rect2(-360, -110, 720, 220), 36), 575, fill: Palette.Card, lineWidth: 6));
         card.AddChild(Sketch.Label("Coming soon!", 64, Palette.Ink));

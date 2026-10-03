@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BipCore;
 using BipIsland.App;
 using BipIsland.Game;
@@ -9,7 +10,7 @@ namespace BipIsland.Dev;
 
 /// <summary>
 /// Opens one screen directly, for screenshots (scripts/check_all.sh opens every scene in
-/// Scenes/Screens with --bip-scene). With a test save folder (--bip-save-dir) it adds sample
+/// Scenes/Screens and Scenes/Games with --bip-scene). With a test save folder (--bip-save-dir) it adds sample
 /// children first, so "Who's playing?" and the map's child badge have something to show; it never
 /// touches a real save.
 /// </summary>
@@ -21,6 +22,25 @@ public partial class ScreenPreview : Node
 
     public override void _Ready() => Callable.From(Open).CallDeferred();
 
+    /// <summary>
+    /// For previews and the walk-through only: the playing child masters the skills of groups 1 to
+    /// <paramref name="groups"/> (right answers on two days) and meets their sounds, which unlocks
+    /// the next group. Only ever used with a test save folder.
+    /// </summary>
+    public static void LearnGroups(GameCoordinator game, int groups)
+    {
+        if (game.Content is not { } content || game.Course is not { } course) return;
+        foreach (var group in course.Groups.Where(g => g.Number <= groups + 1))
+        {
+            foreach (var sound in group.Sounds) game.Progress.MarkMet(sound.Id);
+            if (group.Number > groups) continue;
+            foreach (var day in new[] { game.Today - 1, game.Today })
+                for (var i = 0; i < content.MasteryRules.MasteredWindow; i++)
+                    game.Progress.RecordAnswer(true, group.SkillId, null, day, content.MasteryRules);
+        }
+        game.Store.Save(game.Progress, game.ChildId);
+    }
+
     private void Open()
     {
         var game = GameCoordinator.Instance;
@@ -29,6 +49,12 @@ public partial class ScreenPreview : Node
             game.AddChildProfile("Lily", 5, "penguin");
             game.AddChildProfile("Sam", 7, "tortoise");
         }
+        // Letters games practise sounds the child has met: the sample child has learnt groups 1-3
+        // (Feed the Monster's foods start at group 4).
+        if (Screen is "sound_hunt" or "bubble_pop" or "feed_the_monster") LearnGroups(game, 3);
+        // A game opens the way an island opens it, with its first question straight away.
+        BipIsland.Games.GameScreen.StartDelay = 0;
+        if (game.StartGame(Screen)) return;
         BaseScreen screen = Screen switch
         {
             "profiles" => new ProfilesScreen(),

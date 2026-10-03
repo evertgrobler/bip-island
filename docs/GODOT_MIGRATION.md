@@ -138,7 +138,16 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 - [ ] Phase 2 — Drawing kit, audio, coordinator, input, map, islands, profiles and charging screens
   - [x] Drawing kit: Palette, Sketch, Bip, Buttons, PictureNode, EmojiPictures, StepPictures, Avatars (picture gallery dev scene)
   - [x] Game shell: SaveStore (one JSON save), GameCoordinator, BaseScreen (clicks, keys, timers), big cursor, Bip's sounds, map, four islands, Who's playing?, charging, sticker book, mystery box; a click-through walk test (`--bip-walk`) in `check_all.sh` and CI. Games show "Coming soon!" until Phase 3.
-- [ ] Phase 3 — The 11 games
+- [x] Phase 3 — The 11 games (`Scripts/Games/*`, one screen per game, previews in `Scenes/Games/*`)
+  - [x] Numbers: Count & Tap, Quick Look, on a shared game frame (`Scripts/Games/GameScreen.cs`)
+  - [x] Words: Sound Buttons, Word Builder (tap or drag tiles, spares, sounding out)
+  - [x] Coding: Morning Order (tap-to-place), Bip's Path (strip, take-back, bin, footprints, facing arrow, keys)
+  - [x] Letters: Meet the Sound, Sound Hunt, Bubble Pop, Letter Trace, Feed the Monster; stones and Bip start the planner's activity
+  - Deliberate differences from the Mac version:
+    - Bigger counting pictures.
+    - Bip and buttons kept clear of the grids and cards.
+    - Morning Order now ends with the star count like every other game.
+    - Hunt, Pop and Monster open Meet the Sound when there's nothing to practise yet; the monster's foods start at phonics group 4.
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
   - [x] Profiles, saves, breaks, stickers, mystery box, recommendations (with the Phase 2 shell)
   - [x] Parent gate (hold Esc → maths or passcode), parent area (Progress, Children, Settings), "Update ready" button that installs only after the gate

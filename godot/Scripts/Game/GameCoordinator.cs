@@ -5,6 +5,7 @@ using BipCore;
 using BipIsland.App;
 using BipIsland.Audio;
 using BipIsland.Drawing;
+using BipIsland.Games;
 using BipIsland.Parent;
 using BipIsland.Screens;
 using Godot;
@@ -322,15 +323,155 @@ public partial class GameCoordinator : Node
     }
 
     /// <summary>
-    /// Starts a game from an island. The game screens arrive in Phase 3 of the Godot move, so for
-    /// now this returns false and the island says "coming soon".
+    /// Starts a game from an island. Returns false when it can't (its island's content didn't
+    /// load), and the island says "coming soon".
     /// </summary>
-    public bool StartGame(string gameId) => false;
+    /// <param name="focus">Letters games: the sound to practise (Bip's suggestion when null).</param>
+    public bool StartGame(string gameId, PhonicsSound? focus = null)
+    {
+        if (Content == null) return false;
+        // While Bip charges no game starts (or counts as played): the charging screen shows instead.
+        if (!PlayAllowed())
+        {
+            ShowCharging();
+            return true;
+        }
+        var sound = focus ?? PracticeSound();
+        // Sound Hunt, Bubble Pop and Feed the Monster need sounds the child has met. With nothing to
+        // practise yet, meeting the sound comes first instead of an empty visit.
+        if (gameId is SoundHuntGame.GameId or BubblePopGame.GameId or FeedMonsterGame.GameId
+            && LettersReady && sound != null && !CanPlay(gameId, sound))
+            gameId = MeetTheSoundGame.GameId;
+        GameScreen? screen = gameId switch
+        {
+            MeetTheSoundGame.GameId when LettersReady && sound != null => MeetScreen(sound),
+            SoundHuntGame.GameId when LettersReady && sound != null && Hunt != null => new SoundHuntScreen(Hunt, sound),
+            BubblePopGame.GameId when LettersReady && sound != null => new BubblePopScreen(new BubblePopGame(Content, Course!), sound),
+            LetterTraceGame.GameId when LettersReady && sound != null => new LetterTraceScreen(new LetterTraceGame(Content, Course!), sound),
+            FeedMonsterGame.GameId when LettersReady && sound != null => new FeedMonsterScreen(new FeedMonsterGame(Content, Course!), sound),
+            CountTapGame.GameId when NumbersOpen => new CountTapScreen(new CountTapGame(Content)),
+            QuickLookGame.GameId when NumbersOpen => new QuickLookScreen(new QuickLookGame(Content)),
+            SoundButtonsGame.GameId when WordsOpen => new SoundButtonsScreen(new SoundButtonsGame(Content, Course ?? new PhonicsCourse(Content)),
+                                                                              Course ?? new PhonicsCourse(Content)),
+            WordBuilderGame.GameId when WordsOpen => new WordBuilderScreen(new WordBuilderGame(Content)),
+            MorningOrderGame.GameId when CodingOpen => new MorningOrderScreen(new MorningOrderGame(Content)),
+            BipsPathGame.GameId when CodingOpen => new BipsPathScreen(new BipsPathGame(Content)),
+            _ => null,
+        };
+        if (screen == null) return false;
+        BeginVisit(gameId);
+        Present(screen);
+        return true;
+    }
+
+    private bool LettersReady => LettersOpen && Course != null && LettersProgress != null;
+
+    /// <summary>Whether a Letters game can make a first question for this sound (a trial round, nothing kept).</summary>
+    private bool CanPlay(string gameId, PhonicsSound sound)
+    {
+        var learner = LearnerFor(gameId, sound);
+        return gameId switch
+        {
+            SoundHuntGame.GameId => Hunt is { } hunt && NewSession(hunt).NextRound(hunt, learner, Rng) != null,
+            BubblePopGame.GameId => new BubblePopGame(Content!, Course!) is var pop && NewSession(pop).NextRound(pop, learner, Rng) != null,
+            FeedMonsterGame.GameId => new FeedMonsterGame(Content!, Course!) is var monster && NewSession(monster).NextRound(monster, learner, Rng) != null,
+            _ => true,
+        };
+    }
+
+    /// <summary>Meet the Sound is one round: the sound itself (null if it can't be met yet).</summary>
+    private GameScreen? MeetScreen(PhonicsSound sound)
+    {
+        var game = new MeetTheSoundGame(Content!, Course!);
+        var round = NewSession(game).NextRound(game, LearnerFor(MeetTheSoundGame.GameId, sound), Rng);
+        return round == null ? null : new MeetSoundScreen(round.Sound);
+    }
+
+    /// <summary>The sound to practise outside the planner: Bip's suggestion, else the group's first sound.</summary>
+    public PhonicsSound? PracticeSound() => Planner?.SuggestedSound() ?? LettersProgress?.CurrentGroup.Sounds.FirstOrDefault();
+
+    /// <summary>Bip's suggestion on Letters Island: the next activity for the first sound not yet learnt.</summary>
+    public PlannedActivity? NextActivity() =>
+        Planner is { } planner && Content != null ? planner.NextActivity(Today, Content.MasteryRules, Rng) : null;
+
+    /// <summary>The child heard a new sound all the way through Meet the Sound.</summary>
+    public void MarkMet(PhonicsSound sound)
+    {
+        Progress.MarkMet(sound.Id);
+        Store.Save(Progress, ChildId);
+    }
+
+    // Levels inside games
+
+    /// <summary>The game being played now (null on the map and islands).</summary>
+    public string? CurrentGameId { get; private set; }
+    private int _visitStartStars;
+    private int _visitStartLevel;
+
+    /// <summary>Skins the game screens can draw; a session picks one of these when the game has it.</summary>
+    public static readonly IReadOnlySet<string> DrawnSkins = new HashSet<string>
+    {
+        "paper_desk", "treasure_chests", "bubbles", "sparkles", "monster_blue",
+        "ducks", "dice", "buttons", "tiles", "picture_cards", "island",
+    };
+
+    /// <summary>The child's level in a game (games.json "levels"), starting where their band does.</summary>
+    public int GameLevel(string gameId) =>
+        Content?.Game(gameId) is { } entry ? Progress.GameLevel(gameId, entry.StartingLevel(StartingBand)) : 0;
+
+    public int LevelCount(string gameId) => Content?.Game(gameId)?.LevelSteps.Count ?? 1;
+
+    /// <summary>A learner for one game, at the child's level in it.</summary>
+    public Learner LearnerFor(string gameId, PhonicsSound? focus = null) =>
+        (LettersProgress?.Learner(focus) ?? new Learner(StartingBand, 1, new HashSet<string>(), focus?.Id))
+            .AtLevel(GameLevel(gameId));
+
+    /// <summary>A fresh visit to a game: a session with a random skin it can draw.</summary>
+    public GameSession NewSession(IMiniGame game) =>
+        GameSession.Start(game, Content!.Games.Session, DrawnSkins, Rng);
+
+    /// <summary>Notes the game as played and remembers stars and level, for the celebration at the end.</summary>
+    private void BeginVisit(string gameId)
+    {
+        CurrentGameId = gameId;
+        _visitStartStars = Progress.Stars;
+        _visitStartLevel = GameLevel(gameId);
+        Progress.NotePlayed(gameId);
+        Store.Save(Progress, ChildId);
+    }
+
+    /// <summary>What happened this visit, for the celebration at the end.</summary>
+    public sealed record VisitSummary(int StarsEarned, int LevelBefore, int LevelNow, int LevelCount)
+    {
+        public bool LevelledUp => LevelNow > LevelBefore;
+    }
+
+    public VisitSummary CurrentVisit()
+    {
+        var id = CurrentGameId ?? "";
+        return new VisitSummary(Math.Max(0, Progress.Stars - _visitStartStars), _visitStartLevel,
+                                CurrentGameId == null ? _visitStartLevel : GameLevel(id), LevelCount(id));
+    }
+
+    /// <summary>
+    /// Records one answered question against its skill and sound, and moves the game's own level
+    /// (it shows at the end of the visit). Saves straight away. Returns the sound's level change.
+    /// </summary>
+    public MasteryChange Record(bool correct, string skillId, string? soundId)
+    {
+        if (Content == null) return MasteryChange.None;
+        var change = Progress.RecordAnswer(correct, skillId, soundId, Today, Content.MasteryRules);
+        if (CurrentGameId is { } gameId && Content.Game(gameId) is { } entry)
+            Progress.RecordGameAnswer(correct, gameId, entry.StartingLevel(StartingBand), entry.LevelSteps.Count, Content.MasteryRules);
+        Store.Save(Progress, ChildId);
+        return change;
+    }
 
     /// <summary>Swaps the screen with a short fade through paper colour.</summary>
     public void Present(BaseScreen screen)
     {
         Voice.Stop();
+        if (screen is not GameScreen) CurrentGameId = null;
         // While Bip charges (or the day is done) every game and island redirects here.
         if (screen is not (ChargingScreen or StickerScreen or ProfilesScreen) && !PlayAllowed())
             screen = new ChargingScreen();
