@@ -89,55 +89,194 @@ public partial class ProfilesScreen : BaseScreen
 }
 
 /// <summary>
-/// Bip charging (Swift: ChargingScene): the play-time break. Games stay closed until the break ends;
-/// the battery fill is decoration, not a countdown.
+/// Bip charging (Swift: ChargingScene): the play-time break, or the end of the day's play.
+/// For the child, no reading needed: Bip sleeps plugged into a battery whose five bars fill with
+/// the real break, and he says why when the screen opens or he's clicked. For grown-ups, small
+/// text says when games open again and how to end the break early. When the break ends while the
+/// screen is open, the battery fills, Bip wakes up and the map opens.
 /// </summary>
 public partial class ChargingScreen : BaseScreen
 {
-    private Node2D? _batteryFill;
+    private const int Bars = 5;
+    private const double CheckSeconds = 5;
+
+    private readonly List<Node2D> _bars = [];
+    private Node2D? _battery;
+    private Node2D? _when;
+    private Label? _grownUps;
+    private bool _dayDone;
+    private bool _waking;
+    private double _sinceBeep;
+
+    /// <summary>The grown-up line now showing (for the walk-through test).</summary>
+    public string GrownUpText => _grownUps?.Text ?? "";
+    public bool DayDone => _dayDone;
+    /// <summary>How many battery bars are lit (for the walk-through test).</summary>
+    public int LitBars => _bars.Count(b => b.Modulate.A > 0.9f);
 
     protected override void Build()
     {
-        AddBip(P(-200, -40), 1.1f);
-        Bip.Tilt();
+        _dayDone = Coordinator.CurrentBreakPhase() == BreakPhase.DayDone;
+        var title = new Node2D { Position = P(0, 390) };
+        title.AddChild(Sketch.Label(_dayDone ? "That's all for today" : "Bip is charging", 60, Palette.Ink));
+        Stage.AddChild(title);
 
-        var battery = Pen(RoundRect(R(-110, -190, 220, 380), 36), 1100, fill: Palette.Card, lineWidth: 7);
-        battery.Position = P(320, 20);
-        battery.ZIndex = 5;
-        Stage.AddChild(battery);
-        var nub = Pen(RoundRect(R(-40, -30, 80, 60), 14), 1101, fill: Palette.Card, lineWidth: 7);
-        nub.Position = P(320, 230);
-        nub.ZIndex = 5;
-        Stage.AddChild(nub);
-        // Grows upwards from the bottom of the battery as it charges.
-        var fill = Pen(RoundRect(R(-88, 0, 176, 60), 20), 1102, fill: Palette.Go, lineWidth: 0);
-        fill.Position = P(320, -168);
-        fill.ZIndex = 6;
-        Stage.AddChild(fill);
-        _batteryFill = fill;
+        if (_dayDone) BuildNight();
+        else BuildCharger();
+        Bip.Sleep();
+        AddSnores();
 
-        var label = new Node2D { Position = P(0, -360) };
-        label.AddChild(Sketch.Label("charging…", 64, Palette.Ink));
-        Stage.AddChild(label);
+        var hint = new Node2D { Position = P(0, -395) };
+        hint.AddChild(Sketch.Label(
+            $"Grown-ups: hold Esc for {ParentGateFlow.HoldSeconds:0} seconds to {(_dayDone ? "change the daily limit" : "end the break early")}.",
+            24, Palette.Ink.WithAlpha(0.6)));
+        Stage.AddChild(hint);
+        _when = new Node2D { Position = P(0, -340) };
+        Stage.AddChild(_when);
+        ShowTimes();
 
         Sfx.Play(BipSounds.Effect.Whirr);
-        After(5, Check);
+        After(0.8, ReplayPrompt);
+        After(CheckSeconds, Check);
+    }
+
+    /// <summary>Bip on the left, plugged into a battery by a curly cable.</summary>
+    private void BuildCharger()
+    {
+        AddBip(P(-330, -120), 1.1f);
+        var cable = Pen(Polyline(P(-262, -40), P(-200, -200), P(-40, -240), P(120, -215), P(250, -190), P(250, -172)),
+                        1103, ink: Palette.Ink, lineWidth: 7);
+        cable.ZIndex = 4;
+        Stage.AddChild(cable);
+
+        var battery = new Node2D { Position = P(250, 20), ZIndex = 5 };
+        battery.AddChild(Pen(RoundRect(R(-110, -190, 220, 380), 36), 1100, fill: Palette.Card, lineWidth: 7));
+        battery.AddChild(Pen(RoundRect(R(-40, 190, 80, 40), 14), 1101, fill: Palette.Card, lineWidth: 7));
+        // Five bars, bottom to top; unlit ones are pale.
+        for (var i = 0; i < Bars; i++)
+        {
+            var bar = Pen(RoundRect(R(-86, -170 + i * 70, 172, 58), 16), (ulong)(1110 + i), fill: Palette.Go, lineWidth: 3);
+            battery.AddChild(bar);
+            _bars.Add(bar);
+        }
+        var bolt = Pen(Polygon(P(12, 70), P(-34, 0), P(-4, 0), P(-16, -70), P(34, 6), P(4, 6)), 1120, fill: Palette.Sun, lineWidth: 4);
+        bolt.ZIndex = 1;
+        battery.AddChild(bolt);
+        Stage.AddChild(battery);
+        _battery = battery;
+    }
+
+    /// <summary>The day's play is used up: Bip asleep under the moon and stars.</summary>
+    private void BuildNight()
+    {
+        AddBip(P(0, -150), 1.1f);
+        var moon = new Node2D { Position = P(380, 210), ZIndex = 2 };
+        moon.AddChild(Pen(Ellipse(Vector2.Zero, 90, 90), 1130, fill: Palette.Sun, lineWidth: 6));
+        // A paper-coloured bite out of the full moon makes the crescent.
+        moon.AddChild(Pen(Ellipse(P(42, 26), 78, 78), 1131, fill: Palette.Paper, lineWidth: 0));
+        Stage.AddChild(moon);
+        foreach (var (i, (x, y, r)) in Indexed((-420.0, 240.0, 28.0), (-560.0, 60.0, 20.0), (-250.0, 120.0, 16.0),
+                                               (560.0, 40.0, 22.0), (200.0, 280.0, 18.0)))
+        {
+            var star = Pen(Polygon(Star(P(x, y), r)), (ulong)(1140 + i), fill: Palette.Sun, lineWidth: 3, wobble: 1);
+            Stage.AddChild(star);
+            var twinkle = star.CreateTween().SetLoops();
+            twinkle.TweenInterval(0.4 * i);
+            twinkle.TweenProperty(star, "modulate:a", 0.4f, 0.9);
+            twinkle.TweenProperty(star, "modulate:a", 1f, 0.9);
+        }
+    }
+
+    /// <summary>"z z Z" floating up from Bip's head, over and over.</summary>
+    private void AddSnores()
+    {
+        var head = Bip.Position + new Vector2(70, -300) * Bip.Scale;
+        for (var i = 0; i < 3; i++)
+        {
+            var z = new Node2D { Position = head, ZIndex = 25 };
+            z.AddChild(Sketch.Label("z", 40 + i * 14, Palette.Ink.WithAlpha(0.7)));
+            z.Modulate = new Color(1, 1, 1, 0);
+            Stage.AddChild(z);
+            var drift = z.CreateTween().SetLoops();
+            drift.TweenInterval(0.9 * i);
+            drift.TweenCallback(Callable.From(() => { z.Position = head; z.Modulate = Colors.White; }));
+            drift.TweenProperty(z, "position", head + new Vector2(60 + 20 * i, -150), 2.4);
+            drift.Parallel().TweenProperty(z, "modulate:a", 0f, 2.4);
+            drift.TweenInterval(2.7 - 0.9 * i);
+        }
+    }
+
+    /// <summary>A label is centred for the text it's made with, so a new line gets a new label.</summary>
+    private void SetGrownUpLine(string text)
+    {
+        if (_when == null || _grownUps?.Text == text) return;
+        _grownUps?.QueueFree();
+        _grownUps = Sketch.Label(text, 34, Palette.Ink);
+        _when.AddChild(_grownUps);
+    }
+
+    /// <summary>Lights the battery bars for the time gone and updates the grown-up line.</summary>
+    private void ShowTimes()
+    {
+        if (_dayDone)
+        {
+            SetGrownUpLine("Games open again tomorrow.");
+            return;
+        }
+        var lit = (int)Math.Floor(Coordinator.BreakProgress() * Bars + 0.0001);
+        for (var i = 0; i < _bars.Count; i++) _bars[i].Modulate = new Color(1, 1, 1, i < lit ? 1f : 0.18f);
+        if (Coordinator.BreakEndsAt is not { } ends) return;
+        var minutes = Coordinator.BreakMinutesLeft();
+        SetGrownUpLine($"Games open again at {ends.ToLocalTime():HH:mm} (in {minutes} minute{(minutes == 1 ? "" : "s")}).");
     }
 
     private void Check()
     {
-        // The break follows the wall clock, so a clock change ends it here too.
-        if (Coordinator.CurrentBreakPhase() == BreakPhase.Playing)
+        if (_waking) return;
+        // The break follows the wall clock, so a clock change (or a grown-up ending it) shows here too.
+        var phase = Coordinator.CurrentBreakPhase();
+        if (phase == BreakPhase.Playing)
         {
-            Coordinator.ShowMap();
+            WakeUp();
             return;
         }
-        if (_batteryFill != null)
+        if ((phase == BreakPhase.DayDone) != _dayDone)
         {
-            var grow = _batteryFill.CreateTween();
-            grow.TweenProperty(_batteryFill, "scale:y", Math.Min(_batteryFill.Scale.Y * 1.15f, 5.6f), 2.5);
+            // A break ran into the daily limit, or a new day started a break: rebuild in the right mode.
+            Coordinator.ShowCharging();
+            return;
         }
-        After(5, Check);
+        ShowTimes();
+        _sinceBeep += CheckSeconds;
+        if (_sinceBeep >= 60 && _battery != null)
+        {
+            // Once a minute: a little beep and the battery bounces, so the screen doesn't look stuck.
+            _sinceBeep = 0;
+            Sfx.Play(BipSounds.Effect.Beep);
+            var bounce = _battery.CreateTween();
+            bounce.TweenProperty(_battery, "scale", Vector2.One * 1.06f, 0.15);
+            bounce.TweenProperty(_battery, "scale", Vector2.One, 0.2);
+        }
+        After(CheckSeconds, Check);
+    }
+
+    /// <summary>The break is over: the battery fills, Bip wakes up happy, and the map opens.</summary>
+    private void WakeUp()
+    {
+        _waking = true;
+        foreach (var bar in _bars) bar.Modulate = Colors.White;
+        SetGrownUpLine("Charged! Off we go.");
+        Bip.Sleep(false);
+        Bip.Celebrate();
+        Sfx.Play(BipSounds.Effect.Chime);
+        After(1.6, Coordinator.ShowMap);
+    }
+
+    protected override void DidTapBip() => ReplayPrompt();
+
+    public override void ReplayPrompt()
+    {
+        if (!_waking) Voice.Play([_dayDone ? VoiceLine.DayDone : VoiceLine.BipCharging]);
     }
 
     protected override void GoHome() { }

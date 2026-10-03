@@ -136,6 +136,28 @@ public sealed class SystemsTests
         Assert.Equal(BreakPhase.Playing, PlayBreaks.Advance(state, 0, now, 100, Settings()));
     }
 
+    [Fact]
+    public void TheBatteryFillsWithTheBreakAndCountsDownWholeMinutes()
+    {
+        var state = new BreakState();
+        var now = new DateTimeOffset(2026, 10, 3, 10, 0, 0, TimeSpan.Zero);
+        Assert.Equal(1, PlayBreaks.BreakProgress(state, now, 20));
+        Assert.Equal(0, PlayBreaks.MinutesLeft(state, now));
+
+        Assert.Equal(BreakPhase.BreakTime, PlayBreaks.Advance(state, 20 * 60, now, 100, Settings()));
+        Assert.Equal(0, PlayBreaks.BreakProgress(state, now, 20), 3);
+        Assert.Equal(20, PlayBreaks.MinutesLeft(state, now));
+
+        Assert.Equal(0.5, PlayBreaks.BreakProgress(state, now.AddMinutes(10), 20), 3);
+        Assert.Equal(10, PlayBreaks.MinutesLeft(state, now.AddMinutes(10)));
+        // Part of a minute left still says "1 minute", until the break is over.
+        Assert.Equal(1, PlayBreaks.MinutesLeft(state, now.AddMinutes(19).AddSeconds(30)));
+        Assert.Equal(1, PlayBreaks.BreakProgress(state, now.AddMinutes(25), 20));
+        Assert.Equal(0, PlayBreaks.MinutesLeft(state, now.AddMinutes(25)));
+        // A shorter break setting after the break started can't push the battery below empty.
+        Assert.Equal(0, PlayBreaks.BreakProgress(state, now, 5));
+    }
+
     // MARK: Stickers and the mystery box
 
     [Fact]
