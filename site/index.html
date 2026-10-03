@@ -95,7 +95,7 @@
     .button svg { width: 28px; height: 28px; flex: none; }
     .version { font-size: 16px; color: var(--soft); margin-top: 12px; }
 
-    /* The four islands */
+    /* The five islands */
     .islands-intro { max-width: 720px; }
     .island { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: center; padding: 36px 0; }
     .island + .island { border-top: 3px dashed rgba(43, 42, 51, .2); }
@@ -107,6 +107,7 @@
     .numbers .tag { background: var(--sun); }
     .words .tag { background: var(--grass); }
     .coding .tag { background: var(--lilac); }
+    .art .tag { background: var(--sea); }
     .games { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
     .games li { font-size: 16px; font-weight: 700; padding: 4px 12px; background: var(--card); border: 2px solid var(--ink); border-radius: 12px 16px 12px 18px; }
 
@@ -151,14 +152,14 @@
         <h1>Bip Island</h1>
       </div>
       <p class="tagline">A learning game for children aged 4 to 8.</p>
-      <p class="lead">Children explore four islands with Bip, a small, friendly robot: Letters &amp; Sounds, Numbers, Words &amp; Spelling, and Coding.</p>
+      <p class="lead">Children explore five islands with Bip, a small, friendly robot: Letters &amp; Sounds, Numbers, Words &amp; Spelling, Coding and Art.</p>
       <p>A warm, friendly narrator speaks every instruction, so your child doesn't need to read to play. They pick what to play on the map, and Bip suggests what to try next.</p>
       <p><a class="button" href="#download">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Download the game</a></p>
     </div>
     <figure class="shot">
-      <div class="frame"><img src="screenshots/map.jpg" alt="The island map in Bip Island, with the four islands to choose from" width="1200" height="750" onerror="this.closest('.shot').classList.add('missing')"></div>
+      <div class="frame"><img src="screenshots/map.jpg" alt="The island map in Bip Island, with the five islands to choose from" width="1200" height="750" onerror="this.closest('.shot').classList.add('missing')"></div>
       <figcaption>The map: your child chooses an island.</figcaption>
     </figure>
   </div>
@@ -168,8 +169,8 @@
   <section id="islands">
     <div class="wrap">
       <div class="islands-intro">
-        <h2>Four islands to explore</h2>
-        <p>Each island has its own games. Rounds are made fresh every time, so the games don't repeat, and each game has levels that move up as your child gets things right. There are 11 games so far.</p>
+        <h2>Five islands to explore</h2>
+        <p>Each island has its own games. Rounds are made fresh every time, so the games don't repeat, and each game has levels that move up as your child gets things right. There are 14 games so far.</p>
       </div>
 
       <article class="island letters">
@@ -232,6 +233,21 @@
         </figure>
       </article>
 
+      <article class="island art">
+        <div class="island-text">
+          <span class="tag">Art</span>
+          <h3>Shapes, colours and mirrors</h3>
+          <p>Children find and name flat shapes and fill the gaps in pictures made of shapes, mix paint pots to discover that red and yellow make orange, and finish mirror patterns on a peg board.</p>
+          <ul class="games" aria-label="Games on this island">
+            <li>Shape Builder</li><li>Paint Pots</li><li>Mirror Magic</li>
+          </ul>
+        </div>
+        <figure class="shot">
+          <div class="frame"><img src="screenshots/art-game.jpg" alt="Paint Pots, a game on Art island" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
+          <figcaption>Paint Pots: tap two pots to make the colour.</figcaption>
+        </figure>
+      </article>
+
       <div class="strip">
         <figure class="shot">
           <div class="frame"><img src="screenshots/stickers.jpg" alt="The sticker book in Bip Island" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
@@ -251,8 +267,8 @@
       <p class="lead">Made for our own family first, with a few firm rules.</p>
       <div class="features">
         <div class="card">
-          <h3><span class="dot" style="background: var(--coral)"></span>Parent gate</h3>
-          <p>Only a grown-up can leave the game or open the settings: hold <b>Esc</b> for 3 seconds, then answer a maths question, or enter a passcode if you set one. A full kid lock, which stops children switching to other apps, is still being built.</p>
+          <h3><span class="dot" style="background: var(--coral)"></span>Kid lock</h3>
+          <p>The game fills the screen and children can't switch away or quit by accident. On a Mac the Dock, menu bar, Cmd-Tab and Cmd-Q are blocked; on Windows the Windows key and Alt-Tab are. Shutting down, and Ctrl-Alt-Del on Windows, always work. To leave or open the settings, a grown-up holds <b>Esc</b> for 3 seconds and answers a maths question, or enters a passcode if you set one.</p>
         </div>
         <div class="card">
           <h3><span class="dot" style="background: var(--sun)"></span>Play-time breaks</h3>
@@ -322,7 +338,7 @@
         <ul class="steps">
           <li>Bip Island finds its own updates. When one is ready, an <b>"Update ready"</b> button appears for a grown-up to install.</li>
           <li>To leave the game: hold <b>Esc</b> for 3 seconds, answer the maths question (or enter your passcode), then choose <b>Quit</b> in <b>Settings</b>.</li>
-          <li>The full kid lock, which stops children switching to other apps, is still being built.</li>
+          <li>The game opens full screen with the kid lock on. For a normal window without the lock, hold <b>Option</b> (Mac) or <b>Alt</b> (Windows) while it starts.</li>
         </ul>
       </div>
     </div>

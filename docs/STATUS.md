@@ -4,60 +4,36 @@
 > for the design. **When you finish work, update this file**: append a dated entry under
 > "Session log", refresh "Where things stand", and commit it with your changes.
 
-## Where things stand (1 October 2026, late evening)
+## Where things stand (3 October 2026)
 
-- **Moving to Godot (Mac + Windows), approved 1 Oct.** Plan and checklist: `docs/GODOT_MIGRATION.md`.
-  **New games are paused**: the Swift Mac app gets bug fixes only until the switchover. Godot builds
-  go to a separate test feed; the family feed keeps serving the Swift app. Downloads are a plain `.dmg` / `Setup.exe`,
-  free and unsigned, with no app stores.
-- **Phase 0 (voice): done.** All 702 narrator clips bundled in `Resources/Audio/` (ElevenLabs
-  "Bip Island Narrator", `eleven_v3`). Trimmed deaf (by waveform, not ear): stops 0.1 s,
-  vowels 0.4 s, stretchies ~1 s. Owner is ear-checking `t`/`p`/`k` in playtests.
-- **Phase 1 + 2a (games): done, shipped.** 11 of 28 games live across all 4 open islands:
-  Letters (Meet, Hunt, Pop, Trace, Monster), Numbers (Count & Tap, Quick Look),
-  Words (Sound Buttons, Word Builder), Coding (Morning Order, Bip's Path + GridWalker).
-- **Systems live:** Bip's recommendations + nudge (map glow), wall-clock play breaks +
-  charging scene + parent settings, sticker book (118), daily mystery box, parent area.
-- **Keyboard play live:** arrows move an orange glow, Enter/Space chooses, 1-3 picks,
-  coding fully keyboard drivable (arrows + Enter + Backspace, 1-7 palette). Other keys replay.
-- **Pictures:** 15 hand-drawn + emoji stand-ins (`BipIsland/Drawing/EmojiPictures.swift`).
-  Each table row is the still-to-draw list. Full coverage of all 256 manifest pictures.
-  Morning Order's 123 step cards (30 stories: 20 foundation, 8 stage 1, 2 stage 2) are small scenes (`StepPictures.swift`): shared ground per set
-  (soil, sand, pond), hand-drawn bread/frogs/oven/sandcastle + emoji, each step builds on the last.
-- **Morning Order is tap-to-place** (no dragging): tap a card → it flies to the next numbered
-  space and its line is spoken; tap a placed card to send it back; auto-checks when full.
-- **Big cursor:** `BipIsland/App/BigCursor.swift` — 72 pt orange hand-drawn arrow on the game view
-  (`GameSKView` cursor rects). Parent gate panel keeps the normal system pointer.
-- **Build:** CI green on `main` (109 unit tests). Latest family build: **0.1.0 build 25**,
-  `Downloads/bip-island-keyboard/` on the owner's Mac. App updates itself via Sparkle.
-- **Font:** Atkinson Hyperlegible everywhere (game text and parent area), bundled in
-  `Resources/Fonts/`. Owner decision, see CLAUDE.md "Art and voice".
-- **Profiles:** up to 4 children. "Who's playing?" opens the game when there's more than one
-  (animal pictures, name, stars); an animal badge bottom-left on the map switches child.
-  Parents add, rename, set age and picture, or remove children in the parent area.
-- **Parent area:** Progress tab per child (stars, stickers, minutes today/this week, answers
-  this week, every skill's status by island, every phonics sound's stage, what needs practice,
-  reviews due, recent games), Children tab, Settings tab.
-- **Play-time break is shared by the whole Mac** (stored in UserDefaults `bip.breakState`), so
-  switching profiles can't skip it. Play minutes are still counted per child.
-- **Download page** (`site/index.html`): intro, the four islands with screenshots, parents section with a
-  parent-area screenshot, and two download cards (Mac `.dmg`, Windows `Setup.exe`) for the **Godot** game.
-  Published by `godot.yml`'s publish job on main (`scripts/ci/deploy_site.sh`): fills in version, date and
-  the Blob store links, adds screenshots from `scripts/ci/site_screenshots.sh` (Godot `--bip-scene` shots
-  under xvfb), and carries the Swift app's live `appcast.xml` + zip into the deploy so installed Swift
-  copies keep updating. `build.yml` no longer deploys anything.
-- **Art Island (Godot only, 3 Oct):** a fifth island in the middle of the map with Shape Builder,
-  Paint Pots and Mirror Magic (content in `Content/art/`, game types in `godot/BipCore/Games/`,
-  screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`). Curriculum and the
-  codes still to confirm: `docs/CURRICULUM.md`, "Art Island". The Swift app can't read the art content, so its
-  CI (`build.yml`) is retired (owner: "only the new build, I am removing the old one"); its code stays until
-  Phase 5 removes it.
-- **Known open items:** `vo_who_is_playing` still a placeholder clip (ElevenLabs was busy), waves 2b/3/4
-  games (17 left), golden rounds, real art, music, Developer ID signing.
-
-- **The repo is public since 3 Oct**, so GitHub Actions is free again (it ran out on 2 Oct). Merge rule:
-  green CI + another session's review; run `scripts/check_all.sh` before pushing (see CLAUDE.md
-  "Working rules"). Every main merge publishes the Godot test build to the Blob store.
+- **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
+  Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
+  was built: `docs/GODOT_MIGRATION.md`.
+- **Games:** 14 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Quick Look), Words (Sound Buttons, Word Builder),
+  Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
+  game, 8-question visits, star celebration.
+- **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
+  in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
+  Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
+- **Systems:** profiles (up to 4, "Who's playing?"), Bip's recommendations and nudge, wall-clock play
+  breaks with Bip charging, sticker book, daily mystery box, keyboard play, big cursor, Bip's sounds.
+- **Parent side:** hold Esc 3 s → maths or passcode → parent area (Progress, Children, Settings: play
+  time, passcode, updates, quit). "Update ready" button installs only after the gate.
+- **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
+  keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
+  aren't covered yet.
+- **Voice:** all narrator clips recorded (ElevenLabs "Bip Island Narrator"), `vo_who_is_playing` included.
+- **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
+  123 Morning Order step scenes.
+- **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
+  installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
+  parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
+  screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
+- **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
+  review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
+- **Known open items:** cover second screens in the kid lock; Windows exe
+  icon; more games (waves 2b/3/4), real art, music; paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
 
@@ -70,20 +46,21 @@
 - 20 min play → finish game → 20 min break (wall clock, persisted). Parents configure it.
 - Free choice: Bip recommends, never forces. Rewards collected, never bought.
 - Content lives in `Content/` JSON (never hard-code). Validator must pass after content edits.
-- `project.yml` (XcodeGen) — never commit `.xcodeproj`. Ad-hoc sign for now.
-- GitHub account for this project: **`evertgrobler`** (`evertgrobler/bip-island`, private).
+- No paid signing for now: Mac ad-hoc signed, Windows unsigned (one-time "Run anyway").
+- GitHub account for this project: **`evertgrobler`** (`evertgrobler/bip-island`, public).
   Other `gh` accounts on this Mac (kloutcreator, evert-del, Musicdeed) are off limits.
 
 ## Workflow that works
 
-1. Branch off `main`, PR back, merge only when CI is green. Squash-merge feature PRs.
-2. This Mac has **no Xcode** (CLT only): `swiftc -parse` for syntax, **never** `swift test`
-   (XCTest needs Xcode — CI runs the 109 tests on `macos-latest`, ~6 min when queued).
-3. CI failure loop that works: `gh run view <id> --log-failed | grep error`, fix, push, poll.
-4. Owner playtests CI artifacts: `gh run download <main-run> -n <name> -D ~/Downloads/<label>`,
-   unzip, right-click → Open. Kid-lock exit: hold Esc 3 s + maths. Dark Mode: keep panels light.
+1. Branch off `main`, PR back, merge only when CI is green and another session has reviewed it.
+   Squash-merge feature PRs.
+2. In a cloud session, `scripts/check_all.sh` runs everything CI does except the real Mac/Windows
+   install test (setup below). Look at every screenshot it saves.
+3. CI failure loop: read the failed job's log (GitHub MCP `get_job_logs`), fix, push.
+4. The real Mac/Windows install, update and kid-lock checks run on `main` builds (and on a manual
+   "Run workflow" of **Godot** on any branch).
 
-## Godot version (in progress, see docs/GODOT_MIGRATION.md)
+## Godot version (how-to)
 
 - Project in `godot/` (Godot 4.7.2 .NET, C#, `BipIsland.csproj`). Shared assets are copied in by
   `python3 scripts/godot/prepare_assets.py` (fonts, Content JSON, voice clips converted to `.ogg`).
@@ -121,21 +98,22 @@
   while the gate is open. Previews: `Scenes/Parent/{gate,progress,children,settings,update}.tscn`.
   `Updater.ReadyVersion`/`UpdateReady` drive the "Update ready" button; `InstallAndRestart()` only runs
   after the gate.
+- Kid lock (Phase 4): `Scripts/App/KidLock.cs`, rules in `BipCore.KidLockRules` (tested). The project
+  starts windowed; `Boot` calls `KidLock.Install`, which covers the screen and locks it (Mac), or goes
+  exclusive full screen with a keyboard hook (Windows). Off when headless, with `--bip-windowed`, on
+  Linux, or with Option/Alt held at launch (parent mode). Quitting or updating lifts it first. It
+  can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
+  Known gap vs Swift: second screens aren't covered with paper windows yet (a click there could reach
+  another app). Fine on a one-screen Mac; add cover windows if the family Mac gets a second display.
 
 ## Gotchas learned the hard way
 
 - Godot 4.7.2 **segfaults now and then importing on worker threads** (dmesg: `WorkerThread … segfault`,
   log stops at `reimport | NotoColorEmoji.ttf`; about 1 run in 4). `project.godot` sets
   `editor/import/use_multiple_threads=false`: 0 crashes in 18 fresh imports, still about 7 s.
+- The parent area is always light (cream panels, ink text) whatever the system theme.
 - Godot: **commit the `.uid` file of every new C# script** (run `--headless --import` once to make
   them), or every check run leaves untracked files behind.
-- `UInt64(negativeInt)` **traps at runtime** (crashed Letters Island, build 17). Use enumerated indices.
-- `Sketch.node` requires an explicit `seed:` (no default). `CGPoint + CGPoint` doesn't exist.
-- Cross-module: `internal` memberwise inits are invisible to `BipIsland` (add `public init`).
-- BaseScene subclass re-declaring `init(coordinator:)` needs `override`.
-- `break` is a Swift keyword (test helper param). `onChange(of:)` needs the 2-arg form.
-- Test closures in `playSessions` are non-throwing — no `try XCTUnwrap` inside them.
-- SwiftUI panels must pin `.colorScheme(.light)` + ink text or Dark Mode makes white-on-cream.
 - ElevenLabs keys are often created **restricted** (no `voices_read`/`user_read`): reads fail but
   TTS works. A transient `401` under parallel load goes away with 2 workers + backoff.
 - The narrator voice belongs to one ElevenLabs account; keys from other accounts get
@@ -232,6 +210,14 @@
   (Morning Order, Bip's Path) and Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter Trace, Feed
   the Monster), all 11 games on the shared frame. The walk-through plays every game (112 steps).
   Phase 3 ticked in `GODOT_MIGRATION.md`.
+- **2 Oct, later:** Godot kid lock (Phase 4, part 2) written: Mac presentation options as in Swift plus
+  quit-on-power-off (the Godot build would otherwise block shutdown), Windows exclusive full screen and
+  a keyboard hook, parent mode with Option/Alt. Unproven on real machines until the CI Mac/Windows jobs
+  run (minutes out until 1 Nov, or a brief public window).
+- **3 Oct:** Owner decision: no progress export. The owner installs the Godot app fresh (children
+  start again) and has tried the Godot build and finds it much better. Repo made public (and the owner
+  chose to keep it public, so CI is free again). First real-machine run of the kid lock (Godot run
+  37100738096): Windows "windows hook on", Mac "mac lock on", both installed and updated with saves kept.
 - **3 Oct:** Owner: offer only the new version. The download page now has one card, "Bip Island for Windows
   and Mac" (Test version), linking the Godot builds in the Vercel Blob store (`godot-test/BipIsland-win-Setup.exe`,
   `godot-test/BipIsland-mac.dmg`, fixed addresses, latest build). The old Swift Mac download is gone from the
@@ -249,10 +235,19 @@
   Still to do when PR #26 (kid lock) merges: drop the "kid lock still being built" line, bring back the
   "Kid lock" parent card, add the Option/Alt windowed start. `BipIsland/App/ScreenshotMode.swift` is now
   unused; it goes with the rest of the Swift app.
+- **3 Oct, afternoon:** Kid lock merged (#26), so the download page brings back the "Kid lock" card (Mac: Dock,
+  menu bar, Cmd-Tab, Cmd-Q blocked; Windows: Windows key, Alt-Tab blocked; shutting down and Ctrl-Alt-Del
+  always work) and adds the Option/Alt windowed-start tip. Swift app retired: `deploy_site.sh` no longer
+  carries `appcast.xml` and the Swift zip into the deploy (it still uses `resolve_feed_url.sh` for the site address).
+- **3 Oct, later:** Swift app retired: `BipIsland/`, the Swift `BipCore/`, `project.yml`, `build.yml`,
+  the Sparkle scripts and the placeholder-voice script removed. The real app icon moved to
+  `godot/icons/` (Mac export uses it). CLAUDE.md, SETUP.md, PLAN.md and this file now describe the
+  Godot setup only. "Set up updates" became "Set up the download site" (Vercel project only).
 - **3 Oct:** Art Island (owner request: art with shapes, colour mixing and symmetry, kept on the Cambridge
   curriculum). Shape Builder (7 levels, 1Gg.01 to 3Gg.01), Paint Pots (4 levels, real paint mixes, label
   pictures on every pot), Mirror Magic (6 levels, 1Nf.01, 2Gg.09, 3Gg.09). Validator checks shape geometry,
   pot mixes and mirror lines; ArtGameTests play every level; the walk-through plays one round of each.
   38 narrator clips made with the ElevenLabs connector (about 1,000 credits; the account had 3,391 before),
   including the real `vo_who_is_playing`. ElevenLabs refuses some requests with "unusual activity":
-  three at a time and retrying works.
+  three at a time and retrying works. Review fixes: a replay mid-turn no longer stacks shape turns; a wrong
+  mix only empties its own paint from the bowl.

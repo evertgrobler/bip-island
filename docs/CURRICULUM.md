@@ -100,7 +100,7 @@ The authoritative mapping is `Content/curriculum/games.json`, generated from the
 
 ## The content files
 
-All game content is data. Games never hard-code words, numbers or levels. The app bundles the whole `Content/` folder, and `ContentLibrary` (in `BipCore/Sources/BipCore/Content/`) decodes every file into Swift models at start-up. A unit test decodes each file and fails if a model would drop any key, so a new field in the JSON must also be added to `ContentModels.swift`.
+All game content is data. Games never hard-code words, numbers or levels. The game bundles the whole `Content/` folder (copied in by `scripts/godot/prepare_assets.py`), and `ContentLibrary` (in `godot/BipCore/Content/`) decodes every file into C# models at start-up. A unit test decodes each file and fails if a model would drop any key, so a new field in the JSON must also be added to the C# content models.
 
 | File | What it holds | Used by |
 | --- | --- | --- |

@@ -4,13 +4,13 @@
 decisions, the workflow that works on this machine, and gotchas. When you finish a
 session, update it (dated log entry + current state) and commit it with your changes.
 
-A full-screen native macOS learning game for children aged 4–8. Kids explore four islands — Letters & Sounds, Numbers, Words & Spelling, Coding — guided by a robot companion called Bip. Every instruction is spoken, so no reading is needed to play.
+A full-screen learning game for children aged 4–8, for Mac and Windows, built with Godot (C#). Kids explore five islands — Letters & Sounds, Numbers, Words & Spelling, Coding, Art — guided by a robot companion called Bip. Every instruction is spoken, so no reading is needed to play.
 
 The full game design is in `docs/PLAN.md`. Read it before starting a new phase.
 
 The mini-game catalogue, the freshness system (random rounds, skins, Bip's planner, surprises) and the plug-in architecture are in `docs/GAMES.md`. Every mini-game must follow its template: one game type file, content from data lists, rounds generated at random and validated by tests.
 
-The game follows the **Cambridge curriculum** (Early Years, then Primary English 0058, Mathematics 0096 and Computing 0059, Stages 1–3). `docs/CURRICULUM.md` maps every game to Cambridge objective codes and explains the content data. **All game content lives in `Content/` as JSON** (phonics, words, numbers, coding levels, skills): never hard-code words, numbers or levels in Swift. Run `python3 scripts/validate_content.py` after any content change; it must pass, and CI should run it on every pull request.
+The game follows the **Cambridge curriculum** (Early Years, then Primary English 0058, Mathematics 0096 and Computing 0059, Stages 1–3). `docs/CURRICULUM.md` maps every game to Cambridge objective codes and explains the content data. **All game content lives in `Content/` as JSON** (phonics, words, numbers, coding levels, skills): never hard-code words, numbers or levels in code. Run `python3 scripts/validate_content.py` after any content change; it must pass, and CI should run it on every pull request.
 
 ## Who this is for right now
 
@@ -18,37 +18,36 @@ The owner's own family first, to test how it plays. Not for sale yet, no App Sto
 
 ## How the owner works
 
-- The owner drives everything through **Claude Code cloud sessions**. They do not have Xcode set up and will not build locally.
-- Cloud sessions run on Linux: they cannot run `xcodebuild` or launch the app. All building happens in **GitHub Actions on a macOS runner**.
-- The app **updates itself** on the owner's Mac via **Sparkle**. Every merge to `main` must produce a new versioned build that the installed app picks up automatically.
-- Keep explanations to the owner short and non-technical; they run a digital agency and are comfortable with web tech, less so with Xcode.
+- The owner drives everything through **Claude Code cloud sessions**. They will not build locally.
+- Cloud sessions run on Linux. They can build, test, screenshot and export the Godot game (`scripts/check_all.sh`; setup in `docs/STATUS.md`), but not run it on a real Mac or Windows PC. GitHub Actions does that: the `godot.yml` Mac and Windows jobs install an older build, update it and check the kid lock.
+- The app **updates itself** on the family's Mac and Windows PC via **Velopack**. Every merge to `main` produces a new versioned build, published to the Vercel Blob store, that installed copies pick up (a grown-up confirms the install).
+- Keep explanations to the owner short and non-technical; they run a digital agency and are comfortable with web tech.
 
 ## Tech decisions (fixed)
 
 | Part | Choice |
 | --- | --- |
-| Language | Swift 5.10+, macOS 14 Sonoma minimum |
-| Project file | XcodeGen (`project.yml`) — never commit a hand-edited `.xcodeproj`; CI generates it |
-| Game scenes | SpriteKit |
-| Menus, parent area | SwiftUI |
-| Audio | AVFoundation, bundled `.m4a` clips in `Resources/Audio/` |
-| Persistence | SwiftData, local only, up to 4 child profiles |
-| Updates | Sparkle 2 (Swift Package), EdDSA-signed |
-| CI/CD | GitHub Actions, `macos-latest` runner |
-| Update hosting | The repo is **private**, so release assets can't be fetched anonymously. Host `appcast.xml` + the zipped `.app` on a small public static site (Vercel). The source stays private. |
-| Signing | No paid Apple Developer account yet: ad-hoc sign (`codesign -s -`). First launch needs right-click → Open; Sparkle updates work after that. Design so Developer ID signing + notarisation can be switched on later via secrets. |
+| Engine and language | Godot 4.7 .NET, C# (net8.0). Project in `godot/`; game logic in `godot/BipCore` (plain C#, no Godot), tested by `godot/BipCore.Tests` (xUnit) |
+| Platforms | macOS 14 Sonoma or newer, Windows 10/11 |
+| Drawing | Godot 2D nodes, hand-drawn style in code (`godot/Scripts/Drawing/`) |
+| Parent area | Godot controls (`godot/Scripts/Parent/`) |
+| Audio | `.m4a` clips in `Resources/Audio/` (the source), converted to `.ogg` at build time by `scripts/godot/prepare_assets.py` |
+| Persistence | One JSON save file per computer (`BipCore.SaveStore`), local only, up to 4 child profiles |
+| Updates | Velopack: feeds `win/` and `osx/` in the public Vercel Blob store; downloaded quietly, installed only after the parent gate |
+| CI/CD | GitHub Actions (`.github/workflows/godot.yml`): Linux builds, tests, screenshots and exports both platforms; Mac and Windows runners install, update and check the kid lock; main publishes |
+| Download page | `site/`, deployed to Vercel by `godot.yml`'s publish job (`scripts/ci/deploy_site.sh`) |
+| Signing | No paid Apple or Windows certificate: the Mac app is ad-hoc signed (first launch: right-click → Open), Windows shows "More info → Run anyway" once. Updates are checked by Velopack either way. Keep it possible to add real signing later through secrets. |
 
-Required GitHub Actions secrets (the owner adds these; document exactly how in `docs/SETUP.md`):
-- `SPARKLE_PRIVATE_KEY` — EdDSA key from Sparkle's `generate_keys`. The public key goes in `Info.plist` (`SUPublicEDKey`).
-- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` — to deploy the update feed.
+Required GitHub Actions secrets (the owner adds these; see `docs/SETUP.md`):
+- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` — the download page and the Blob store.
 
-Versioning: `CFBundleShortVersionString` = `0.MINOR.PATCH`, `CFBundleVersion` = GitHub run number, so every build is newer than the last.
+Versioning: `0.MINOR.PATCH`, with the patch number from the GitHub run, so every build is newer than the last (`scripts/godot/set_version.sh`).
 
 ## Kid-safety and UX rules (non-negotiable)
 
-- App opens straight into full screen with a kid lock: hide Dock and menu bar, disable process switching and Cmd-Q (`NSApplication.PresentationOptions` + `applicationShouldTerminate`).
+- App opens straight into full screen with a kid lock (`godot/Scripts/App/KidLock.cs`, rules in `BipCore.KidLockRules`). Mac: Dock and menu bar hidden, no Cmd-Tab, Force Quit, Cmd-H or Cmd-Q; never block logging out or shutting down. Windows: exclusive full screen, the Windows key, Alt-Tab, Alt/Ctrl-Esc and Alt-F4 blocked while the game is in front (Ctrl-Alt-Del always works). Holding Option (Mac) or Alt (Windows) at launch opens parent mode: a normal window, no lock.
 - Parent gate to exit or open settings: hold Esc 3 seconds, then answer an adult maths question, or enter the parent passcode if a parent has set one (4–8 digits, stored only as a salted hash; after 3 wrong tries it falls back to maths).
-- No network access except Sparkle's update check. No ads, analytics, accounts or data collection.
+- No network access except the update check. No ads, analytics, accounts or data collection.
 - No time pressure inside games: no countdown timers, lives or "game over". Wrong answer → soft sound, retry, then a spoken hint after 2 misses.
 - Click targets at least 120 pt. Design for a mouse, not a trackpad. Any key = "play that sound again".
 - **Play-time breaks:** after 20 minutes of play, Bip's battery runs low; the child finishes the current game, then Bip "charges" for a 20-minute break during which games stay closed. Track time with the wall clock in persisted storage so quitting and reopening the app cannot skip a break. Parents set play length, break length and an optional daily maximum behind the parent gate, and can end a break early.
@@ -65,8 +64,8 @@ Versioning: `CFBundleShortVersionString` = `0.MINOR.PATCH`, `CFBundleVersion` = 
 ## Art and voice
 
 - Art style: **hand-drawn** — wobbly ink outlines, paper texture, warm bright colours. Bip is a small, friendly hand-drawn robot.
-- Font (**owner decision, 1 October 2026**): **Atkinson Hyperlegible** for *all* text: the letters and words children learn, labels, speech bubbles and the parent area. No Andika, Patrick Hand or system fonts. The owner knows its "a" differs from the school-taught shape and chose it anyway. The font files are bundled in `Resources/Fonts/` (OFL licence, never fetched over the network); use `Fonts.letters`, `Fonts.regular`/`Fonts.bold` or `Fonts.ui(size, bold:)` from `BipIsland/Drawing/Palette.swift`.
-- Narrator voice (**official, locked in 1 October 2026**): ElevenLabs voice **"Bip Island Narrator"**, voice ID `Mq5hYfc3xyDzuW3pPMck` — a warm, friendly female South African English teacher voice. Every spoken clip in the game uses this voice and nothing else. Generate clips with the `eleven_v3` model unless a test shows another model pronounces pure phonemes better. Until real clips exist, use placeholder clips (macOS `say` in CI, or silent stubs) and keep the file-name contract below so real clips drop in.
+- Font (**owner decision, 1 October 2026**): **Atkinson Hyperlegible** for *all* text: the letters and words children learn, labels, speech bubbles and the parent area. No Andika, Patrick Hand or system fonts. The owner knows its "a" differs from the school-taught shape and chose it anyway. The font files are bundled in `Resources/Fonts/` (OFL licence, never fetched over the network); the Godot project copies them in (`prepare_assets.py`); use `Fonts.Letters`, `Fonts.Regular`/`Fonts.Bold` from `godot/Scripts/Drawing/Palette.cs`, and `ParentUi` for the parent area.
+- Narrator voice (**official, locked in 1 October 2026**): ElevenLabs voice **"Bip Island Narrator"**, voice ID `Mq5hYfc3xyDzuW3pPMck` — a warm, friendly female South African English teacher voice. Every spoken clip in the game uses this voice and nothing else. Generate clips with the `eleven_v3` model unless a test shows another model pronounces pure phonemes better. A clip with no recording yet plays as a short silence; keep the file-name contract below so real clips drop in.
 - Bip himself makes short robot sound effects (beeps, whirrs), not speech.
 
 Audio file-name contract (`Resources/Audio/`):
@@ -84,7 +83,7 @@ Audio file-name contract (`Resources/Audio/`):
 - **The repo is public (owner decision, 3 October 2026)**, so GitHub Actions is free again, Mac and Windows runners included. A PR merges only when:
   1. its GitHub CI is green;
   2. another session reviewed it (`/code-review` at high effort, findings on the PR) and every blocking finding is fixed.
-  Before pushing, run `scripts/check_all.sh` in the session (it runs everything CI does except the real Mac/Windows install test) and open every screenshot in `build/check/screenshots/`. Swift changes (bug fixes only) stay small and are reviewed line by line, since Swift can't be compiled on Linux; a logic change also changes its C# twin in `godot/BipCore`, with a test.
+  Before pushing, run `scripts/check_all.sh` in the session (it runs everything CI does except the real Mac/Windows install test) and open every screenshot in `build/check/screenshots/`.
 - Public means everything committed is visible to anyone: never commit keys, tokens, `.env` files or family details. Secrets live only in GitHub Actions secrets.
 - Write unit tests for game logic (mastery tracking, phonics ordering, coding-puzzle interpreter) — they run in CI.
 - Update `docs/PLAN.md` "Build phases" status when a phase finishes.
