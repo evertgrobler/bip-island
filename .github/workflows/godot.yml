@@ -1,6 +1,5 @@
 # Builds and tests the Godot version of the game (Mac + Windows). See docs/GODOT_MIGRATION.md.
-# Main builds also publish the download page (site/), carrying the Swift app's Sparkle feed over
-# unchanged so installed Swift copies keep updating until they're replaced.
+# Every main build is tested on real Mac and Windows machines, then published with the download page (site/).
 name: Godot
 
 # Docs-only changes run nothing. Pull requests run the Linux job only; the Mac and Windows

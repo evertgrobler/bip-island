@@ -2,9 +2,6 @@
 # Publishes the download page (site/) to Vercel, with the Godot game's downloads and screenshots.
 # Called by the publish job in .github/workflows/godot.yml after the builds are in the Blob store.
 #
-# The old Swift Mac app still checks the same site for updates (appcast.xml), so the live feed and
-# the zip it names are copied into the new deploy; a Vercel deploy replaces the whole site.
-#
 # Env: VERSION, MAC_URL, WIN_URL, VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID,
 #      optional UPDATE_FEED_URL, SCREENSHOTS (folder of .jpg, default build/site-screenshots)
 set -euo pipefail
@@ -24,20 +21,9 @@ else
   echo "::warning title=No screenshots::The download page was published without screenshots."
 fi
 
-# The Swift app's update feed, carried over from the live site.
+# The page's own address, for the live check below.
 feed_url="$("$root/scripts/ci/resolve_feed_url.sh")"
 base="${feed_url%/*}"
-if curl -fsSL -o "$site/appcast.xml" "$feed_url"; then
-  zip_name="$(grep -o 'url="[^"]*\.zip"' "$site/appcast.xml" | head -1 | sed 's|.*/||; s|"$||')"
-  if [ -n "$zip_name" ] && curl -fsSL -o "$site/$zip_name" "$base/$zip_name"; then
-    echo "Kept the Swift app's update feed ($zip_name)."
-  else
-    echo "::warning title=Swift feed::Couldn't copy the Swift app's update zip; installed Swift copies won't find updates."
-  fi
-else
-  rm -f "$site/appcast.xml"
-  echo "::warning title=Swift feed::Couldn't read $feed_url; installed Swift copies won't find updates."
-fi
 
 date_text="$(date -u '+%-d %B %Y')"
 sed -e "s|{{VERSION}}|$VERSION|g" -e "s|{{DATE}}|$date_text|g" \

@@ -16,7 +16,7 @@ Unit tests check that the two lists cover every clip the game can play.
 
 ## Placeholders until the real voice is ready
 
-The real narrator is the ElevenLabs voice "Bip Island Narrator" (a female South African English teacher voice). Until its clips are recorded, every build makes **placeholder** clips for both lists with the Mac's built-in robot voice (`scripts/make_placeholder_audio.py`, run in GitHub Actions). They are clearly placeholders: robotic, and listed in the parent area as "placeholder voice clips".
+The real narrator is the ElevenLabs voice "Bip Island Narrator" (a female South African English teacher voice). A clip that hasn't been recorded yet plays as a short silence in the game (the parent area shows how many clips the build has), so record any missing line from `audio/script.csv` and drop it into `Resources/Audio/` under the same file name.
 
 Placeholder phonics sounds are *not* good enough to teach with ("t, as in tap" instead of a clean "t"). Swap in the real clips before relying on the game for phonics.
 
@@ -30,4 +30,4 @@ When a game needs a new instruction, praise or hint clip, add a row here at the 
 
 ## Bip's beeps
 
-Bip's beeps and whirrs, the soft "try again" sound and the bubble pops are made by code (`BipIsland/Audio/BipSounds.swift`), so they need no files.
+Bip's beeps and whirrs, the soft "try again" sound and the bubble pops are made by code (`godot/Scripts/Audio/BipSounds.cs`), so they need no files.
