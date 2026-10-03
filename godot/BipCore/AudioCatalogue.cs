@@ -28,6 +28,8 @@ public static class VoiceLine
     public const string WordsIsland = "vo_words_island";
     public const string CodingIsland = "vo_coding_island";
     public const string WhoIsPlaying = "vo_who_is_playing";
+    public const string BipCharging = "vo_bip_charging";
+    public const string DayDone = "vo_day_done";
     // Art Island
     public const string ArtIsland = "vo_art_island";
     public const string FindTheShape = "vo_find_the_shape";
@@ -52,6 +54,7 @@ public static class VoiceLine
         Welcome, IslandSleeping, LettersIsland, MeetNewSound, SayItWithMe, ClickToHearAgain, FindTheSound,
         PopTheLetter, LevelUp, LetsPractiseAgain, RoundDone, TraceLetter, FeedMonster, CountTap, QuickLook,
         SoundButtons, WordBuilder, MorningOrder, BipsPath, NumbersIsland, WordsIsland, CodingIsland, WhoIsPlaying,
+        BipCharging, DayDone,
         ArtIsland, FindTheShape, WhichShapeFits, ShapeSides, StraightSides, ShapeCurved, ShapeTurn, ShapeCountTurns,
         ShapeRegular, PaintMake, PaintPredict, Make, MirrorSame, MirrorFinish, MirrorPegs, MirrorLine,
     ];

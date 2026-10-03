@@ -251,6 +251,12 @@
   including the real `vo_who_is_playing`. ElevenLabs refuses some requests with "unusual activity":
   three at a time and retrying works. Review fixes: a replay mid-turn no longer stacks shape turns; a wrong
   mix only empties its own paint from the bowl.
+- **3 Oct, evening:** Charging screen explains itself. For the child: Bip asleep, plugged into a
+  battery whose five bars fill with the real break, and a spoken reason (`vo_bip_charging`; silent
+  until the clip is generated). For grown-ups: "Games open again at 10:45 (in 12 minutes)" and "hold
+  Esc for 3 seconds to end the break early". The daily limit has its own night screen (`vo_day_done`).
+  When the break ends with the screen open, Bip wakes up and the map opens. Previews:
+  `Scenes/Screens/charging.tscn` and `day_done.tscn`.
 - **3 Oct, evening:** Audit of main (agent, report in the session): content, phonics order, coding levels,
   safety rules all correct. Fixed from it: Bip's Path blocks 120 pt and a hint that doesn't trail off,
   "1 star", play time paused while the parent gate is open and not banked after the daily maximum (a new

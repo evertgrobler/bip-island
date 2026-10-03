@@ -95,6 +95,21 @@ public static class PlayBreaks
         return BreakPhase.Playing;
     }
 
+    /// <summary>
+    /// How far through the break Bip is, from 0 (just started) to 1 (charged), for the battery on
+    /// the charging screen. 1 when there is no break.
+    /// </summary>
+    public static double BreakProgress(BreakState state, DateTimeOffset now, int breakMinutes)
+    {
+        if (state.BreakEndsAt is not DateTimeOffset endsAt || breakMinutes <= 0) return 1;
+        var left = (endsAt - now).TotalSeconds;
+        return Math.Clamp(1 - left / (breakMinutes * 60.0), 0, 1);
+    }
+
+    /// <summary>Whole minutes until games open again, rounded up (so "in 1 minute" until it ends). 0 when there is no break.</summary>
+    public static int MinutesLeft(BreakState state, DateTimeOffset now) =>
+        state.BreakEndsAt is DateTimeOffset endsAt && endsAt > now ? (int)Math.Ceiling((endsAt - now).TotalMinutes) : 0;
+
     /// <summary>A parent ends the break early from settings.</summary>
     public static void EndBreakEarly(BreakState state)
     {

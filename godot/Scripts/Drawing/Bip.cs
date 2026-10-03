@@ -116,6 +116,26 @@ public partial class Bip : Node2D
         glow.TweenProperty(_chestLight, "modulate:a", 1f, 0.8);
     }
 
+    private readonly List<Node2D> _closedEyes = new();
+
+    /// <summary>Eyes shut (the charging screen) or open again. Closed eyes are little smiling curves.</summary>
+    public void Sleep(bool asleep = true)
+    {
+        if (_closedEyes.Count == 0)
+        {
+            foreach (var eye in _eyes)
+            {
+                var closed = Sketch.Node(new SketchShape.Arc(Vector2.Zero, 18, 10, 0.15f, Mathf.Pi - 0.15f), Next(), lineWidth: 5);
+                closed.Position = eye.Position;
+                closed.Visible = false;
+                _head.AddChild(closed);
+                _closedEyes.Add(closed);
+            }
+        }
+        foreach (var eye in _eyes) eye.Visible = !asleep;
+        foreach (var closed in _closedEyes) closed.Visible = asleep;
+    }
+
     /// <summary>A happy little hop (when clicked or beeping).</summary>
     public void Hop()
     {
