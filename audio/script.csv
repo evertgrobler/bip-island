@@ -43,6 +43,8 @@ vo_numbers_island.m4a,"Welcome to Numbers Island! Click Bip, and let's count.",P
 vo_words_island.m4a,"Welcome to Words Island! Click Bip, and let's read.",Plays when arriving on Words Island.,Words Island!
 vo_coding_island.m4a,"Welcome to Coding Island! Click Bip, and let's program.",Plays when arriving on Coding Island.,Coding Island!
 vo_who_is_playing.m4a,Who's playing today? Click your picture!,"Plays on the profile picker when more than one child uses the Mac. Warm and inviting, a little pause before 'Click your picture'.",Who's playing?
+vo_bip_charging.m4a,"Bip's battery is low, so he's having a rest. When the battery is full, we can play again!",Plays on the charging screen when a play-time break starts and when the child clicks Bip during the break. Calm and kind; never sounds like a punishment.,Bip is charging.
+vo_day_done.m4a,That's all our playing for today. See you tomorrow!,Plays when the daily play limit is reached. Warm and sleepy.,See you tomorrow!
 vo_art_island.m4a,"Welcome to Art Island! Let's play with shapes, paint and mirrors.",Art Island.,"Welcome to Art Island! Let's play with shapes, paint and mirrors."
 vo_find_the_shape.m4a,Can you find the,"Followed straight away by a shape name (""circle""). Rising, unfinished intonation.",Can you find the
 vo_which_shape_fits.m4a,Which shape fits in the gap?,Art Island.,Which shape fits in the gap?

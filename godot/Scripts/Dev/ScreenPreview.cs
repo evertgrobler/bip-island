@@ -41,6 +41,22 @@ public partial class ScreenPreview : Node
         game.Store.Save(game.Progress, game.ChildId);
     }
 
+    /// <summary>A 20-minute break with 12 minutes to go (two bars lit), or the day's play used up.</summary>
+    private static ChargingScreen ChargingPreview(GameCoordinator game, bool dayDone)
+    {
+        if (dayDone)
+        {
+            game.Store.Settings = game.Store.Settings with { DailyMaxMinutes = 60 };
+            game.ForceDayDoneForTest();
+        }
+        else
+        {
+            game.Store.Settings = game.Store.Settings with { BreakMinutes = 20 };
+            game.ForceBreakForTest(12);
+        }
+        return new ChargingScreen();
+    }
+
     private void Open()
     {
         var game = GameCoordinator.Instance;
@@ -62,8 +78,9 @@ public partial class ScreenPreview : Node
             "numbers" => new GameIslandScreen(Island.Numbers, greet: false),
             "words" => new GameIslandScreen(Island.Words, greet: false),
             "coding" => new GameIslandScreen(Island.Coding, greet: false),
+            "charging" => ChargingPreview(game, dayDone: false),
+            "day_done" => ChargingPreview(game, dayDone: true),
             "art" => new ArtIslandScreen(greet: false),
-            "charging" => new ChargingScreen(),
             "stickers" => new StickerScreen(),
             _ => new MapScreen(greet: false),
         };
