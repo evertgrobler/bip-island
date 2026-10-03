@@ -419,6 +419,7 @@ public partial class ParentArea : VBoxContainer
         about.AddChild(ParentUi.Text($"Version {Updater.InstalledVersion ?? version}", 17));
         if (Updater.ReadyVersion is { } ready) about.AddChild(ParentUi.Text($"Version {ready} is ready to install.", 17, bold: true));
         about.AddChild(ParentUi.Text($"Voice clips: {VoicePlayer.CountClips()} narrator recordings.", 15, colour: ParentUi.Secondary));
+        about.AddChild(ParentUi.Text(KidLockText(), 15, colour: ParentUi.Secondary, wrap: true));
         _versionNote = ParentUi.Text("", 15, colour: ParentUi.Secondary, wrap: true);
         var updates = Updater.ReadyVersion == null
             ? ParentUi.Button("Check for updates now", CheckForUpdates)
@@ -428,6 +429,14 @@ public partial class ParentArea : VBoxContainer
         if (Updater.FeedUrl == null) _versionNote.Text = "Automatic updates aren't switched on in this build.";
         about.AddChild(_versionNote);
     }
+
+    private static string KidLockText() => KidLock.Status switch
+    {
+        "mac" or "windows" => "Kid lock: on. To play in a normal window without it, hold Option (Mac) or Alt (Windows) while the game opens.",
+        "parent mode" => "Kid lock: off (parent mode, because Option or Alt was held as the game opened).",
+        "off" => "Kid lock: off on this computer.",
+        var problem => $"Kid lock: couldn't start ({problem}).",
+    };
 
     private void SetSettings(PlayTimeSettings settings)
     {

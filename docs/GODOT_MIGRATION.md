@@ -103,7 +103,7 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
 **Phase 5 — Switch over, about 1–2 sessions. This is the owner's single test.**
 - The owner installs the test-feed build on the Mac and the Windows PC and plays it for a few days. Fixes are pushed to the test feed.
 - Only when the owner is happy does the family feed switch to Godot.
-- The last Swift update (via Sparkle) adds **"export progress"**. It writes every child's progress to a file in a shared folder, and the Godot app imports it on first launch.
+- **No progress export (owner decision, 3 Oct 2026):** the owner installs the Godot app fresh and the children start again in it. No last Swift update and no import step.
 - The owner installs the Godot Mac app once by hand and removes the old one. Installing on the Windows PC is likewise a one-time step.
 - Retire the Swift code, `project.yml` and the Xcode CI.
 - Switch the audio source and contract to `.ogg` (`Resources/Audio`, `make_placeholder_audio.py`, the validator, `AudioScriptTests`).
@@ -151,13 +151,13 @@ Run Phases 0 → 4 back to back, one PR per phase (or per group of games), each 
 - [ ] Phase 4 — Profiles, saves, breaks, stickers, mystery box, recommendations, parent gate and parent area
   - [x] Profiles, saves, breaks, stickers, mystery box, recommendations (with the Phase 2 shell)
   - [x] Parent gate (hold Esc → maths or passcode), parent area (Progress, Children, Settings), "Update ready" button that installs only after the gate
-  - [ ] Native kid lock: Mac (hide Dock and menu bar, no Cmd-Tab) and Windows (no Windows key or Alt-Tab)
-- [ ] Phase 5 — Owner test, progress export/import, family feed switched, Swift code retired, docs updated
+  - [x] Native kid lock: Mac (borderless cover window + presentation options; quits when the Mac powers off) and Windows (exclusive full screen + keyboard hook for the Windows key, Alt-Tab, Alt/Ctrl-Esc). Option/Alt at launch = parent mode. First proof on real machines: the `--bip-kidlock-check` step in the Mac/Windows CI jobs (a warning until it has passed once).
+- [ ] Phase 5 — Owner test (owner tried the Godot build and prefers it), family feed switched, Swift code retired, docs updated (no progress export: owner decision)
 
 ## Port notes from the Swift sessions (1 Oct 2026)
 
 - **Levels:** games.json `levels` (checked by the validator). `GameEntry.startingLevel` is the last level whose band is ≤ the child's band. `ChildProgress.recordGameAnswer` goes up a level after 3 right answers in a row and back one after 2 misses, clamped to the game's range. `GameLevelTests` is the spec.
-- **Parent passcode:** `BipCore/ParentPasscode.swift`: a salted SHA-256 hash, 4–8 digits, 3 wrong tries fall back to maths. Swift stores it under the UserDefaults key `bip.parentPasscode`; migrate it with the progress export.
+- **Parent passcode:** `BipCore/ParentPasscode.swift`: a salted SHA-256 hash, 4–8 digits, 3 wrong tries fall back to maths. Swift stores it under the UserDefaults key `bip.parentPasscode`. Not migrated: the Godot app starts fresh, so a parent sets the passcode again.
 - **Update prompt:** `UpdateController.swift` and `RootView`'s `UpdateReadyButton`. The gate model's `openForUpdate()` installs only after unlocking.
 - **Word Builder:** tiles show `PhonicsSound.grapheme` (not ids). Split-digraph words are left out. Spare tiles come from unlocked, non-confusable sounds, with `spares` set per level.
 - **Bip's Path:** `GridWalker.facings` drives the arrow that shows which way Bip is facing.

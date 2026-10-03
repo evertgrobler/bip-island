@@ -115,6 +115,13 @@
   while the gate is open. Previews: `Scenes/Parent/{gate,progress,children,settings,update}.tscn`.
   `Updater.ReadyVersion`/`UpdateReady` drive the "Update ready" button; `InstallAndRestart()` only runs
   after the gate.
+- Kid lock (Phase 4): `Scripts/App/KidLock.cs`, rules in `BipCore.KidLockRules` (tested). The project
+  starts windowed; `Boot` calls `KidLock.Install`, which covers the screen and locks it (Mac), or goes
+  exclusive full screen with a keyboard hook (Windows). Off when headless, with `--bip-windowed`, on
+  Linux, or with Option/Alt held at launch (parent mode). Quitting or updating lifts it first. It
+  can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
+  Known gap vs Swift: second screens aren't covered with paper windows yet (a click there could reach
+  another app). Fine on a one-screen Mac; add cover windows if the family Mac gets a second display.
 
 ## Gotchas learned the hard way
 
@@ -226,6 +233,14 @@
   (Morning Order, Bip's Path) and Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter Trace, Feed
   the Monster), all 11 games on the shared frame. The walk-through plays every game (112 steps).
   Phase 3 ticked in `GODOT_MIGRATION.md`.
+- **2 Oct, later:** Godot kid lock (Phase 4, part 2) written: Mac presentation options as in Swift plus
+  quit-on-power-off (the Godot build would otherwise block shutdown), Windows exclusive full screen and
+  a keyboard hook, parent mode with Option/Alt. Unproven on real machines until the CI Mac/Windows jobs
+  run (minutes out until 1 Nov, or a brief public window).
+- **3 Oct:** Owner decision: no progress export. The owner installs the Godot app fresh (children
+  start again) and has tried the Godot build and finds it much better. Repo made public (and the owner
+  chose to keep it public, so CI is free again). First real-machine run of the kid lock (Godot run
+  37100738096): Windows "windows hook on", Mac "mac lock on", both installed and updated with saves kept.
 - **3 Oct:** Owner: offer only the new version. The download page now has one card, "Bip Island for Windows
   and Mac" (Test version), linking the Godot builds in the Vercel Blob store (`godot-test/BipIsland-win-Setup.exe`,
   `godot-test/BipIsland-mac.dmg`, fixed addresses, latest build). The old Swift Mac download is gone from the

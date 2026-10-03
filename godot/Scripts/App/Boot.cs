@@ -31,12 +31,12 @@ public partial class Boot : Node
 
         // Kid lock: the window close button, Cmd-Q and Alt-F4 do nothing; only the parent area's Quit button quits.
         GetTree().AutoAcceptQuit = false;
-        if (UserArgs.Contains("--bip-windowed"))
-            DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
     }
 
     public override void _Ready()
     {
+        // Full screen and locked (or a normal window in parent mode, tests and --bip-windowed).
+        KidLock.Install(windowedRequested: UserArgs.Contains("--bip-windowed"));
         // "--bip-scene res://…tscn" opens that scene instead of the main screen (dev pages, screenshots).
         var scene = System.Array.IndexOf(UserArgs, "--bip-scene");
         if (scene >= 0 && scene + 1 < UserArgs.Length)
@@ -49,17 +49,28 @@ public partial class Boot : Node
 
     public override void _Notification(int what)
     {
-        if (what == NotificationWMCloseRequest && !_allowQuit)
-            GD.Print("Bip Island: quitting needs the parent gate (hold Esc).");
+        if (what == NotificationWMCloseRequest)
+        {
+            if (_allowQuit) GetTree().Quit();
+            else GD.Print("Bip Island: quitting needs the parent area (hold Esc).");
+        }
+        else if (what == NotificationApplicationFocusIn)
+        {
+            KidLock.Reapply();
+        }
     }
 
     /// <summary>Lets the window close (an update about to restart the game).</summary>
-    public void AllowQuit() => _allowQuit = true;
+    public void AllowQuit()
+    {
+        _allowQuit = true;
+        KidLock.Release();
+    }
 
     /// <summary>The only way out: the parent gate, a self-test finishing, or an update restarting the game.</summary>
     public void Quit(int exitCode = 0)
     {
-        _allowQuit = true;
+        AllowQuit();
         GetTree().Quit(exitCode);
     }
 }
