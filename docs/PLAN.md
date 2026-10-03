@@ -114,24 +114,24 @@ Kids help Bip get home across a grid by snapping picture blocks into a command s
 
 Pressing Go plays the program one step at a time with a highlight on the current block, so kids see exactly where a mistake happens. Fewer blocks earns a gold star, but any working solution passes.
 
-## Native Mac build
+## Mac and Windows build
 
-Build it in Swift: SwiftUI for menus and the parent area, SpriteKit for the game scenes, and everything stored on the Mac with no internet, ads or data collection.
+Built with Godot 4 (C#), so one codebase runs on both computers, with everything stored locally and no internet (except the update check), ads or data collection. (It started as a native Swift Mac app; it moved to Godot in October 2026, see `docs/GODOT_MIGRATION.md`.)
 
 | Part | Choice | Why |
 | --- | --- | --- |
-| Language | Swift, Xcode | Apple's native stack, smallest app, smoothest animation |
-| Game scenes | SpriteKit | 2D sprites, physics, particle sparkles, built into macOS |
-| Menus, parent area | SwiftUI | Fast to build standard screens |
-| Audio | AVFoundation, bundled .m4a files | Instant playback, works offline |
-| Progress & profiles | SwiftData | Local, up to 4 child profiles |
-| Minimum macOS | 14 Sonoma | Covers most Macs from 2018 on |
+| Engine and language | Godot 4.7 .NET, C# | One codebase for Mac and Windows, free, good 2D |
+| Game logic | Plain C# library (`godot/BipCore`), unit-tested | Tested on Linux in every session and in CI |
+| Audio | Bundled clips (`.m4a` source, `.ogg` in the game) | Instant playback, works offline |
+| Progress & profiles | One local JSON save file | Up to 4 child profiles |
+| Updates | Velopack | Self-updating on both computers, a grown-up confirms |
+| Minimum | macOS 14 Sonoma, Windows 10 | Covers the family's computers |
 
-**Full screen with a kid lock:** the app opens straight into full screen and uses macOS presentation options to hide the Dock and menu bar and block Cmd-Tab and Cmd-Q, so a child can't wander into other apps.
+**Full screen with a kid lock:** the game opens straight into full screen. On a Mac it hides the Dock and menu bar and blocks Cmd-Tab and Cmd-Q; on Windows it blocks the Windows key and Alt-Tab. A child can't wander into other apps, and shutting down always works.
 
 **Parent gate:** hold the Esc key for 3 seconds, then answer an adult question (e.g. “type 7 × 8”) to reach settings or quit. Settings cover profiles, a daily play limit, volume and voice speed, and a simple progress view per skill.
 
-**Distribution:** either the Mac App Store, or a signed and notarised download from your own site (needs a paid Apple Developer account, US$99 a year, in both cases).
+**Distribution:** direct downloads from the download page (a `.dmg` for Mac, `Setup.exe` for Windows), unsigned for now: the first launch needs right-click → Open (Mac) or "Run anyway" (Windows). Paid signing can be added later if the game is shared beyond the family.
 
 ## Build phases
 
@@ -139,20 +139,20 @@ Prove the hardest part first: if the phonics audio and the core click-and-hear l
 
 | Phase | What gets built | Done when | Status |
 | --- | --- | --- | --- |
-| 0. Sound test | Script for group 1 sounds (s a t p i n) generated in ElevenLabs, trimmed, checked | Every sound is clean, no letter names or “uh” | Script ready (`audio/script.csv`); clips not yet recorded |
-| 1. Prototype | Full-screen app, Bip, Letters Island with group 1 (meet, hunt, pop) | A 4-year-old plays 10 minutes without help | Built, with placeholder voice and auto-update pipeline. The three Letters games now run on the shared game template, read every sound and word from `Content/`, and save progress per child and per skill (mastery over 2 days, reviews). Waiting on real clips and a play test |
-| 2. All islands | Groups 2–5, Numbers, Words, Coding tiers 1–3, profiles, progress | Each island has 15+ activities and mastery tracking | Not started |
-| 3. Polish | Art, music, sticker book, parent gate and dashboard, ages 6–8 content, Coding tiers 4–6 | Kids ask to play it again | Not started |
-| 4. Release | Signing, notarisation or App Store review, website page | Installs cleanly on a fresh Mac | Not started |
-| Godot move | Rebuild in Godot 4 (C#) for Mac + Windows, auto-updating, direct downloads (see `docs/GODOT_MIGRATION.md`) | The owner plays the Godot build on both computers and switches the family feed over | Approved 1 Oct 2026; Phase 0 not started |
+| 0. Sound test | Script for group 1 sounds (s a t p i n) generated in ElevenLabs, trimmed, checked | Every sound is clean, no letter names or “uh” | Done: all clips recorded in the narrator voice (only `vo_who_is_playing` still to record) |
+| 1. Prototype | Full-screen app, Bip, Letters Island with group 1 (meet, hunt, pop) | A 4-year-old plays 10 minutes without help | Done; family play testing |
+| 2. All islands | Groups 2–5, Numbers, Words, Coding tiers 1–3, profiles, progress | Each island has 15+ activities and mastery tracking | In progress: all four islands, 11 games with levels, profiles and the parent progress view are built; more activities per island to come |
+| 3. Polish | Art, music, sticker book, parent gate and dashboard, ages 6–8 content, Coding tiers 4–6 | Kids ask to play it again | Partly: sticker book, parent gate and dashboard done; art (emoji stand-ins), music and higher tiers to come |
+| 4. Release | Signing, notarisation or App Store review, website page | Installs cleanly on a fresh Mac | Download page done (Mac + Windows, unsigned); paid signing only if the game is shared beyond the family |
+| Godot move | Rebuild in Godot 4 (C#) for Mac + Windows, auto-updating, direct downloads (see `docs/GODOT_MIGRATION.md`) | The owner plays the Godot build on both computers and switches the family feed over | Done 3 Oct 2026: all phases complete, Swift app retired |
 
 ## Decisions
 
 - [x] Language: English only for now.
-- [x] Audience: your own family first, to see how it plays and feels; no App Store needed yet, so free Xcode signing is enough.
+- [x] Audience: your own family first, to see how it plays and feels; no App Store needed yet, so unsigned direct downloads are enough.
 - [x] Build: entirely with Claude Code, in a new GitHub repository.
 - [x] Art style: hand-drawn.
 - [x] Voice: "Bip Island Narrator" (ElevenLabs voice ID Mq5hYfc3xyDzuW3pPMck), a female South African English voice. Locked in as the official game voice on 1 October 2026.
 - [x] Companion: a robot (Bip, working name).
-- [x] Repository: private, named bip-island.
-- [x] Workflow: cloud-driven. Claude Code cloud sessions write the code, GitHub Actions builds it on a Mac runner, and the app updates itself on your Mac via Sparkle. No Xcode needed on your Mac.
+- [x] Repository: bip-island, public since 3 October 2026 (so GitHub Actions is free).
+- [x] Workflow: cloud-driven. Claude Code cloud sessions write the code, GitHub Actions builds and tests it on Linux, Mac and Windows machines, and the game updates itself on the family's computers via Velopack (a grown-up confirms). Nothing to install on your computer except the game.
