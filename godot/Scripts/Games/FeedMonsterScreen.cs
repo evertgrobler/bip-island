@@ -124,6 +124,13 @@ public partial class FeedMonsterScreen : GameScreen
                 card.ZIndex = 20;
                 if (card == HintedNode) StopHint();
                 return;
+            // The button was let go where we couldn't see it (outside the window, or behind the
+            // parent gate): the food goes back.
+            case InputEventMouseMotion motion when _dragged is { } held && !motion.ButtonMask.HasFlag(MouseButtonMask.Left):
+                GetViewport().SetInputAsHandled();
+                _dragged = null;
+                SendHome(held);
+                return;
             case InputEventMouseMotion motion when _dragged != null:
                 GetViewport().SetInputAsHandled();
                 if (!InputLocked) _dragged.Position = Stage.ToLocal(motion.GlobalPosition) + _dragOffset;
@@ -148,7 +155,7 @@ public partial class FeedMonsterScreen : GameScreen
         var from = Stage.ToGlobal(_cards[index].Position);
         var to = Stage.ToGlobal(MonsterMouth);
         _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, GlobalPosition = from, Position = from });
-        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = to, Position = to });
+        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = to, Position = to, ButtonMask = MouseButtonMask.Left });
         _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = to, Position = to });
     }
 

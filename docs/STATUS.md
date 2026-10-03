@@ -49,9 +49,9 @@
 - **Known open items:** `vo_who_is_playing` still a placeholder clip (ElevenLabs was busy), waves 2b/3/4
   games (17 left), golden rounds, real art, music, Developer ID signing.
 
-- **GitHub Actions minutes are used up until 1 Nov** (2,029/2,000 on 2 Oct; Mac runners). Owner won't pay.
-  Merge rule meanwhile: `scripts/check_all.sh` + looked-at screenshots + another session's review
-  (see CLAUDE.md "Working rules"). Merges publish nothing until November.
+- **The repo is public since 3 Oct**, so GitHub Actions is free again (it ran out on 2 Oct). Merge rule:
+  green CI + another session's review; run `scripts/check_all.sh` before pushing (see CLAUDE.md
+  "Working rules"). Every main merge publishes the Godot test build to the Blob store.
 
 ## Locked decisions (don't relitigate)
 
@@ -246,4 +246,9 @@
   `godot-test/BipIsland-mac.dmg`, fixed addresses, latest build). The old Swift Mac download is gone from the
   page, but `deploy_vercel.sh` still publishes its zip + `appcast.xml`, so installed Swift copies keep updating.
   Page says plainly the kid lock isn't built yet; Mac step explains Replace / Keep Both (both apps are called
-  Bip Island; progress isn't moved across yet). Live only once a `main` build runs again (minutes out until 1 Nov).
+  Bip Island; progress isn't moved across yet). The builds there are already 0.2.31 (Godot run 31, #27).
+- **3 Oct:** Owner made the repo public, so Actions minutes are free again; merge rule back to green CI
+  plus a session review. History scanned for secrets: none. Godot run 31 (#27) had already published
+  0.2.31 (all 11 games) to `godot-test/`; its last check failed only because the overwritten feed is
+  cached for 60 s, so the check now retries for 3 minutes. Drags and tracing stop when the button is
+  let go out of sight (#27 review follow-up).

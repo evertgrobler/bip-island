@@ -79,9 +79,21 @@ public partial class WordBuilderScreen : GameScreen
         var from = Stage.ToGlobal(tile.Position);
         var to = Stage.ToGlobal(_slots[slot].Position);
         _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, GlobalPosition = from, Position = from });
-        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = (from + to) / 2, Position = (from + to) / 2 });
-        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = to, Position = to });
+        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = (from + to) / 2, Position = (from + to) / 2, ButtonMask = MouseButtonMask.Left });
+        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = to, Position = to, ButtonMask = MouseButtonMask.Left });
         _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = to, Position = to });
+    }
+
+    /// <summary>True while a tile follows the pointer (for the walk-through test).</summary>
+    public bool Dragging => _dragged != null;
+
+    /// <summary>Presses on a tile, then moves the pointer with the button already let go (for the walk-through test).</summary>
+    public void LostReleaseForTest(string tileName)
+    {
+        if (FindTappable(tileName) is not LetterTile tile) return;
+        var from = Stage.ToGlobal(tile.Position);
+        _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, GlobalPosition = from, Position = from });
+        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = from + new Vector2(300, 0), Position = from + new Vector2(300, 0) });
     }
 
     /// <summary>What the spaces hold now (tile ids, "" for empty), for the walk-through test.</summary>
@@ -166,6 +178,12 @@ public partial class WordBuilderScreen : GameScreen
                 when !InputLocked && _dragged == null && TileAt(press.GlobalPosition) is { } tile:
                 GetViewport().SetInputAsHandled();
                 StartDrag(tile, Stage.ToLocal(press.GlobalPosition));
+                return;
+            // The button was let go where we couldn't see it (outside the window, or behind the
+            // parent gate): drop the tile where it is now.
+            case InputEventMouseMotion motion when _dragged != null && !motion.ButtonMask.HasFlag(MouseButtonMask.Left):
+                GetViewport().SetInputAsHandled();
+                EndDrag(Stage.ToLocal(motion.GlobalPosition));
                 return;
             case InputEventMouseMotion motion when _dragged != null:
                 GetViewport().SetInputAsHandled();
