@@ -1,6 +1,6 @@
 # Builds and tests the Godot version of the game (Mac + Windows). See docs/GODOT_MIGRATION.md.
-# Nothing here touches the Swift app or its Sparkle feed: the family keeps getting the Swift app
-# until the switchover.
+# Main builds also publish the download page (site/), carrying the Swift app's Sparkle feed over
+# unchanged so installed Swift copies keep updating until they're replaced.
 name: Godot
 
 # Docs-only changes run nothing. Pull requests run the Linux job only; the Mac and Windows
@@ -12,6 +12,9 @@ on:
       - "scripts/godot/**"
       - "scripts/check_all.sh"
       - "scripts/validate_content.py"
+      - "scripts/ci/deploy_site.sh"
+      - "scripts/ci/site_screenshots.sh"
+      - "site/**"
       - "Content/**"
       - "Resources/**"
       - "audio/**"
@@ -23,6 +26,9 @@ on:
       - "scripts/godot/**"
       - "scripts/check_all.sh"
       - "scripts/validate_content.py"
+      - "scripts/ci/deploy_site.sh"
+      - "scripts/ci/site_screenshots.sh"
+      - "site/**"
       - "Content/**"
       - "Resources/**"
       - "audio/**"
@@ -165,6 +171,10 @@ jobs:
             exit 1
           }
 
+      - name: Screenshots for the download page
+        continue-on-error: true
+        run: scripts/ci/site_screenshots.sh
+
       - name: Export for Mac and Windows
         working-directory: godot
         run: |
@@ -192,6 +202,15 @@ jobs:
         with:
           name: godot-screenshots-${{ steps.version.outputs.version }}
           path: build/godot/screenshots
+          retention-days: 14
+
+      - name: Keep the download page screenshots
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-screenshots
+          path: build/site-screenshots
+          if-no-files-found: ignore
           retention-days: 14
 
       - name: Keep the Mac export
@@ -345,8 +364,30 @@ jobs:
             }
           done
 
+      - name: Get the download page screenshots
+        if: always() && steps.upload.outputs.mac_url != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: site-screenshots
+          path: build/site-screenshots
+
+      # The download page (site/) with this version's links. Runs once the builds are uploaded,
+      # even if the feed check above is slow to see the new version.
+      - name: Publish the download page
+        if: always() && steps.upload.outputs.mac_url != ''
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          UPDATE_FEED_URL: ${{ vars.UPDATE_FEED_URL }}
+          VERSION: ${{ needs.export.outputs.version }}
+          MAC_URL: ${{ steps.upload.outputs.mac_url }}
+          WIN_URL: ${{ steps.upload.outputs.win_url }}
+        run: scripts/ci/deploy_site.sh
+
       - name: Summary
-        if: steps.upload.outputs.mac_url != ''
+        if: always() && steps.upload.outputs.mac_url != ''
         run: |
           {
             echo "### Godot test build ${{ needs.export.outputs.version }} published"

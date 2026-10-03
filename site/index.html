@@ -9,8 +9,9 @@
   <meta name="description" content="Bip Island: a learning game for children aged 4 to 8, for Mac and Windows.">
   <link rel="icon" type="image/png" href="favicon.png">
   <!--
-    The download page. CI (scripts/ci/deploy_vercel.sh) fills in VERSION, BUILD, ZIP and DATE in
-    double curly braces, and copies the screenshots CI took of the real game into screenshots/.
+    The download page. godot.yml's publish job (scripts/ci/deploy_site.sh) fills in VERSION, DATE,
+    MAC_URL and WIN_URL in double curly braces, and adds the screenshots CI took of the real game
+    (scripts/ci/site_screenshots.sh) in screenshots/.
     Everything is local: the font is bundled in fonts/, no trackers, no external requests.
   -->
   <style>
@@ -121,10 +122,8 @@
     /* Download */
     .downloads { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 24px; }
     .download-card h3 { margin-bottom: 6px; }
-    .tag.test { background: var(--sun); }
-    .downloads.single { max-width: 720px; }
-    .buttons { display: flex; flex-wrap: wrap; gap: 14px; }
-    .button.secondary { background: var(--sea); }
+    .after-install { margin-top: 20px; }
+    .parent-shot { max-width: 760px; margin: 32px auto 0; }
     .steps { padding-left: 26px; margin: 16px 0 0; }
     .steps li { margin-bottom: 12px; }
 
@@ -136,7 +135,7 @@
       .island:nth-of-type(even) .island-text { order: 2; }
       .strip { grid-template-columns: 1fr 1fr; }
       .features { grid-template-columns: 1fr 1fr; }
-      .downloads:not(.single) { grid-template-columns: 1fr 1fr; align-items: start; }
+      .downloads { grid-template-columns: 1fr 1fr; align-items: start; }
     }
     @media (min-width: 1000px) { .features { grid-template-columns: 1fr 1fr 1fr; } }
     @media (prefers-reduced-motion: reduce) { .button { transition: none; } }
@@ -192,7 +191,7 @@
         <div class="island-text">
           <span class="tag">Numbers</span>
           <h3>Counting real things</h3>
-          <p>Maths starts with things you can see: tap each duck as the narrator counts aloud, and learn to spot small amounts at a glance on dice and dots, before moving on to bigger numbers.</p>
+          <p>Maths starts with things you can see: tap each one as the narrator counts aloud, and learn to spot small amounts at a glance on dice and dots, before moving on to bigger numbers.</p>
           <ul class="games" aria-label="Games on this island">
             <li>Count &amp; Tap</li><li>Quick Look</li>
           </ul>
@@ -236,7 +235,7 @@
       <div class="strip">
         <figure class="shot">
           <div class="frame"><img src="screenshots/stickers.jpg" alt="The sticker book in Bip Island" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
-          <figcaption>Stars fill Bip's jar and earn stickers for the sticker book. Nothing is ever bought.</figcaption>
+          <figcaption>The sticker book: a sticker for every sound, earned with stars. Nothing is ever bought.</figcaption>
         </figure>
         <figure class="shot">
           <div class="frame"><img src="screenshots/charging.jpg" alt="Bip charging his battery during a play-time break" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
@@ -276,44 +275,55 @@
           <p>Games line up with Cambridge Early Years and Primary Stages 1 to 3 for English, Mathematics and Computing. There are no timers, lives or "game over": a wrong answer gets a gentle sound, another try, and a spoken hint after two misses.</p>
         </div>
       </div>
+      <figure class="shot parent-shot">
+        <div class="frame"><img src="screenshots/parent-progress.jpg" alt="The parent area's Progress tab, showing a child's stars, stickers, minutes played and phonics sounds" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div>
+        <figcaption>The parent area: each child's progress, sound by sound.</figcaption>
+      </figure>
     </div>
   </section>
 
   <section id="download">
     <div class="wrap">
       <h2>Download</h2>
-      <p>For a Windows PC or a Mac. It's free, with nothing to buy and no sign-up.</p>
-      <!-- The Godot build for Windows and Mac from the Vercel Blob store (scripts/godot/publish_blob.mjs keeps
-           the latest at these fixed addresses). The old Swift Mac app is no longer offered here, but
-           deploy_vercel.sh still publishes its zip and appcast.xml, so installed copies keep updating. -->
-      <div class="downloads single">
-        <div class="card download-card" id="download-test">
-          <span class="tag test">Test version</span>
-          <h3>Bip Island for Windows and Mac</h3>
-          <p class="muted">Windows 10 or 11, or a Mac with macOS 14 Sonoma or newer.</p>
-          <p class="buttons">
-            <a class="button" href="https://x4dwtory3rjimb1l.public.blob.vercel-storage.com/godot-test/BipIsland-win-Setup.exe">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Download for Windows</a>
-            <a class="button secondary" href="https://x4dwtory3rjimb1l.public.blob.vercel-storage.com/godot-test/BipIsland-mac.dmg">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Download for Mac</a>
-          </p>
-          <p class="version">Still being tested. It has all four islands, every game and the parent area. The full kid lock isn't in it yet, so children can still switch away (Windows key or Alt+Tab, Cmd+Tab on a Mac).</p>
-          <h3>First install on Windows</h3>
+      <p>For a Mac with macOS 14 Sonoma or newer, or a Windows 10 or 11 PC. It's free, with nothing to buy and no sign-up.</p>
+      <!-- One card per computer. godot.yml's publish job fills in the double-brace placeholders
+           (scripts/ci/deploy_site.sh) with the version, date and the Blob store links it just uploaded. -->
+      <div class="downloads">
+        <div class="card download-card" id="download-mac">
+          <h3>Bip Island for Mac</h3>
+          <p><a class="button" href="{{MAC_URL}}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download for Mac</a></p>
+          <p class="version">Version {{VERSION}}, {{DATE}}</p>
+          <h3>First install</h3>
+          <ol class="steps">
+            <li>Open the downloaded <b>BipIsland-mac.dmg</b> and drag <b>Bip Island</b> into <b>Applications</b>.<br>
+              If an older Bip Island is already there, choose <b>Replace</b>. Progress from the older version doesn't carry over.</li>
+            <li>Right-click <b>Bip Island</b> and choose <b>Open</b>, then <b>Open</b> again.<br>
+              On macOS 15 or newer: if it says it can't be opened, go to <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>.</li>
+          </ol>
+        </div>
+        <div class="card download-card" id="download-windows">
+          <h3>Bip Island for Windows</h3>
+          <p><a class="button" href="{{WIN_URL}}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download for Windows</a></p>
+          <p class="version">Version {{VERSION}}, {{DATE}}</p>
+          <h3>First install</h3>
           <ol class="steps">
             <li>Open the downloaded <b>BipIsland-win-Setup.exe</b>.</li>
             <li>If Windows says <b>"Windows protected your PC"</b>, click <b>More info</b>, then <b>Run anyway</b>. This is needed once, because the game isn't signed with a paid certificate.</li>
             <li>Bip Island installs and opens by itself.</li>
           </ol>
-          <h3>First install on a Mac</h3>
-          <ol class="steps">
-            <li>Open the downloaded <b>BipIsland-mac.dmg</b> and drag <b>Bip Island</b> into <b>Applications</b>.<br>
-              If the older Mac version of Bip Island is already installed, the Mac asks whether to replace it. Choose <b>Replace</b> to swap it for the new one, or <b>Keep Both</b> to keep it too. Progress from the older version isn't moved across yet.</li>
-            <li>Right-click the new <b>Bip Island</b> and choose <b>Open</b>, then <b>Open</b> again (or <b>Open Anyway</b> in <b>System Settings → Privacy &amp; Security</b>).</li>
-          </ol>
-          <p>To leave the game: hold <b>Esc</b> for 3 seconds, answer the maths question (or enter your passcode), then choose <b>Quit</b> in <b>Settings</b>. It finds its own updates, and a grown-up installs them with the "Update ready" button.</p>
         </div>
+      </div>
+      <div class="card after-install">
+        <h3>After that, on both</h3>
+        <ul class="steps">
+          <li>Bip Island finds its own updates. When one is ready, an <b>"Update ready"</b> button appears for a grown-up to install.</li>
+          <li>To leave the game: hold <b>Esc</b> for 3 seconds, answer the maths question (or enter your passcode), then choose <b>Quit</b> in <b>Settings</b>.</li>
+          <li>The full kid lock, which stops children switching to other apps, is still being built.</li>
+        </ul>
       </div>
     </div>
   </section>

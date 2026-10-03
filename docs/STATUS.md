@@ -40,12 +40,12 @@
   reviews due, recent games), Children tab, Settings tab.
 - **Play-time break is shared by the whole Mac** (stored in UserDefaults `bip.breakState`), so
   switching profiles can't skip it. Play minutes are still counted per child.
-- **Download page** (`site/index.html`): intro, the four islands with screenshots, a parents section,
-  and the Mac download + first-install steps. Screenshots are real: CI opens the built app with
-  `BIP_SCREENSHOTS=<folder>` (`BipIsland/App/ScreenshotMode.swift`, `scripts/ci/take_screenshots.sh`),
-  saves 12 scenes, shrinks them to JPEGs and deploys them to `screenshots/`. If that step fails the page
-  shows marked empty frames and the release still ships. The download area has one card per platform,
-  ready for a Windows card after the Godot move (the Godot build needs its own screenshot mode then).
+- **Download page** (`site/index.html`): intro, the four islands with screenshots, parents section with a
+  parent-area screenshot, and two download cards (Mac `.dmg`, Windows `Setup.exe`) for the **Godot** game.
+  Published by `godot.yml`'s publish job on main (`scripts/ci/deploy_site.sh`): fills in version, date and
+  the Blob store links, adds screenshots from `scripts/ci/site_screenshots.sh` (Godot `--bip-scene` shots
+  under xvfb), and carries the Swift app's live `appcast.xml` + zip into the deploy so installed Swift
+  copies keep updating. `build.yml` no longer deploys anything.
 - **Known open items:** `vo_who_is_playing` still a placeholder clip (ElevenLabs was busy), waves 2b/3/4
   games (17 left), golden rounds, real art, music, Developer ID signing.
 
@@ -237,3 +237,9 @@
   0.2.31 (all 11 games) to `godot-test/`; its last check failed only because the overwritten feed is
   cached for 60 s, so the check now retries for 3 minutes. Drags and tracing stop when the button is
   let go out of sight (#27 review follow-up).
+- **3 Oct, later:** Download page switched to the Godot game:
+  two cards with placeholders filled by godot.yml, Godot screenshots, deploy moved from build.yml to
+  godot.yml (`deploy_site.sh`, `site_screenshots.sh`; `deploy_vercel.sh` and `take_screenshots.sh` removed).
+  Still to do when PR #26 (kid lock) merges: drop the "kid lock still being built" line, bring back the
+  "Kid lock" parent card, add the Option/Alt windowed start. `BipIsland/App/ScreenshotMode.swift` is now
+  unused; it goes with the rest of the Swift app.
