@@ -347,9 +347,19 @@ jobs:
           cp scripts/godot/publish_blob.mjs "$tools/"
           BLOB_READ_WRITE_TOKEN="$token" node "$tools/publish_blob.mjs" release/windows release/macos godot-test/
           base="$(printf '%s\n' "$store" | sed -n 2p)"
+          # The feeds are overwritten in place and cached for 60 seconds (publish_blob.mjs), so
+          # the old feed can still be served just after the upload: give the cache up to 3 minutes.
           for os in win osx; do
-            curl -fsS "$base/godot-test/$os/releases.$os.json" | grep -q "$VERSION" || {
-              echo "::error::The $os update feed doesn't list $VERSION."
+            listed=false
+            for _ in $(seq 1 12); do
+              if curl -fsS "$base/godot-test/$os/releases.$os.json" | grep -q "$VERSION"; then
+                listed=true
+                break
+              fi
+              sleep 15
+            done
+            $listed || {
+              echo "::error::The $os update feed still doesn't list $VERSION after 3 minutes."
               exit 1
             }
           done

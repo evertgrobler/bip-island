@@ -295,6 +295,11 @@ public static class WalkTest
                 // Tapping a placed tile sends it back to the bank.
                 foreach (var name in wrong) await Tap(name);
                 Check("tapping placed tiles sends them back", builder.Spelling.All(s => s.Length == 0), string.Join(",", builder.Spelling));
+                // A release the game never saw (outside the window, or behind the gate): the tile drops.
+                builder.LostReleaseForTest(answer[0]);
+                await Wait(0.4);
+                Check("a drag whose release was missed drops the tile instead of following the pointer",
+                      !builder.Dragging && builder.Spelling.All(s => s.Length == 0));
                 // Drag the first tile into its space; tap the rest in.
                 builder.DragForTest(answer[0], 0);
                 await Wait(0.4);
