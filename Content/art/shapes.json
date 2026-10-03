@@ -1,5 +1,5 @@
 {
-  "note": "Shape Builder (Art Island). Outlines are drawn in a box from -1 to 1 (y up) and stretched to the size given. 'card' is the width:height a shape shows at on its own. straightSides, curved, regular and lookSameTurns (how many times a shape looks the same in one full turn; 0 = every way round, like a circle) are checked against the outline by scripts/validate_content.py. Pictures sit in a 600 x 420 frame centred on 0,0; pieces marked fixed are never the missing piece (too small to tap).",
+  "note": "Shape Builder (Art Island). Outlines are drawn in a box from -1 to 1 (y up) and stretched to the size given. 'card' is the width:height a shape shows at on its own. straightSides, curved, regular (polygons only) and lookSameTurns (how many times a shape looks the same in one full turn; 0 = every way round, like a circle) are checked against the outline by scripts/validate_content.py. Pictures sit in a 600 x 420 frame centred on 0,0; pieces marked fixed are never the missing piece (too small to tap).",
   "shapes": [
     {
       "id": "circle",
@@ -14,7 +14,6 @@
       ],
       "straightSides": 0,
       "curved": true,
-      "regular": null,
       "lookSameTurns": 0
     },
     {
@@ -128,7 +127,6 @@
       ],
       "straightSides": 0,
       "curved": true,
-      "regular": null,
       "lookSameTurns": 2
     },
     {
@@ -144,7 +142,6 @@
       ],
       "straightSides": 1,
       "curved": true,
-      "regular": null,
       "lookSameTurns": 1
     },
     {
@@ -155,8 +152,8 @@
         "kind": "polygon",
         "points": [
           [
-            0.0,
-            1.0
+            0,
+            1
           ],
           [
             -0.951,
@@ -193,8 +190,8 @@
         "kind": "polygon",
         "points": [
           [
-            0.0,
-            1.0
+            0,
+            1
           ],
           [
             -0.866,
@@ -205,8 +202,8 @@
             -0.5
           ],
           [
-            -0.0,
-            -1.0
+            0,
+            -1
           ],
           [
             0.866,

@@ -136,6 +136,34 @@
         "...GGG..",
         "........"
       ]
+    },
+    {
+      "id": "pencil",
+      "mirror": "horizontal",
+      "rows": [
+        "........",
+        "........",
+        "RYYYYYO.",
+        "RYYYYYOK",
+        "RYYYYYOK",
+        "RYYYYYO.",
+        "........",
+        "........"
+      ]
+    },
+    {
+      "id": "carrot",
+      "mirror": "horizontal",
+      "rows": [
+        "........",
+        "GG......",
+        ".GOOOO..",
+        "GGOOOOOO",
+        "GGOOOOOO",
+        ".GOOOO..",
+        "GG......",
+        "........"
+      ]
     }
   ],
   "pegs": {

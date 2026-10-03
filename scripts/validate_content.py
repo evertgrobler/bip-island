@@ -207,11 +207,11 @@ for sh in SHAPES.values():
         sides = [math.dist(pts[i], pts[(i + 1) % len(pts)]) for i in range(len(pts))]
         if sh["straightSides"] != len(pts) or sh["curved"]: err(f"{where}: a polygon with {len(pts)} straight sides and no curves")
         regular = max(sides) - min(sides) < 0.02 and same_after_turn(pts, 2 * math.pi / len(pts))
-        if sh["regular"] != regular: err(f"{where}: regular should be {regular}")
+        if sh.get("regular") != regular: err(f"{where}: regular should be {regular}")
     else:
         want = {"ellipse": 0, "semicircle": 1}[kind]
-        if sh["straightSides"] != want or not sh["curved"] or sh["regular"] is not None:
-            err(f"{where}: a curved shape has {want} straight sides, curved true and regular null")
+        if sh["straightSides"] != want or not sh["curved"] or sh.get("regular") is not None:
+            err(f"{where}: a curved shape has {want} straight sides, curved true and no regular")
     turns = 0 if kind == "ellipse" and sh["card"][0] == sh["card"][1] else \
         max(k for k in range(1, 13) if same_after_turn(pts, 2 * math.pi / k))
     if sh["lookSameTurns"] != turns: err(f"{where}: looks the same {turns} times in a full turn, not {sh['lookSameTurns']}")
@@ -265,7 +265,7 @@ for gm in games:
                 if not same or len(shs) - len(same) < 2: err(f"{where}: turn rounds need shapes that do and don't survive a quarter turn")
             if "count" in lv["modes"] and any(SHAPES[x]["lookSameTurns"] < 2 for x in shs): err(f"{where}: count rounds need shapes that look the same at least twice")
             if "regular" in lv["modes"]:
-                reg = [x for x in shs if SHAPES[x]["regular"]]; irr = [x for x in shs if SHAPES[x]["regular"] is False]
+                reg = [x for x in shs if SHAPES[x].get("regular")]; irr = [x for x in shs if SHAPES[x].get("regular") is False]
                 if not reg or len(irr) < 2: err(f"{where}: regular rounds need regular shapes and at least two irregular ones")
         elif gm["id"] == "paint_pots":
             pots = lv.get("pots", [])
