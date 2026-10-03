@@ -58,15 +58,19 @@ public partial class LettersIslandScreen : BaseScreen
         Stage.AddChild(trace);
         _keyNodes.Add(trace);
 
-        var monster = Buttons.Tappable(Group(
-            Pen(Ellipse(Vector2.Zero, 100, 100), 770, fill: Palette.Purple, lineWidth: 6),
-            Pen(Ellipse(P(0, -10), 44, 34), 771, fill: Palette.Ink, lineWidth: 4)), "monster");
-        foreach (var (i, eye) in Indexed(-30, 30))
-            monster.AddChild(Pen(Ellipse(P(eye, 44), 16, 20), (ulong)(772 + i), fill: Palette.White, lineWidth: 4));
-        monster.Position = P(560, -300);
-        monster.ZIndex = 10;
-        Stage.AddChild(monster);
-        _keyNodes.Add(monster);
+        // Feed the Monster waits until there are foods the child can read (from group 4).
+        if (Coordinator.LettersGameReady(FeedMonsterGame.GameId))
+        {
+            var monster = Buttons.Tappable(Group(
+                Pen(Ellipse(Vector2.Zero, 100, 100), 770, fill: Palette.Purple, lineWidth: 6),
+                Pen(Ellipse(P(0, -10), 44, 34), 771, fill: Palette.Ink, lineWidth: 4)), "monster");
+            foreach (var (i, eye) in Indexed(-30, 30))
+                monster.AddChild(Pen(Ellipse(P(eye, 44), 16, 20), (ulong)(772 + i), fill: Palette.White, lineWidth: 4));
+            monster.Position = P(560, -300);
+            monster.ZIndex = 10;
+            Stage.AddChild(monster);
+            _keyNodes.Add(monster);
+        }
 
         var play = Buttons.Play();
         play.Position = positions.Count > 6 ? P(380, -320) : P(140, -230);

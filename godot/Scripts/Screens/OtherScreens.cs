@@ -158,7 +158,7 @@ public partial class StickerScreen : BaseScreen
         AddBip(P(-640, -380), 0.7f);
 
         var jar = new Node2D { Position = P(0, 400) };
-        jar.AddChild(Sketch.Label($"{Coordinator.Progress.Stars} stars in the jar", 56, Palette.Ink));
+        jar.AddChild(Sketch.Label($"{Coordinator.Progress.Stars} {(Coordinator.Progress.Stars == 1 ? "star" : "stars")} in the jar", 56, Palette.Ink));
         Stage.AddChild(jar);
 
         var toggle = Buttons.Tappable(Buttons.Next(), "page");

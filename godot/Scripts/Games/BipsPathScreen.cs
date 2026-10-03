@@ -188,7 +188,7 @@ public partial class BipsPathScreen : GameScreen
             var button = Buttons.Tappable(new Node2D(), $"block:{i}");
             button.Position = P((i - (level.Blocks.Count - 1) / 2.0) * 130, -340);
             button.ZIndex = 10;
-            button.AddChild(Pen(Ellipse(Vector2.Zero, 56, 56), (ulong)(994 + i), fill: Palette.Sun, lineWidth: 5));
+            button.AddChild(Pen(Ellipse(Vector2.Zero, 60, 60), (ulong)(994 + i), fill: Palette.Sun, lineWidth: 5));
             button.AddChild(BlockIcon(level.Blocks[i]));
             Stage.AddChild(button);
             _palette.Add(button);
@@ -228,13 +228,11 @@ public partial class BipsPathScreen : GameScreen
         for (var i = 0; i < _strip.Count; i++)
         {
             var node = Buttons.Tappable(new Node2D(), $"strip:{i}");
-            // Two rows of six along the top right, clear of the level stars in the middle.
-            node.Position = P(180 + i % 6 * 95, 392 - i / 6 * 85);
+            // Two rows of six along the top right, clear of the level stars in the middle; 120 pt to tap.
+            node.Position = P(185 + i % 6 * 128, 392 - i / 6 * 128);
             node.ZIndex = 10;
-            node.AddChild(Pen(RoundRect(R(-40, -40, 80, 80), 16), (ulong)(999 + i), fill: Palette.LightTeal, lineWidth: 4));
-            var icon = BlockIcon(_strip[i]);
-            icon.Scale *= 0.8f;
-            node.AddChild(icon);
+            node.AddChild(Pen(RoundRect(R(-60, -60, 120, 120), 20), (ulong)(999 + i), fill: Palette.LightTeal, lineWidth: 4));
+            node.AddChild(BlockIcon(_strip[i]));
             Stage.AddChild(node);
             _stripNodes.Add(node);
         }
@@ -429,7 +427,7 @@ public partial class BipsPathScreen : GameScreen
         if (_attempt.NeedsHint)
         {
             WiggleNextRightBlock(round);
-            After(0.4, () => Voice.Play([Coordinator.RandomHint()]));
+            After(0.4, () => Voice.Play([AudioCatalogue.LookHint]));
         }
         After(0.6, () =>
         {

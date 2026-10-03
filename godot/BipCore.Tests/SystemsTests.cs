@@ -127,6 +127,21 @@ public sealed class SystemsTests
     }
 
     [Fact]
+    public void TimeAfterTheDayIsDoneIsNotPlay()
+    {
+        var state = new BreakState { DayStamp = 100 };
+        var now = Reference.AddSeconds(3_500_000);
+        var settings = Settings(play: 20, rest: 20, dailyMax: 15);
+        Assert.Equal(BreakPhase.DayDone, PlayBreaks.Advance(state, 15 * 60, now, 100, settings));
+        // An hour on the night screen banks nothing, so it can't start a break tomorrow.
+        Assert.Equal(BreakPhase.DayDone, PlayBreaks.Advance(state, 60 * 60, now.AddHours(1), 100, settings));
+        Assert.Equal(15 * 60, state.PlayedSeconds);
+        // The next day starts with a full battery.
+        Assert.Equal(BreakPhase.Playing, PlayBreaks.Advance(state, 60, now.AddHours(12), 101, settings));
+        Assert.Equal(60, state.PlayedSeconds);
+    }
+
+    [Fact]
     public void ParentEndsBreakEarly()
     {
         var state = new BreakState { DayStamp = 100 };

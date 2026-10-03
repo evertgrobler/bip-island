@@ -1,5 +1,5 @@
 {
-  "note": "Decodable word bank. 'graphemes' lists grapheme ids from phonics/graphemes.json in reading order; split digraphs (a_e etc.) sit where the vowel sound is heard. A word may only be used at a child's level once every grapheme's group is unlocked (decodableFromGroup). Rhyme families share 'rime'. Every picturable word needs pic_<word> artwork and every word needs word_<word> audio.",
+  "note": "Decodable word bank. 'graphemes' lists grapheme ids from phonics/graphemes.json in reading order; split digraphs (a_e etc.) sit where the vowel sound is heard. A word may only be used at a child's level once every grapheme's group is unlocked (decodableFromGroup). Rhyme families share 'rime', a family key by sound: where one spelling has two sounds the key names the second (owl/cow are 'owl'/'ow'; bowl and snow are 'owl-oa'/'ow-oa'; wood is 'ood-short'). Every picturable word needs pic_<word> artwork and every word needs word_<word> audio.",
   "words": [
     {
       "word": "sat",
@@ -3856,7 +3856,7 @@
       "decodableFromGroup": 7,
       "band": "stage1",
       "firstSound": "w",
-      "rime": "ood",
+      "rime": "ood-short",
       "audio": "word_wood",
       "picturable": true,
       "objectives": [
@@ -4878,7 +4878,7 @@
       "decodableFromGroup": 9,
       "band": "stage2",
       "firstSound": "s",
-      "rime": "ow",
+      "rime": "ow-oa",
       "audio": "word_snow",
       "picturable": true,
       "objectives": [
@@ -4906,7 +4906,7 @@
       "decodableFromGroup": 9,
       "band": "stage2",
       "firstSound": "b",
-      "rime": "owl",
+      "rime": "owl-oa",
       "audio": "word_bowl",
       "picturable": true,
       "objectives": [

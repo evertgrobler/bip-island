@@ -46,6 +46,7 @@ public partial class GameCoordinator : Node
     /// <summary>The most one gap between checks can add to a child's minutes (an idle game left open overnight shouldn't count).</summary>
     private const int MaxPlayCreditSeconds = 30 * 60;
     private DateTimeOffset _lastBreakCheck = DateTimeOffset.Now;
+    private bool _breakClockPaused;
     private bool _hasWelcomed;
 
     private CanvasLayer _fadeLayer = null!;
@@ -240,17 +241,32 @@ public partial class GameCoordinator : Node
     public BreakPhase CurrentBreakPhase()
     {
         var now = DateTimeOffset.Now;
-        var elapsed = (int)Math.Max(0, (now - _lastBreakCheck).TotalSeconds);
+        // A long gap (the computer asleep) counts as no more than MaxPlayCreditSeconds of play.
+        var elapsed = _breakClockPaused ? 0 : (int)Math.Clamp((now - _lastBreakCheck).TotalSeconds, 0, MaxPlayCreditSeconds);
         _lastBreakCheck = now;
         var wasPlaying = _break.BreakEndsAt == null;
         var phase = PlayBreaks.Advance(_break, elapsed, now, Today, Store.Settings.ToBreakSettings());
         Store.SaveBreak(_break);
         if (wasPlaying)
         {
-            Progress.NotePlayTime(Math.Min(elapsed, MaxPlayCreditSeconds), Today);
+            Progress.NotePlayTime(elapsed, Today);
             Store.Save(Progress, ChildId);
         }
         return phase;
+    }
+
+    /// <summary>The parent gate opened: bank the play so far, then stop counting until it closes.</summary>
+    public void PauseBreakClock()
+    {
+        CurrentBreakPhase();
+        _breakClockPaused = true;
+    }
+
+    /// <summary>The parent gate closed: count play again from now.</summary>
+    public void ResumeBreakClock()
+    {
+        _breakClockPaused = false;
+        _lastBreakCheck = DateTimeOffset.Now;
     }
 
     /// <summary>A parent ends the break early from settings.</summary>
@@ -378,6 +394,12 @@ public partial class GameCoordinator : Node
             _ => true,
         };
     }
+
+    /// <summary>
+    /// Whether a Letters game has something for the child now (Feed the Monster's foods start at group 4).
+    /// The island hides a game's button until it has, rather than opening a different game.
+    /// </summary>
+    public bool LettersGameReady(string gameId) => LettersReady && PracticeSound() is { } sound && CanPlay(gameId, sound);
 
     /// <summary>Meet the Sound is one round: the sound itself (null if it can't be met yet).</summary>
     private GameScreen? MeetScreen(PhonicsSound sound)

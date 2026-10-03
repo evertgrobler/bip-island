@@ -65,8 +65,10 @@ public static class PlayBreaks
     {
         if (day != state.DayStamp)
         {
+            // A new day starts with a full battery (a break still running carries on below).
             state.DayStamp = day;
             state.PlayedTodaySeconds = 0;
+            state.PlayedSeconds = 0;
         }
         if (state.BreakEndsAt is DateTimeOffset endsAt)
         {
@@ -80,6 +82,8 @@ public static class PlayBreaks
                 return BreakPhase.BreakTime;
             }
         }
+        // The day is done: time on the night screen isn't play, so nothing more is banked.
+        if (settings.DailyMaxMinutes is int dayMax && state.PlayedTodaySeconds >= dayMax * 60) return BreakPhase.DayDone;
         state.PlayedSeconds += Math.Max(0, elapsed);
         state.PlayedTodaySeconds += Math.Max(0, elapsed);
         if (settings.DailyMaxMinutes is int max && state.PlayedTodaySeconds >= max * 60) return BreakPhase.DayDone;
