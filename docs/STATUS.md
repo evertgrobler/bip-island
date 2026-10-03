@@ -251,3 +251,5 @@
   including the real `vo_who_is_playing`. ElevenLabs refuses some requests with "unusual activity":
   three at a time and retrying works. Review fixes: a replay mid-turn no longer stacks shape turns; a wrong
   mix only empties its own paint from the bowl.
+- **3 Oct, evening:** Shape Builder's snowman picture became a rondavel (snow isn't everyday South African life):
+  rectangle wall, thatched triangle roof, round window, semicircle door. No new voice clips needed.
