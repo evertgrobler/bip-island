@@ -122,6 +122,8 @@
     .downloads { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 24px; }
     .download-card h3 { margin-bottom: 6px; }
     .tag.test { background: var(--sun); }
+    .buttons { display: flex; flex-wrap: wrap; gap: 14px; }
+    .button.secondary { background: var(--sea); }
     .steps { padding-left: 26px; margin: 16px 0 0; }
     .steps li { margin-bottom: 12px; }
 
@@ -280,12 +282,13 @@
     <div class="wrap">
       <h2>Download</h2>
       <p>For a Mac or a Windows PC. Both versions are free, with nothing to buy and no sign-up.</p>
-      <!-- One card per platform. The Windows card links to the Godot test build in the Vercel Blob
-           store (scripts/godot/publish_blob.mjs keeps the latest at this fixed address). -->
+      <!-- The current Mac app (Swift, Sparkle feed), and the Godot test build for Windows and Mac from the
+           Vercel Blob store (scripts/godot/publish_blob.mjs keeps the latest at these fixed addresses).
+           At the switchover the test card becomes the only download. -->
       <div class="downloads">
         <div class="card download-card" id="download-mac">
           <h3>Bip Island for Mac</h3>
-          <p class="muted">macOS 14 Sonoma or newer.</p>
+          <p class="muted">The current version, played by our family. macOS 14 Sonoma or newer.</p>
           <p><a class="button" href="{{ZIP}}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Download for Mac</a></p>
@@ -299,22 +302,32 @@
           </ol>
           <p>After this, Bip Island finds its own updates. When one is ready, an "Update ready" button appears in the corner for a grown-up to install.</p>
         </div>
-        <div class="card download-card" id="download-windows">
+        <div class="card download-card" id="download-test">
           <span class="tag test">Test version</span>
-          <h3>Bip Island for Windows</h3>
-          <p class="muted">Windows 10 or 11.</p>
-          <p><a class="button" href="https://x4dwtory3rjimb1l.public.blob.vercel-storage.com/godot-test/BipIsland-win-Setup.exe">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Download for Windows</a></p>
-          <p class="version">The new version of the game, still being tested. It has all four islands and the parent area. The full kid lock isn't on Windows yet, so children can still switch away with the Windows key or Alt+Tab.</p>
-          <h3>First install</h3>
+          <h3>The new Bip Island, for Windows and Mac</h3>
+          <p class="muted">Windows 10 or 11, or a Mac with macOS 14 Sonoma or newer.</p>
+          <p class="buttons">
+            <a class="button" href="https://x4dwtory3rjimb1l.public.blob.vercel-storage.com/godot-test/BipIsland-win-Setup.exe">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Download for Windows</a>
+            <a class="button secondary" href="https://x4dwtory3rjimb1l.public.blob.vercel-storage.com/godot-test/BipIsland-mac.dmg">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Download for Mac</a>
+          </p>
+          <p class="version">The next version of the game, still being tested. It has all four islands and the parent area. The full kid lock isn't in it yet, so children can still switch away (Windows key or Alt+Tab, Cmd+Tab on a Mac). Its progress is kept separately from the Mac version above for now.</p>
+          <h3>First install on Windows</h3>
           <ol class="steps">
             <li>Open the downloaded <b>BipIsland-win-Setup.exe</b>.</li>
             <li>If Windows says <b>"Windows protected your PC"</b>, click <b>More info</b>, then <b>Run anyway</b>. This is needed once, because the game isn't signed with a paid certificate.</li>
             <li>Bip Island installs and opens by itself.</li>
-            <li>To leave the game: hold <b>Esc</b> for 3 seconds, answer the maths question (or enter your passcode), then choose <b>Quit</b> in <b>Settings</b>.</li>
           </ol>
-          <p>After this, the test version finds its own updates. A grown-up installs them with the "Update ready" button.</p>
+          <h3>First install on a Mac</h3>
+          <ol class="steps">
+            <li>Open the downloaded <b>BipIsland-mac.dmg</b> and drag <b>Bip Island</b> into <b>Applications</b>.<br>
+              If you already have the Mac version above, the Mac asks whether to replace it: choose <b>Keep Both</b>.</li>
+            <li>Right-click the new <b>Bip Island</b> and choose <b>Open</b>, then <b>Open</b> again (or <b>Open Anyway</b> in <b>System Settings → Privacy &amp; Security</b>).</li>
+          </ol>
+          <p>To leave the test version: hold <b>Esc</b> for 3 seconds, answer the maths question (or enter your passcode), then choose <b>Quit</b> in <b>Settings</b>. It finds its own updates, and a grown-up installs them with the "Update ready" button.</p>
         </div>
       </div>
     </div>
