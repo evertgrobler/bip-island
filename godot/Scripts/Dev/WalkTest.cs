@@ -121,9 +121,27 @@ public static class WalkTest
         game.StartGame(BipCore.QuickLookGame.GameId);
         await Expect<ChargingScreen>("during a break a game shows Bip charging instead");
         Check("...and doesn't count as played", game.Progress.RecentGames.Count == playedBefore && game.CurrentGameId == null);
-        game.EndBreakEarly();
+        if (Screen() is ChargingScreen charging)
+        {
+            Check("the charging screen tells grown-ups when games open again",
+                  charging.GrownUpText.StartsWith("Games open again at ") && charging.GrownUpText.EndsWith("(in 1 minute)."), charging.GrownUpText);
+            Check("the battery starts empty", charging.LitBars == 0, $"{charging.LitBars} bars");
+            // A grown-up ends the break (Settings): Bip wakes up and the map opens by itself.
+            game.EndBreakEarly();
+            await WaitFor(() => Screen() is MapScreen, 10);
+            await Expect<MapScreen>("when the break ends, Bip wakes up and the map opens by itself");
+        }
+
+        // The daily maximum: the night screen, not the battery.
+        game.Store.Settings = game.Store.Settings with { DailyMaxMinutes = 10 };
+        game.ForceDayDoneForTest();
         game.ShowMap();
-        await Expect<MapScreen>("after the break the map opens again");
+        await Expect<ChargingScreen>("when the day's play is used up, the map shows Bip asleep");
+        Check("...with its own words: games open again tomorrow",
+              Screen() is ChargingScreen { DayDone: true, GrownUpText: "Games open again tomorrow." });
+        game.Store.Settings = game.Store.Settings with { DailyMaxMinutes = null, PlayMinutes = 20, BreakMinutes = 20 };
+        game.ShowMap();
+        await Expect<MapScreen>("with no daily maximum the map opens again");
 
         // Phase 3 games: one round of each, through the real clicks.
 

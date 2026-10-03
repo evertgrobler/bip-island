@@ -28,6 +28,8 @@ public static class VoiceLine
     public const string WordsIsland = "vo_words_island";
     public const string CodingIsland = "vo_coding_island";
     public const string WhoIsPlaying = "vo_who_is_playing";
+    public const string BipCharging = "vo_bip_charging";
+    public const string DayDone = "vo_day_done";
 
     /// <summary>Every instruction clip, in the order above.</summary>
     public static readonly IReadOnlyList<string> All =
@@ -35,6 +37,7 @@ public static class VoiceLine
         Welcome, IslandSleeping, LettersIsland, MeetNewSound, SayItWithMe, ClickToHearAgain, FindTheSound,
         PopTheLetter, LevelUp, LetsPractiseAgain, RoundDone, TraceLetter, FeedMonster, CountTap, QuickLook,
         SoundButtons, WordBuilder, MorningOrder, BipsPath, NumbersIsland, WordsIsland, CodingIsland, WhoIsPlaying,
+        BipCharging, DayDone,
     ];
 }
 

@@ -261,10 +261,27 @@ public partial class GameCoordinator : Node
         _lastBreakCheck = DateTimeOffset.Now;
     }
 
-    /// <summary>For the walk-through test only: starts a one-minute break now.</summary>
-    public void ForceBreakForTest()
+    /// <summary>When the break ends (null while playing), for the charging screen.</summary>
+    public DateTimeOffset? BreakEndsAt => _break.BreakEndsAt;
+
+    /// <summary>0 (break just started) to 1 (charged), for the charging screen's battery.</summary>
+    public double BreakProgress() => PlayBreaks.BreakProgress(_break, DateTimeOffset.Now, Store.Settings.BreakMinutes);
+
+    /// <summary>Whole minutes until games open again, rounded up.</summary>
+    public int BreakMinutesLeft() => PlayBreaks.MinutesLeft(_break, DateTimeOffset.Now);
+
+    /// <summary>For previews and the walk-through only: today's play time is used up (needs a daily maximum).</summary>
+    public void ForceDayDoneForTest()
     {
-        _break.BreakEndsAt = DateTimeOffset.Now.AddMinutes(1);
+        _break.BreakEndsAt = null;
+        _break.PlayedTodaySeconds = int.MaxValue / 2;
+        Store.SaveBreak(_break);
+    }
+
+    /// <summary>For previews and the walk-through only: a break that ends <paramref name="minutes"/> from now.</summary>
+    public void ForceBreakForTest(double minutes = 1)
+    {
+        _break.BreakEndsAt = DateTimeOffset.Now.AddMinutes(minutes);
         Store.SaveBreak(_break);
     }
 
