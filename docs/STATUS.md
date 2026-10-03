@@ -24,8 +24,8 @@
 - **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
   123 Morning Order step scenes.
 - **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
-  installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`, two cards,
-  Godot screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
+  installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands, parents section with the kid lock card,
+  two download cards with the Option/Alt tip, Godot screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
 - **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
   review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
 - **Known open items:** record `vo_who_is_playing`; cover second screens in the kid lock; Windows exe
@@ -231,6 +231,10 @@
   Still to do when PR #26 (kid lock) merges: drop the "kid lock still being built" line, bring back the
   "Kid lock" parent card, add the Option/Alt windowed start. `BipIsland/App/ScreenshotMode.swift` is now
   unused; it goes with the rest of the Swift app.
+- **3 Oct, afternoon:** Kid lock merged (#26), so the download page brings back the "Kid lock" card (Mac: Dock,
+  menu bar, Cmd-Tab, Cmd-Q blocked; Windows: Windows key, Alt-Tab blocked; shutting down and Ctrl-Alt-Del
+  always work) and adds the Option/Alt windowed-start tip. Swift app retired: `deploy_site.sh` no longer
+  carries `appcast.xml` and the Swift zip into the deploy (it still uses `resolve_feed_url.sh` for the site address).
 - **3 Oct, later:** Swift app retired: `BipIsland/`, the Swift `BipCore/`, `project.yml`, `build.yml`,
   the Sparkle scripts and the placeholder-voice script removed. The real app icon moved to
   `godot/icons/` (Mac export uses it). CLAUDE.md, SETUP.md, PLAN.md and this file now describe the
