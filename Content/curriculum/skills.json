@@ -745,6 +745,123 @@
       "prerequisites": [
         "programs"
       ]
+    },
+    {
+      "id": "shapes_2d",
+      "island": "art",
+      "band": "foundation",
+      "name": "Naming flat shapes",
+      "objectives": [
+        "1Gg.01"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "shape_sides",
+      "island": "art",
+      "band": "stage1",
+      "name": "Sides: how many, straight or curved",
+      "objectives": [
+        "1Gg.01"
+      ],
+      "prerequisites": [
+        "shapes_2d"
+      ]
+    },
+    {
+      "id": "shape_names",
+      "island": "art",
+      "band": "stage2",
+      "name": "Pentagons, hexagons and turned shapes",
+      "objectives": [
+        "2Gg.01"
+      ],
+      "prerequisites": [
+        "shape_sides"
+      ]
+    },
+    {
+      "id": "shape_turns",
+      "island": "art",
+      "band": "stage2",
+      "name": "Shapes that look the same as they turn",
+      "objectives": [
+        "1Gg.07",
+        "2Gg.10"
+      ],
+      "prerequisites": [
+        "shape_names"
+      ]
+    },
+    {
+      "id": "shape_regular",
+      "island": "art",
+      "band": "stage3",
+      "name": "Regular and irregular shapes",
+      "objectives": [
+        "3Gg.01"
+      ],
+      "prerequisites": [
+        "shape_names"
+      ]
+    },
+    {
+      "id": "colour_mixing",
+      "island": "art",
+      "band": "foundation",
+      "name": "Mixing two colours",
+      "objectives": [
+        "AD1.colour"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "colour_light_dark",
+      "island": "art",
+      "band": "stage1",
+      "name": "Lighter with white, darker with black",
+      "objectives": [
+        "AD2.colour"
+      ],
+      "prerequisites": [
+        "colour_mixing"
+      ]
+    },
+    {
+      "id": "symmetry_halves",
+      "island": "art",
+      "band": "foundation",
+      "name": "Same on both sides",
+      "objectives": [
+        "1Nf.01"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "symmetry_finish",
+      "island": "art",
+      "band": "stage1",
+      "name": "Finishing a mirror picture",
+      "objectives": [
+        "1Nf.01",
+        "2Gg.09"
+      ],
+      "prerequisites": [
+        "symmetry_halves"
+      ]
+    },
+    {
+      "id": "symmetry_lines",
+      "island": "art",
+      "band": "stage2",
+      "name": "Mirror lines across and down",
+      "objectives": [
+        "2Gg.09",
+        "3Gg.09"
+      ],
+      "prerequisites": [
+        "symmetry_finish"
+      ]
     }
   ]
 }

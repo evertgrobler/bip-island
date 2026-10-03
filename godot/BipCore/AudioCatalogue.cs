@@ -28,6 +28,23 @@ public static class VoiceLine
     public const string WordsIsland = "vo_words_island";
     public const string CodingIsland = "vo_coding_island";
     public const string WhoIsPlaying = "vo_who_is_playing";
+    // Art Island
+    public const string ArtIsland = "vo_art_island";
+    public const string FindTheShape = "vo_find_the_shape";
+    public const string WhichShapeFits = "vo_which_shape_fits";
+    public const string ShapeSides = "vo_shape_sides";
+    public const string StraightSides = "vo_straight_sides";
+    public const string ShapeCurved = "vo_shape_curved";
+    public const string ShapeTurn = "vo_shape_turn";
+    public const string ShapeCountTurns = "vo_shape_count_turns";
+    public const string ShapeRegular = "vo_shape_regular";
+    public const string PaintMake = "vo_paint_make";
+    public const string PaintPredict = "vo_paint_predict";
+    public const string Make = "vo_make";
+    public const string MirrorSame = "vo_mirror_same";
+    public const string MirrorFinish = "vo_mirror_finish";
+    public const string MirrorPegs = "vo_mirror_pegs";
+    public const string MirrorLine = "vo_mirror_line";
 
     /// <summary>Every instruction clip, in the order above.</summary>
     public static readonly IReadOnlyList<string> All =
@@ -35,6 +52,8 @@ public static class VoiceLine
         Welcome, IslandSleeping, LettersIsland, MeetNewSound, SayItWithMe, ClickToHearAgain, FindTheSound,
         PopTheLetter, LevelUp, LetsPractiseAgain, RoundDone, TraceLetter, FeedMonster, CountTap, QuickLook,
         SoundButtons, WordBuilder, MorningOrder, BipsPath, NumbersIsland, WordsIsland, CodingIsland, WhoIsPlaying,
+        ArtIsland, FindTheShape, WhichShapeFits, ShapeSides, StraightSides, ShapeCurved, ShapeTurn, ShapeCountTurns,
+        ShapeRegular, PaintMake, PaintPredict, Make, MirrorSame, MirrorFinish, MirrorPegs, MirrorLine,
     ];
 }
 

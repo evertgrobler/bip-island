@@ -16,6 +16,7 @@ shots=(
   numbers-game:Games/count_and_tap
   words-game:Games/word_builder
   coding-game:Games/bips_path
+  art-game:Games/paint_pots
   stickers:Screens/stickers
   charging:Screens/charging
   parent-progress:Parent/progress

@@ -758,6 +758,267 @@
       ],
       "content": "free play: no levels",
       "buildPhase": 3
+    },
+    {
+      "id": "shape_builder",
+      "island": "art",
+      "name": "Shape Builder",
+      "ages": "4-8",
+      "skills": [
+        "shapes_2d",
+        "shape_sides",
+        "shape_names",
+        "shape_turns",
+        "shape_regular"
+      ],
+      "objectives": [
+        "1Gg.01",
+        "1Gg.07",
+        "2Gg.01",
+        "2Gg.10",
+        "3Gg.01"
+      ],
+      "content": "art/shapes.json",
+      "buildPhase": 5,
+      "levels": [
+        {
+          "modes": [
+            "find"
+          ],
+          "shapes": [
+            "circle",
+            "square",
+            "triangle",
+            "rectangle"
+          ],
+          "note": "Find the circle, square, triangle or rectangle"
+        },
+        {
+          "modes": [
+            "fill"
+          ],
+          "shapes": [
+            "circle",
+            "square",
+            "triangle",
+            "rectangle"
+          ],
+          "note": "Which shape fits the gap in the picture?"
+        },
+        {
+          "band": "stage1",
+          "modes": [
+            "sides",
+            "fill"
+          ],
+          "shapes": [
+            "circle",
+            "square",
+            "triangle",
+            "rectangle",
+            "oval",
+            "semicircle"
+          ],
+          "note": "How many straight sides? Which one is curved?"
+        },
+        {
+          "band": "stage2",
+          "modes": [
+            "find",
+            "fill"
+          ],
+          "shapes": [
+            "circle",
+            "square",
+            "triangle",
+            "rectangle",
+            "oval",
+            "semicircle",
+            "pentagon",
+            "hexagon"
+          ],
+          "note": "Pentagons and hexagons, turned any way round"
+        },
+        {
+          "modes": [
+            "turn"
+          ],
+          "shapes": [
+            "circle",
+            "square",
+            "triangle",
+            "rectangle",
+            "oval",
+            "semicircle",
+            "pentagon",
+            "hexagon"
+          ],
+          "note": "Which one still looks the same after a quarter turn?"
+        },
+        {
+          "modes": [
+            "count"
+          ],
+          "shapes": [
+            "square",
+            "triangle",
+            "rectangle",
+            "oval",
+            "pentagon",
+            "hexagon"
+          ],
+          "note": "How many times does it look the same in one full turn?"
+        },
+        {
+          "band": "stage3",
+          "modes": [
+            "regular"
+          ],
+          "shapes": [
+            "square",
+            "triangle",
+            "pentagon",
+            "hexagon",
+            "rectangle",
+            "tall_triangle",
+            "kite",
+            "wonky_pentagon",
+            "wonky_hexagon"
+          ],
+          "note": "Which shape has all its sides the same length?"
+        }
+      ]
+    },
+    {
+      "id": "paint_pots",
+      "island": "art",
+      "name": "Paint Pots",
+      "ages": "4-7",
+      "skills": [
+        "colour_mixing",
+        "colour_light_dark"
+      ],
+      "objectives": [
+        "AD1.colour",
+        "AD2.colour"
+      ],
+      "content": "art/paints.json",
+      "buildPhase": 5,
+      "levels": [
+        {
+          "modes": [
+            "make"
+          ],
+          "pots": [
+            "red",
+            "yellow",
+            "blue"
+          ],
+          "note": "Mix two pots to make orange, green or purple"
+        },
+        {
+          "modes": [
+            "predict"
+          ],
+          "pots": [
+            "red",
+            "yellow",
+            "blue"
+          ],
+          "note": "What will these two make? Guess, then mix to check"
+        },
+        {
+          "band": "stage1",
+          "modes": [
+            "make",
+            "predict"
+          ],
+          "pots": [
+            "red",
+            "yellow",
+            "blue",
+            "white"
+          ],
+          "note": "White makes colours lighter"
+        },
+        {
+          "band": "stage2",
+          "modes": [
+            "make",
+            "predict"
+          ],
+          "pots": [
+            "red",
+            "yellow",
+            "blue",
+            "white",
+            "black"
+          ],
+          "note": "A little black makes colours darker"
+        }
+      ]
+    },
+    {
+      "id": "mirror_magic",
+      "island": "art",
+      "name": "Mirror Magic",
+      "ages": "4-8",
+      "skills": [
+        "symmetry_halves",
+        "symmetry_finish",
+        "symmetry_lines"
+      ],
+      "objectives": [
+        "1Nf.01",
+        "2Gg.09",
+        "3Gg.09"
+      ],
+      "content": "art/mirror.json",
+      "buildPhase": 5,
+      "levels": [
+        {
+          "modes": [
+            "same"
+          ],
+          "note": "Which picture is the same on both sides?"
+        },
+        {
+          "band": "stage1",
+          "modes": [
+            "finish"
+          ],
+          "mirror": "vertical",
+          "note": "Which half finishes the picture?"
+        },
+        {
+          "modes": [
+            "finish"
+          ],
+          "mirror": "horizontal",
+          "note": "The mirror goes across"
+        },
+        {
+          "band": "stage2",
+          "modes": [
+            "pegs"
+          ],
+          "mirror": "vertical",
+          "note": "Put pegs on the other side to finish the pattern"
+        },
+        {
+          "modes": [
+            "pegs"
+          ],
+          "mirror": "horizontal"
+        },
+        {
+          "band": "stage3",
+          "modes": [
+            "line"
+          ],
+          "note": "Where is the mirror line?"
+        }
+      ]
     }
   ]
 }
