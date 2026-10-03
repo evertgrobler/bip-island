@@ -16,6 +16,7 @@ The frameworks used:
 - **English (0058)**, Reading and Writing *word structure* strands (codes `Rw`, `Ww`). Phonics runs through Stages 1–4; spelling through every stage.
 - **Mathematics (0096)**, mainly the Number strand: counting and sequences `Nc`, integers `Ni`, money `Nm`, place value `Np`, plus position `Gp`, statistics `Ss` and probability `Sp`.
 - **Computing (0059)**: computational thinking `CT` and programming `P`.
+- **Art Island** adds Mathematics geometry (`Gg`: 2D shapes, turning, symmetry) and halves (`Nf`), plus colour mixing from **Art & Design (0067)**, Making strand.
 
 Cambridge Early Years learning statements are only available to registered schools, so the `foundation` band uses the earliest Stage 1 objectives as its targets. If the family ever gets the EY statements, add them to `Content/curriculum/objectives.json` and link them to the foundation skills.
 
@@ -80,6 +81,9 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | Repeat Robot | 6–8 | 2P.03, 3CT.02, 3CT.03, 3P.01 |
 | Puddle Rules | 7–8 | 3CT.05, 3CT.07, 3CT.08 (if-then goes slightly beyond Stage 3: offer it only to confident 7–8 year olds) |
 | Bip's Dance Party | 5–8 | 1CT.07, 2P.03, 2P.04, 3CT.02, 3CT.03, 3P.01, 3P.03, 3P.04 |
+| Shape Builder (Art) | 4–8 | 1Gg.01, 1Gg.07, 2Gg.01, 2Gg.10, 3Gg.01 |
+| Paint Pots (Art) | 4–7 | AD1.colour, AD2.colour (Art & Design 0067, codes to be confirmed) |
+| Mirror Magic (Art) | 4–8 | 1Nf.01, 2Gg.09, 3Gg.09 |
 
 The authoritative mapping is `Content/curriculum/games.json`, generated from the skills each game practises. If this table and the JSON ever differ, the JSON wins.
 
@@ -114,6 +118,9 @@ All game content is data. Games never hard-code words, numbers or levels. The ap
 | `coding/sequences.json` | 8 picture-card sequences for Morning Order | Coding island |
 | `coding/patterns.json` | Pattern rules from AB up to growing patterns | Pattern Party |
 | `coding/levels.json` | 52 grid levels (easy arrows, arrows, turns, Fix-It, repeat) plus 5 Puddle Rules levels, each checked solvable with a shortest solution | Bip's Path, Fix-It, Repeat Robot, Puddle Rules |
+| `art/shapes.json` | 12 flat shapes (outline, sides, curved, regular, how often they look the same in a turn) and 14 pictures built from them | Shape Builder |
+| `art/paints.json` | Paint colours, the pots (each with a label picture) and every mix, following real paint | Paint Pots |
+| `art/mirror.json` | 8 x 8 peg pictures, each folding along exactly one mirror line, and the peg board | Mirror Magic |
 | `asset_manifest.json` | Generated: every voice clip (660, with the text to speak) and picture (256, with a brief) the content needs | Audio and art production |
 
 ## Rules for changing content
@@ -139,4 +146,17 @@ All game content is data. Games never hard-code words, numbers or levels. The ap
 - [Cambridge Primary Mathematics curriculum framework 0096 (2020)](https://cmapspublic2.ihmc.us/rid=1X1FVKBN9-26QY3DL-426X/Cambridge%20Primary%20Mathematics%20Curriculum%20Framework%200096_tcm142-592530.pdf)
 - [Cambridge Primary Computing curriculum framework 0059 (2021)](https://pdfcoffee.com/0059-primary-computing-curriculum-framework-2021-tcm142-635600-pdf-free.html)
 - [Cambridge Early Years to Primary transition document (EY stage ages)](https://www.cambridgeinternational.org/Images/729772-cambridge-early-years-to-primary-transition-support-document.pdf)
+- [Cambridge Primary Art & Design (0067)](https://www.cambridgeinternational.org/programmes-and-qualifications/cambridge-primary/curriculum/art-and-design/)
 - [Cambridge Early Years handbook 2026](https://www.cambridgeinternational.org/Images/745285-cambridge-early-years-handbook-2026.pdf)
+
+## Art Island (added 3 October 2026)
+
+Three games on a fifth island, in the Godot version only.
+
+- **Shape Builder**: find a named shape, then fill the gap in a picture made of shapes (foundation). From stage 1, sort shapes by straight sides and curves. From stage 2, pentagons and hexagons, shapes in any position, which shape still looks the same after a quarter turn, and how many times a shape looks the same in one full turn. At stage 3, tell regular shapes (all sides equal) from irregular ones.
+- **Paint Pots**: mix two pots to make a colour, or predict what two pots make and then mix to check (the "predict and check" habit from Thinking and Working Mathematically). White makes colours lighter (stage 1), black makes them darker (stage 2). Mixes follow real paint, never screen light. Every pot carries a label picture and Bip says every colour name, for children who find some colours hard to tell apart.
+- **Mirror Magic**: which picture is the same on both sides (foundation), which half finishes a picture with the mirror down or across (stage 1), mirror the pegs on a peg board (stage 2), and where the mirror line goes (stage 3).
+
+**To confirm:** 1Gg.07 and 3Gg.09 were checked against summaries of the 0096 framework, not the document itself. The Art & Design 0067 framework is only open to registered schools, so `AD1.colour` and `AD2.colour` are placeholder codes for its Making strand: swap in the real codes once someone has the framework.
+
+The validator checks the art content too: each shape's sides, regular flag and turn count against its outline; that every pair of pots a level offers has exactly one, distinct mix; and that every mirror picture folds along its own line and no other.

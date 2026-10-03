@@ -46,6 +46,12 @@
   the Blob store links, adds screenshots from `scripts/ci/site_screenshots.sh` (Godot `--bip-scene` shots
   under xvfb), and carries the Swift app's live `appcast.xml` + zip into the deploy so installed Swift
   copies keep updating. `build.yml` no longer deploys anything.
+- **Art Island (Godot only, 3 Oct):** a fifth island in the middle of the map with Shape Builder,
+  Paint Pots and Mirror Magic (content in `Content/art/`, game types in `godot/BipCore/Games/`,
+  screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`). Curriculum and the
+  codes still to confirm: `docs/CURRICULUM.md`, "Art Island". The Swift app can't read the art content, so its
+  CI (`build.yml`) is retired (owner: "only the new build, I am removing the old one"); its code stays until
+  Phase 5 removes it.
 - **Known open items:** `vo_who_is_playing` still a placeholder clip (ElevenLabs was busy), waves 2b/3/4
   games (17 left), golden rounds, real art, music, Developer ID signing.
 
@@ -243,3 +249,10 @@
   Still to do when PR #26 (kid lock) merges: drop the "kid lock still being built" line, bring back the
   "Kid lock" parent card, add the Option/Alt windowed start. `BipIsland/App/ScreenshotMode.swift` is now
   unused; it goes with the rest of the Swift app.
+- **3 Oct:** Art Island (owner request: art with shapes, colour mixing and symmetry, kept on the Cambridge
+  curriculum). Shape Builder (7 levels, 1Gg.01 to 3Gg.01), Paint Pots (4 levels, real paint mixes, label
+  pictures on every pot), Mirror Magic (6 levels, 1Nf.01, 2Gg.09, 3Gg.09). Validator checks shape geometry,
+  pot mixes and mirror lines; ArtGameTests play every level; the walk-through plays one round of each.
+  38 narrator clips made with the ElevenLabs connector (about 1,000 credits; the account had 3,391 before),
+  including the real `vo_who_is_playing`. ElevenLabs refuses some requests with "unusual activity":
+  three at a time and retrying works.

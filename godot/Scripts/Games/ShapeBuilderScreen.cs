@@ -90,10 +90,11 @@ public partial class ShapeBuilderScreen : GameScreen
             }
             else if (_game.Shape(next.Choices[i]) is { } shape)
             {
-                var (w, h) = next.Mode == ShapeBuilderGame.Mode.Fill && next.Picture is { } pic
-                    ? FitPiece(pic.Pieces[next.Missing], size * 0.68)
-                    : ArtDrawing.CardSize(shape, size * 0.72);
-                var turn = next.Mode == ShapeBuilderGame.Mode.Fill ? next.Picture!.Pieces[next.Missing].Rotation ?? 0 : next.Turns?[i] ?? 0;
+                // Fill rounds: the right shape is drawn just as the gap needs it; the others keep their own
+                // proportions (a square drawn the gap's shape would look like a rectangle).
+                var fits = next.Mode == ShapeBuilderGame.Mode.Fill && next.Picture is { } pic && shape.Name == next.Target?.Name;
+                var (w, h) = fits ? FitPiece(next.Picture!.Pieces[next.Missing], size * 0.68) : ArtDrawing.CardSize(shape, size * 0.62);
+                var turn = fits ? next.Picture!.Pieces[next.Missing].Rotation ?? 0 : next.Mode == ShapeBuilderGame.Mode.Fill ? 0 : next.Turns?[i] ?? 0;
                 var drawn = ArtDrawing.Shape(shape, w, h, colours[i % colours.Count], Seed(10 + i), turn);
                 card.AddChild(drawn);
                 if (next.Mode == ShapeBuilderGame.Mode.Turn) _turning.Add(drawn);
@@ -132,8 +133,8 @@ public partial class ShapeBuilderScreen : GameScreen
             Node2D part = i == round.Missing
                 ? ArtDrawing.Gap(shape, piece.W, piece.H, Seed(40 + i), piece.Rotation ?? 0)
                 : ArtDrawing.Shape(shape, piece.W, piece.H, ArtDrawing.Named(piece.Colour), Seed(40 + i), piece.Rotation ?? 0, 5);
+            // Pieces are drawn in the picture's order, so a door still shows on top of a missing wall.
             part.Position = P(piece.X, piece.Y);
-            part.ZIndex = i == round.Missing ? 2 : 1;
             picture.AddChild(part);
             if (i == round.Missing) _gap = part;
         }
@@ -232,9 +233,9 @@ public partial class ShapeBuilderScreen : GameScreen
         var piece = round.Picture.Pieces[round.Missing];
         var filled = ArtDrawing.Shape(shape, piece.W, piece.H, ArtDrawing.Named(piece.Colour), Seed(60), piece.Rotation ?? 0, 5);
         filled.Position = gap.Position;
-        filled.ZIndex = 3;
         filled.Scale = Vector2.One * 0.01f;
         picture.AddChild(filled);
+        picture.MoveChild(filled, gap.GetIndex());
         gap.Visible = false;
         var grow = filled.CreateTween();
         grow.TweenInterval(0.2);

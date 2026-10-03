@@ -76,6 +76,16 @@ Seven games that build up from putting things in order to writing small programs
 
 Coding levels are built from small map files, so new puzzles can be added with no new code.
 
+## Art (added 3 October 2026)
+
+A fifth island, in the Godot version: shapes, mixing paint and symmetry.
+
+| Game | How it plays | Skill | Ages | Skins |
+| --- | --- | --- | --- | --- |
+| Shape Builder | Find the shape, fill the gap in a picture made of shapes, sort by sides, watch shapes turn | 2D shapes, turning, regular shapes | 4–8 | Art studio |
+| Paint Pots | Tap two paint pots to mix a colour, or guess what two pots make and mix to check | Mixing colours, lighter and darker | 4–7 | Art studio |
+| Mirror Magic | Which picture is the same on both sides? Finish the mirror half, mirror the pegs, find the mirror line | Symmetry | 4–8 | Peg board |
+
 ## Rewards and surprises
 
 Rewards are things to collect: every correct answer moves the child up a ladder of stars, stickers, creatures and decorations. There is nothing to buy, no countdowns and no “come back or lose it”.

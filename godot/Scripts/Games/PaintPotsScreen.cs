@@ -42,6 +42,20 @@ public partial class PaintPotsScreen : GameScreen
     protected override string GameId => PaintPotsGame.GameId;
     protected override IReadOnlyList<Node2D> KeyOptions => _round?.Mode == PaintPotsGame.Mode.Predict ? _splodges : _pots;
 
+    /// <summary>Make rounds: the two pots that make the colour (for the walk-through test), or (-1, -1).</summary>
+    public (int A, int B) RightPots
+    {
+        get
+        {
+            if (_round is not { Mode: PaintPotsGame.Mode.Make } round || _pots.Count == 0) return (-1, -1);
+            var pair = round.Choices.FirstOrDefault(c => _game.IsCorrect(c, round));
+            if (pair == null) return (-1, -1);
+            var (a, b) = PaintPotsGame.SplitPair(pair);
+            var ids = round.Pots.Select(p => p.Id).ToList();
+            return (ids.IndexOf(a), ids.IndexOf(b));
+        }
+    }
+
     protected override void Build()
     {
         AddGameChrome(P(640, -330), P(-640, -400), 0.7f);

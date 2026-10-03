@@ -72,6 +72,7 @@ public static class WalkTest
         await PlayNumbers();
         await PlayWords();
         await PlayCoding();
+        await PlayArt();
 
         if (await Tap("stickers")) await Expect<StickerScreen>("the sticker book opens");
         if (await Tap("page")) Check("the sticker page turns", Screen() is StickerScreen);
@@ -445,6 +446,48 @@ public static class WalkTest
             }
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Path goes back to coding island");
             if (await Tap("home")) await Expect<MapScreen>("home from coding island after the games");
+        }
+
+        async Task PlayArt()
+        {
+            if (await Tap("island:art")) await Expect<ArtIslandScreen>("art island opens");
+            if (await Tap("shapes")) await Expect<ShapeBuilderScreen>("Shape Builder opens from the island");
+            Check("Shape Builder shows three shape cards", await WaitFor(() => Screen() is ShapeBuilderScreen { RightIndex: >= 0 }, 3));
+            if (Screen() is ShapeBuilderScreen shapes)
+            {
+                var stars = game.Progress.Stars;
+                await Tap($"card:{(shapes.RightIndex + 1) % 3}");
+                Check("a wrong shape boops and gives no star", game.Progress.Stars == stars && shapes is { InputLocked: false });
+                await Tap($"card:{shapes.RightIndex}");
+                Check("the right shape after a miss: no star, but the answer is saved",
+                      await WaitFor(() => game.Progress.Skill("shapes_2d").TotalAttempts == 1, 6) && game.Progress.Stars == stars,
+                      $"stars {stars} → {game.Progress.Stars}");
+            }
+            if (await Tap("home")) await Expect<ArtIslandScreen>("home from Shape Builder goes back to art island");
+
+            if (await Tap("paint")) await Expect<PaintPotsScreen>("Paint Pots opens from the island");
+            Check("Paint Pots shows its pots", await WaitFor(() => Screen() is PaintPotsScreen { RightPots.A: >= 0 }, 3));
+            if (Screen() is PaintPotsScreen paint && paint.RightPots is var (a, b) && a >= 0)
+            {
+                var stars = game.Progress.Stars;
+                await Tap($"pot:{a}");
+                await Tap($"pot:{b}");
+                Check("mixing the right two pots earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6),
+                      $"stars {stars} → {game.Progress.Stars}");
+            }
+            if (await Tap("home")) await Expect<ArtIslandScreen>("home from Paint Pots goes back to art island");
+
+            if (await Tap("mirror")) await Expect<MirrorMagicScreen>("Mirror Magic opens from the island");
+            Check("Mirror Magic shows its pictures", await WaitFor(() => Screen() is MirrorMagicScreen { RightIndex: >= 0 }, 3));
+            if (Screen() is MirrorMagicScreen mirror)
+            {
+                var stars = game.Progress.Stars;
+                await Tap($"card:{mirror.RightIndex}");
+                Check("the picture that's the same on both sides earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6),
+                      $"stars {stars} → {game.Progress.Stars}");
+            }
+            if (await Tap("home")) await Expect<ArtIslandScreen>("home from Mirror Magic goes back to art island");
+            if (await Tap("home")) await Expect<MapScreen>("home from art island after the games");
         }
 
         var json = JsonSerializer.Serialize(steps.Select(s => new { step = s.Name, ok = s.Ok, detail = s.Detail }),

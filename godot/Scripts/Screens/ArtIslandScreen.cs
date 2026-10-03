@@ -33,7 +33,7 @@ public partial class ArtIslandScreen : BaseScreen
 
         foreach (var (button, x) in new[] { (ShapesButton(), -420.0), (PaintButton(), 0.0), (MirrorButton(), 420.0) })
         {
-            button.Position = P(x, 80);
+            button.Position = P(x, 110);
             button.ZIndex = 5;
             Stage.AddChild(button);
             _keyNodes.Add(button);
@@ -41,7 +41,7 @@ public partial class ArtIslandScreen : BaseScreen
         Buttons.Pulse(_keyNodes[0]);
 
         AddHomeButton();
-        AddBip(P(0, -360), 0.85f);
+        AddBip(P(0, -380), 0.8f);
         if (_greet) After(0.5, ReplayPrompt);
     }
 
@@ -53,7 +53,7 @@ public partial class ArtIslandScreen : BaseScreen
         var button = Buttons.Tappable(Group(Disc(3010, Palette.Card)), "shapes");
         button.AddChild(Pen(Ellipse(P(-60, 40), 48, 48), 3011, fill: Palette.Red, lineWidth: 5));
         button.AddChild(Pen(Polygon(P(55, 95), P(110, 0), P(0, 0)), 3012, fill: Palette.Sun, lineWidth: 5));
-        button.AddChild(Pen(RoundRect(R(-40, -105, 90, 90), 6), 3013, fill: Palette.Teal, lineWidth: 5));
+        button.AddChild(Pen(Polygon(P(-40, -15), P(50, -15), P(50, -105), P(-40, -105)), 3013, fill: Palette.Teal, lineWidth: 5));
         return button;
     }
 

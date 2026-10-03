@@ -178,8 +178,8 @@ public static class ArtDrawing
             MirrorMagicGame.Diagonal => (P(-half, half), P(half, -half)),
             _ => (P(0, half), P(0, -half)),
         };
-        holder.AddChild(Pen(Polyline(from, to), seed, ink: Palette.White, lineWidth: 16, wobble: 1));
-        holder.AddChild(Pen(Polyline(from, to), seed + 1, ink: Palette.Teal, lineWidth: 7, wobble: 1));
+        holder.AddChild(Pen(Polyline(from, to), seed, ink: Palette.White, lineWidth: 10, wobble: 1));
+        holder.AddChild(Pen(Polyline(from, to), seed + 1, ink: Palette.Teal, lineWidth: 5, wobble: 1));
         return holder;
     }
 }
