@@ -49,7 +49,7 @@ public static class KidLock
         catch (Exception error)
         {
             Status = "failed: " + error.Message;
-            GD.PrintErr($"Bip Island: the kid lock couldn't start, so the game plays unlocked: {error.Message}");
+            GD.PrintErr($"Bip Island: the child lock couldn't start, so the game plays unlocked: {error.Message}");
             // Still fill the screen, as a child expects.
             DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
         }
@@ -60,7 +60,7 @@ public static class KidLock
     {
         if (Status != "mac") return;
         try { Mac.ApplyOptions(); }
-        catch (Exception error) { GD.PrintErr($"Bip Island: kid lock: {error.Message}"); }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock: {error.Message}"); }
     }
 
     /// <summary>Lifts the lock before the game quits or restarts for an update.</summary>
@@ -74,7 +74,7 @@ public static class KidLock
         }
         catch (Exception error)
         {
-            GD.PrintErr($"Bip Island: kid lock release: {error.Message}");
+            GD.PrintErr($"Bip Island: child lock release: {error.Message}");
         }
         Status = "off";
     }
@@ -289,7 +289,7 @@ public static class KidLock
                 UnhookWindowsHookEx(_hook);
                 _hook = IntPtr.Zero;
             })
-            { IsBackground = true, Name = "Bip Island kid lock" };
+            { IsBackground = true, Name = "Bip Island child lock" };
             thread.Start();
             if (!ready.Wait(TimeSpan.FromSeconds(2))) throw new InvalidOperationException("keyboard hook thread didn't start");
             if (_hook == IntPtr.Zero) throw new InvalidOperationException($"keyboard hook refused (error {error})");
