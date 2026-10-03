@@ -18,7 +18,6 @@ public static class WordPictures
         "pic_mug" => Mug(),
         "pic_hill" => Hill(),
         "pic_cliff" => Cliff(),
-        "pic_pup" => Pup(),
         "pic_dad" => Dad(),
         "pic_tail" => Tail(),
         "pic_tray" => Tray(),
@@ -44,7 +43,7 @@ public static class WordPictures
 
     public static readonly string[] Ids =
     {
-        "pic_cup", "pic_mug", "pic_hill", "pic_cliff", "pic_pup", "pic_dad", "pic_tail", "pic_tray", "pic_gate",
+        "pic_cup", "pic_mug", "pic_hill", "pic_cliff", "pic_dad", "pic_tail", "pic_tray", "pic_gate",
         "pic_bench", "pic_farm", "pic_moth", "pic_cube", "pic_fin", "pic_top", "pic_light", "pic_desk", "pic_cot",
         "pic_lid", "pic_neck", "pic_mat", "pic_rug", "pic_mud", "pic_plum", "pic_belt",
     };
@@ -119,25 +118,6 @@ public static class WordPictures
             n.AddChild(Pen(Polyline(P(x, y), P(x + 26, y - 8)), (ulong)(1133 + i), ink: Palette.Ink.WithAlpha(0.6), lineWidth: 4));
         foreach (var (i, x) in Indexed(40.0, 80.0))
             n.AddChild(Pen(Arc(P(x, -64), 14, 8, 0.2, 2.9), (ulong)(1136 + i), ink: Palette.White, lineWidth: 4));
-        return n;
-    }
-
-    // A tiny puppy: big head, floppy ears, short legs, a ball beside it.
-    private static Node2D Pup()
-    {
-        var n = new Node2D();
-        n.AddChild(Pen(Ellipse(P(78, -62), 22, 22), 1140, fill: Palette.Red));
-        n.AddChild(Pen(Ellipse(P(-6, -40), 54, 36), 1141, fill: Palette.LightBrown));
-        foreach (var (i, x) in Indexed(-40.0, -14.0, 14.0, 34.0))
-            n.AddChild(Pen(Box(x - 8, -90, 18, 36), (ulong)(1142 + i), fill: Palette.LightBrown, lineWidth: 4));
-        n.AddChild(Pen(Polyline(P(-56, -30), P(-78, -10), P(-84, 8)), 1146, ink: Palette.Ink, lineWidth: 6));
-        n.AddChild(Pen(Ellipse(P(10, 34), 54, 48), 1147, fill: Palette.LightBrown));
-        n.AddChild(Pen(Ellipse(P(-40, 30), 18, 36), 1148, fill: Palette.Brown, lineWidth: 4));
-        n.AddChild(Pen(Ellipse(P(60, 30), 18, 36), 1149, fill: Palette.Brown, lineWidth: 4));
-        n.AddChild(Dot(-6, 42, 6));
-        n.AddChild(Dot(26, 42, 6));
-        n.AddChild(Pen(Ellipse(P(10, 18), 12, 9), 1150, fill: Palette.Ink, lineWidth: 2));
-        n.AddChild(Pen(Ellipse(P(10, 0), 8, 10), 1151, fill: Palette.Pink, lineWidth: 3));
         return n;
     }
 

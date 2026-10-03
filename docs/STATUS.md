@@ -259,3 +259,7 @@
   hook (eleven_v3; ElevenLabs then blocked the free tier, so no more clips until the plan is upgraded).
   25 pictures a child could name another way are now hand-drawn (`WordPictures.cs`; parts get an orange
   arrow). The gallery takes `--bip-gallery-ids` for close-ups.
+- **3 Oct, evening (2):** South African wording (owner): removed `pup` (we say puppy), `kid` (slang) and
+  `yak` from the word bank, and `corn` is never a picture (a child says "mealie"). The validator now
+  rejects these. **Pending:** the y sound's picture word becomes **yo-yo** (owner's choice) once
+  ElevenLabs can record `word_yoyo` again; until then `yak` stays as y's picture word only.

@@ -14,7 +14,7 @@ The game follows the **Cambridge curriculum** (Early Years, then Primary English
 
 ## Who this is for right now
 
-The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only. UK / South African spelling everywhere (colour, mum, favourite) — in code comments, UI text and docs. All words the child hears or sees are proper South African English: no slang (say "corner shop", not "spaza"; "picnic", not "braai").
+The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only. UK / South African spelling everywhere (colour, mum, favourite) — in code comments, UI text and docs. All words the child hears or sees are proper South African English: no slang (say "corner shop", not "spaza"; "picnic", not "braai"), and the words a South African child actually uses ("puppy", not "pup"; never "kid"; a picture of a cob is a "mealie", so "corn" is never shown as a picture). `validate_content.py` rejects the known ones.
 
 ## How the owner works
 

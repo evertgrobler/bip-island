@@ -620,29 +620,6 @@
       ]
     },
     {
-      "word": "kid",
-      "graphemes": [
-        "k",
-        "i",
-        "d"
-      ],
-      "soundCount": 3,
-      "decodableFromGroup": 2,
-      "band": "foundation",
-      "firstSound": "k",
-      "rime": "id",
-      "audio": "word_kid",
-      "picturable": true,
-      "objectives": [
-        "1Rw.05",
-        "1Ww.05"
-      ],
-      "picture": "pic_kid",
-      "tags": [
-        "person"
-      ]
-    },
-    {
       "word": "dig",
       "graphemes": [
         "d",
@@ -1327,29 +1304,6 @@
         "1Rw.02",
         "1Rw.05",
         "1Ww.05"
-      ]
-    },
-    {
-      "word": "pup",
-      "graphemes": [
-        "p",
-        "u",
-        "p"
-      ],
-      "soundCount": 3,
-      "decodableFromGroup": 3,
-      "band": "foundation",
-      "firstSound": "p",
-      "rime": "up",
-      "audio": "word_pup",
-      "picturable": true,
-      "objectives": [
-        "1Rw.05",
-        "1Ww.05"
-      ],
-      "picture": "pic_pup",
-      "tags": [
-        "animal"
       ]
     },
     {
@@ -2671,29 +2625,6 @@
       "objectives": [
         "1Rw.05",
         "1Ww.05"
-      ]
-    },
-    {
-      "word": "yak",
-      "graphemes": [
-        "y",
-        "a",
-        "k"
-      ],
-      "soundCount": 3,
-      "decodableFromGroup": 5,
-      "band": "stage1",
-      "firstSound": "y",
-      "rime": "ak",
-      "audio": "word_yak",
-      "picturable": true,
-      "objectives": [
-        "1Rw.05",
-        "1Ww.05"
-      ],
-      "picture": "pic_yak",
-      "tags": [
-        "animal"
       ]
     },
     {
@@ -4073,7 +4004,7 @@
       "firstSound": "c",
       "rime": "orn",
       "audio": "word_corn",
-      "picturable": true,
+      "picturable": false,
       "objectives": [
         "1Rw.02",
         "1Rw.05",

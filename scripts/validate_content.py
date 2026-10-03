@@ -66,6 +66,16 @@ def spell(parts):
         else: out += gr
     return out + tail
 
+# South African English (CLAUDE.md): words a South African child wouldn't use, and words fine to read
+# but never shown as a picture because the child would name the picture another way.
+NOT_SA_WORDS = {"pup": "puppy", "kid": "child (slang)", "yak": "not an animal SA children know",
+                "mom": "mum", "candy": "sweets", "cookie": "biscuit", "trash": "rubbish", "garbage": "rubbish",
+                "diaper": "nappy", "flashlight": "torch", "spaza": "corner shop", "braai": "picnic"}
+NOT_SA_PICTURES = {"corn": "a South African child calls the cob a mealie"}
+for w in words_doc["words"]:
+    if w["word"] in NOT_SA_WORDS: err(f"word {w['word']}: not South African English ({NOT_SA_WORDS[w['word']]})")
+    if w["picturable"] and w["word"] in NOT_SA_PICTURES: err(f"word {w['word']}: no picture ({NOT_SA_PICTURES[w['word']]})")
+
 for w in words_doc["words"]:
     parts = w["graphemes"]
     missing = [p for p in parts if p not in G]
