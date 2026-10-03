@@ -238,5 +238,12 @@
   a keyboard hook, parent mode with Option/Alt. Unproven on real machines until the CI Mac/Windows jobs
   run (minutes out until 1 Nov, or a brief public window).
 - **3 Oct:** Owner decision: no progress export. The owner installs the Godot app fresh (children
-  start again) and has tried the Godot build and finds it much better. Repo made public briefly so
-  CI could build: Godot on main (test downloads), Swift on main, Godot on the kid-lock branch.
+  start again) and has tried the Godot build and finds it much better. Repo made public (and the owner
+  chose to keep it public, so CI is free again). First real-machine run of the kid lock (Godot run
+  37100738096): Windows "windows hook on", Mac "mac lock on", both installed and updated with saves kept.
+- **3 Oct:** Owner: offer only the new version. The download page now has one card, "Bip Island for Windows
+  and Mac" (Test version), linking the Godot builds in the Vercel Blob store (`godot-test/BipIsland-win-Setup.exe`,
+  `godot-test/BipIsland-mac.dmg`, fixed addresses, latest build). The old Swift Mac download is gone from the
+  page, but `deploy_vercel.sh` still publishes its zip + `appcast.xml`, so installed Swift copies keep updating.
+  Page says plainly the kid lock isn't built yet; Mac step explains Replace / Keep Both (both apps are called
+  Bip Island; progress isn't moved across yet). Live only once a `main` build runs again (minutes out until 1 Nov).
