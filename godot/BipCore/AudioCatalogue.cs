@@ -75,6 +75,9 @@ public static partial class AudioCatalogue
     public static string NumberClip(int n) => $"num_{n}";
 
     public static readonly IReadOnlyList<string> PraiseClips = Enumerable.Range(1, PraiseCount).Select(n => $"praise_{n:00}").ToList();
+    /// <summary>The one hint that stands alone ("Look for the one that's wiggling!"); the others lead into a sound.</summary>
+    public const string LookHint = "hint_02";
+
     public static readonly IReadOnlyList<string> HintClips = Enumerable.Range(1, HintCount).Select(n => $"hint_{n:00}").ToList();
 
     /// <summary>Clips written in audio/script.csv rather than generated from the content.</summary>

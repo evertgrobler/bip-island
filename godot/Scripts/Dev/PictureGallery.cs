@@ -13,14 +13,15 @@ namespace BipIsland.Dev;
 /// pages, plus a last page with the buttons, avatars, Bip and the star. Lets a cloud session (no Mac)
 /// screenshot the ported drawings and compare them with the Swift app.
 /// Run: <c>--bip-scene res://Scenes/Dev/PictureGallery.tscn [--bip-gallery-page N]</c>; left/right keys turn pages.
+/// <c>--bip-gallery-ids pic_cup,pic_mug</c> shows just those pictures, big, for checking new drawings.
 /// </summary>
 public partial class PictureGallery : Node2D
 {
-    private const int Columns = 13;
-    private const int Rows = 6;
-    private const int PerPage = Columns * Rows;
-    private const float CardScale = 0.36f;
-    private static readonly Vector2 Spacing = new(120, 152);
+    private int Columns = 13;
+    private int Rows = 6;
+    private int PerPage => Columns * Rows;
+    private float CardScale = 0.36f;
+    private Vector2 Spacing = new(120, 152);
 
     private readonly Node2D _stage = new();
     private List<string> _ids = new();
@@ -41,6 +42,12 @@ public partial class PictureGallery : Node2D
         AddChild(_stage);
         _stage.Position = GetViewportRect().Size / 2;
         _ids = PictureIds();
+        var only = Array.IndexOf(Boot.UserArgs, "--bip-gallery-ids");
+        if (only >= 0 && only + 1 < Boot.UserArgs.Length)
+        {
+            _ids = Boot.UserArgs[only + 1].Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            (Columns, Rows, CardScale, Spacing) = (7, 4, 0.72f, new Vector2(215, 235));
+        }
         var i = Array.IndexOf(Boot.UserArgs, "--bip-gallery-page");
         if (i >= 0 && i + 1 < Boot.UserArgs.Length && int.TryParse(Boot.UserArgs[i + 1], out var page)) _page = page;
         Show(_page);
@@ -82,7 +89,7 @@ public partial class PictureGallery : Node2D
             var id = ids[i];
             var card = new PictureCard(id, id.StartsWith("pic_") ? id[4..] : id, 900 + (ulong)i) { Position = at, Scale = Vector2.One * CardScale };
             _stage.AddChild(card);
-            var label = Sketch.Label(id[4..], 13, Palette.Ink, Fonts.Regular);
+            var label = Sketch.Label(id.StartsWith("pic_") ? id[4..] : id, CardScale > 0.5f ? 22 : 13, Palette.Ink, Fonts.Regular);
             label.Position += at + new Vector2(0, PictureCard.Size * CardScale / 2 + 12);
             _stage.AddChild(label);
         }
@@ -106,7 +113,7 @@ public partial class PictureGallery : Node2D
         _stage.AddChild(EmojiPictures.Make("pic_cat")!.WithPosition(new Vector2(350, 250)));
     }
 
-    private static Vector2 CellPosition(int column, int row) =>
+    private Vector2 CellPosition(int column, int row) =>
         new((column - (Columns - 1) / 2f) * Spacing.X, (row - (Rows - 1) / 2f) * Spacing.Y + 20);
 }
 

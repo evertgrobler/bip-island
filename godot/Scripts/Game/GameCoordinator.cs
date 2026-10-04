@@ -44,9 +44,11 @@ public partial class GameCoordinator : Node
     public ChildProgress Progress { get; private set; } = new();
     /// <summary>One break for the whole computer, so switching profiles can't skip it.</summary>
     private BreakState _break = new();
-    /// <summary>The most one gap between checks can add to a child's minutes (an idle game left open overnight shouldn't count).</summary>
-    private const int MaxPlayCreditSeconds = 30 * 60;
+    /// <summary>How often the play clock is checked while the game runs (it pauses behind the parent gate).</summary>
+    private const double BreakTickSeconds = 30;
     private DateTimeOffset _lastBreakCheck = DateTimeOffset.Now;
+    private bool _breakClockPaused;
+    private FeedMonsterGame? _monster;
     private bool _hasWelcomed;
 
     private CanvasLayer _fadeLayer = null!;
@@ -69,6 +71,11 @@ public partial class GameCoordinator : Node
         OpenSaves(SaveFolder());
         Parent = new ParentLayer { Name = "Parent" };
         AddChild(Parent);
+        // A steady tick keeps the play clock accurate during long games, so any much longer gap
+        // between checks means the computer slept or the game froze (PlayBreaks.Credit).
+        var tick = new Timer { WaitTime = BreakTickSeconds, Autostart = true, ProcessMode = ProcessModeEnum.Pausable };
+        tick.Timeout += () => CurrentBreakPhase();
+        AddChild(tick);
         if (DisplayServer.GetName() != "headless") BigCursor.Install();
     }
 
@@ -103,7 +110,7 @@ public partial class GameCoordinator : Node
             _ = new MeetTheSoundGame(Content, Course);
             _ = new BubblePopGame(Content, Course);
             _ = new LetterTraceGame(Content, Course);
-            _ = new FeedMonsterGame(Content, Course);
+            _monster = new FeedMonsterGame(Content, Course);
         });
         NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); });
         WordsOpen = Try("Words", () => { _ = new SoundButtonsGame(Content, new PhonicsCourse(Content)); _ = new WordBuilderGame(Content); });
@@ -242,17 +249,33 @@ public partial class GameCoordinator : Node
     public BreakPhase CurrentBreakPhase()
     {
         var now = DateTimeOffset.Now;
-        var elapsed = (int)Math.Max(0, (now - _lastBreakCheck).TotalSeconds);
+        var elapsed = _breakClockPaused ? 0 : PlayBreaks.Credit((now - _lastBreakCheck).TotalSeconds);
         _lastBreakCheck = now;
-        var wasPlaying = _break.BreakEndsAt == null;
+        // The child's minutes get exactly what the break banked: nothing on a break or after the day is done.
+        var before = _break.DayStamp == Today ? _break.PlayedTodaySeconds : 0;
         var phase = PlayBreaks.Advance(_break, elapsed, now, Today, Store.Settings.ToBreakSettings());
         Store.SaveBreak(_break);
-        if (wasPlaying)
+        var banked = _break.PlayedTodaySeconds - before;
+        if (banked > 0)
         {
-            Progress.NotePlayTime(Math.Min(elapsed, MaxPlayCreditSeconds), Today);
+            Progress.NotePlayTime(banked, Today);
             Store.Save(Progress, ChildId);
         }
         return phase;
+    }
+
+    /// <summary>The parent gate opened: bank the play so far, then stop counting until it closes.</summary>
+    public void PauseBreakClock()
+    {
+        CurrentBreakPhase();
+        _breakClockPaused = true;
+    }
+
+    /// <summary>The parent gate closed: count play again from now.</summary>
+    public void ResumeBreakClock()
+    {
+        _breakClockPaused = false;
+        _lastBreakCheck = DateTimeOffset.Now;
     }
 
     /// <summary>A parent ends the break early from settings.</summary>
@@ -303,7 +326,12 @@ public partial class GameCoordinator : Node
     }
 
     public string RandomPraise() => Rng.Pick(AudioCatalogue.PraiseClips) ?? "praise_01";
-    public string RandomHint() => Rng.Pick(AudioCatalogue.HintClips) ?? "hint_01";
+    /// <summary>
+    /// A spoken hint. Most hints lead into a sound ("It sounds like this:"); with nothing to follow,
+    /// it's the one that stands alone ("Look for the one that's wiggling!").
+    /// </summary>
+    public string RandomHint(bool followedBySound = true) =>
+        followedBySound ? Rng.Pick(AudioCatalogue.HintClips) ?? "hint_01" : AudioCatalogue.LookHint;
 
     // Navigation
 
@@ -406,6 +434,14 @@ public partial class GameCoordinator : Node
             _ => true,
         };
     }
+
+    /// <summary>
+    /// Whether Feed the Monster has foods the child can read yet (they start at phonics group 4). The
+    /// island hides the monster until then, rather than opening a different game; a cheap check, since
+    /// it runs on every island build (StartGame still falls back if a round can't be made).
+    /// </summary>
+    public bool FeedMonsterReady() =>
+        LettersReady && LettersProgress is { } letters && _monster is { } monster && monster.FoodsUpToGroup(letters.HighestUnlockedGroup).Count > 0;
 
     /// <summary>Meet the Sound is one round: the sound itself (null if it can't be met yet).</summary>
     private GameScreen? MeetScreen(PhonicsSound sound)

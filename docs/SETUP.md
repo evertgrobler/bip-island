@@ -11,7 +11,7 @@ Claude Code ──► GitHub (bip-island, public)
                  │  every merge to main
                  ▼
          GitHub Actions (Linux, Mac and Windows machines in the cloud)
-         builds, tests, installs, updates and checks the kid lock
+         builds, tests, installs, updates and checks the child lock
                  │
                  ▼
          Vercel: download page + Blob store (installers and update feeds)
@@ -57,7 +57,7 @@ Open the download page and pick your computer.
 The game opens full screen. Set up each child in the parent area (**Settings → Children**), and a
 parent passcode if you'd like one.
 
-## The kid lock
+## The child lock
 
 - **Mac:** the Dock, menu bar, Cmd-Tab, Cmd-H and Cmd-Q are blocked. Logging out, restarting and
   shutting down always work.

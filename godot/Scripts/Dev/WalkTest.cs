@@ -396,13 +396,13 @@ public static class WalkTest
             }
             await Wait(0.6);
 
-            // Feed the Monster's foods start at phonics group 4: before that the monster button
-            // meets the sound instead of an empty visit.
-            if (await Tap("monster")) await Expect<MeetSoundScreen>("with no foods yet, the monster button meets the sound instead");
-            if (await Tap("home")) await Expect<LettersIslandScreen>("home from that goes back to letters island");
+            // Feed the Monster's foods start at phonics group 4: before that the monster stays away.
+            Check("with no foods yet, there's no monster button", Screen()?.FindTappable("monster") == null);
             ScreenPreview.LearnGroups(game, 3);
             Check("after learning groups 1-3, group 4 is open", game.LettersProgress?.HighestUnlockedGroup >= 4,
                   $"highest group {game.LettersProgress?.HighestUnlockedGroup}");
+            game.ShowIsland(Island.Letters, greet: false);
+            await Expect<LettersIslandScreen>("letters island again, now with group 4 open");
             starsBefore = game.Progress.Stars;
             if (await Tap("monster")) await Expect<FeedMonsterScreen>("Feed the Monster opens from the island");
             Check("Feed the Monster shows foods", await WaitFor(() => Screen() is FeedMonsterScreen { RightIndex: >= 0, InputLocked: false }, 3));

@@ -259,3 +259,21 @@
   `Scenes/Screens/charging.tscn` and `day_done.tscn`.
 - **3 Oct, evening:** Shape Builder's snowman picture became a rondavel (snow isn't everyday South African life):
   rectangle wall, thatched triangle roof, round window, semicircle door. No new voice clips needed.
+- **3 Oct, evening:** Audit of main (agent, report in the session): content, phonics order, coding levels,
+  safety rules all correct. Fixed from it: Bip's Path blocks 120 pt and a hint that doesn't trail off,
+  "1 star", play time paused while the parent gate is open and not banked after the daily maximum (a new
+  day starts with a full battery), the monster button waits for group 4 foods, false rhyme pairs split.
+  Voice: 22 word clips trimmed (stray noise or long silence), b d g dd j h shortened, new f/ff/th, puff,
+  hook (eleven_v3; ElevenLabs then blocked the free tier, so no more clips until the plan is upgraded).
+  25 pictures a child could name another way are now hand-drawn (`WordPictures.cs`; parts get an orange
+  arrow). The gallery takes `--bip-gallery-ids` for close-ups.
+- **3 Oct, evening (2):** South African wording (owner): removed `pup` (we say puppy), `kid` (slang) and
+  `yak` from the word bank, and `corn` is never a picture (a child says "mealie"). The validator now
+  rejects these. **Pending:** the y sound's picture word becomes **yo-yo** (owner's choice) once
+  ElevenLabs can record `word_yoyo` again; until then `yak` stays as y's picture word only.
+- **4 Oct:** Review fixes for #36. The play clock ticks every 30 s while the game runs; a gap over 90 s
+  (sleep, a frozen game, overnight) counts as no play (`PlayBreaks.Credit`), so a new day never starts
+  with a break. A child's minutes get exactly what the break banked (none on the night screen). Hints:
+  `RandomHint(followedBySound: false)` gives "Look for the one that's wiggling!" (Mirror Magic, Bip's
+  Path). The South African check now walks every content file (graphemes, skills, objectives) and the
+  strings inside C# interpolation holes; `yak` prints as WAITING until `word_yoyo` is recorded.

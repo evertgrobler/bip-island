@@ -2722,11 +2722,6 @@
       "notes": ""
     },
     {
-      "id": "word_kid",
-      "text": "kid",
-      "notes": ""
-    },
-    {
       "id": "word_kind",
       "text": "kind",
       "notes": ""
@@ -3224,11 +3219,6 @@
     {
       "id": "word_pull",
       "text": "pull",
-      "notes": ""
-    },
-    {
-      "id": "word_pup",
-      "text": "pup",
       "notes": ""
     },
     {
@@ -4178,10 +4168,6 @@
       "brief": "coin (picture for the sound oi)"
     },
     {
-      "id": "pic_corn",
-      "brief": "corn"
-    },
-    {
       "id": "pic_cot",
       "brief": "cot"
     },
@@ -4474,10 +4460,6 @@
       "brief": "juice"
     },
     {
-      "id": "pic_kid",
-      "brief": "kid"
-    },
-    {
       "id": "pic_king",
       "brief": "king"
     },
@@ -4768,10 +4750,6 @@
     {
       "id": "pic_pot",
       "brief": "pot"
-    },
-    {
-      "id": "pic_pup",
-      "brief": "pup"
     },
     {
       "id": "pic_queen",

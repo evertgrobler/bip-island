@@ -56,7 +56,7 @@ public static class SelfTest
                     ["kidLock"] = state,
                     ["locked"] = locked,
                 }));
-                GD.Print($"Bip Island: kid lock check: {state}");
+                GD.Print($"Bip Island: child lock check: {state}");
                 boot.Quit(locked ? 0 : 1);
                 return;
             }

@@ -65,8 +65,10 @@ public static class PlayBreaks
     {
         if (day != state.DayStamp)
         {
+            // A new day starts with a full battery (a break still running carries on below).
             state.DayStamp = day;
             state.PlayedTodaySeconds = 0;
+            state.PlayedSeconds = 0;
         }
         if (state.BreakEndsAt is DateTimeOffset endsAt)
         {
@@ -80,6 +82,8 @@ public static class PlayBreaks
                 return BreakPhase.BreakTime;
             }
         }
+        // The day is done: time on the night screen isn't play, so nothing more is banked.
+        if (settings.DailyMaxMinutes is int dayMax && state.PlayedTodaySeconds >= dayMax * 60) return BreakPhase.DayDone;
         state.PlayedSeconds += Math.Max(0, elapsed);
         state.PlayedTodaySeconds += Math.Max(0, elapsed);
         if (settings.DailyMaxMinutes is int max && state.PlayedTodaySeconds >= max * 60) return BreakPhase.DayDone;
@@ -105,6 +109,12 @@ public static class PlayBreaks
     /// <summary>Whole minutes until games open again, rounded up (so "in 1 minute" until it ends). 0 when there is no break.</summary>
     public static int MinutesLeft(BreakState state, DateTimeOffset now) =>
         state.BreakEndsAt is DateTimeOffset endsAt && endsAt > now ? (int)Math.Ceiling((endsAt - now).TotalMinutes) : 0;
+
+    /// <summary>The longest gap between checks that still counts as play. The game checks every 30 s, so a longer gap means the computer slept or the game froze.</summary>
+    public const int IdleGapSeconds = 90;
+
+    /// <summary>The play seconds a gap between two checks is worth: all of it, or none if it was idle.</summary>
+    public static int Credit(double gapSeconds) => gapSeconds <= 0 || gapSeconds > IdleGapSeconds ? 0 : (int)gapSeconds;
 
     /// <summary>A parent ends the break early from settings.</summary>
     public static void EndBreakEarly(BreakState state)

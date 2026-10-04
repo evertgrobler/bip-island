@@ -14,7 +14,14 @@ The game follows the **Cambridge curriculum** (Early Years, then Primary English
 
 ## Who this is for right now
 
-The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only. UK / South African spelling everywhere (colour, mum, favourite) — in code comments, UI text and docs. All words the child hears or sees are proper South African English: no slang (say "corner shop", not "spaza"; "picnic", not "braai").
+The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only.
+
+**South African English, always (owner rule, 3 October 2026; non-negotiable).** Everything in Bip Island is South African: the words, the spelling, the voice, the pictures and the everyday things in them. Not British, not American, not any other country.
+- **Spelling:** South African spelling, which follows British spelling: colour, favourite, realise, grey, centre, maths, practise (verb), mum. Never American spelling (color, favorite, realize, gray, center, math, mom). This applies to UI text, voice lines, content, code comments and docs.
+- **Words:** the words a South African child and parent actually use: takkies (not trainers or sneakers), gumboots (not wellies), chips (not crisps or fries), cooldrink (not soda or fizzy drink), biscuit (not cookie), sweets (not candy), nappy, dummy, plaster, torch, truck (not lorry), cellphone, dustbin, brinjal, baby marrow, Grade R and Grade 1, "puppy" (not "pup"), "child" (never "kid"; the parent area says "child lock"). A picture of a cob is a "mealie", so "corn" is never shown as a picture.
+- **No slang** even when it's South African: say "corner shop", not "spaza"; "picnic", not "braai".
+- **South African life:** money is rand and cents; seasons, food, animals, places and weather are South African. No snow-day, Thanksgiving, Halloween, Bonfire Night, robins or squirrels as everyday things.
+- **Enforced:** `scripts/sa_english.py` lists the words and spellings; `validate_content.py` runs it over the content, `audio/script.csv`, every on-screen string in `godot/Scripts` and the download page, and fails the build on any hit. When the owner flags a word, add it to `sa_english.py` in the same change.
 
 ## How the owner works
 
