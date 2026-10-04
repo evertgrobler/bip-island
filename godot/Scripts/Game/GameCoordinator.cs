@@ -410,7 +410,7 @@ public partial class GameCoordinator : Node
     {
         if (!PlayAllowed())
         {
-            ShowCharging();
+            Present(RestScreen());
             return;
         }
         Present(new MapScreen(greet: !_hasWelcomed));
@@ -418,6 +418,13 @@ public partial class GameCoordinator : Node
     }
 
     public void ShowCharging() => Present(new ChargingScreen());
+
+    /// <summary>
+    /// Where games send the child while they're closed: Bip charging, or "Who's playing?" when the
+    /// child on screen could play but the child at the computer is resting (see <see cref="SomeoneElseResting"/>).
+    /// </summary>
+    private BaseScreen RestScreen() =>
+        SomeoneElseResting && CurrentBreakPhase() == BreakPhase.Playing ? new ProfilesScreen() : new ChargingScreen();
     public void ShowStickers() => Present(new StickerScreen());
 
     public void ShowIsland(Island island, bool greet = true)
@@ -455,7 +462,7 @@ public partial class GameCoordinator : Node
         // While Bip charges no game starts (or counts as played): the charging screen shows instead.
         if (!PlayAllowed())
         {
-            ShowCharging();
+            Present(RestScreen());
             return true;
         }
         var sound = focus ?? PracticeSound();
@@ -607,7 +614,7 @@ public partial class GameCoordinator : Node
         if (screen is not GameScreen) CurrentGameId = null;
         // While Bip charges (or the day is done) every game and island redirects here.
         if (screen is not (ChargingScreen or StickerScreen or ProfilesScreen) && !PlayAllowed())
-            screen = SomeoneElseResting && CurrentBreakPhase() == BreakPhase.Playing ? new ProfilesScreen() : new ChargingScreen();
+            screen = RestScreen();
         var tree = GetTree();
         if (tree.CurrentScene == null || SelfTest.IsRequested(Boot.UserArgs))
         {
