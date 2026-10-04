@@ -150,6 +150,40 @@ public static class WalkTest
         game.ShowMap();
         await Expect<MapScreen>("with no daily maximum the map opens again");
 
+        // Each child has their own break: while Lily rests, her brother or sister can play, but only
+        // once a grown-up says yes (otherwise picking another picture would skip her break).
+        var other = game.Children.First(c => c.Id != lily.Id);
+        game.Store.Settings = game.Store.Settings with { PlayMinutes = 1, BreakMinutes = 1 };
+        game.ForceBreakForTest();
+        game.ShowMap();
+        await Expect<ChargingScreen>("Lily's break: Bip charging");
+        Check("the charging screen has the badge for Who's playing?", Screen()?.FindTappable("profiles") != null);
+        if (await Tap("profiles"))
+        {
+            await Expect<ProfilesScreen>("the badge on the charging screen goes to Who's playing?");
+            Check("Lily shows as resting, the other child doesn't", game.IsResting(lily.Id) && !game.IsResting(other.Id));
+            await Tap("child:" + other.Id);
+            await Wait(0.3);
+            Check("picking someone else while Lily rests asks a grown-up first",
+                  game.Parent.Flow.Phase == GatePhase.Question && game.Parent.Flow.SwitchingTo == other.Id && game.ChildId == lily.Id);
+            game.Parent.Submit(game.Parent.Flow.Challenge.Answer.ToString());
+            await WaitFor(() => Screen() is MapScreen, 5);
+            await Expect<MapScreen>("after the grown-up's answer, the other child plays: the map opens");
+            Check("...as the other child, with their own break clock", game.ChildId == other.Id && game.PlayAllowed() && !game.Parent.IsOpen);
+        }
+        if (await Tap("profiles"))
+        {
+            await Expect<ProfilesScreen>("back to Who's playing?");
+            await Tap("child:" + lily.Id);
+            await WaitFor(() => Screen() is ChargingScreen, 5);
+            Check("picking Lily needs no grown-up (the other child wasn't resting), and her break carries on",
+                  Screen() is ChargingScreen && game.ChildId == lily.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
+        }
+        game.EndBreakEarly();
+        game.Store.Settings = game.Store.Settings with { PlayMinutes = 20, BreakMinutes = 20 };
+        await WaitFor(() => Screen() is MapScreen, 10);
+        await Expect<MapScreen>("Lily's break ended: the map opens");
+
         // Phase 3 games: one round of each, through the real clicks.
 
         async Task<bool> WaitFor(Func<bool> ready, double seconds)

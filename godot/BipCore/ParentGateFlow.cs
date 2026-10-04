@@ -11,7 +11,8 @@ public enum GatePhase
 /// The parent gate's rules, without any drawing (the Swift app's ParentGateModel):
 /// hold Esc for 3 seconds → the parent passcode (if one is set) or an adult maths question →
 /// the parent area. After <see cref="ParentPasscode.TriesBeforeMaths"/> wrong codes it asks maths
-/// instead. Opened from the "Update ready" button, it installs the update once unlocked.
+/// instead. Opened from the "Update ready" button, it installs the update once unlocked; opened to
+/// let another child play while one is resting, it hands over to them once unlocked.
 /// Times are seconds from any steady clock.
 /// </summary>
 public sealed class ParentGateFlow
@@ -30,6 +31,8 @@ public sealed class ParentGateFlow
     public bool UsingPasscode { get; private set; }
     public bool LastAnswerWasWrong { get; private set; }
     public bool HasPasscode => _passcode() != null;
+    /// <summary>The child waiting to play, while the gate asks before handing over to them.</summary>
+    public Guid? SwitchingTo { get; private set; }
 
     /// <summary>The gate opened (pause the game).</summary>
     public event Action? Opened;
@@ -37,6 +40,8 @@ public sealed class ParentGateFlow
     public event Action? Closed;
     /// <summary>Unlocked from the "Update ready" button: install the update now.</summary>
     public event Action? InstallUpdate;
+    /// <summary>Unlocked to hand over to another child: they play now.</summary>
+    public event Action<Guid>? SwitchChild;
 
     /// <param name="passcode">Reads the saved parent passcode (null when none is set).</param>
     public ParentGateFlow(IRandomSource rng, Func<ParentPasscode?> passcode)
@@ -72,6 +77,7 @@ public sealed class ParentGateFlow
         if (Phase != GatePhase.Closed) return;
         _hold.Release();
         _installAfterUnlock = false;
+        SwitchingTo = null;
         _wrongPasscodeTries = 0;
         Challenge = ParentChallenge.Random(_rng);
         LastAnswerWasWrong = false;
@@ -86,6 +92,17 @@ public sealed class ParentGateFlow
         if (Phase != GatePhase.Closed) return;
         Open();
         _installAfterUnlock = true;
+    }
+
+    /// <summary>
+    /// "Who's playing?" while the child who was playing is resting: the same passcode or maths, then
+    /// <paramref name="childId"/> plays.
+    /// </summary>
+    public void OpenToSwitchChild(Guid childId)
+    {
+        if (Phase != GatePhase.Closed) return;
+        Open();
+        SwitchingTo = childId;
     }
 
     /// <summary>Checks the typed answer. Returns true when the gate unlocked.</summary>
@@ -118,6 +135,7 @@ public sealed class ParentGateFlow
         if (Phase == GatePhase.Closed) return;
         Phase = GatePhase.Closed;
         _installAfterUnlock = false;
+        SwitchingTo = null;
         _hold.Release();
         Closed?.Invoke();
     }
@@ -130,6 +148,11 @@ public sealed class ParentGateFlow
         {
             _installAfterUnlock = false;
             InstallUpdate?.Invoke();
+        }
+        if (SwitchingTo is Guid childId)
+        {
+            SwitchingTo = null;
+            SwitchChild?.Invoke(childId);
         }
         return true;
     }

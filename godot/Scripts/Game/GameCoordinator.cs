@@ -42,7 +42,7 @@ public partial class GameCoordinator : Node
     public Guid ChildId { get; private set; }
     /// <summary>The child who is playing now.</summary>
     public ChildProgress Progress { get; private set; } = new();
-    /// <summary>One break for the whole computer, so switching profiles can't skip it.</summary>
+    /// <summary>The playing child's break (each child has their own; switching away from a resting child needs a grown-up).</summary>
     private BreakState _break = new();
     /// <summary>The most one gap between checks can add to a child's minutes (an idle game left open overnight shouldn't count).</summary>
     private const int MaxPlayCreditSeconds = 30 * 60;
@@ -133,7 +133,13 @@ public partial class GameCoordinator : Node
         Children = Store.Children();
         ChildId = Store.LastChildId();
         Progress = Store.Progress(ChildId);
-        _break = Store.LoadBreak(Progress.Breaks) ?? new BreakState { DayStamp = Today };
+        LoadBreak();
+    }
+
+    /// <summary>Each child has their own play clock and break: load the current child's.</summary>
+    private void LoadBreak()
+    {
+        _break = Store.LoadBreak(ChildId) ?? new BreakState { DayStamp = Today };
         _lastBreakCheck = DateTimeOffset.Now;
     }
 
@@ -148,13 +154,25 @@ public partial class GameCoordinator : Node
 
     public ChildSummary? CurrentChild => Children.FirstOrDefault(c => c.Id == ChildId);
 
-    /// <summary>The child picks their picture: their progress loads and the map opens.</summary>
+    /// <summary>
+    /// Whether picking <paramref name="id"/> needs a grown-up first: the child who was playing is
+    /// resting, and picking someone else would skip their break (see <see cref="PlayBreaks.SwitchNeedsGrownUp"/>).
+    /// </summary>
+    public bool SwitchNeedsGrownUp(Guid id) => PlayBreaks.SwitchNeedsGrownUp(CurrentBreakPhase(), id == ChildId);
+
+    /// <summary>Whether a child is resting (charging or done for the day), for their picture in "Who's playing?".</summary>
+    public bool IsResting(Guid id) => id == ChildId
+        ? PlayBreaks.IsResting(_break, DateTimeOffset.Now, Today, Store.Settings.ToBreakSettings())
+        : PlayBreaks.IsResting(Store.LoadBreak(id), DateTimeOffset.Now, Today, Store.Settings.ToBreakSettings());
+
+    /// <summary>The child picks their picture: their progress and break load, and the map opens.</summary>
     public void Choose(Guid id)
     {
         if (Children.All(c => c.Id != id)) return;
         CurrentBreakPhase(); // Bank play time to the child who was playing.
         ChildId = id;
         Progress = Store.Progress(id);
+        LoadBreak();
         Store.SetLastChild(id);
         _hasWelcomed = false;
         ShowMap();
@@ -184,6 +202,7 @@ public partial class GameCoordinator : Node
         if (Children.Any(c => c.Id == ChildId) || Children.Count == 0) return;
         ChildId = Children[0].Id;
         Progress = Store.Progress(ChildId);
+        LoadBreak();
         Store.SetLastChild(ChildId);
     }
 
@@ -246,7 +265,7 @@ public partial class GameCoordinator : Node
         _lastBreakCheck = now;
         var wasPlaying = _break.BreakEndsAt == null;
         var phase = PlayBreaks.Advance(_break, elapsed, now, Today, Store.Settings.ToBreakSettings());
-        Store.SaveBreak(_break);
+        Store.SaveBreak(ChildId, _break);
         if (wasPlaying)
         {
             Progress.NotePlayTime(Math.Min(elapsed, MaxPlayCreditSeconds), Today);
@@ -255,11 +274,11 @@ public partial class GameCoordinator : Node
         return phase;
     }
 
-    /// <summary>A parent ends the break early from settings.</summary>
+    /// <summary>A parent ends the playing child's break early from settings.</summary>
     public void EndBreakEarly()
     {
         PlayBreaks.EndBreakEarly(_break);
-        Store.SaveBreak(_break);
+        Store.SaveBreak(ChildId, _break);
         _lastBreakCheck = DateTimeOffset.Now;
     }
 
@@ -277,14 +296,14 @@ public partial class GameCoordinator : Node
     {
         _break.BreakEndsAt = null;
         _break.PlayedTodaySeconds = int.MaxValue / 2;
-        Store.SaveBreak(_break);
+        Store.SaveBreak(ChildId, _break);
     }
 
     /// <summary>For previews and the walk-through only: a break that ends <paramref name="minutes"/> from now.</summary>
     public void ForceBreakForTest(double minutes = 1)
     {
         _break.BreakEndsAt = DateTimeOffset.Now.AddMinutes(minutes);
-        Store.SaveBreak(_break);
+        Store.SaveBreak(ChildId, _break);
     }
 
     /// <summary>False while Bip is charging or the day is done: games stay closed.</summary>

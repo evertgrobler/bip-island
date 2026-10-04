@@ -106,6 +106,25 @@ public static class PlayBreaks
     public static int MinutesLeft(BreakState state, DateTimeOffset now) =>
         state.BreakEndsAt is DateTimeOffset endsAt && endsAt > now ? (int)Math.Ceiling((endsAt - now).TotalMinutes) : 0;
 
+    /// <summary>
+    /// Each child has their own break, so a child who is resting (charging or done for the day) could
+    /// skip it by picking a brother's or sister's picture. Moving away from a resting child needs a
+    /// grown-up; picking yourself again, or leaving while you can still play, doesn't.
+    /// </summary>
+    public static bool SwitchNeedsGrownUp(BreakPhase currentChild, bool sameChild) =>
+        !sameChild && currentChild != BreakPhase.Playing;
+
+    /// <summary>
+    /// Whether a child is resting right now (charging, or their daily play used up), without banking
+    /// any time: for the sleepy "z z" on their picture in "Who's playing?".
+    /// </summary>
+    public static bool IsResting(BreakState? state, DateTimeOffset now, int day, BreakSettings settings)
+    {
+        if (state == null) return false;
+        if (state.BreakEndsAt is DateTimeOffset endsAt && endsAt > now) return true;
+        return state.DayStamp == day && settings.DailyMaxMinutes is int max && state.PlayedTodaySeconds >= max * 60;
+    }
+
     /// <summary>A parent ends the break early from settings.</summary>
     public static void EndBreakEarly(BreakState state)
     {

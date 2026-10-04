@@ -137,6 +137,29 @@ public sealed class SystemsTests
     }
 
     [Fact]
+    public void MovingAwayFromARestingChildNeedsAGrownUp()
+    {
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(BreakPhase.Playing, sameChild: false));
+        Assert.True(PlayBreaks.SwitchNeedsGrownUp(BreakPhase.BreakTime, sameChild: false));
+        Assert.True(PlayBreaks.SwitchNeedsGrownUp(BreakPhase.DayDone, sameChild: false));
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(BreakPhase.BreakTime, sameChild: true));
+    }
+
+    [Fact]
+    public void AChildIsRestingDuringTheirBreakOrOnceTheirDayIsUsedUp()
+    {
+        var now = new DateTimeOffset(2026, 10, 4, 9, 0, 0, TimeSpan.Zero);
+        var settings = Settings(dailyMax: 30);
+        Assert.False(PlayBreaks.IsResting(null, now, 100, settings));
+        Assert.True(PlayBreaks.IsResting(new BreakState { BreakEndsAt = now.AddMinutes(5), DayStamp = 100 }, now, 100, settings));
+        Assert.False(PlayBreaks.IsResting(new BreakState { BreakEndsAt = now.AddMinutes(-1), DayStamp = 100 }, now, 100, settings));
+        var dayUsed = new BreakState { DayStamp = 100, PlayedTodaySeconds = 30 * 60 };
+        Assert.True(PlayBreaks.IsResting(dayUsed, now, 100, settings));
+        Assert.False(PlayBreaks.IsResting(dayUsed, now, 101, settings)); // A new day.
+        Assert.False(PlayBreaks.IsResting(dayUsed, now, 100, Settings())); // No daily maximum.
+    }
+
+    [Fact]
     public void TheBatteryFillsWithTheBreakAndCountsDownWholeMinutes()
     {
         var state = new BreakState();

@@ -63,12 +63,32 @@ public partial class ProfilesScreen : BaseScreen
         // Left-aligned just after the star (Swift: horizontalAlignmentMode = .left).
         count.Position = new Vector2(P(-6, -158).X, P(-6, -158).Y - count.Size.Y / 2);
         card.AddChild(count);
+
+        if (Coordinator.IsResting(child.Id))
+        {
+            // Bip is charging for this child: a sleepy "z z" by their picture.
+            foreach (var (x, y, size) in new[] { (95.0, 140.0, 34), (125.0, 175.0, 44) })
+            {
+                var z = Sketch.Label("z", size, Palette.Ink.WithAlpha(0.45));
+                var holder = new Node2D { Position = P(x, y) };
+                holder.AddChild(z);
+                card.AddChild(holder);
+            }
+        }
         return card;
     }
 
     protected override void HandleTap(string name, Node2D node)
     {
         if (!name.StartsWith("child:", StringComparison.Ordinal) || !Guid.TryParse(name["child:".Length..], out var id)) return;
+        if (Coordinator.SwitchNeedsGrownUp(id))
+        {
+            // The child who was playing is resting: a grown-up says yes before someone else plays.
+            Sfx.Play(BipSounds.Effect.Tick);
+            Buttons.Press(node);
+            Coordinator.Parent.Flow.OpenToSwitchChild(id);
+            return;
+        }
         InputLocked = true;
         Sfx.Play(BipSounds.Effect.Chime);
         Buttons.Press(node);
@@ -135,9 +155,27 @@ public partial class ChargingScreen : BaseScreen
         Stage.AddChild(_when);
         ShowTimes();
 
+        // With brothers or sisters: tap the animal to go to "Who's playing?" (a grown-up says yes there).
+        if (Coordinator.Children.Count > 1 && Coordinator.CurrentChild is { } child)
+        {
+            var badge = Buttons.Tappable(Avatars.Badge(child.Avatar, 64, 684), "profiles");
+            badge.Position = P(-700, -370);
+            badge.ZIndex = 10;
+            Stage.AddChild(badge);
+        }
+
         Sfx.Play(BipSounds.Effect.Whirr);
         After(0.8, ReplayPrompt);
         After(CheckSeconds, Check);
+    }
+
+    protected override void HandleTap(string name, Node2D node)
+    {
+        if (name != "profiles" || _waking) return;
+        InputLocked = true;
+        Sfx.Play(BipSounds.Effect.Tick);
+        Buttons.Press(node);
+        After(0.25, Coordinator.ShowProfiles);
     }
 
     /// <summary>Bip on the left, plugged into a battery by a curly cable.</summary>

@@ -44,6 +44,7 @@
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
 - No timers/lives/game-over. Wrong → boop → retry → hint after 2 misses. 120 pt targets.
 - 20 min play → finish game → 20 min break (wall clock, persisted). Parents configure it.
+  **Each child has their own break** (owner, 3 Oct); leaving a resting child for another needs the parent gate.
 - Free choice: Bip recommends, never forces. Rewards collected, never bought.
 - Content lives in `Content/` JSON (never hard-code). Validator must pass after content edits.
 - No paid signing for now: Mac ad-hoc signed, Windows unsigned (one-time "Run anyway").
@@ -257,3 +258,11 @@
   Esc for 3 seconds to end the break early". The daily limit has its own night screen (`vo_day_done`).
   When the break ends with the screen open, Bip wakes up and the map opens. Previews:
   `Scenes/Screens/charging.tscn` and `day_done.tscn`.
+- **4 Oct:** Per-child breaks (owner: "each child"). Each child's play clock, break and daily total
+  live on their save row (`SavedChild.Break`); the old shared break is copied to every child on load,
+  so updating can't end a running break. Settings stay shared. While one child rests, the charging
+  screen shows their badge → "Who's playing?" (resting children get a sleepy "z z"); picking another
+  child then needs the parent gate (`ParentGateFlow.OpenToSwitchChild`, rule in
+  `PlayBreaks.SwitchNeedsGrownUp`), so quitting, reopening or switching can't skip a break. Parent
+  area: "End Lily's break now" names the playing child. Tests: save carry-over, the switch rule, the
+  gate hand-over; walk-through: Lily rests → grown-up lets the other child play → back to Lily's break.

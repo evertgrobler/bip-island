@@ -402,7 +402,9 @@ public partial class ParentArea : VBoxContainer
             SetSettings(Coordinator.Store.Settings with { DailyMaxMinutes = on ? Coordinator.Store.Settings.DailyMaxMinutes ?? 60 : null });
             daily.Visible = on;
         };
-        var endBreak = ParentUi.Button("End Bip's break now", () => { });
+        // Each child has their own break: this ends the break of the child who was playing.
+        var whose = Coordinator.Children.Count > 1 && Coordinator.CurrentChild is { } current ? $"{current.Name}'s" : "Bip's";
+        var endBreak = ParentUi.Button($"End {whose} break now", () => { });
         var ended = ParentUi.Text("", 15, colour: ParentUi.Secondary);
         endBreak.Pressed += () =>
         {
