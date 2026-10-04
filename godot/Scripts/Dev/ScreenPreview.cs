@@ -19,6 +19,10 @@ public partial class ScreenPreview : Node
     [Export] public string Screen { get; set; } = "map";
     /// <summary>The grown-ups' layer on top: "gate", "progress", "children", "settings" or "update" (the button).</summary>
     [Export] public string Parent { get; set; } = "";
+    /// <summary>Word Rocket: the skin, the child's level in it (-1 keeps theirs), and letters typed before a hint.</summary>
+    [Export] public string Skin { get; set; } = "";
+    [Export] public int Level { get; set; } = -1;
+    [Export] public int Typed { get; set; }
 
     public override void _Ready() => Callable.From(Open).CallDeferred();
 
@@ -68,6 +72,14 @@ public partial class ScreenPreview : Node
         // Letters games practise sounds the child has met: the sample child has learnt groups 1-3
         // (Feed the Monster's foods start at group 4).
         if (Screen is "sound_hunt" or "bubble_pop" or "feed_the_monster") LearnGroups(game, 3);
+        if (Screen == WordRocketGame.GameId)
+        {
+            // Longer words need digraphs (group 6 and up).
+            LearnGroups(game, Level >= 2 ? 7 : 3);
+            if (Level >= 0) game.Progress.GameLevels[WordRocketGame.GameId] = new SkillMastery(Level);
+            BipIsland.Games.WordRocketScreen.PreviewSkin = Skin.Length > 0 ? Skin : null;
+            BipIsland.Games.WordRocketScreen.PreviewLetters = Typed;
+        }
         // A game opens the way an island opens it, with its first question straight away.
         BipIsland.Games.GameScreen.StartDelay = 0;
         if (game.StartGame(Screen)) return;

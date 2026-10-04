@@ -187,7 +187,7 @@ public sealed record GameLevel
     public int? Cards { get; init; }
     /// <summary>Word Builder: spare tiles in the bank that aren't in the word.</summary>
     public int? Spares { get; init; }
-    /// <summary>Art Island: the kinds of question a level mixes (e.g. "find", "fill").</summary>
+    /// <summary>Art Island: the kinds of question a level mixes (e.g. "find", "fill"). Word Rocket: the one kind it asks ("letter", "cvc", "longer", "tricky").</summary>
     public List<string>? Modes { get; init; }
     /// <summary>Shape Builder: the shapes this level uses (ids in art/shapes.json).</summary>
     public List<string>? Shapes { get; init; }

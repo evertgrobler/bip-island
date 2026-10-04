@@ -37,6 +37,7 @@ vo_count_tap.m4a,"Tap each one as we count, then tap the number.",Count & Tap pr
 vo_quick_look.m4a,Look quickly… how many do you see?,"Quick Look prompt, said just as the dots appear.",How many?
 vo_sound_buttons.m4a,"Push each button, then find the word they make.",Sound Buttons prompt.,Push the buttons!
 vo_build_word.m4a,Drag the letters to build the word in the picture.,Word Builder prompt.,Build the word!
+vo_word_rocket.m4a,"Listen, then type what you hear on the keyboard.","Word Rocket prompt; the sound or word follows straight after. Not recorded yet (waiting on the ElevenLabs upgrade), so it plays as silence.",Type what you hear!
 vo_morning_order.m4a,Put the pictures in order. What comes first?,Morning Order prompt.,What comes first?
 vo_bips_path.m4a,"Snap the arrows together, then press Go to walk Bip home.",Bip's Path prompt.,Press Go!
 vo_numbers_island.m4a,"Welcome to Numbers Island! Click Bip, and let's count.",Plays when arriving on Numbers Island.,Numbers Island!

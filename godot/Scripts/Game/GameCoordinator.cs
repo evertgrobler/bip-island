@@ -113,7 +113,13 @@ public partial class GameCoordinator : Node
             _monster = new FeedMonsterGame(Content, Course);
         });
         NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); });
-        WordsOpen = Try("Words", () => { _ = new SoundButtonsGame(Content, new PhonicsCourse(Content)); _ = new WordBuilderGame(Content); });
+        WordsOpen = Try("Words", () =>
+        {
+            var course = new PhonicsCourse(Content);
+            _ = new SoundButtonsGame(Content, course);
+            _ = new WordBuilderGame(Content);
+            _ = new WordRocketGame(Content, course);
+        });
         CodingOpen = Try("Coding", () => { _ = new MorningOrderGame(Content); _ = new BipsPathGame(Content); });
         ArtOpen = Try("Art", () => { _ = new ShapeBuilderGame(Content); _ = new PaintPotsGame(Content); _ = new MirrorMagicGame(Content); });
     }
@@ -407,6 +413,7 @@ public partial class GameCoordinator : Node
             SoundButtonsGame.GameId when WordsOpen => new SoundButtonsScreen(new SoundButtonsGame(Content, Course ?? new PhonicsCourse(Content)),
                                                                               Course ?? new PhonicsCourse(Content)),
             WordBuilderGame.GameId when WordsOpen => new WordBuilderScreen(new WordBuilderGame(Content)),
+            WordRocketGame.GameId when WordsOpen => new WordRocketScreen(new WordRocketGame(Content, Course ?? new PhonicsCourse(Content))),
             MorningOrderGame.GameId when CodingOpen => new MorningOrderScreen(new MorningOrderGame(Content)),
             BipsPathGame.GameId when CodingOpen => new BipsPathScreen(new BipsPathGame(Content)),
             ShapeBuilderGame.GameId when ArtOpen => new ShapeBuilderScreen(new ShapeBuilderGame(Content)),
@@ -477,6 +484,7 @@ public partial class GameCoordinator : Node
     {
         "paper_desk", "treasure_chests", "bubbles", "sparkles", "monster_blue",
         "ducks", "dice", "buttons", "tiles", "picture_cards", "island", "studio", "pegs",
+        "rocket", "balloon", "submarine",
     };
 
     /// <summary>The child's level in a game (games.json "levels"), starting where their band does.</summary>
