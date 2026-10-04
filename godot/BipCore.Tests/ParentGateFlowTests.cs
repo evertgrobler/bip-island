@@ -114,8 +114,11 @@ public sealed class ParentGateFlowTests
         var lily = Guid.NewGuid();
         var switched = new List<Guid>();
         gate.SwitchChild += switched.Add;
+        Guid? askedFor = null;
+        gate.Opened += () => askedFor = gate.SwitchingTo; // The question can say who's waiting.
 
         gate.OpenToSwitchChild(lily);
+        Assert.Equal(lily, askedFor);
         Assert.Equal(GatePhase.Question, gate.Phase);
         Assert.Equal(lily, gate.SwitchingTo);
         Assert.False(gate.Submit("0"));

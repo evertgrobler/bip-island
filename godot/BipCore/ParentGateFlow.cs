@@ -72,12 +72,15 @@ public sealed class ParentGateFlow
 
     // Opening and answering
 
-    public void Open()
+    public void Open() => Open(install: false, switchTo: null);
+
+    /// <summary>Opens the gate; what happens on unlock is set before <see cref="Opened"/> so the question can say why.</summary>
+    private void Open(bool install, Guid? switchTo)
     {
         if (Phase != GatePhase.Closed) return;
         _hold.Release();
-        _installAfterUnlock = false;
-        SwitchingTo = null;
+        _installAfterUnlock = install;
+        SwitchingTo = switchTo;
         _wrongPasscodeTries = 0;
         Challenge = ParentChallenge.Random(_rng);
         LastAnswerWasWrong = false;
@@ -89,9 +92,7 @@ public sealed class ParentGateFlow
     /// <summary>The "Update ready" button: the same passcode or maths, then the update installs.</summary>
     public void OpenForUpdate()
     {
-        if (Phase != GatePhase.Closed) return;
-        Open();
-        _installAfterUnlock = true;
+        Open(install: true, switchTo: null);
     }
 
     /// <summary>
@@ -100,9 +101,7 @@ public sealed class ParentGateFlow
     /// </summary>
     public void OpenToSwitchChild(Guid childId)
     {
-        if (Phase != GatePhase.Closed) return;
-        Open();
-        SwitchingTo = childId;
+        Open(install: false, switchTo: childId);
     }
 
     /// <summary>Checks the typed answer. Returns true when the gate unlocked.</summary>

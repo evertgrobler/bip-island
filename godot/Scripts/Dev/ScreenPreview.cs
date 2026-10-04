@@ -107,7 +107,9 @@ public partial class ScreenPreview : Node
                 return;
             case "switch":
                 // "Who's playing?" while Player 1 rests: the grown-up's question before Lily plays.
-                layer.Flow.OpenToSwitchChild(game.Children.First(c => c.Id != game.ChildId).Id);
+                // After the cards have grown in, as when a child taps one.
+                var lily = game.Children.First(c => c.Id != game.ChildId).Id;
+                GetTree().CreateTimer(0.5).Timeout += () => layer.Flow.OpenToSwitchChild(lily);
                 return;
         }
         layer.Flow.Open();
