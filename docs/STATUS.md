@@ -291,3 +291,6 @@
   child who can play and taps a resting sibling's picture can go back to their own without the gate.
   Owner decision (4 Oct): straight after the game opens, a sibling with play time left can pick their
   own picture without the gate, even if the last child is resting (they stay on their break).
+  Re-review fix: tapping a resting sibling never moves "who's at the computer", and if that sibling's
+  break ends first, "Who's playing?" opens instead of the map, so a resting child can't play through a
+  sibling whose break was shorter.

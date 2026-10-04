@@ -210,6 +210,33 @@ public static class WalkTest
         await WaitFor(() => Screen() is MapScreen, 10);
         await Expect<MapScreen>("Lily's break ended: the map opens");
 
+        // A resting child can't skip their break by tapping a sibling whose break ends sooner: when the
+        // sibling's break ends, "Who's playing?" opens instead of the map, and playing needs a grown-up.
+        game.ForceBreakForTest(15);
+        game.Store.SaveBreak(other.Id, new BreakState { BreakEndsAt = DateTimeOffset.Now.AddSeconds(3), DayStamp = game.Today });
+        game.ShowProfiles();
+        await Expect<ProfilesScreen>("Lily rests (15 minutes), the other child rests (3 seconds): Who's playing?");
+        await Tap("child:" + other.Id);
+        await WaitFor(() => Screen() is ChargingScreen, 5);
+        Check("Lily can look at the other child's charging screen without a grown-up",
+              Screen() is ChargingScreen && game.ChildId == other.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
+        await WaitFor(() => Screen() is ProfilesScreen, 15);
+        Check("when the other child's break ends first, Who's playing? opens, not the map",
+              Screen() is ProfilesScreen, Screen()?.GetType().Name ?? "no screen");
+        await Tap("child:" + other.Id);
+        await Wait(0.3);
+        Check("...and playing as them asks a grown-up, because Lily is still resting",
+              game.Parent.Flow.Phase == GatePhase.Question && game.Parent.Flow.SwitchingTo == other.Id);
+        game.Parent.Close();
+        await Wait(0.3);
+        await Tap("child:" + lily.Id);
+        await WaitFor(() => Screen() is ChargingScreen, 5);
+        Check("Lily goes back to her own charging screen with no grown-up",
+              Screen() is ChargingScreen && game.ChildId == lily.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
+        game.EndBreakEarly();
+        await WaitFor(() => Screen() is MapScreen, 10);
+        await Expect<MapScreen>("Lily's break ended again: the map opens");
+
         // Phase 3 games: one round of each, through the real clicks.
 
         async Task<bool> WaitFor(Func<bool> ready, double seconds)

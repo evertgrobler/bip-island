@@ -126,13 +126,14 @@ public static class PlayBreaks
         atComputerResting && !targetIsAtComputer && !targetResting;
 
     /// <summary>
-    /// Who is at the computer after picking <paramref name="target"/>. A child who can still play and
-    /// taps a resting brother's or sister's picture (by mistake, or to lock them out) only sees that
-    /// child charging: they stay the one at the computer, so they can go back to their own picture
-    /// without a grown-up. Otherwise the picked child is.
+    /// Who is at the computer after picking <paramref name="target"/>. Picking a resting brother's or
+    /// sister's picture only shows them charging, so the child at the computer stays the same: one who
+    /// can still play goes back to their own picture without a grown-up, and one who is resting can't
+    /// skip their break by waiting for a sibling's shorter break to end. Picking a child who can play
+    /// (with a grown-up's yes when it's needed) makes them the one at the computer.
     /// </summary>
-    public static Guid AtComputerAfterSwitch(Guid atComputer, bool atComputerResting, Guid target, bool targetResting) =>
-        targetResting && !atComputerResting ? atComputer : target;
+    public static Guid AtComputerAfterSwitch(Guid atComputer, Guid target, bool targetResting) =>
+        targetResting ? atComputer : target;
 
     /// <summary>
     /// Whether a child is resting right now (charging, or their daily play used up), without banking

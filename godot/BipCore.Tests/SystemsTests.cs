@@ -189,19 +189,26 @@ public sealed class SystemsTests
     {
         var lily = Guid.NewGuid();
         var sam = Guid.NewGuid();
-        var bob = Guid.NewGuid();
         // Lily can play and taps resting Sam's picture: she's still the one at the computer, so going
         // back to her own picture needs no grown-up.
-        var atComputer = PlayBreaks.AtComputerAfterSwitch(lily, atComputerResting: false, sam, targetResting: true);
-        Assert.Equal(lily, atComputer);
+        Assert.Equal(lily, PlayBreaks.AtComputerAfterSwitch(lily, sam, targetResting: true));
         Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: false, targetIsAtComputer: true, targetResting: false));
-        // Sam is resting and taps resting Bob: Bob is at the computer now, and still resting, so
-        // picking Lily (who can play) asks a grown-up.
-        atComputer = PlayBreaks.AtComputerAfterSwitch(sam, atComputerResting: true, bob, targetResting: true);
-        Assert.Equal(bob, atComputer);
-        Assert.True(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: false, targetResting: false));
         // Picking a child who can play (after the grown-up said yes) makes them the one at the computer.
-        Assert.Equal(lily, PlayBreaks.AtComputerAfterSwitch(sam, atComputerResting: true, lily, targetResting: false));
+        Assert.Equal(sam, PlayBreaks.AtComputerAfterSwitch(lily, sam, targetResting: false));
+    }
+
+    [Fact]
+    public void ARestingChildCannotSkipTheirBreakThroughASiblingWhoseBreakEndsSooner()
+    {
+        var lily = Guid.NewGuid();
+        var ben = Guid.NewGuid();
+        var sam = Guid.NewGuid();
+        // Lily has 15 minutes of break left and taps Ben (1 minute left): she stays at the computer.
+        Assert.Equal(lily, PlayBreaks.AtComputerAfterSwitch(lily, ben, targetResting: true));
+        // When Ben's break ends he can play, but Lily (at the computer) is still resting: picking Ben,
+        // or Sam, needs a grown-up.
+        Assert.True(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: false, targetResting: false));
+        Assert.Equal(lily, PlayBreaks.AtComputerAfterSwitch(lily, sam, targetResting: true));
     }
 
     [Fact]

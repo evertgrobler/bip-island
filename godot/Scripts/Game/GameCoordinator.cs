@@ -210,7 +210,7 @@ public partial class GameCoordinator : Node
         }
         else
         {
-            _atComputer = PlayBreaks.AtComputerAfterSwitch(atComputer, AtComputerResting(atComputer), id, targetResting);
+            _atComputer = PlayBreaks.AtComputerAfterSwitch(atComputer, id, targetResting);
         }
         ChildId = id;
         Progress = Store.Progress(id);
@@ -315,9 +315,15 @@ public partial class GameCoordinator : Node
             Progress.NotePlayTime(banked, Today);
             Store.Save(Progress, ChildId);
         }
-        // The child on screen is playing, so they're the one at the computer now.
-        if (phase == BreakPhase.Playing)
+        if (_atComputer is Guid other && other != ChildId)
         {
+            // Another child is at the computer, only looking at this one: once their own rest is
+            // over, the child on screen counts as the one at the computer again.
+            if (!IsResting(other)) _atComputer = null;
+        }
+        else if (phase == BreakPhase.Playing)
+        {
+            // The child on screen is playing, so they're the one at the computer now.
             _atComputer = null;
             _nobodyYet = false;
         }
@@ -371,7 +377,14 @@ public partial class GameCoordinator : Node
     }
 
     /// <summary>False while Bip is charging or the day is done: games stay closed.</summary>
-    public bool PlayAllowed() => CurrentBreakPhase() == BreakPhase.Playing;
+    public bool PlayAllowed() => CurrentBreakPhase() == BreakPhase.Playing && !SomeoneElseResting;
+
+    /// <summary>
+    /// The child at the computer is resting while looking at a brother's or sister's picture. If that
+    /// child's break ends first, games stay closed: "Who's playing?" opens, and playing as them needs
+    /// a grown-up.
+    /// </summary>
+    private bool SomeoneElseResting => !_nobodyYet && AtComputer != ChildId && IsResting(AtComputer);
 
     // Rewards
 
@@ -598,7 +611,7 @@ public partial class GameCoordinator : Node
         if (screen is not GameScreen) CurrentGameId = null;
         // While Bip charges (or the day is done) every game and island redirects here.
         if (screen is not (ChargingScreen or StickerScreen or ProfilesScreen) && !PlayAllowed())
-            screen = new ChargingScreen();
+            screen = SomeoneElseResting && CurrentBreakPhase() == BreakPhase.Playing ? new ProfilesScreen() : new ChargingScreen();
         var tree = GetTree();
         if (tree.CurrentScene == null || SelfTest.IsRequested(Boot.UserArgs))
         {
