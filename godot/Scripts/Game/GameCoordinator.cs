@@ -142,7 +142,6 @@ public partial class GameCoordinator : Node
         Progress = Store.Progress(ChildId);
         LoadBreak();
         _nobodyYet = true;
-        _atComputer = null;
     }
 
     /// <summary>Each child has their own play clock and break: load the current child's.</summary>
@@ -164,54 +163,45 @@ public partial class GameCoordinator : Node
     public ChildSummary? CurrentChild => Children.FirstOrDefault(c => c.Id == ChildId);
 
     /// <summary>
-    /// Whether picking <paramref name="id"/> needs a grown-up first: the child who was playing is
-    /// resting, and picking someone else would skip their break (see <see cref="PlayBreaks.SwitchNeedsGrownUp"/>).
+    /// Whether picking <paramref name="id"/> needs a grown-up first: the child at the computer is
+    /// resting, and picking a child who can play would skip their break (see <see cref="PlayBreaks.SwitchNeedsGrownUp"/>).
+    /// A resting brother's or sister's picture never gets here: tapping it only shows them charging
+    /// (<see cref="ShowResting"/>), so the child at the computer is always <see cref="ChildId"/>.
     /// </summary>
     public bool SwitchNeedsGrownUp(Guid id)
     {
-        CurrentBreakPhase(); // Bank play time first.
-        var atComputer = AtComputer;
-        return PlayBreaks.SwitchNeedsGrownUp(AtComputerResting(atComputer), id == atComputer, IsResting(id));
+        var resting = CurrentBreakPhase() != BreakPhase.Playing; // Banks play time first.
+        return PlayBreaks.SwitchNeedsGrownUp(!_nobodyYet && resting, id == ChildId, IsResting(id));
     }
 
     /// <summary>
-    /// Whether the child at the computer is resting. Straight after the game opens nobody is yet
-    /// (owner, 4 October 2026): a brother or sister with play time left can start without a grown-up,
-    /// and the child who was resting stays on their break.
+    /// Straight after the game opens nobody is at the computer yet (owner, 4 October 2026): a brother
+    /// or sister with play time left can start without a grown-up, and the child who was resting stays
+    /// on their break. Cleared once the playing child can play.
     /// </summary>
-    private bool AtComputerResting(Guid atComputer) => !_nobodyYet && IsResting(atComputer);
     private bool _nobodyYet = true;
 
-    /// <summary>
-    /// The child whose break the switch rule protects: usually the one playing, but a child who could
-    /// still play and only peeked at a resting sibling's picture stays the one at the computer.
-    /// </summary>
-    private Guid AtComputer => _atComputer is Guid id && Children.Any(c => c.Id == id) ? id : ChildId;
-    private Guid? _atComputer;
-
     /// <summary>Whether a child is resting (charging or done for the day), for their picture in "Who's playing?".</summary>
-    public bool IsResting(Guid id) => id == ChildId
-        ? PlayBreaks.IsResting(_break, DateTimeOffset.Now, Today, Store.Settings.ToBreakSettings())
-        : PlayBreaks.IsResting(Store.LoadBreak(id), DateTimeOffset.Now, Today, Store.Settings.ToBreakSettings());
+    public bool IsResting(Guid id) =>
+        PlayBreaks.IsResting(BreakOf(id), DateTimeOffset.Now, Today, Store.Settings.ToBreakSettings());
+
+    /// <summary>A child's break: the playing child's live one, or another child's as last saved.</summary>
+    private BreakState? BreakOf(Guid id) => id == ChildId ? _break : Store.LoadBreak(id);
+
+    /// <summary>
+    /// A resting brother's or sister's picture was tapped: show them charging, without them becoming
+    /// the playing child (nothing is banked to them, the grown-ups' buttons stay with the child at the
+    /// computer, and when their break ends "Who's playing?" opens again).
+    /// </summary>
+    public void ShowResting(Guid id) => Present(new ChargingScreen(id));
 
     /// <summary>The child picks their picture: their progress and break load, and the map opens.</summary>
     public void Choose(Guid id)
     {
         if (Children.All(c => c.Id != id)) return;
         CurrentBreakPhase(); // Bank play time to the child who was playing.
-        var atComputer = AtComputer;
-        var targetResting = IsResting(id);
-        if (_nobodyYet)
-        {
-            // Just opened: picking a resting child only shows them charging, so nobody is at the
-            // computer until someone who can play is picked.
-            _nobodyYet = targetResting;
-            _atComputer = null;
-        }
-        else
-        {
-            _atComputer = PlayBreaks.AtComputerAfterSwitch(atComputer, id, targetResting);
-        }
+        // Just opened: picking a resting child (their own picture) doesn't make anyone at the computer yet.
+        if (_nobodyYet) _nobodyYet = IsResting(id);
         ChildId = id;
         Progress = Store.Progress(id);
         LoadBreak();
@@ -315,14 +305,8 @@ public partial class GameCoordinator : Node
             Progress.NotePlayTime(banked, Today);
             Store.Save(Progress, ChildId);
         }
-        // The child on screen is playing (and nobody else at the computer is resting), so they're the
-        // one at the computer now. While the child at the computer rests, games stay closed for the
-        // child they're looking at (SomeoneElseResting), so nothing changes here.
-        if (phase == BreakPhase.Playing && (_nobodyYet || !IsResting(AtComputer)))
-        {
-            _atComputer = null;
-            _nobodyYet = false;
-        }
+        // The playing child can play, so they're the one at the computer now.
+        if (phase == BreakPhase.Playing) _nobodyYet = false;
         return phase;
     }
 
@@ -351,6 +335,14 @@ public partial class GameCoordinator : Node
     /// <summary>When the break ends (null while playing), for the charging screen.</summary>
     public DateTimeOffset? BreakEndsAt => _break.BreakEndsAt;
 
+    /// <summary>A brother's or sister's break, for their charging screen (nothing is banked).</summary>
+    public BreakPhase RestingPhaseOf(Guid id) =>
+        PlayBreaks.PhaseWithoutBanking(BreakOf(id), DateTimeOffset.Now, Today, Store.Settings.ToBreakSettings());
+    public DateTimeOffset? BreakEndsAtOf(Guid id) => BreakOf(id)?.BreakEndsAt;
+    public double BreakProgressOf(Guid id) =>
+        BreakOf(id) is { } state ? PlayBreaks.BreakProgress(state, DateTimeOffset.Now, Store.Settings.BreakMinutes) : 1;
+    public int BreakMinutesLeftOf(Guid id) => BreakOf(id) is { } state ? PlayBreaks.MinutesLeft(state, DateTimeOffset.Now) : 0;
+
     /// <summary>0 (break just started) to 1 (charged), for the charging screen's battery.</summary>
     public double BreakProgress() => PlayBreaks.BreakProgress(_break, DateTimeOffset.Now, Store.Settings.BreakMinutes);
 
@@ -373,14 +365,7 @@ public partial class GameCoordinator : Node
     }
 
     /// <summary>False while Bip is charging or the day is done: games stay closed.</summary>
-    public bool PlayAllowed() => CurrentBreakPhase() == BreakPhase.Playing && !SomeoneElseResting;
-
-    /// <summary>
-    /// The child at the computer is resting while looking at a brother's or sister's picture. If that
-    /// child's break ends first, games stay closed: "Who's playing?" opens, and playing as them needs
-    /// a grown-up.
-    /// </summary>
-    private bool SomeoneElseResting => !_nobodyYet && AtComputer != ChildId && IsResting(AtComputer);
+    public bool PlayAllowed() => CurrentBreakPhase() == BreakPhase.Playing;
 
     // Rewards
 
@@ -410,7 +395,7 @@ public partial class GameCoordinator : Node
     {
         if (!PlayAllowed())
         {
-            Present(RestScreen());
+            ShowCharging();
             return;
         }
         Present(new MapScreen(greet: !_hasWelcomed));
@@ -419,12 +404,6 @@ public partial class GameCoordinator : Node
 
     public void ShowCharging() => Present(new ChargingScreen());
 
-    /// <summary>
-    /// Where games send the child while they're closed: Bip charging, or "Who's playing?" when the
-    /// child on screen could play but the child at the computer is resting (see <see cref="SomeoneElseResting"/>).
-    /// </summary>
-    private BaseScreen RestScreen() =>
-        SomeoneElseResting && CurrentBreakPhase() == BreakPhase.Playing ? new ProfilesScreen() : new ChargingScreen();
     public void ShowStickers() => Present(new StickerScreen());
 
     public void ShowIsland(Island island, bool greet = true)
@@ -462,7 +441,7 @@ public partial class GameCoordinator : Node
         // While Bip charges no game starts (or counts as played): the charging screen shows instead.
         if (!PlayAllowed())
         {
-            Present(RestScreen());
+            ShowCharging();
             return true;
         }
         var sound = focus ?? PracticeSound();
@@ -614,7 +593,7 @@ public partial class GameCoordinator : Node
         if (screen is not GameScreen) CurrentGameId = null;
         // While Bip charges (or the day is done) every game and island redirects here.
         if (screen is not (ChargingScreen or StickerScreen or ProfilesScreen) && !PlayAllowed())
-            screen = RestScreen();
+            screen = new ChargingScreen();
         var tree = GetTree();
         if (tree.CurrentScene == null || SelfTest.IsRequested(Boot.UserArgs))
         {

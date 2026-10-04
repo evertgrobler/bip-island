@@ -287,10 +287,10 @@
   `PlayBreaks.SwitchNeedsGrownUp`), so quitting, reopening or switching can't skip a break. Parent
   area: "End Lily's break now" names the playing child. Tests: save carry-over, the switch rule, the
   gate hand-over; walk-through: Lily rests → grown-up lets the other child play → back to Lily's break.
-  Review fix: the rule follows the child at the computer (`PlayBreaks.AtComputerAfterSwitch`), so a
-  child who can play and taps a resting sibling's picture can go back to their own without the gate.
+  Review fixes: tapping a resting brother's or sister's picture only shows their charging screen
+  (`ChargingScreen(peek)`, nothing banked, they don't become the playing child), so the child at the
+  computer is always the playing child: going back needs no gate, a resting child can't play through a
+  sibling whose break was shorter (when it ends, "Who's playing?" opens), and the gate text and "End
+  the break now" always mean the child at the computer.
   Owner decision (4 Oct): straight after the game opens, a sibling with play time left can pick their
   own picture without the gate, even if the last child is resting (they stay on their break).
-  Re-review fix: tapping a resting sibling never moves "who's at the computer", and if that sibling's
-  break ends first, "Who's playing?" opens instead of the map, so a resting child can't play through a
-  sibling whose break was shorter.

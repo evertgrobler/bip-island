@@ -172,21 +172,26 @@ public static class WalkTest
             await Expect<MapScreen>("after the grown-up's answer, the other child plays: the map opens");
             Check("...as the other child, with their own break clock", game.ChildId == other.Id && game.PlayAllowed() && !game.Parent.IsOpen);
         }
+        // The other child taps resting Lily's picture: it only shows her charging. She doesn't become
+        // the playing child, so nothing is banked to her and no grown-up is needed to go back.
         if (await Tap("profiles"))
         {
             await Expect<ProfilesScreen>("back to Who's playing?");
+            var lilyPlayed = game.Store.LoadBreak(lily.Id)?.PlayedTodaySeconds ?? 0;
             await Tap("child:" + lily.Id);
             await WaitFor(() => Screen() is ChargingScreen, 5);
-            Check("picking Lily needs no grown-up (the other child wasn't resting), and her break carries on",
-                  Screen() is ChargingScreen && game.ChildId == lily.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
+            Check("tapping resting Lily shows her charging, and the other child stays the one playing",
+                  Screen() is ChargingScreen { Peeking: var shown } && shown == lily.Id && game.ChildId == other.Id && !game.Parent.IsOpen,
+                  Screen()?.GetType().Name ?? "no screen");
+            await Wait(1.5);
+            Check("...and none of that time counts as Lily's play", (game.Store.LoadBreak(lily.Id)?.PlayedTodaySeconds ?? 0) == lilyPlayed);
         }
-        // The other child only peeked at resting Lily's picture: they can go back to their own without a grown-up.
         if (await Tap("profiles"))
         {
             await Expect<ProfilesScreen>("from Lily's charging screen, back to Who's playing?");
             await Tap("child:" + other.Id);
             await WaitFor(() => Screen() is MapScreen, 5);
-            Check("the child who only peeked at Lily goes back to their own picture with no grown-up",
+            Check("the child who only looked at Lily goes back to their own picture with no grown-up",
                   Screen() is MapScreen && game.ChildId == other.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
         }
         // Owner decision: straight after the game opens, a brother or sister with play time left can
@@ -202,7 +207,7 @@ public static class WalkTest
               Screen() is MapScreen && game.ChildId == other.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
         Check("...and Lily is still on her break", game.IsResting(lily.Id));
 
-        // Tidy up: Lily's break ends, and the walk carries on as the other child.
+        // Tidy up: Lily's break ends.
         game.Choose(lily.Id);
         await WaitFor(() => Screen() is ChargingScreen, 5);
         game.EndBreakEarly();
@@ -210,32 +215,44 @@ public static class WalkTest
         await WaitFor(() => Screen() is MapScreen, 10);
         await Expect<MapScreen>("Lily's break ended: the map opens");
 
-        // A resting child can't skip their break by tapping a sibling whose break ends sooner: when the
-        // sibling's break ends, "Who's playing?" opens instead of the map, and playing needs a grown-up.
+        // A resting child can't skip their break through a sibling whose break ends sooner: tapping the
+        // sibling only shows them charging, and when their break ends "Who's playing?" opens again,
+        // where playing as them needs a grown-up.
         game.ForceBreakForTest(15);
         game.Store.SaveBreak(other.Id, new BreakState { BreakEndsAt = DateTimeOffset.Now.AddSeconds(3), DayStamp = game.Today });
         game.ShowProfiles();
         await Expect<ProfilesScreen>("Lily rests (15 minutes), the other child rests (3 seconds): Who's playing?");
         await Tap("child:" + other.Id);
         await WaitFor(() => Screen() is ChargingScreen, 5);
-        Check("Lily can look at the other child's charging screen without a grown-up",
-              Screen() is ChargingScreen && game.ChildId == other.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
+        Check("Lily can look at the other child's charging screen; she stays the one at the computer",
+              Screen() is ChargingScreen { Peeking: var peeked } && peeked == other.Id && game.ChildId == lily.Id && !game.Parent.IsOpen,
+              Screen()?.GetType().Name ?? "no screen");
         await WaitFor(() => Screen() is ProfilesScreen, 15);
         Check("when the other child's break ends first, Who's playing? opens, not the map",
-              Screen() is ProfilesScreen, Screen()?.GetType().Name ?? "no screen");
+              Screen() is ProfilesScreen && game.ChildId == lily.Id, Screen()?.GetType().Name ?? "no screen");
         await Tap("child:" + other.Id);
         await Wait(0.3);
         Check("...and playing as them asks a grown-up, because Lily is still resting",
               game.Parent.Flow.Phase == GatePhase.Question && game.Parent.Flow.SwitchingTo == other.Id);
+        Check("...and the question names Lily as the one on a break",
+              game.Parent.SwitchText()?.StartsWith("Lily is having a break.") == true, game.Parent.SwitchText() ?? "no text");
         game.Parent.Close();
         await Wait(0.3);
-        await Tap("child:" + lily.Id);
-        await WaitFor(() => Screen() is ChargingScreen, 5);
-        Check("Lily goes back to her own charging screen with no grown-up",
-              Screen() is ChargingScreen && game.ChildId == lily.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
+
+        // "End the break now" ends the break of the child at the computer, even while a brother's or
+        // sister's charging screen is showing.
+        game.Store.SaveBreak(other.Id, new BreakState { BreakEndsAt = DateTimeOffset.Now.AddMinutes(10), DayStamp = game.Today });
+        game.ShowProfiles();
+        await Expect<ProfilesScreen>("Who's playing? again");
+        await Tap("child:" + other.Id);
+        await WaitFor(() => Screen() is ChargingScreen { Peeking: not null }, 5);
         game.EndBreakEarly();
-        await WaitFor(() => Screen() is MapScreen, 10);
-        await Expect<MapScreen>("Lily's break ended again: the map opens");
+        Check("ending the break while looking at the other child ends Lily's break, not theirs",
+              !game.IsResting(lily.Id) && game.IsResting(other.Id));
+        game.Store.SaveBreak(other.Id, new BreakState { DayStamp = game.Today });
+        game.ShowMap();
+        await Expect<MapScreen>("Lily's break ended: the map opens as Lily");
+        Check("...as Lily", game.ChildId == lily.Id);
 
         // Phase 3 games: one round of each, through the real clicks.
 

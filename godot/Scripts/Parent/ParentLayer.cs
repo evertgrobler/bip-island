@@ -212,8 +212,8 @@ public partial class ParentLayer : CanvasLayer
 
     private void Submit() => Submit(_answer?.Text ?? "");
 
-    /// <summary>Why the gate opened from "Who's playing?", for the grown-up answering it.</summary>
-    private string? SwitchText()
+    /// <summary>Why the gate opened from "Who's playing?", for the grown-up answering it (public for the walk-through test).</summary>
+    public string? SwitchText()
     {
         if (Flow.SwitchingTo is not Guid id) return null;
         var next = Coordinator.Children.FirstOrDefault(c => c.Id == id)?.Name;

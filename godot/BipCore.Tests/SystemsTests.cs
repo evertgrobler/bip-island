@@ -185,30 +185,19 @@ public sealed class SystemsTests
     }
 
     [Fact]
-    public void PeekingAtARestingSiblingDoesNotLockTheChildOut()
+    public void ABrothersOrSistersBreakIsReadWithoutBankingAnything()
     {
-        var lily = Guid.NewGuid();
-        var sam = Guid.NewGuid();
-        // Lily can play and taps resting Sam's picture: she's still the one at the computer, so going
-        // back to her own picture needs no grown-up.
-        Assert.Equal(lily, PlayBreaks.AtComputerAfterSwitch(lily, sam, targetResting: true));
-        Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: false, targetIsAtComputer: true, targetResting: false));
-        // Picking a child who can play (after the grown-up said yes) makes them the one at the computer.
-        Assert.Equal(sam, PlayBreaks.AtComputerAfterSwitch(lily, sam, targetResting: false));
-    }
-
-    [Fact]
-    public void ARestingChildCannotSkipTheirBreakThroughASiblingWhoseBreakEndsSooner()
-    {
-        var lily = Guid.NewGuid();
-        var ben = Guid.NewGuid();
-        var sam = Guid.NewGuid();
-        // Lily has 15 minutes of break left and taps Ben (1 minute left): she stays at the computer.
-        Assert.Equal(lily, PlayBreaks.AtComputerAfterSwitch(lily, ben, targetResting: true));
-        // When Ben's break ends he can play, but Lily (at the computer) is still resting: picking Ben,
-        // or Sam, needs a grown-up.
-        Assert.True(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: false, targetResting: false));
-        Assert.Equal(lily, PlayBreaks.AtComputerAfterSwitch(lily, sam, targetResting: true));
+        var now = new DateTimeOffset(2026, 10, 4, 9, 0, 0, TimeSpan.Zero);
+        var settings = Settings(dailyMax: 30);
+        var charging = new BreakState { BreakEndsAt = now.AddMinutes(5), DayStamp = 100, PlayedSeconds = 1200, PlayedTodaySeconds = 1200 };
+        Assert.Equal(BreakPhase.BreakTime, PlayBreaks.PhaseWithoutBanking(charging, now, 100, settings));
+        // Reading it changes nothing (Advance would clear an ended break and bank play).
+        Assert.Equal(BreakPhase.Playing, PlayBreaks.PhaseWithoutBanking(charging, now.AddMinutes(6), 100, settings));
+        Assert.Equal(now.AddMinutes(5), charging.BreakEndsAt);
+        Assert.Equal(1200, charging.PlayedTodaySeconds);
+        var dayUsed = new BreakState { DayStamp = 100, PlayedTodaySeconds = 30 * 60 };
+        Assert.Equal(BreakPhase.DayDone, PlayBreaks.PhaseWithoutBanking(dayUsed, now, 100, settings));
+        Assert.Equal(BreakPhase.Playing, PlayBreaks.PhaseWithoutBanking(null, now, 100, settings));
     }
 
     [Fact]

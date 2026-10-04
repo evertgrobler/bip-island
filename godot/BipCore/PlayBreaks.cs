@@ -118,32 +118,31 @@ public static class PlayBreaks
 
     /// <summary>
     /// Each child has their own break, so a child who is resting (charging or done for the day) could
-    /// skip it by picking a brother's or sister's picture. The rule follows the child at the computer
-    /// (see <see cref="AtComputerAfterSwitch"/>): when they're resting, picking a child who can play
-    /// needs a grown-up. Picking themselves, or another resting child, doesn't skip anything.
+    /// skip it by picking a brother's or sister's picture. When the child at the computer is resting,
+    /// picking a child who can play needs a grown-up. Picking themselves, or another resting child
+    /// (whose charging screen only shows; they don't become the playing child), skips nothing.
     /// </summary>
     public static bool SwitchNeedsGrownUp(bool atComputerResting, bool targetIsAtComputer, bool targetResting) =>
         atComputerResting && !targetIsAtComputer && !targetResting;
 
     /// <summary>
-    /// Who is at the computer after picking <paramref name="target"/>. Picking a resting brother's or
-    /// sister's picture only shows them charging, so the child at the computer stays the same: one who
-    /// can still play goes back to their own picture without a grown-up, and one who is resting can't
-    /// skip their break by waiting for a sibling's shorter break to end. Picking a child who can play
-    /// (with a grown-up's yes when it's needed) makes them the one at the computer.
-    /// </summary>
-    public static Guid AtComputerAfterSwitch(Guid atComputer, Guid target, bool targetResting) =>
-        targetResting ? atComputer : target;
-
-    /// <summary>
     /// Whether a child is resting right now (charging, or their daily play used up), without banking
     /// any time: for the sleepy "z z" on their picture in "Who's playing?".
     /// </summary>
-    public static bool IsResting(BreakState? state, DateTimeOffset now, int day, BreakSettings settings)
+    public static bool IsResting(BreakState? state, DateTimeOffset now, int day, BreakSettings settings) =>
+        PhaseWithoutBanking(state, now, day, settings) != BreakPhase.Playing;
+
+    /// <summary>
+    /// Where a child's break stands, without banking any time or changing their state: for a brother's
+    /// or sister's charging screen, shown while another child is at the computer.
+    /// </summary>
+    public static BreakPhase PhaseWithoutBanking(BreakState? state, DateTimeOffset now, int day, BreakSettings settings)
     {
-        if (state == null) return false;
-        if (state.BreakEndsAt is DateTimeOffset endsAt && endsAt > now) return true;
-        return state.DayStamp == day && settings.DailyMaxMinutes is int max && state.PlayedTodaySeconds >= max * 60;
+        if (state == null) return BreakPhase.Playing;
+        if (state.BreakEndsAt is DateTimeOffset endsAt && endsAt > now) return BreakPhase.BreakTime;
+        return state.DayStamp == day && settings.DailyMaxMinutes is int max && state.PlayedTodaySeconds >= max * 60
+            ? BreakPhase.DayDone
+            : BreakPhase.Playing;
     }
 
     /// <summary>A parent ends the break early from settings.</summary>
