@@ -299,9 +299,9 @@
   the break now" always mean the child at the computer.
   Owner decision (4 Oct): straight after the game opens, a sibling with play time left can pick their
   own picture without the gate, even if the last child is resting (they stay on their break).
-- **4 Oct, midday:** First-time setup guide for grown-ups (owner request). On a fresh install
-  (`SaveStore.IsNew`: no save file yet; families updating aren't interrupted) a guide opens over the
-  paused game: welcome; the child lock and practising the way in (hold Esc 3 s and answer, for real; it comes
+- **4 Oct, midday:** First-time setup guide for grown-ups (owner request). Until a grown-up finishes
+  or skips it (`SaveStore.SetupDone`; older saves read false, so updating families see it once, and a
+  first run cut short gets it again) a guide opens over the paused game at launch: welcome; the child lock and practising the way in (hold Esc 3 s and answer, for real; it comes
   back to the guide instead of opening the parent area); optional passcode; children; play time; a
   3-card tour of what the child sees; all set, then "Hand over to your child". Steps are
   `BipCore.SetupGuide` (tested); the cards are `ParentLayer.Setup.cs`, reusing the parent area's
@@ -310,4 +310,5 @@
   Review fixes: on a first run the practise step can't be skipped, so the passcode, children and
   play-time steps come only after the gate is really opened (from Settings it can be skipped); the
   hold ring draws above the card; the first child added replaces the untouched "Player 1"; finishing
-  from Settings returns to the same screen; a typed passcode is saved on Next.
+  from Settings returns to the same screen; a typed passcode is saved on Next. Second round: an Esc
+  hold left running from the practise step is released when the guide moves on.
