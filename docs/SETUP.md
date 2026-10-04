@@ -54,8 +54,10 @@ Open the download page and pick your computer.
 2. The first time only, Windows may say **"Windows protected your PC"**: click **More info** →
    **Run anyway**.
 
-The game opens full screen. Set up each child in the parent area (**Settings → Children**), and a
-parent passcode if you'd like one.
+The game opens full screen, and the first time it opens a short **setup guide** walks you through
+it (about 3 minutes): practising the way into the grown-up area (hold **Esc** for 3 seconds), an
+optional passcode, your children, play time and breaks, and what your child will see. You can skip it,
+and open it again any time from the parent area (**Settings → Show the setup guide again**).
 
 ## The child lock
 

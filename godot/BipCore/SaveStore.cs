@@ -30,6 +30,8 @@ public sealed class SaveFile
     public PlayTimeSettings Settings { get; set; } = new();
     /// <summary>The optional parent passcode (only a salted hash is kept).</summary>
     public ParentPasscode? Passcode { get; set; }
+    /// <summary>A grown-up has been through (or skipped) the first-time setup guide. Older saves read as false, so they see it once.</summary>
+    public bool SetupDone { get; set; }
 }
 
 public sealed class SavedChild
@@ -176,6 +178,16 @@ public sealed class SaveStore
             _file.Passcode = value;
             Save();
         }
+    }
+
+    /// <summary>Whether the first-time setup guide has been finished or skipped on this computer.</summary>
+    public bool SetupDone => _file.SetupDone;
+
+    /// <summary>The setup guide is finished or skipped: it doesn't open again by itself.</summary>
+    public void MarkSetupDone(bool done = true)
+    {
+        _file.SetupDone = done;
+        Save();
     }
 
     // Loading and saving

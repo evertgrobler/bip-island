@@ -17,7 +17,7 @@ namespace BipIsland.Dev;
 public partial class ScreenPreview : Node
 {
     [Export] public string Screen { get; set; } = "map";
-    /// <summary>The grown-ups' layer on top: "gate", "progress", "children", "settings" or "update" (the button).</summary>
+    /// <summary>The grown-ups' layer on top: "gate", "progress", "children", "settings", "update" (the button), or "setup:N" / "setup:tourN" (the first-time guide).</summary>
     [Export] public string Parent { get; set; } = "";
 
     public override void _Ready() => Callable.From(Open).CallDeferred();
@@ -98,6 +98,21 @@ public partial class ScreenPreview : Node
                 return;
             case "":
                 return;
+        }
+        // "setup:N" shows step N (1-based) of the first-time setup guide, "setup:tourN" a tour card.
+        if (Parent.StartsWith("setup:", StringComparison.Ordinal))
+        {
+            var what = Parent["setup:".Length..];
+            layer.ShowSetupGuide();
+            var tour = what.StartsWith("tour", StringComparison.Ordinal);
+            var step = tour ? BipCore.SetupGuide.Step.Tour : (BipCore.SetupGuide.Step)(int.Parse(what) - 1);
+            var card = tour ? int.Parse(what["tour".Length..]) - 1 : 0;
+            while (layer.Guide is { } guide && (guide.Current != step || guide.TourCard != card))
+            {
+                if (guide.Current == BipCore.SetupGuide.Step.GrownUpArea) guide.GateOpened();
+                layer.GuideNext();
+            }
+            return;
         }
         layer.Flow.Open();
         if (Parent == "gate") return;

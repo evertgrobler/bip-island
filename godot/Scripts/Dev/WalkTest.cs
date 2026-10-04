@@ -51,8 +51,48 @@ public static class WalkTest
             Check(step, Screen() is T, $"showing {Screen()?.GetType().Name ?? "nothing"}");
         }
 
+        // The first-time setup guide: a fresh save shows it over the game, a grown-up practises the way
+        // into the grown-up area, adds a child, changes play time and hands over to the map.
+        async Task WalkSetupGuide()
+        {
+            var layer = game.Parent;
+            void Esc(bool down) => Input.ParseInputEvent(new InputEventKey { Keycode = Key.Escape, PhysicalKeycode = Key.Escape, Pressed = down });
+            await Wait(0.3);
+            Check("a first run opens the setup guide, with the game paused behind it", layer.Guide is { Current: BipCore.SetupGuide.Step.Welcome } && tree.Paused);
+            layer.GuideNext();
+            Check("the guide asks the grown-up to practise the Esc hold", layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanGoOn: false });
+            Esc(true);
+            await Wait(3.4);
+            Check("holding Esc in the guide opens the real question", layer.Flow.Phase == GatePhase.Question);
+            Esc(false);
+            await Wait(0.2);
+            layer.Submit(layer.Flow.Challenge.Answer.ToString());
+            await Wait(0.2);
+            Check("the right answer comes back to the guide, not the parent area",
+                  layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, PractisedGate: true, CanGoOn: true } && layer.Area == null && !layer.IsOpen && tree.Paused);
+            layer.GuideNext(); // Passcode
+            Check("the passcode step is the parent area's passcode form", layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode && layer.Area != null);
+            layer.GuideSkipStep(); // Children
+            Check("the children step can add a child", layer.Area != null && layer.Area.AddChild("Thabo", 6) && game.Children.Any(c => c.Name == "Thabo"));
+            layer.GuideNext(); // Play time
+            Check("the play-time step shows the settings", layer.Guide?.Current == BipCore.SetupGuide.Step.PlayTime && layer.Area != null);
+            layer.GuideNext(); // Tour
+            for (var i = 0; i < BipCore.SetupGuide.TourCards; i++) layer.GuideNext();
+            Check("after the tour comes All set", layer.Guide?.Current == BipCore.SetupGuide.Step.AllSet);
+            layer.GuideNext();
+            await Wait(0.8);
+            Check("handing over ends the guide and saves that it's done", layer.Guide == null && game.Store.SetupDone && !tree.Paused);
+            Check("with two children the game opens on Who's playing?", Screen() is ProfilesScreen, $"showing {Screen()?.GetType().Name}");
+            // Back to one child so the rest of the walk-through starts as before.
+            if (game.Children.FirstOrDefault(c => c.Name == "Thabo") is { } thabo) game.DeleteChild(thabo.Id);
+            game.Start();
+            await Wait(0.3);
+            Check("the guide doesn't open again by itself", layer.Guide == null);
+        }
+
         game.EndBreakEarly(); // A fresh test save starts outside any break.
         game.Start();
+        await WalkSetupGuide();
         await Expect<MapScreen>("one child: the game opens on the map");
 
         if (await Tap("island:letters")) await Expect<LettersIslandScreen>("letters island opens");

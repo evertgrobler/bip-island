@@ -282,3 +282,11 @@
   recording (it still has a small "uh"; two trims were rejected) until it can be re-recorded.
   **Waiting on the ElevenLabs upgrade:** `snd_h`, `word_yoyo` (then switch y's picture word from yak),
   `vo_bip_charging`, `vo_day_done`.
+- **4 Oct, midday:** First-time setup guide for grown-ups (owner request). On a computer's first run
+  (`SaveStore.SetupDone` false, so existing installs see it once too) a guide opens over the paused
+  game: welcome; the child lock and practising the way in (hold Esc 3 s and answer, for real; it comes
+  back to the guide instead of opening the parent area); optional passcode; children; play time; a
+  3-card tour of what the child sees; all set, then "Hand over to your child". Steps are
+  `BipCore.SetupGuide` (tested); the cards are `ParentLayer.Setup.cs`, reusing the parent area's
+  children, passcode and play-time parts (`ParentArea.Part`). Settings has "Show the setup guide
+  again". Previews: `Scenes/Parent/setup_*.tscn`; the walk-through runs it first.

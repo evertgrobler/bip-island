@@ -63,6 +63,8 @@ public partial class ParentLayer : CanvasLayer
     {
         if (@event is not InputEventKey { Keycode: Key.Escape } key) return;
         GetViewport().SetInputAsHandled();
+        // During the setup guide, Esc only does something on the step that practises it.
+        if (Guide != null && !IsOpen && !PractisingGate) return;
         if (IsOpen)
         {
             // A fresh press goes back to the game; the first press's repeats and release don't.
@@ -82,13 +84,19 @@ public partial class ParentLayer : CanvasLayer
         var progress = Flow.HoldProgress(now);
         _ring.Visible = progress > 0;
         _ring.Progress = (float)progress;
-        _updateButton.Visible = !IsOpen && progress <= 0 && (Updater.ReadyVersion != null || _updateButtonForTest);
+        _updateButton.Visible = !IsOpen && Guide == null && progress <= 0 && (Updater.ReadyVersion != null || _updateButtonForTest);
     }
 
     // Opening and closing
 
     private void OnOpened()
     {
+        // Practising from the setup guide: the game is already paused behind the guide.
+        if (Guide != null)
+        {
+            ShowQuestion();
+            return;
+        }
         _changed = false;
         // Bip's voice and every screen's timers pause with the tree and carry on afterwards.
         GetTree().Paused = true;
@@ -100,6 +108,12 @@ public partial class ParentLayer : CanvasLayer
     private void OnClosed()
     {
         ClearPanel();
+        // Back to the setup guide (after practising, or opened from Settings): still paused.
+        if (Guide != null)
+        {
+            ShowGuideStep();
+            return;
+        }
         GetTree().Paused = false;
         Coordinator.ResumeBreakClock();
         // Children or settings changed: start again from the map as the (possibly new) child.
@@ -200,6 +214,12 @@ public partial class ParentLayer : CanvasLayer
     private void ShowArea()
     {
         if (Flow.Phase != GatePhase.Unlocked) return;
+        if (PractisingGate)
+        {
+            Guide!.GateOpened();
+            Flow.Close();
+            return;
+        }
         var column = Card(940, 640);
         Area = new ParentArea(this) { SizeFlagsVertical = Control.SizeFlags.ExpandFill };
         column.AddChild(Area);

@@ -53,6 +53,7 @@ Versioning: `0.MINOR.PATCH`, with the patch number from the GitHub run, so every
 ## Kid-safety and UX rules (non-negotiable)
 
 - App opens straight into full screen with a kid lock (`godot/Scripts/App/KidLock.cs`, rules in `BipCore.KidLockRules`). Mac: Dock and menu bar hidden, no Cmd-Tab, Force Quit, Cmd-H or Cmd-Q; never block logging out or shutting down. Windows: exclusive full screen, the Windows key, Alt-Tab, Alt/Ctrl-Esc and Alt-F4 blocked while the game is in front (Ctrl-Alt-Del always works). Holding Option (Mac) or Alt (Windows) at launch opens parent mode: a normal window, no lock.
+- First run: a setup guide for grown-ups (`BipCore.SetupGuide`, `ParentLayer.Setup.cs`) has them practise the Esc hold, then set the passcode, children and play time; shown once (`SaveStore.SetupDone`), again from Settings.
 - Parent gate to exit or open settings: hold Esc 3 seconds, then answer an adult maths question, or enter the parent passcode if a parent has set one (4–8 digits, stored only as a salted hash; after 3 wrong tries it falls back to maths).
 - No network access except the update check. No ads, analytics, accounts or data collection.
 - No time pressure inside games: no countdown timers, lives or "game over". Wrong answer → soft sound, retry, then a spoken hint after 2 misses.

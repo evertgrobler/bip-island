@@ -23,7 +23,16 @@ public partial class ParentArea : VBoxContainer
         Settings,
     }
 
+    /// <summary>One part of the parent area on its own, for the first-time setup guide.</summary>
+    public enum Part
+    {
+        Children,
+        PlayTime,
+        Passcode,
+    }
+
     private readonly ParentLayer _layer;
+    private readonly Part? _only;
     private TabBar _tabs = null!;
     private VBoxContainer _body = null!;
     private Guid? _reportChild;
@@ -36,9 +45,24 @@ public partial class ParentArea : VBoxContainer
 
     public ParentArea(ParentLayer layer) => _layer = layer;
 
+    /// <summary>Just one part (the children, play time or the passcode), with no header or tabs: the setup guide's steps.</summary>
+    public ParentArea(ParentLayer layer, Part only)
+    {
+        _layer = layer;
+        _only = only;
+    }
+
     public override void _Ready()
     {
         AddThemeConstantOverride("separation", 14);
+        if (_only != null)
+        {
+            _body = ParentUi.Column(18);
+            _body.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            AddChild(_body);
+            Refresh();
+            return;
+        }
         var close = ParentUi.Button("Back to the game", _layer.Close);
         AddChild(ParentUi.Row(12, ParentUi.Text("Parent area", 30, bold: true), ParentUi.Spacer(), close));
 
@@ -79,6 +103,16 @@ public partial class ParentArea : VBoxContainer
     {
         foreach (var child in _body.GetChildren()) child.QueueFree();
         _versionNote = null;
+        if (_only is { } part)
+        {
+            switch (part)
+            {
+                case Part.Children: BuildChildren(); break;
+                case Part.PlayTime: BuildPlayTime(); break;
+                case Part.Passcode: BuildPasscode(); break;
+            }
+            return;
+        }
         switch (Showing)
         {
             case Tab.Progress: BuildProgress(); break;
@@ -255,8 +289,10 @@ public partial class ParentArea : VBoxContainer
 
     private void BuildChildren()
     {
-        _body.AddChild(ParentUi.Text("Each child picks their animal when the game opens. Their age sets where they start; the game then adjusts to how they do.",
-            16, colour: ParentUi.Secondary, wrap: true));
+        // The setup guide says this itself.
+        if (_only == null)
+            _body.AddChild(ParentUi.Text("Each child picks their animal when the game opens. Their age sets where they start; the game then adjusts to how they do.",
+                16, colour: ParentUi.Secondary, wrap: true));
         var children = Coordinator.Children;
         foreach (var child in children) _body.AddChild(ChildRow(child, children.Count > 1));
 
@@ -315,7 +351,7 @@ public partial class ParentArea : VBoxContainer
         age.ItemSelected += _ => Change(child with { Age = AgeFrom(age) });
 
         var row = ParentUi.Row(12, avatar, name, save, age);
-        if (child.Id == Coordinator.ChildId) row.AddChild(ParentUi.Text("playing now", 15, colour: ParentUi.Secondary));
+        if (child.Id == Coordinator.ChildId && _only == null) row.AddChild(ParentUi.Text("playing now", 15, colour: ParentUi.Secondary));
         row.AddChild(ParentUi.Spacer());
         var remove = ParentUi.Button("Remove", () => ConfirmRemove(child), danger: true);
         remove.Disabled = !canRemove;
@@ -385,6 +421,13 @@ public partial class ParentArea : VBoxContainer
             _settingsMessage = null;
         }
 
+        BuildPlayTime();
+        BuildPasscode();
+        BuildAbout();
+    }
+
+    private void BuildPlayTime()
+    {
         var play = ParentUi.Section(_body, "Play time");
         var settings = Coordinator.Store.Settings;
         play.AddChild(Stepper("Play for", "minutes", settings.PlayMinutes, 5, 120, 5,
@@ -410,10 +453,12 @@ public partial class ParentArea : VBoxContainer
             _layer.MarkChanged();
             ended.Text = "Done: games are open again.";
         };
-        play.AddChild(ParentUi.Row(12, endBreak, ended));
+        // In the setup guide there's no break to end yet.
+        if (_only == null) play.AddChild(ParentUi.Row(12, endBreak, ended));
+    }
 
-        BuildPasscode();
-
+    private void BuildAbout()
+    {
         var about = ParentUi.Section(_body, "This copy of Bip Island");
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
         about.AddChild(ParentUi.Text($"Version {Updater.InstalledVersion ?? version}", 17));
@@ -426,6 +471,7 @@ public partial class ParentArea : VBoxContainer
             : ParentUi.Button("Install the update", InstallUpdate);
         updates.Disabled = Updater.FeedUrl == null;
         about.AddChild(ParentUi.Row(12, updates, ParentUi.Button("Quit Bip Island", () => Boot.Instance.Quit(), danger: true)));
+        about.AddChild(ParentUi.Row(12, ParentUi.Button("Show the setup guide again", _layer.ShowSetupGuide)));
         if (Updater.FeedUrl == null) _versionNote.Text = "Automatic updates aren't switched on in this build.";
         about.AddChild(_versionNote);
     }
