@@ -396,9 +396,9 @@ public partial class GameCoordinator : Node
             return true;
         }
         var sound = focus ?? PracticeSound();
-        // Sound Hunt, Bubble Pop and Feed the Monster need sounds the child has met. With nothing to
-        // practise yet, meeting the sound comes first instead of an empty visit.
-        if (gameId is SoundHuntGame.GameId or BubblePopGame.GameId or FeedMonsterGame.GameId
+        // Sound Hunt, Bubble Pop, Feed the Monster and Word Rocket's letter level need sounds the child
+        // has met. With nothing to practise yet, meeting the sound comes first instead of an empty visit.
+        if (gameId is SoundHuntGame.GameId or BubblePopGame.GameId or FeedMonsterGame.GameId or WordRocketGame.GameId
             && LettersReady && sound != null && !CanPlay(gameId, sound))
             gameId = MeetTheSoundGame.GameId;
         GameScreen? screen = gameId switch
@@ -438,6 +438,7 @@ public partial class GameCoordinator : Node
             SoundHuntGame.GameId => Hunt is { } hunt && NewSession(hunt).NextRound(hunt, learner, Rng) != null,
             BubblePopGame.GameId => new BubblePopGame(Content!, Course!) is var pop && NewSession(pop).NextRound(pop, learner, Rng) != null,
             FeedMonsterGame.GameId => new FeedMonsterGame(Content!, Course!) is var monster && NewSession(monster).NextRound(monster, learner, Rng) != null,
+            WordRocketGame.GameId => new WordRocketGame(Content!, Course!) is var rocket && NewSession(rocket).NextRound(rocket, LearnerFor(gameId), Rng) != null,
             _ => true,
         };
     }

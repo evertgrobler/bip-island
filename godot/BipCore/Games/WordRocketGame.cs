@@ -7,12 +7,13 @@ namespace BipCore;
 /// key fills the next window of the rocket (one window per letter, so the child sees how many); the
 /// last letter launches it. A level is one kind of question (games.json "modes"), easiest first:
 /// <list type="bullet">
-/// <item>"letter": a letter sound (never its name) from a group the child has unlocked; press that key.</item>
+/// <item>"letter": a letter sound (never its name) the child has met; press that key.</item>
 /// <item>"cvc": a decodable three-letter, three-sound word (sat, dog).</item>
 /// <item>"longer": a decodable word with a digraph or a blend (chip, frog, rain).</item>
 /// <item>"tricky": a Stage 2 tricky word (door, because).</item>
 /// </list>
-/// When a level has nothing fresh at the child's phonics group, the next easier kind fills in.
+/// When a level has nothing fresh at the child's phonics group, the next easier kind fills in; with no
+/// sound met yet there is nothing to ask, and the game opens Meet the Sound instead (GameCoordinator).
 /// Words are typed exactly. A letter sound accepts every key that makes it: c and k both say /k/.
 /// </summary>
 public sealed partial class WordRocketGame : IMiniGame<WordRocketGame.Round, string>
@@ -82,8 +83,15 @@ public sealed partial class WordRocketGame : IMiniGame<WordRocketGame.Round, str
         _ => Mode.Letter,
     };
 
-    /// <summary>Single-letter sounds from the groups the child has unlocked.</summary>
+    /// <summary>Single-letter sounds the child has met, from the groups they have unlocked: the ones a letter question asks.</summary>
     public List<PhonicsSound> Letters(Learner learner) =>
+        Keys(learner).Where(s => learner.KnownSoundIds.Contains(s.Id)).ToList();
+
+    /// <summary>
+    /// Single-letter sounds from the unlocked groups, met or not: a key that makes the asked sound
+    /// still counts (a child who has met c and presses k for /k/ is right).
+    /// </summary>
+    private List<PhonicsSound> Keys(Learner learner) =>
         _course.SoundsUpToGroup(learner.UnlockedPhonicsGroup).Where(s => s.Grapheme.Length == 1 && Keyboard.Contains(s.Grapheme)).ToList();
 
     private static bool IsCvc((Word Word, List<PhonicsSound> Parts) w) =>
@@ -134,7 +142,7 @@ public sealed partial class WordRocketGame : IMiniGame<WordRocketGame.Round, str
     private Round LetterRound(PhonicsSound sound, Learner learner)
     {
         // Every key whose letter makes the same sound counts (c and k).
-        var keys = Letters(learner).Where(s => s.Ipa == sound.Ipa).Select(s => s.Grapheme).Append(sound.Grapheme).ToHashSet();
+        var keys = Keys(learner).Where(s => s.Ipa == sound.Ipa).Select(s => s.Grapheme).Append(sound.Grapheme).ToHashSet();
         return new Round(Mode.Letter, sound.Grapheme, sound.SoundClip, [new Slot(sound.Grapheme, keys, sound.SoundClip)],
                          Keyboard, SoundId: sound.Id);
     }

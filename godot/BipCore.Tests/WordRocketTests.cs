@@ -90,6 +90,7 @@ public sealed class WordRocketTests
                 case WordRocketGame.Mode.Letter:
                     var sound = _course.Sound(round.SoundId!)!;
                     Assert.True(sound.Group <= learner.UnlockedPhonicsGroup, "only sounds from unlocked groups");
+                    Assert.Contains(sound.Id, learner.KnownSoundIds); // only sounds the child has met
                     Assert.Equal(sound.SoundClip, round.Clip); // the sound, never the letter's name
                     Assert.StartsWith("snd_", round.Clip);
                     // Every right key makes the sound Bip said (c and k), and no other key does.
@@ -131,7 +132,7 @@ public sealed class WordRocketTests
     public void ALetterLevelOnlyAsksSingleLettersFromUnlockedGroups()
     {
         var rng = new SeededGenerator(50);
-        var learner = new Learner(Band.Foundation, 1, new HashSet<string>());
+        var learner = new Learner(Band.Foundation, 1, _course.SoundsUpToGroup(1).Select(s => s.Id).ToHashSet());
         var session = GameSession.Start(_game, _content.Games.Session, new HashSet<string>(), rng);
         var letters = new List<string>();
         while (session.NextRound(_game, learner, rng) is { } round) letters.Add(round.Answer);
@@ -143,13 +144,28 @@ public sealed class WordRocketTests
     public void CAndKBothFillTheKSound()
     {
         var c = _course.Sound("c")!;
-        var learner = new Learner(Band.Foundation, 2, new HashSet<string>(), "c");
+        // The child has met c but not k: k still makes the sound, so it counts too.
+        var learner = new Learner(Band.Foundation, 2, new HashSet<string> { "c" }, "c");
         var session = new GameSession(WordRocketGame.GameId, _game.Skins[0], 8);
         var round = session.NextRound(_game, learner, new SeededGenerator(51))!;
         Assert.Equal(c.SoundClip, round.Clip);
         Assert.True(WordRocketGame.IsRightKey(round, 0, "c"));
         Assert.True(WordRocketGame.IsRightKey(round, 0, "K"));
         Assert.False(WordRocketGame.IsRightKey(round, 0, "g"));
+    }
+
+    [Fact]
+    public void ALetterIsOnlyAskedOnceTheChildHasMetItsSound()
+    {
+        var rng = new SeededGenerator(54);
+        var metTwo = new Learner(Band.Foundation, 2, new HashSet<string> { "s", "m" });
+        var session = GameSession.Start(_game, _content.Games.Session, new HashSet<string>(), rng);
+        var asked = new List<string>();
+        while (session.NextRound(_game, metTwo, rng) is { } round) asked.Add(round.Answer);
+        Assert.Equal(["m", "s"], asked.Order());
+        // Nothing met yet: nothing to ask (the game opens Meet the Sound instead).
+        var nobody = new Learner(Band.Foundation, 1, new HashSet<string>());
+        Assert.Null(new GameSession(WordRocketGame.GameId, _game.Skins[0], 8).NextRound(_game, nobody, rng));
     }
 
     [Fact]
