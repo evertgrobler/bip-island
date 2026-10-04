@@ -17,7 +17,7 @@ namespace BipIsland.Dev;
 public partial class ScreenPreview : Node
 {
     [Export] public string Screen { get; set; } = "map";
-    /// <summary>The grown-ups' layer on top: "gate", "progress", "children", "settings" or "update" (the button).</summary>
+    /// <summary>The grown-ups' layer on top: "gate", "switch" (letting another child play), "progress", "children", "settings" or "update" (the button).</summary>
     [Export] public string Parent { get; set; } = "";
     /// <summary>Word Rocket: the skin, the child's level in it (-1 keeps theirs), and letters typed before a hint.</summary>
     [Export] public string Skin { get; set; } = "";
@@ -61,6 +61,13 @@ public partial class ScreenPreview : Node
         return new ChargingScreen();
     }
 
+    /// <summary>"Who's playing?" with the playing child (Player 1) resting, so their card shows "z z".</summary>
+    private static ProfilesScreen ProfilesPreview(GameCoordinator game)
+    {
+        game.ForceBreakForTest(12);
+        return new ProfilesScreen();
+    }
+
     private void Open()
     {
         var game = GameCoordinator.Instance;
@@ -85,7 +92,7 @@ public partial class ScreenPreview : Node
         if (game.StartGame(Screen)) return;
         BaseScreen screen = Screen switch
         {
-            "profiles" => new ProfilesScreen(),
+            "profiles" => ProfilesPreview(game),
             "letters" => new LettersIslandScreen(greet: false),
             "numbers" => new GameIslandScreen(Island.Numbers, greet: false),
             "words" => new GameIslandScreen(Island.Words, greet: false),
@@ -109,6 +116,10 @@ public partial class ScreenPreview : Node
                 layer.ShowUpdateButtonForTest();
                 return;
             case "":
+                return;
+            case "switch":
+                // "Who's playing?" while Player 1 rests: the grown-up's question before Lily plays.
+                layer.Flow.OpenToSwitchChild(game.Children.First(c => c.Id != game.ChildId).Id);
                 return;
         }
         layer.Flow.Open();

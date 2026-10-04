@@ -49,6 +49,8 @@
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
 - No timers/lives/game-over. Wrong → boop → retry → hint after 2 misses. 120 pt targets.
 - 20 min play → finish game → 20 min break (wall clock, persisted). Parents configure it.
+  **Each child has their own break** (owner, 3 Oct); leaving a resting child for another needs the parent gate,
+  except straight after the game opens (owner, 4 Oct).
 - Free choice: Bip recommends, never forces. Rewards collected, never bought.
 - Content lives in `Content/` JSON (never hard-code). Validator must pass after content edits.
 - No paid signing for now: Mac ad-hoc signed, Windows unsigned (one-time "Run anyway").
@@ -287,6 +289,21 @@
   recording (it still has a small "uh"; two trims were rejected) until it can be re-recorded.
   **Waiting on the ElevenLabs upgrade:** `snd_h`, `word_yoyo` (then switch y's picture word from yak),
   `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`.
+- **4 Oct:** Per-child breaks (owner: "each child"). Each child's play clock, break and daily total
+  live on their save row (`SavedChild.Break`); the old shared break is copied to every child on load,
+  so updating can't end a running break. Settings stay shared. While one child rests, the charging
+  screen shows their badge → "Who's playing?" (resting children get a sleepy "z z"); picking another
+  child then needs the parent gate (`ParentGateFlow.OpenToSwitchChild`, rule in
+  `PlayBreaks.SwitchNeedsGrownUp`), so quitting, reopening or switching can't skip a break. Parent
+  area: "End Lily's break now" names the playing child. Tests: save carry-over, the switch rule, the
+  gate hand-over; walk-through: Lily rests → grown-up lets the other child play → back to Lily's break.
+  Review fixes: tapping a resting brother's or sister's picture only shows their charging screen
+  (`ChargingScreen(peek)`, nothing banked, they don't become the playing child), so the child at the
+  computer is always the playing child: going back needs no gate, a resting child can't play through a
+  sibling whose break was shorter (when it ends, "Who's playing?" opens), and the gate text and "End
+  the break now" always mean the child at the computer.
+  Owner decision (4 Oct): straight after the game opens, a sibling with play time left can pick their
+  own picture without the gate, even if the last child is resting (they stay on their break).
 - **4 Oct:** Word Rocket, the typing game (owner request), on Words Island as its third button, for ages
   4–8 (was 7–8). Bip says a sound or a word; each right key fills the next window of the craft (one
   window per letter, Atkinson Hyperlegible, lower case even with Shift or Caps Lock); the last one
@@ -299,4 +316,5 @@
   gate (all in the walk-through with real key events). Rocket, hot-air balloon and submarine skins
   (`Scripts/Drawing/RocketDrawing.cs`); previews `Scenes/Games/word_rocket*.tscn`. New line
   `vo_word_rocket` ("Listen, then type what you hear on the keyboard.") plays silence until recorded:
-  **waiting on the ElevenLabs upgrade.**
+  **waiting on the ElevenLabs upgrade.** Review fix: a letter question only asks sounds the child has
+  met; with none met yet, the Word Rocket button opens Meet the Sound (as Sound Hunt does).
