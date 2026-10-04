@@ -299,3 +299,6 @@
   the break now" always mean the child at the computer.
   Owner decision (4 Oct): straight after the game opens, a sibling with play time left can pick their
   own picture without the gate, even if the last child is resting (they stay on their break).
+- **4 Oct, evening:** Owner rule: South African time (SAST, UTC+2) everywhere. CLAUDE.md says so;
+  `.claude/settings.json` sets `TZ=Africa/Johannesburg` for every session (cloud machines run on UTC);
+  `check_all.sh`'s summary is stamped in SAST. The game itself already uses the computer's own clock.
