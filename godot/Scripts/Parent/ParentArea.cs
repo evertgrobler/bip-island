@@ -323,7 +323,7 @@ public partial class ParentArea : VBoxContainer
         if (ProfileRules.CleanName(name) == null) return false;
         // In the setup guide, the first child added takes over the untouched "Player 1" the game made
         // on its first run, so the family doesn't end up with a spare profile.
-        if (_only == Part.Children && UntouchedPlayerOne() is { } placeholder)
+        if (_only == Part.Children && UntouchedPlayerOne(Coordinator) is { } placeholder)
         {
             Change(placeholder with { Name = name, Age = age });
             return true;
@@ -335,10 +335,10 @@ public partial class ParentArea : VBoxContainer
     }
 
     /// <summary>The only child, when it's still the "Player 1" made on the first run and has never played.</summary>
-    private ChildSummary? UntouchedPlayerOne()
+    public static ChildSummary? UntouchedPlayerOne(GameCoordinator game)
     {
-        if (Coordinator.Children is not [var only] || only.Name != SaveStore.FirstChildName || only.Age != null) return null;
-        var progress = Coordinator.Store.Progress(only.Id);
+        if (game.Children is not [var only] || only.Name != SaveStore.FirstChildName || only.Age != null) return null;
+        var progress = game.Store.Progress(only.Id);
         return progress.Stars == 0 && progress.RecentGames.Count == 0 ? only : null;
     }
 

@@ -108,7 +108,7 @@ public partial class ParentLayer
                 ParentArea.Part.Passcode); break;
             case SetupGuide.Step.Children: GuidePart(column, "Your children",
                 "Add each child who will play (up to four), with their name, age and an animal picture." +
-                (_guideFirstRun ? " The first child you add replaces \"Player 1\"." : "") +
+                (ParentArea.UntouchedPlayerOne(Coordinator) != null ? " The first child you add replaces \"Player 1\"." : "") +
                 " Each child picks their animal when the game opens; their age sets where they start, and the game then adjusts to how they do.",
                 ParentArea.Part.Children); break;
             case SetupGuide.Step.PlayTime: GuidePart(column, "Play time and breaks",
