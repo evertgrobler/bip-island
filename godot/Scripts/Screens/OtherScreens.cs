@@ -33,7 +33,8 @@ public partial class ProfilesScreen : BaseScreen
             card.Scale = Vector2.One * 0.01f;
             Stage.AddChild(card);
             _cards.Add(card);
-            var grow = card.CreateTween();
+            // Grows in even if the grown-ups' gate opens over it (that pauses the game).
+            var grow = card.CreateTween().SetPauseMode(Tween.TweenPauseMode.Process);
             grow.TweenInterval(0.1 * i);
             grow.TweenProperty(card, "scale", Vector2.One * 1.06f, 0.2);
             grow.TweenProperty(card, "scale", Vector2.One, 0.1);
