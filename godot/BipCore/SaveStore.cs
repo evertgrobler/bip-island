@@ -25,7 +25,7 @@ public sealed class SaveFile
     public int Version { get; set; } = CurrentVersion;
     public List<SavedChild> Children { get; set; } = [];
     public Guid? LastChildId { get; set; }
-    /// <summary>The play-time break, shared by the whole computer so switching profiles can't skip it.</summary>
+    /// <summary>Older saves kept one break for the whole computer; on load it's copied to every child.</summary>
     public BreakState? Break { get; set; }
     public PlayTimeSettings Settings { get; set; } = new();
     /// <summary>The optional parent passcode (only a salted hash is kept).</summary>
@@ -38,6 +38,8 @@ public sealed class SavedChild
     public string Name { get; set; } = "";
     public int? Age { get; set; }
     public string Avatar { get; set; } = ProfileRules.Avatars[0];
+    /// <summary>This child's play clock and break (each child has their own; the settings are shared).</summary>
+    public BreakState? Break { get; set; }
     public int SortOrder { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public ChildProgress Progress { get; set; } = new();
@@ -142,16 +144,19 @@ public sealed class SaveStore
         Save();
     }
 
-    // The break, settings and passcode (one each for the whole computer)
+    // Each child's break
 
-    /// <summary>The saved break, or one carried over from an older save that kept it per child.</summary>
-    public BreakState? LoadBreak(BreakState? legacy) => _file.Break ?? legacy;
+    /// <summary>The child's saved break (null for a new child, or one not on this computer).</summary>
+    public BreakState? LoadBreak(Guid childId) => Find(childId)?.Break is { } state ? state with { } : null;
 
-    public void SaveBreak(BreakState state)
+    public void SaveBreak(Guid childId, BreakState state)
     {
-        _file.Break = state;
+        if (Find(childId) is not { } row) return;
+        row.Break = state with { };
         Save();
     }
+
+    // The settings and passcode (one each for the whole computer)
 
     public PlayTimeSettings Settings
     {
@@ -207,7 +212,11 @@ public sealed class SaveStore
                 child.Name ??= "";
                 child.Progress ??= new ChildProgress();
                 child.Avatar = ProfileRules.ValidAvatar(child.Avatar);
+                // Older saves kept the break for the whole computer (or, before that, in the child's
+                // progress): every child carries it on, so updating can't end a break early.
+                child.Break ??= (file.Break ?? child.Progress.Breaks) is { } old ? old with { } : null;
             }
+            file.Break = null;
             return file;
         }
         catch (JsonException error)
