@@ -427,7 +427,7 @@ public partial class BipsPathScreen : GameScreen
         if (_attempt.NeedsHint)
         {
             WiggleNextRightBlock(round);
-            After(0.4, () => Voice.Play([AudioCatalogue.LookHint]));
+            After(0.4, () => Voice.Play([Coordinator.RandomHint(followedBySound: false)]));
         }
         After(0.6, () =>
         {

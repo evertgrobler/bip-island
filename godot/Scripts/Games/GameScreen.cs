@@ -122,7 +122,7 @@ public abstract partial class GameScreen : BaseScreen
         Bip.Tilt();
         if (outcome.Kind != AnswerOutcomeKind.Hint) return;
         if (right != null) ShowHint(right);
-        After(0.4, () => Voice.Play([Coordinator.RandomHint(), .. sayWhenRight]));
+        After(0.4, () => Voice.Play([Coordinator.RandomHint(sayWhenRight.Count > 0), .. sayWhenRight]));
     }
 
     protected enum Ending { LevelUp, PractiseAgain, RoundDone }
@@ -193,7 +193,7 @@ public abstract partial class GameScreen : BaseScreen
             grow.TweenProperty(star, "scale", Vector2.One * 1.2f, 0.12);
             grow.TweenProperty(star, "scale", Vector2.One, 0.08);
         }
-        var total = Sketch.Label(summary.StarsEarned > 0 ? $"+{summary.StarsEarned} {(summary.StarsEarned == 1 ? "star" : "stars")}" : "Well played!", 46, Palette.Ink);
+        var total = Sketch.Label(summary.StarsEarned > 0 ? "+" + Sketch.Plural(summary.StarsEarned, "star") : "Well played!", 46, Palette.Ink);
         total.Position += P(0, -60);
         card.AddChild(total);
 

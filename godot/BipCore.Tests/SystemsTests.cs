@@ -141,6 +141,27 @@ public sealed class SystemsTests
         Assert.Equal(60, state.PlayedSeconds);
     }
 
+    [Theory]
+    [InlineData(30, 30)]     // one tick of play
+    [InlineData(90, 90)]     // a slow frame or two still counts
+    [InlineData(91, 0)]      // longer than three ticks: the computer slept or the game froze
+    [InlineData(8 * 3600, 0)] // left open overnight
+    [InlineData(-5, 0)]      // the clock went backwards
+    public void OnlyRealPlayIsCredited(double gap, int credited) =>
+        Assert.Equal(credited, PlayBreaks.Credit(gap));
+
+    [Fact]
+    public void AnOvernightGapStartsTheDayWithAFullBattery()
+    {
+        var state = new BreakState { DayStamp = 100 };
+        var now = Reference.AddSeconds(3_700_000);
+        Assert.Equal(BreakPhase.Playing, PlayBreaks.Advance(state, 15 * 60, now, 100, Settings()));
+        // Next morning: the first check after the night credits nothing, so there's no break.
+        var morning = now.AddHours(10);
+        Assert.Equal(BreakPhase.Playing, PlayBreaks.Advance(state, PlayBreaks.Credit((morning - now).TotalSeconds), morning, 101, Settings()));
+        Assert.Equal(0, state.PlayedSeconds);
+    }
+
     [Fact]
     public void ParentEndsBreakEarly()
     {

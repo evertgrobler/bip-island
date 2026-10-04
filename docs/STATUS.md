@@ -271,3 +271,9 @@
   `yak` from the word bank, and `corn` is never a picture (a child says "mealie"). The validator now
   rejects these. **Pending:** the y sound's picture word becomes **yo-yo** (owner's choice) once
   ElevenLabs can record `word_yoyo` again; until then `yak` stays as y's picture word only.
+- **4 Oct:** Review fixes for #36. The play clock ticks every 30 s while the game runs; a gap over 90 s
+  (sleep, a frozen game, overnight) counts as no play (`PlayBreaks.Credit`), so a new day never starts
+  with a break. A child's minutes get exactly what the break banked (none on the night screen). Hints:
+  `RandomHint(followedBySound: false)` gives "Look for the one that's wiggling!" (Mirror Magic, Bip's
+  Path). The South African check now walks every content file (graphemes, skills, objectives) and the
+  strings inside C# interpolation holes; `yak` prints as WAITING until `word_yoyo` is recorded.

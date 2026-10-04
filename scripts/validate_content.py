@@ -417,8 +417,13 @@ SKIP_KEYS = {"id", "audio", "objectives", "graphemes", "ipa", "rime", "code", "k
              "handwritingFamily", "note", "notes", "narratorHint", "mnemonicPicture", "picture", "skills",
              "prerequisites", "content", "island", "skin", "skins", "label", "colour", "shape", "letterName"}
 
+sa_waiting = set()
+
 def sa_check(where, text):
-    for problem in sa_english.problems(text): err(f"{where}: {problem}")
+    for problem in sa_english.problems(text):
+        waiting = next((w for w in sa_english.TEMPORARY if f'"{w}"' in problem), None)
+        if waiting: sa_waiting.add(f"{where}: {problem} (allowed for now: {sa_english.TEMPORARY[waiting]})")
+        else: err(f"{where}: {problem}")
 
 def sa_walk(where, node):
     if isinstance(node, str): sa_check(where, node)
@@ -426,7 +431,11 @@ def sa_walk(where, node):
         for item in node: sa_walk(where, item)
     elif isinstance(node, dict):
         for key, value in node.items():
-            if key not in SKIP_KEYS: sa_walk(f"{where} {key}", value)
+            # Skip ids and notes for people, but never a whole list of records under the same key
+            # (graphemes.json's "graphemes", skills.json's "skills", the currency "notes").
+            is_ids = isinstance(value, str) or (isinstance(value, list) and all(isinstance(v, str) for v in value))
+            if key in SKIP_KEYS and is_ids: continue
+            sa_walk(f"{where} {key}", value)
 
 REPO = ROOT.parent
 for path in sorted(ROOT.rglob("*.json")):
@@ -441,6 +450,8 @@ for path in sorted((REPO / "godot" / "Scripts").rglob("*.cs")):
         sa_check(str(path.relative_to(REPO)), text)
 site = REPO / "site" / "index.html"
 if site.exists(): sa_check("site/index.html", sa_english.html_text(site.read_text(encoding="utf-8")))
+
+for note in sorted(sa_waiting): print(f"WAITING (South African English): {note}")
 
 if errors:
     print(f"{len(errors)} problem(s):")

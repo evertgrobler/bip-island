@@ -89,7 +89,7 @@ public partial class PictureGallery : Node2D
             var id = ids[i];
             var card = new PictureCard(id, id.StartsWith("pic_") ? id[4..] : id, 900 + (ulong)i) { Position = at, Scale = Vector2.One * CardScale };
             _stage.AddChild(card);
-            var label = Sketch.Label(id[4..], CardScale > 0.5f ? 22 : 13, Palette.Ink, Fonts.Regular);
+            var label = Sketch.Label(id.StartsWith("pic_") ? id[4..] : id, CardScale > 0.5f ? 22 : 13, Palette.Ink, Fonts.Regular);
             label.Position += at + new Vector2(0, PictureCard.Size * CardScale / 2 + 12);
             _stage.AddChild(label);
         }

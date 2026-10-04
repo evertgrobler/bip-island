@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using static BipIsland.Drawing.Up;
@@ -12,41 +14,37 @@ namespace BipIsland.Drawing;
 /// </summary>
 public static class WordPictures
 {
-    public static Node2D? Make(string id) => id switch
+    private static readonly Dictionary<string, Func<Node2D>> Pictures = new()
     {
-        "pic_cup" => Cup(),
-        "pic_mug" => Mug(),
-        "pic_hill" => Hill(),
-        "pic_cliff" => Cliff(),
-        "pic_dad" => Dad(),
-        "pic_tail" => Tail(),
-        "pic_tray" => Tray(),
-        "pic_gate" => Gate(),
-        "pic_bench" => Bench(),
-        "pic_farm" => Farm(),
-        "pic_moth" => Moth(),
-        "pic_cube" => Cube(),
-        "pic_fin" => Fin(),
-        "pic_top" => Top(),
-        "pic_light" => Light(),
-        "pic_desk" => Desk(),
-        "pic_cot" => Cot(),
-        "pic_lid" => Lid(),
-        "pic_neck" => Neck(),
-        "pic_mat" => Mat(),
-        "pic_rug" => Rug(),
-        "pic_mud" => Mud(),
-        "pic_plum" => Plum(),
-        "pic_belt" => Belt(),
-        _ => null,
+        ["pic_cup"] = Cup,
+        ["pic_mug"] = Mug,
+        ["pic_hill"] = Hill,
+        ["pic_cliff"] = Cliff,
+        ["pic_dad"] = Dad,
+        ["pic_tail"] = Tail,
+        ["pic_tray"] = Tray,
+        ["pic_gate"] = Gate,
+        ["pic_bench"] = Bench,
+        ["pic_farm"] = Farm,
+        ["pic_moth"] = Moth,
+        ["pic_cube"] = Cube,
+        ["pic_fin"] = Fin,
+        ["pic_top"] = Top,
+        ["pic_light"] = Light,
+        ["pic_desk"] = Desk,
+        ["pic_cot"] = Cot,
+        ["pic_lid"] = Lid,
+        ["pic_neck"] = Neck,
+        ["pic_mat"] = Mat,
+        ["pic_rug"] = Rug,
+        ["pic_mud"] = Mud,
+        ["pic_plum"] = Plum,
+        ["pic_belt"] = Belt,
     };
 
-    public static readonly string[] Ids =
-    {
-        "pic_cup", "pic_mug", "pic_hill", "pic_cliff", "pic_dad", "pic_tail", "pic_tray", "pic_gate",
-        "pic_bench", "pic_farm", "pic_moth", "pic_cube", "pic_fin", "pic_top", "pic_light", "pic_desk", "pic_cot",
-        "pic_lid", "pic_neck", "pic_mat", "pic_rug", "pic_mud", "pic_plum", "pic_belt",
-    };
+    public static Node2D? Make(string id) => Pictures.TryGetValue(id, out var draw) ? draw() : null;
+
+    public static IEnumerable<string> Ids => Pictures.Keys;
 
     /// <summary>An orange arrow pointing at <paramref name="tip"/> from <paramref name="from"/>.</summary>
     private static Node2D Pointer(Vector2 from, Vector2 tip, ulong seed)

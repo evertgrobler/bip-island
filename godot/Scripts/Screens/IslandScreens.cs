@@ -59,7 +59,7 @@ public partial class LettersIslandScreen : BaseScreen
         _keyNodes.Add(trace);
 
         // Feed the Monster waits until there are foods the child can read (from group 4).
-        if (Coordinator.LettersGameReady(FeedMonsterGame.GameId))
+        if (Coordinator.FeedMonsterReady())
         {
             var monster = Buttons.Tappable(Group(
                 Pen(Ellipse(Vector2.Zero, 100, 100), 770, fill: Palette.Purple, lineWidth: 6),
