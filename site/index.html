@@ -124,6 +124,8 @@
     .downloads { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 24px; }
     .download-card h3 { margin-bottom: 6px; }
     .after-install { margin-top: 20px; }
+    .reqs { padding-left: 22px; margin: 4px 0 14px; font-size: 17px; }
+    .reqs li { margin-bottom: 4px; }
     .parent-shot { max-width: 760px; margin: 32px auto 0; }
     .steps { padding-left: 26px; margin: 16px 0 0; }
     .steps li { margin-bottom: 12px; }
@@ -311,6 +313,12 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Download for Mac</a></p>
           <p class="version">Version {{VERSION}}, {{DATE}}</p>
+          <h3>What you need</h3>
+          <ul class="reqs">
+            <li>macOS 14 Sonoma or newer</li>
+            <li>An Apple chip (M1 or later) or an Intel processor</li>
+            <li>4 GB of memory and about 500 MB of free space</li>
+          </ul>
           <h3>First install</h3>
           <ol class="steps">
             <li>Open the downloaded <b>BipIsland-mac.dmg</b> and drag <b>Bip Island</b> into <b>Applications</b>.<br>
@@ -325,6 +333,12 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Download for Windows</a></p>
           <p class="version">Version {{VERSION}}, {{DATE}}</p>
+          <h3>What you need</h3>
+          <ul class="reqs">
+            <li>Windows 10 or 11, 64-bit</li>
+            <li>Graphics that support OpenGL 3.3 (almost every PC from 2012 onwards)</li>
+            <li>4 GB of memory and about 500 MB of free space</li>
+          </ul>
           <h3>First install</h3>
           <ol class="steps">
             <li>Open the downloaded <b>BipIsland-win-Setup.exe</b>.</li>
@@ -334,8 +348,9 @@
         </div>
       </div>
       <div class="card after-install">
-        <h3>After that, on both</h3>
+        <h3>On both computers</h3>
         <ul class="steps">
+          <li>You'll also need speakers or headphones (every instruction is spoken), a mouse (easier for small hands than a trackpad) and a keyboard for the grown-ups. The internet is only needed to download the game and its updates.</li>
           <li>Bip Island finds its own updates. When one is ready, an <b>"Update ready"</b> button appears for a grown-up to install.</li>
           <li>To leave the game: hold <b>Esc</b> for 3 seconds, answer the maths question (or enter your passcode), then choose <b>Quit</b> in <b>Settings</b>.</li>
           <li>The game opens full screen with the child lock on. For a normal window without the lock, hold <b>Option</b> (Mac) or <b>Alt</b> (Windows) while it starts.</li>
