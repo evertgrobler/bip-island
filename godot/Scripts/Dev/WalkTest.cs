@@ -76,8 +76,8 @@ public static class WalkTest
             layer.GuideNext(); // Passcode
             Check("the passcode step is the parent area's passcode form", layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode && layer.Area != null);
             layer.GuideSkipStep(); // Children
-            Check("the first child added takes over \"Player 1\"", layer.Area != null && layer.Area.AddChild("Thabo", 6)
-                  && game.Children is [{ Name: "Thabo", Age: 6 }], string.Join(", ", game.Children.Select(c => c.Name)));
+            Check("the first child added takes over \"Player 1\"", layer.Area != null && layer.Area.AddChild("Thabo", null)
+                  && game.Children is [{ Name: "Thabo", Age: null }], string.Join(", ", game.Children.Select(c => c.Name)));
             layer.GuideNext(); // Play time
             Check("the play-time step shows the settings", layer.Guide?.Current == BipCore.SetupGuide.Step.PlayTime && layer.Area != null);
             layer.GuideNext(); // Tour
