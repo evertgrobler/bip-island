@@ -153,7 +153,8 @@ public static class WalkTest
         // Each child has their own break: while Lily rests, her brother or sister can play, but only
         // once a grown-up says yes (otherwise picking another picture would skip her break).
         var other = game.Children.First(c => c.Id != lily.Id);
-        game.Store.Settings = game.Store.Settings with { PlayMinutes = 1, BreakMinutes = 1 };
+        // Full-length play, so the other child (who played earlier in this walk) isn't due a break too.
+        game.Store.Settings = game.Store.Settings with { PlayMinutes = 20, BreakMinutes = 1 };
         game.ForceBreakForTest();
         game.ShowMap();
         await Expect<ChargingScreen>("Lily's break: Bip charging");
