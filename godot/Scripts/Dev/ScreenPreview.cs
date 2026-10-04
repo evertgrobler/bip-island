@@ -103,7 +103,7 @@ public partial class ScreenPreview : Node
         if (Parent.StartsWith("setup:", StringComparison.Ordinal))
         {
             var what = Parent["setup:".Length..];
-            layer.ShowSetupGuide();
+            layer.ShowSetupGuide(firstRun: true);
             var tour = what.StartsWith("tour", StringComparison.Ordinal);
             var step = tour ? BipCore.SetupGuide.Step.Tour : (BipCore.SetupGuide.Step)(int.Parse(what) - 1);
             var card = tour ? int.Parse(what["tour".Length..]) - 1 : 0;

@@ -3,10 +3,15 @@ namespace BipCore;
 /// <summary>
 /// The first-time setup guide for grown-ups: the steps in order, moving between them, and when a
 /// step lets you go on. Shown once (<see cref="SaveStore.SetupDone"/>), and again from Settings.
-/// Plain logic, so the order and the rules are tested without Godot; the cards are drawn by the
-/// game's SetupGuideView.
+/// Plain logic, so the order and the rules are tested without Godot; the cards are drawn in
+/// godot/Scripts/Parent/ParentLayer.Setup.cs.
 /// </summary>
-public sealed class SetupGuide
+/// <param name="gatedAlready">
+/// The grown-up already passed the gate to open the guide (from Settings). On a first run nobody has,
+/// so the practise step can't be skipped: the passcode, children and play-time steps are parent
+/// controls, and only someone who has opened the gate reaches them.
+/// </param>
+public sealed class SetupGuide(bool gatedAlready = false)
 {
     public enum Step
     {
@@ -38,13 +43,16 @@ public sealed class SetupGuide
     public bool PractisedGate { get; private set; }
     /// <summary>The guide is over (finished or skipped).</summary>
     public bool Done { get; private set; }
+    /// <summary>Opened from Settings, behind the gate (see the constructor).</summary>
+    public bool GatedAlready { get; } = gatedAlready;
 
     public int Number => (int)Current + 1;
     public static int Count => Steps.Count;
 
     /// <summary>
     /// Whether Next is offered. The grown-up area step waits until the gate has been opened once,
-    /// because that's the one thing a parent must know; it can still be skipped on purpose.
+    /// because that's the one thing a parent must know (and, on a first run, what keeps the parent
+    /// controls after it behind the gate). From Settings it can be skipped on purpose.
     /// </summary>
     public bool CanGoOn => Current != Step.GrownUpArea || PractisedGate;
 
@@ -88,10 +96,13 @@ public sealed class SetupGuide
         return true;
     }
 
-    /// <summary>Skips the practice, or the tour, and goes to the next step.</summary>
+    /// <summary>Whether the current step offers "Skip": the passcode and the tour, and the practise step from Settings.</summary>
+    public bool CanSkipStep => !Done && (Current is Step.Tour or Step.Passcode || (Current == Step.GrownUpArea && GatedAlready));
+
+    /// <summary>Skips the practice (from Settings), the passcode or the tour, and goes to the next step.</summary>
     public bool SkipStep()
     {
-        if (Done || Current is not (Step.GrownUpArea or Step.Tour or Step.Passcode)) return false;
+        if (!CanSkipStep) return false;
         Current++;
         TourCard = 0;
         return true;

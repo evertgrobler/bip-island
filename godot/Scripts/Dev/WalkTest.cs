@@ -60,9 +60,12 @@ public static class WalkTest
             await Wait(0.3);
             Check("a first run opens the setup guide, with the game paused behind it", layer.Guide is { Current: BipCore.SetupGuide.Step.Welcome } && tree.Paused);
             layer.GuideNext();
-            Check("the guide asks the grown-up to practise the Esc hold", layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanGoOn: false });
+            Check("on a first run the practise step can't be skipped (the parent controls come after it)",
+                  layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanGoOn: false, CanSkipStep: false });
             Esc(true);
-            await Wait(3.4);
+            await Wait(1.5);
+            Check("the hold ring shows above the guide while Esc is held", layer.RingShowsOverCard);
+            await Wait(1.9);
             Check("holding Esc in the guide opens the real question", layer.Flow.Phase == GatePhase.Question);
             Esc(false);
             await Wait(0.2);
@@ -73,7 +76,8 @@ public static class WalkTest
             layer.GuideNext(); // Passcode
             Check("the passcode step is the parent area's passcode form", layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode && layer.Area != null);
             layer.GuideSkipStep(); // Children
-            Check("the children step can add a child", layer.Area != null && layer.Area.AddChild("Thabo", 6) && game.Children.Any(c => c.Name == "Thabo"));
+            Check("the first child added takes over \"Player 1\"", layer.Area != null && layer.Area.AddChild("Thabo", 6)
+                  && game.Children is [{ Name: "Thabo", Age: 6 }], string.Join(", ", game.Children.Select(c => c.Name)));
             layer.GuideNext(); // Play time
             Check("the play-time step shows the settings", layer.Guide?.Current == BipCore.SetupGuide.Step.PlayTime && layer.Area != null);
             layer.GuideNext(); // Tour
@@ -82,12 +86,23 @@ public static class WalkTest
             layer.GuideNext();
             await Wait(0.8);
             Check("handing over ends the guide and saves that it's done", layer.Guide == null && game.Store.SetupDone && !tree.Paused);
-            Check("with two children the game opens on Who's playing?", Screen() is ProfilesScreen, $"showing {Screen()?.GetType().Name}");
-            // Back to one child so the rest of the walk-through starts as before.
-            if (game.Children.FirstOrDefault(c => c.Name == "Thabo") is { } thabo) game.DeleteChild(thabo.Id);
+            Check("with one child the game opens on the map", Screen() is MapScreen, $"showing {Screen()?.GetType().Name}");
             game.Start();
             await Wait(0.3);
             Check("the guide doesn't open again by itself", layer.Guide == null);
+
+            // From Settings: the gate was passed, so practising can be skipped; leaving changes nothing.
+            var before = Screen();
+            layer.Flow.Open();
+            layer.Submit(layer.Flow.Challenge.Answer.ToString());
+            await Wait(0.2);
+            layer.ShowSetupGuide();
+            await Wait(0.2);
+            layer.GuideNext();
+            Check("from Settings the practise step can be skipped", layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanSkipStep: true } && tree.Paused);
+            layer.FinishGuide();
+            await Wait(0.3);
+            Check("skipping the guide from Settings goes back to the same screen", layer.Guide == null && !tree.Paused && Screen() == before && before != null);
         }
 
         game.EndBreakEarly(); // A fresh test save starts outside any break.

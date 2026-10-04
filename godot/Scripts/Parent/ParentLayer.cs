@@ -28,6 +28,7 @@ public partial class ParentLayer : CanvasLayer
     private Control? _panel;
     private LineEdit? _answer;
     private bool _changed;
+    private Control _ringCorner = null!;
     private bool _updateButtonForTest;
     private string? _installProblem;
 
@@ -46,10 +47,15 @@ public partial class ParentLayer : CanvasLayer
         var corner = new Control { MouseFilter = Control.MouseFilterEnum.Ignore };
         corner.SetAnchorsPreset(Control.LayoutPreset.FullRect);
         AddChild(corner);
+        // The ring has its own layer, kept above any card (Card moves it up): while practising from
+        // the setup guide, the hold starts with the guide's backdrop showing.
+        _ringCorner = new Control { MouseFilter = Control.MouseFilterEnum.Ignore };
+        _ringCorner.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        AddChild(_ringCorner);
         _ring = new HoldRing { Visible = false };
         _ring.SetAnchorsPreset(Control.LayoutPreset.TopRight);
         _ring.Position = new Vector2(-24 - HoldRing.Size, 24);
-        corner.AddChild(_ring);
+        _ringCorner.AddChild(_ring);
 
         _updateButton = MakeUpdateButton();
         corner.AddChild(_updateButton);
@@ -147,6 +153,7 @@ public partial class ParentLayer : CanvasLayer
         var column = ParentUi.Column(16);
         card.AddChild(column);
         AddChild(backdrop);
+        MoveChild(_ringCorner, -1);
         _panel = backdrop;
         return column;
     }
@@ -188,7 +195,7 @@ public partial class ParentLayer : CanvasLayer
             };
             Centred(column, forgot);
         }
-        var buttons = ParentUi.Row(16, ParentUi.Button("Back to the game", Flow.Close), ParentUi.Button("Continue", Submit));
+        var buttons = ParentUi.Row(16, ParentUi.Button(PractisingGate ? "Back to setup" : "Back to the game", Flow.Close), ParentUi.Button("Continue", Submit));
         buttons.Alignment = BoxContainer.AlignmentMode.Center;
         column.AddChild(buttons);
         _answer.CallDeferred(Control.MethodName.GrabFocus);

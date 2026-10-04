@@ -70,6 +70,11 @@ public sealed class SaveStore
     public string? LoadError { get; private set; }
     /// <summary>True when the save file couldn't be read and no copy could be kept: nothing is written this run.</summary>
     public bool SavingPaused { get; private set; }
+    /// <summary>
+    /// True when there was no save file at all: the game's first run on this computer, so the setup
+    /// guide opens by itself. An existing family upgrading never sees it pop up uninvited.
+    /// </summary>
+    public bool IsNew { get; private set; }
 
     /// <param name="readFile">Reads a file's text; tests pass one that fails like a locked file.</param>
     public SaveStore(string folder, Func<DateTimeOffset>? now = null, Func<string, string>? readFile = null)
@@ -80,10 +85,13 @@ public sealed class SaveStore
         _file = Load();
         if (_file.Children.Count == 0)
         {
-            AddChildRecord("Player 1", null, ProfileRules.Avatars[0], new ChildProgress());
+            AddChildRecord(FirstChildName, null, ProfileRules.Avatars[0], new ChildProgress());
             Save();
         }
     }
+
+    /// <summary>The name of the child the first run makes, until a grown-up names them.</summary>
+    public const string FirstChildName = "Player 1";
 
     public string FilePath => Path.Combine(_folder, FileName);
 
@@ -194,7 +202,11 @@ public sealed class SaveStore
 
     private SaveFile Load()
     {
-        if (!File.Exists(FilePath)) return new SaveFile();
+        if (!File.Exists(FilePath))
+        {
+            IsNew = true;
+            return new SaveFile();
+        }
         string json;
         try
         {

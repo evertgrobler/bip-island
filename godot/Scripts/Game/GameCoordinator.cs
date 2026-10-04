@@ -150,11 +150,12 @@ public partial class GameCoordinator : Node
         if (Children.Count > 1) ShowProfiles();
         else ShowMap();
         // The first time on this computer, a grown-up is guided through setting up (over the screen, paused).
-        if (!Store.SetupDone && Parent.Guide == null && !SkipSetupGuide) Parent.ShowSetupGuide();
+        // Only on a fresh install: a family updating from an older version isn't interrupted.
+        if (Store.IsNew && !Store.SetupDone && Parent.Guide == null) Parent.ShowSetupGuide(firstRun: true);
     }
 
-    /// <summary>Tests and screenshots that open a screen directly skip the first-time guide.</summary>
-    public bool SkipSetupGuide { get; set; }
+    /// <summary>The next map greets the child again (after the first-run setup guide).</summary>
+    public void ResetWelcome() => _hasWelcomed = false;
 
     // Children
 

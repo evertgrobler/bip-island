@@ -30,16 +30,31 @@ public sealed class SetupGuideTests
     }
 
     [Fact]
-    public void ThePractiseStepWaitsForTheGateUnlessSkipped()
+    public void OnAFirstRunThePractiseStepWaitsForTheGate()
     {
+        // Nobody has passed the gate yet: the parent controls after this step stay behind it.
         var fresh = new SetupGuide();
         fresh.GateOpened(); // on Welcome: doesn't count
         fresh.Next();
         Assert.False(fresh.CanGoOn);
         Assert.False(fresh.Next());
+        Assert.False(fresh.CanSkipStep);
+        Assert.False(fresh.SkipStep());
         Assert.Equal(SetupGuide.Step.GrownUpArea, fresh.Current);
-        Assert.True(fresh.SkipStep());
+        fresh.GateOpened();
+        Assert.True(fresh.Next());
         Assert.Equal(SetupGuide.Step.Passcode, fresh.Current);
+    }
+
+    [Fact]
+    public void FromSettingsThePractiseStepCanBeSkipped()
+    {
+        var again = new SetupGuide(gatedAlready: true);
+        again.Next();
+        Assert.False(again.CanGoOn);
+        Assert.True(again.CanSkipStep);
+        Assert.True(again.SkipStep());
+        Assert.Equal(SetupGuide.Step.Passcode, again.Current);
     }
 
     [Fact]
@@ -69,7 +84,7 @@ public sealed class SetupGuideTests
     [Fact]
     public void OnlyThePractiseThePasscodeAndTheTourCanBeSkipped()
     {
-        var guide = new SetupGuide();
+        var guide = new SetupGuide(gatedAlready: true);
         Assert.False(guide.SkipStep()); // Welcome
         guide.Next();
         Assert.True(guide.SkipStep()); // GrownUpArea → Passcode
@@ -91,7 +106,22 @@ public sealed class SetupGuideTests
             var store = new SaveStore(folder);
             Assert.False(store.SetupDone);
             store.MarkSetupDone();
-            Assert.True(new SaveStore(folder).SetupDone);
+            var reopened = new SaveStore(folder);
+            Assert.True(reopened.SetupDone);
+            Assert.False(store.IsNew || reopened.IsNew, "a save file existed: not a first run");
+        }
+        finally { Directory.Delete(folder, recursive: true); }
+    }
+
+    [Fact]
+    public void OnlyAComputerWithNoSaveFileIsNew()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "bip-setup-" + Guid.NewGuid());
+        Directory.CreateDirectory(folder);
+        try
+        {
+            Assert.True(new SaveStore(folder).IsNew);
+            Assert.False(new SaveStore(folder).IsNew); // the first run wrote "Player 1"
         }
         finally { Directory.Delete(folder, recursive: true); }
     }
