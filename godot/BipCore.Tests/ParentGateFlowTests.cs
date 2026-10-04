@@ -108,6 +108,35 @@ public sealed class ParentGateFlowTests
     }
 
     [Fact]
+    public void AnotherChildOnlyPlaysAfterUnlockingFromWhosPlaying()
+    {
+        var gate = Gate();
+        var lily = Guid.NewGuid();
+        var switched = new List<Guid>();
+        gate.SwitchChild += switched.Add;
+        Guid? askedFor = null;
+        gate.Opened += () => askedFor = gate.SwitchingTo; // The question can say who's waiting.
+
+        gate.OpenToSwitchChild(lily);
+        Assert.Equal(lily, askedFor);
+        Assert.Equal(GatePhase.Question, gate.Phase);
+        Assert.Equal(lily, gate.SwitchingTo);
+        Assert.False(gate.Submit("0"));
+        Assert.Empty(switched);
+        gate.Submit(gate.Challenge.Answer.ToString());
+        Assert.Equal([lily], switched);
+        Assert.Null(gate.SwitchingTo);
+
+        gate.Close();
+        gate.OpenToSwitchChild(lily);
+        gate.Close(); // Backing out: nobody switches, and holding Esc later just opens the parent area.
+        Assert.Null(gate.SwitchingTo);
+        gate.Open();
+        gate.Submit(gate.Challenge.Answer.ToString());
+        Assert.Single(switched);
+    }
+
+    [Fact]
     public void ClosingGoesBackToTheGameAndAnswersAreIgnoredWhileClosed()
     {
         var gate = Gate();

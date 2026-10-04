@@ -17,7 +17,7 @@ namespace BipIsland.Dev;
 public partial class ScreenPreview : Node
 {
     [Export] public string Screen { get; set; } = "map";
-    /// <summary>The grown-ups' layer on top: "gate", "progress", "children", "settings", "update" (the button), or "setup:N" / "setup:tourN" (the first-time guide).</summary>
+    /// <summary>The grown-ups' layer on top: "gate", "switch" (letting another child play), "progress", "children", "settings", "update" (the button), or "setup:N" / "setup:tourN" (the first-time guide).</summary>
     [Export] public string Parent { get; set; } = "";
 
     public override void _Ready() => Callable.From(Open).CallDeferred();
@@ -57,6 +57,13 @@ public partial class ScreenPreview : Node
         return new ChargingScreen();
     }
 
+    /// <summary>"Who's playing?" with the playing child (Player 1) resting, so their card shows "z z".</summary>
+    private static ProfilesScreen ProfilesPreview(GameCoordinator game)
+    {
+        game.ForceBreakForTest(12);
+        return new ProfilesScreen();
+    }
+
     private void Open()
     {
         var game = GameCoordinator.Instance;
@@ -73,7 +80,7 @@ public partial class ScreenPreview : Node
         if (game.StartGame(Screen)) return;
         BaseScreen screen = Screen switch
         {
-            "profiles" => new ProfilesScreen(),
+            "profiles" => ProfilesPreview(game),
             "letters" => new LettersIslandScreen(greet: false),
             "numbers" => new GameIslandScreen(Island.Numbers, greet: false),
             "words" => new GameIslandScreen(Island.Words, greet: false),
@@ -97,6 +104,10 @@ public partial class ScreenPreview : Node
                 layer.ShowUpdateButtonForTest();
                 return;
             case "":
+                return;
+            case "switch":
+                // "Who's playing?" while Player 1 rests: the grown-up's question before Lily plays.
+                layer.Flow.OpenToSwitchChild(game.Children.First(c => c.Id != game.ChildId).Id);
                 return;
         }
         // "setup:N" shows step N (1-based) of the first-time setup guide, "setup:tourN" a tour card.

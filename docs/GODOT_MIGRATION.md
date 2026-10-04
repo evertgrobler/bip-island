@@ -47,7 +47,7 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
    - **Windows:** borderless full screen, a keyboard hook that blocks the Windows key, Alt+Tab and Alt+F4, and a "can't close" rule.
    - **Both:** Godot's close request is refused unless the parent gate passes.
    - **Limit:** Windows never lets an app block Ctrl+Alt+Del. `docs/SETUP.md` will explain how to turn on Windows "Assigned Access" (kiosk mode) for a full lock.
-5. **Saves:** a JSON file in Godot's per-user folder, replacing SwiftData. Today's `ChildProgress` is already JSON in `progressData`, so the format maps across directly. The break state stays shared by the whole computer and uses the wall clock.
+5. **Saves:** a JSON file in Godot's per-user folder, replacing SwiftData. Today's `ChildProgress` is already JSON in `progressData`, so the format maps across directly. Each child has their own break state (since 3 October 2026), on the wall clock.
 6. **Pictures:** today's stand-in pictures are Apple emoji, which look different on Windows.
    - Bundle an open-licence colour emoji font (Noto Color Emoji or Twemoji) so the pictures look the same on both computers.
    - Hand-drawn pictures (`Sketch.swift`, `StepPictures.swift`, `PictureNode.swift`) are ported as Godot custom drawing with the same seeded wobble.

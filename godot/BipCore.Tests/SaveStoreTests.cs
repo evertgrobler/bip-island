@@ -103,13 +103,14 @@ public sealed class SaveStoreTests : IDisposable
     public void TheBreakSettingsAndPasscodeAreKept()
     {
         var store = Open();
+        var id = store.LastChildId();
         var ends = new DateTimeOffset(2026, 10, 2, 9, 30, 0, TimeSpan.Zero);
-        store.SaveBreak(new BreakState { PlayedSeconds = 30, BreakEndsAt = ends, DayStamp = 9, PlayedTodaySeconds = 600 });
+        store.SaveBreak(id, new BreakState { PlayedSeconds = 30, BreakEndsAt = ends, DayStamp = 9, PlayedTodaySeconds = 600 });
         store.Settings = new PlayTimeSettings { PlayMinutes = 15, BreakMinutes = 10, DailyMaxMinutes = 0 };
         store.Passcode = ParentPasscode.Create("2468", salt: "salt");
 
         var reopened = Open();
-        var saved = reopened.LoadBreak(legacy: null)!;
+        var saved = reopened.LoadBreak(id)!;
         Assert.Equal(ends, saved.BreakEndsAt);
         Assert.Equal(600, saved.PlayedTodaySeconds);
         Assert.Equal(15, reopened.Settings.PlayMinutes);
@@ -118,10 +119,60 @@ public sealed class SaveStoreTests : IDisposable
     }
 
     [Fact]
-    public void AnOlderPerChildBreakCarriesOver()
+    public void EachChildHasTheirOwnBreak()
     {
-        var legacy = new BreakState { PlayedSeconds = 120, DayStamp = 3 };
-        Assert.Same(legacy, Open().LoadBreak(legacy));
+        var store = Open();
+        var first = store.LastChildId();
+        var second = store.AddChild("Lily", 5, "penguin")!.Value;
+        var ends = new DateTimeOffset(2026, 10, 4, 9, 30, 0, TimeSpan.Zero);
+        store.SaveBreak(first, new BreakState { BreakEndsAt = ends, DayStamp = 9, PlayedTodaySeconds = 1200 });
+
+        var reopened = Open();
+        Assert.Equal(ends, reopened.LoadBreak(first)!.BreakEndsAt);
+        Assert.Null(reopened.LoadBreak(second)); // Lily hasn't played yet: no break of her own.
+        Assert.Null(reopened.LoadBreak(Guid.NewGuid()));
+
+        // Changing what LoadBreak returned doesn't change the save until SaveBreak.
+        reopened.LoadBreak(first)!.PlayedSeconds = 999;
+        Assert.Equal(0, reopened.LoadBreak(first)!.PlayedSeconds);
+    }
+
+    [Fact]
+    public void AnOlderSharedBreakCarriesOverToEveryChild()
+    {
+        // Saves from before per-child breaks kept one break for the whole computer. After the update
+        // every child carries it on, so a break that was running can't be skipped by updating.
+        var ends = new DateTimeOffset(2026, 10, 4, 9, 30, 0, TimeSpan.Zero);
+        var olderChild = new SavedChild { Id = Guid.NewGuid(), Name = "Sam" };
+        olderChild.Progress.SetBreaks(new BreakState { PlayedSeconds = 5, DayStamp = 1 });
+        var file = new SaveFile
+        {
+            Children = [new SavedChild { Id = Guid.NewGuid(), Name = "Lily" }, olderChild],
+            Break = new BreakState { PlayedSeconds = 300, BreakEndsAt = ends, DayStamp = 9 },
+        };
+        Directory.CreateDirectory(_folder);
+        File.WriteAllText(Path.Combine(_folder, SaveStore.FileName), BipJson.Encode(file));
+
+        var store = Open();
+        foreach (var child in file.Children)
+        {
+            var carried = store.LoadBreak(child.Id)!;
+            Assert.Equal(ends, carried.BreakEndsAt);
+            Assert.Equal(300, carried.PlayedSeconds);
+        }
+        // The children's copies are separate: one child's break changing leaves the other's alone.
+        store.SaveBreak(file.Children[0].Id, new BreakState { DayStamp = 10 });
+        Assert.Equal(ends, Open().LoadBreak(file.Children[1].Id)!.BreakEndsAt);
+    }
+
+    [Fact]
+    public void TheOldestPerChildBreakCarriesOver()
+    {
+        var child = new SavedChild { Id = Guid.NewGuid(), Name = "Sam" };
+        child.Progress.SetBreaks(new BreakState { PlayedSeconds = 120, DayStamp = 3 });
+        Directory.CreateDirectory(_folder);
+        File.WriteAllText(Path.Combine(_folder, SaveStore.FileName), BipJson.Encode(new SaveFile { Children = [child] }));
+        Assert.Equal(120, Open().LoadBreak(child.Id)!.PlayedSeconds);
     }
 
     [Fact]

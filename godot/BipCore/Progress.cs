@@ -139,8 +139,8 @@ public sealed class ChildProgress : IEquatable<ChildProgress>
     /// <summary>The day Bip's mystery box was last opened (null if never).</summary>
     [JsonInclude] public int? LastMysteryDay { get; private set; }
     /// <summary>
-    /// Where the play-time break stands. Older saves kept the break per child; the app keeps one
-    /// break for the whole computer (so switching profiles can't skip it) and only reads this to carry it over.
+    /// Where the play-time break stood in the oldest saves. The break now lives on the child's save
+    /// row (<see cref="SavedChild.Break"/>); this is only read to carry it over.
     /// </summary>
     [JsonInclude] public BreakState? Breaks { get; private set; }
     /// <summary>Seconds played, by day number, for the parent progress view. Only recent days are kept.</summary>

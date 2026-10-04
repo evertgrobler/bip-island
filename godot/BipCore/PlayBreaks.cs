@@ -116,6 +116,35 @@ public static class PlayBreaks
     /// <summary>The play seconds a gap between two checks is worth: all of it, or none if it was idle.</summary>
     public static int Credit(double gapSeconds) => gapSeconds <= 0 || gapSeconds > IdleGapSeconds ? 0 : (int)gapSeconds;
 
+    /// <summary>
+    /// Each child has their own break, so a child who is resting (charging or done for the day) could
+    /// skip it by picking a brother's or sister's picture. When the child at the computer is resting,
+    /// picking a child who can play needs a grown-up. Picking themselves, or another resting child
+    /// (whose charging screen only shows; they don't become the playing child), skips nothing.
+    /// </summary>
+    public static bool SwitchNeedsGrownUp(bool atComputerResting, bool targetIsAtComputer, bool targetResting) =>
+        atComputerResting && !targetIsAtComputer && !targetResting;
+
+    /// <summary>
+    /// Whether a child is resting right now (charging, or their daily play used up), without banking
+    /// any time: for the sleepy "z z" on their picture in "Who's playing?".
+    /// </summary>
+    public static bool IsResting(BreakState? state, DateTimeOffset now, int day, BreakSettings settings) =>
+        PhaseWithoutBanking(state, now, day, settings) != BreakPhase.Playing;
+
+    /// <summary>
+    /// Where a child's break stands, without banking any time or changing their state: for a brother's
+    /// or sister's charging screen, shown while another child is at the computer.
+    /// </summary>
+    public static BreakPhase PhaseWithoutBanking(BreakState? state, DateTimeOffset now, int day, BreakSettings settings)
+    {
+        if (state == null) return BreakPhase.Playing;
+        if (state.BreakEndsAt is DateTimeOffset endsAt && endsAt > now) return BreakPhase.BreakTime;
+        return state.DayStamp == day && settings.DailyMaxMinutes is int max && state.PlayedTodaySeconds >= max * 60
+            ? BreakPhase.DayDone
+            : BreakPhase.Playing;
+    }
+
     /// <summary>A parent ends the break early from settings.</summary>
     public static void EndBreakEarly(BreakState state)
     {

@@ -173,6 +173,48 @@ public sealed class SystemsTests
     }
 
     [Fact]
+    public void MovingAwayFromARestingChildNeedsAGrownUp()
+    {
+        // The child at the computer is resting: picking someone who can play would skip their break.
+        Assert.True(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: false, targetResting: false));
+        // Picking themselves, or another resting child, skips nothing.
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: true, targetResting: true));
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: false, targetResting: true));
+        // A child who can still play picks anyone.
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: false, targetIsAtComputer: false, targetResting: false));
+    }
+
+    [Fact]
+    public void ABrothersOrSistersBreakIsReadWithoutBankingAnything()
+    {
+        var now = new DateTimeOffset(2026, 10, 4, 9, 0, 0, TimeSpan.Zero);
+        var settings = Settings(dailyMax: 30);
+        var charging = new BreakState { BreakEndsAt = now.AddMinutes(5), DayStamp = 100, PlayedSeconds = 1200, PlayedTodaySeconds = 1200 };
+        Assert.Equal(BreakPhase.BreakTime, PlayBreaks.PhaseWithoutBanking(charging, now, 100, settings));
+        // Reading it changes nothing (Advance would clear an ended break and bank play).
+        Assert.Equal(BreakPhase.Playing, PlayBreaks.PhaseWithoutBanking(charging, now.AddMinutes(6), 100, settings));
+        Assert.Equal(now.AddMinutes(5), charging.BreakEndsAt);
+        Assert.Equal(1200, charging.PlayedTodaySeconds);
+        var dayUsed = new BreakState { DayStamp = 100, PlayedTodaySeconds = 30 * 60 };
+        Assert.Equal(BreakPhase.DayDone, PlayBreaks.PhaseWithoutBanking(dayUsed, now, 100, settings));
+        Assert.Equal(BreakPhase.Playing, PlayBreaks.PhaseWithoutBanking(null, now, 100, settings));
+    }
+
+    [Fact]
+    public void AChildIsRestingDuringTheirBreakOrOnceTheirDayIsUsedUp()
+    {
+        var now = new DateTimeOffset(2026, 10, 4, 9, 0, 0, TimeSpan.Zero);
+        var settings = Settings(dailyMax: 30);
+        Assert.False(PlayBreaks.IsResting(null, now, 100, settings));
+        Assert.True(PlayBreaks.IsResting(new BreakState { BreakEndsAt = now.AddMinutes(5), DayStamp = 100 }, now, 100, settings));
+        Assert.False(PlayBreaks.IsResting(new BreakState { BreakEndsAt = now.AddMinutes(-1), DayStamp = 100 }, now, 100, settings));
+        var dayUsed = new BreakState { DayStamp = 100, PlayedTodaySeconds = 30 * 60 };
+        Assert.True(PlayBreaks.IsResting(dayUsed, now, 100, settings));
+        Assert.False(PlayBreaks.IsResting(dayUsed, now, 101, settings)); // A new day.
+        Assert.False(PlayBreaks.IsResting(dayUsed, now, 100, Settings())); // No daily maximum.
+    }
+
+    [Fact]
     public void TheBatteryFillsWithTheBreakAndCountsDownWholeMinutes()
     {
         var state = new BreakState();

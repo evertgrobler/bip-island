@@ -44,6 +44,8 @@
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
 - No timers/lives/game-over. Wrong → boop → retry → hint after 2 misses. 120 pt targets.
 - 20 min play → finish game → 20 min break (wall clock, persisted). Parents configure it.
+  **Each child has their own break** (owner, 3 Oct); leaving a resting child for another needs the parent gate,
+  except straight after the game opens (owner, 4 Oct).
 - Free choice: Bip recommends, never forces. Rewards collected, never bought.
 - Content lives in `Content/` JSON (never hard-code). Validator must pass after content edits.
 - No paid signing for now: Mac ad-hoc signed, Windows unsigned (one-time "Run anyway").
@@ -282,11 +284,30 @@
   recording (it still has a small "uh"; two trims were rejected) until it can be re-recorded.
   **Waiting on the ElevenLabs upgrade:** `snd_h`, `word_yoyo` (then switch y's picture word from yak),
   `vo_bip_charging`, `vo_day_done`.
-- **4 Oct, midday:** First-time setup guide for grown-ups (owner request). On a computer's first run
-  (`SaveStore.SetupDone` false, so existing installs see it once too) a guide opens over the paused
-  game: welcome; the child lock and practising the way in (hold Esc 3 s and answer, for real; it comes
+- **4 Oct:** Per-child breaks (owner: "each child"). Each child's play clock, break and daily total
+  live on their save row (`SavedChild.Break`); the old shared break is copied to every child on load,
+  so updating can't end a running break. Settings stay shared. While one child rests, the charging
+  screen shows their badge → "Who's playing?" (resting children get a sleepy "z z"); picking another
+  child then needs the parent gate (`ParentGateFlow.OpenToSwitchChild`, rule in
+  `PlayBreaks.SwitchNeedsGrownUp`), so quitting, reopening or switching can't skip a break. Parent
+  area: "End Lily's break now" names the playing child. Tests: save carry-over, the switch rule, the
+  gate hand-over; walk-through: Lily rests → grown-up lets the other child play → back to Lily's break.
+  Review fixes: tapping a resting brother's or sister's picture only shows their charging screen
+  (`ChargingScreen(peek)`, nothing banked, they don't become the playing child), so the child at the
+  computer is always the playing child: going back needs no gate, a resting child can't play through a
+  sibling whose break was shorter (when it ends, "Who's playing?" opens), and the gate text and "End
+  the break now" always mean the child at the computer.
+  Owner decision (4 Oct): straight after the game opens, a sibling with play time left can pick their
+  own picture without the gate, even if the last child is resting (they stay on their break).
+- **4 Oct, midday:** First-time setup guide for grown-ups (owner request). On a fresh install
+  (`SaveStore.IsNew`: no save file yet; families updating aren't interrupted) a guide opens over the
+  paused game: welcome; the child lock and practising the way in (hold Esc 3 s and answer, for real; it comes
   back to the guide instead of opening the parent area); optional passcode; children; play time; a
   3-card tour of what the child sees; all set, then "Hand over to your child". Steps are
   `BipCore.SetupGuide` (tested); the cards are `ParentLayer.Setup.cs`, reusing the parent area's
   children, passcode and play-time parts (`ParentArea.Part`). Settings has "Show the setup guide
   again". Previews: `Scenes/Parent/setup_*.tscn`; the walk-through runs it first.
+  Review fixes: on a first run the practise step can't be skipped, so the passcode, children and
+  play-time steps come only after the gate is really opened (from Settings it can be skipped); the
+  hold ring draws above the card; the first child added replaces the untouched "Player 1"; finishing
+  from Settings returns to the same screen; a typed passcode is saved on Next.

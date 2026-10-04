@@ -33,7 +33,8 @@ public partial class ProfilesScreen : BaseScreen
             card.Scale = Vector2.One * 0.01f;
             Stage.AddChild(card);
             _cards.Add(card);
-            var grow = card.CreateTween();
+            // Grows in even if the grown-ups' gate opens over it (that pauses the game).
+            var grow = card.CreateTween().SetPauseMode(Tween.TweenPauseMode.Process);
             grow.TweenInterval(0.1 * i);
             grow.TweenProperty(card, "scale", Vector2.One * 1.06f, 0.2);
             grow.TweenProperty(card, "scale", Vector2.One, 0.1);
@@ -63,12 +64,41 @@ public partial class ProfilesScreen : BaseScreen
         // Left-aligned just after the star (Swift: horizontalAlignmentMode = .left).
         count.Position = new Vector2(P(-6, -158).X, P(-6, -158).Y - count.Size.Y / 2);
         card.AddChild(count);
+
+        if (Coordinator.IsResting(child.Id))
+        {
+            // Bip is charging for this child: a sleepy "z z" by their picture.
+            foreach (var (x, y, size) in new[] { (95.0, 140.0, 34), (125.0, 175.0, 44) })
+            {
+                var z = Sketch.Label("z", size, Palette.Ink.WithAlpha(0.45));
+                var holder = new Node2D { Position = P(x, y) };
+                holder.AddChild(z);
+                card.AddChild(holder);
+            }
+        }
         return card;
     }
 
     protected override void HandleTap(string name, Node2D node)
     {
         if (!name.StartsWith("child:", StringComparison.Ordinal) || !Guid.TryParse(name["child:".Length..], out var id)) return;
+        if (id != Coordinator.ChildId && Coordinator.IsResting(id))
+        {
+            // A resting brother or sister: just show them charging (they don't become the playing child).
+            InputLocked = true;
+            Sfx.Play(BipSounds.Effect.Tick);
+            Buttons.Press(node);
+            After(0.25, () => Coordinator.ShowResting(id));
+            return;
+        }
+        if (Coordinator.SwitchNeedsGrownUp(id))
+        {
+            // The child who was playing is resting: a grown-up says yes before someone else plays.
+            Sfx.Play(BipSounds.Effect.Tick);
+            Buttons.Press(node);
+            Coordinator.Parent.Flow.OpenToSwitchChild(id);
+            return;
+        }
         InputLocked = true;
         Sfx.Play(BipSounds.Effect.Chime);
         Buttons.Press(node);
@@ -94,11 +124,24 @@ public partial class ProfilesScreen : BaseScreen
 /// the real break, and he says why when the screen opens or he's clicked. For grown-ups, small
 /// text says when games open again and how to end the break early. When the break ends while the
 /// screen is open, the battery fills, Bip wakes up and the map opens.
+/// Opened for a resting brother or sister (tapped in "Who's playing?"), it only shows their break:
+/// they don't become the playing child, and when their break ends "Who's playing?" opens again.
 /// </summary>
 public partial class ChargingScreen : BaseScreen
 {
     private const int Bars = 5;
     private const double CheckSeconds = 5;
+
+    private readonly Guid? _peek;
+
+    public ChargingScreen() { }
+
+    /// <param name="peek">A resting brother or sister to show, rather than the playing child.</param>
+    public ChargingScreen(Guid? peek) => _peek = peek;
+
+    /// <summary>The brother or sister being shown, or null for the playing child (for the walk-through test).</summary>
+    public Guid? Peeking => _peek;
+    private Guid Shown => _peek ?? Coordinator.ChildId;
 
     private readonly List<Node2D> _bars = [];
     private Node2D? _battery;
@@ -116,7 +159,7 @@ public partial class ChargingScreen : BaseScreen
 
     protected override void Build()
     {
-        _dayDone = Coordinator.CurrentBreakPhase() == BreakPhase.DayDone;
+        _dayDone = (_peek is Guid peek ? Coordinator.RestingPhaseOf(peek) : Coordinator.CurrentBreakPhase()) == BreakPhase.DayDone;
         var title = new Node2D { Position = P(0, 390) };
         title.AddChild(Sketch.Label(_dayDone ? "That's all for today" : "Bip is charging", 60, Palette.Ink));
         Stage.AddChild(title);
@@ -126,18 +169,40 @@ public partial class ChargingScreen : BaseScreen
         Bip.Sleep();
         AddSnores();
 
+        var shownChild = Coordinator.Children.FirstOrDefault(c => c.Id == Shown);
         var hint = new Node2D { Position = P(0, -395) };
         hint.AddChild(Sketch.Label(
-            $"Grown-ups: hold Esc for {ParentGateFlow.HoldSeconds:0} seconds to {(_dayDone ? "change the daily limit" : "end the break early")}.",
+            _peek != null
+                // A brother's or sister's break: the grown-ups' buttons are for the child at the computer.
+                ? $"{shownChild?.Name ?? "This child"} {(_dayDone ? "has finished playing for today" : "is having a break")}."
+                : $"Grown-ups: hold Esc for {ParentGateFlow.HoldSeconds:0} seconds to {(_dayDone ? "change the daily limit" : "end the break early")}.",
             24, Palette.Ink.WithAlpha(0.6)));
         Stage.AddChild(hint);
         _when = new Node2D { Position = P(0, -340) };
         Stage.AddChild(_when);
         ShowTimes();
 
+        // With brothers or sisters: tap the animal to go to "Who's playing?" (a grown-up says yes there).
+        if (Coordinator.Children.Count > 1 && shownChild is { } child)
+        {
+            var badge = Buttons.Tappable(Avatars.Badge(child.Avatar, 64, 684), "profiles");
+            badge.Position = P(-700, -370);
+            badge.ZIndex = 10;
+            Stage.AddChild(badge);
+        }
+
         Sfx.Play(BipSounds.Effect.Whirr);
         After(0.8, ReplayPrompt);
         After(CheckSeconds, Check);
+    }
+
+    protected override void HandleTap(string name, Node2D node)
+    {
+        if (name != "profiles" || _waking) return;
+        InputLocked = true;
+        Sfx.Play(BipSounds.Effect.Tick);
+        Buttons.Press(node);
+        After(0.25, Coordinator.ShowProfiles);
     }
 
     /// <summary>Bip on the left, plugged into a battery by a curly cable.</summary>
@@ -223,16 +288,36 @@ public partial class ChargingScreen : BaseScreen
             SetGrownUpLine("Games open again tomorrow.");
             return;
         }
-        var lit = (int)Math.Floor(Coordinator.BreakProgress() * Bars + 0.0001);
+        var lit = (int)Math.Floor(Coordinator.BreakProgressOf(Shown) * Bars + 0.0001);
         for (var i = 0; i < _bars.Count; i++) _bars[i].Modulate = new Color(1, 1, 1, i < lit ? 1f : 0.18f);
-        if (Coordinator.BreakEndsAt is not { } ends) return;
-        var minutes = Coordinator.BreakMinutesLeft();
+        if (Coordinator.BreakEndsAtOf(Shown) is not { } ends) return;
+        var minutes = Coordinator.BreakMinutesLeftOf(Shown);
         SetGrownUpLine($"Games open again at {ends.ToLocalTime():HH:mm} (in {Sketch.Plural(minutes, "minute")}).");
     }
 
     private void Check()
     {
         if (_waking) return;
+        if (_peek is Guid peek)
+        {
+            // A brother's or sister's break: nothing is banked. When it ends, back to "Who's playing?"
+            // (playing as them may need a grown-up's yes there).
+            var theirs = Coordinator.RestingPhaseOf(peek);
+            if (theirs == BreakPhase.Playing)
+            {
+                _waking = true;
+                Coordinator.ShowProfiles();
+                return;
+            }
+            if ((theirs == BreakPhase.DayDone) != _dayDone)
+            {
+                Coordinator.ShowResting(peek);
+                return;
+            }
+            ShowTimes();
+            After(CheckSeconds, Check);
+            return;
+        }
         // The break follows the wall clock, so a clock change (or a grown-up ending it) shows here too.
         var phase = Coordinator.CurrentBreakPhase();
         if (phase == BreakPhase.Playing)

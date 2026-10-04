@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BipCore;
 using BipIsland.App;
 using BipIsland.Drawing;
@@ -12,7 +13,8 @@ namespace BipIsland.Parent;
 /// - hold Esc for 3 seconds (a ring fills in the corner) → passcode or maths → the parent area;
 /// - a fresh Esc press while it's open goes back to the game;
 /// - the "Update ready" button appears when a new version has downloaded, and installs it only
-///   after the same passcode or maths.
+///   after the same passcode or maths;
+/// - "Who's playing?" asks the same before another child can play while one is resting.
 /// The game is paused while the layer is open.
 /// </summary>
 public partial class ParentLayer : CanvasLayer
@@ -31,6 +33,7 @@ public partial class ParentLayer : CanvasLayer
     private Control _ringCorner = null!;
     private bool _updateButtonForTest;
     private string? _installProblem;
+    private Guid? _switchAfterClose;
 
     private static double Now => Time.GetTicksMsec() / 1000.0;
 
@@ -43,6 +46,8 @@ public partial class ParentLayer : CanvasLayer
         Flow.Closed += OnClosed;
         // On success the game quits and restarts as the new version; otherwise say why in Settings.
         Flow.InstallUpdate += () => _installProblem = Updater.InstallAndRestart();
+        // Handing over to another child: back to the game as them, no parent area.
+        Flow.SwitchChild += id => _switchAfterClose = id;
 
         var corner = new Control { MouseFilter = Control.MouseFilterEnum.Ignore };
         corner.SetAnchorsPreset(Control.LayoutPreset.FullRect);
@@ -122,6 +127,13 @@ public partial class ParentLayer : CanvasLayer
         }
         GetTree().Paused = false;
         Coordinator.ResumeBreakClock();
+        if (_switchAfterClose is Guid id)
+        {
+            _switchAfterClose = null;
+            _changed = false;
+            Coordinator.Choose(id);
+            return;
+        }
         // Children or settings changed: start again from the map as the (possibly new) child.
         if (_changed) Coordinator.ShowMap();
         _changed = false;
@@ -165,6 +177,7 @@ public partial class ParentLayer : CanvasLayer
         var column = Card(520);
         column.Alignment = BoxContainer.AlignmentMode.Center;
         Centred(column, ParentUi.Text("Grown-ups only", 30, bold: true));
+        if (SwitchText() is { } switching) Centred(column, ParentUi.Text(switching, 20, colour: ParentUi.Secondary));
         var passcode = Flow.UsingPasscode;
         Centred(column, ParentUi.Text(passcode ? "Enter the parent passcode" : $"What is {Flow.Challenge.Question}?", 26, bold: true));
 
@@ -210,11 +223,25 @@ public partial class ParentLayer : CanvasLayer
     /// <summary>Checks the typed answer (also used by the walk-through test).</summary>
     public void Submit(string answer)
     {
-        if (Flow.Submit(answer)) ShowArea();
+        if (Flow.Submit(answer))
+        {
+            if (_switchAfterClose != null) Flow.Close();
+            else ShowArea();
+        }
         else if (Flow.Phase == GatePhase.Question) ShowQuestion();
     }
 
     private void Submit() => Submit(_answer?.Text ?? "");
+
+    /// <summary>Why the gate opened from "Who's playing?", for the grown-up answering it (public for the walk-through test).</summary>
+    public string? SwitchText()
+    {
+        if (Flow.SwitchingTo is not Guid id) return null;
+        var next = Coordinator.Children.FirstOrDefault(c => c.Id == id)?.Name;
+        var resting = Coordinator.CurrentChild?.Name;
+        if (string.IsNullOrWhiteSpace(next) || string.IsNullOrWhiteSpace(resting)) return "Let someone else play while Bip rests?";
+        return $"{resting} is having a break. Let {next} play now?";
+    }
 
     // The parent area
 
