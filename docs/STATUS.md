@@ -258,6 +258,8 @@
   Esc for 3 seconds to end the break early". The daily limit has its own night screen (`vo_day_done`).
   When the break ends with the screen open, Bip wakes up and the map opens. Previews:
   `Scenes/Screens/charging.tscn` and `day_done.tscn`.
+- **3 Oct, evening:** Shape Builder's snowman picture became a rondavel (snow isn't everyday South African life):
+  rectangle wall, thatched triangle roof, round window, semicircle door. No new voice clips needed.
 - **4 Oct:** Per-child breaks (owner: "each child"). Each child's play clock, break and daily total
   live on their save row (`SavedChild.Break`); the old shared break is copied to every child on load,
   so updating can't end a running break. Settings stay shared. While one child rests, the charging
