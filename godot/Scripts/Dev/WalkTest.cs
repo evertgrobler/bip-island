@@ -73,7 +73,14 @@ public static class WalkTest
             await Wait(0.2);
             Check("the right answer comes back to the guide, not the parent area",
                   layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, PractisedGate: true, CanGoOn: true } && layer.Area == null && !layer.IsOpen && tree.Paused);
+            // A hold started on the practise step and still going when Next is clicked doesn't open the gate.
+            Esc(true);
+            await Wait(0.5);
             layer.GuideNext(); // Passcode
+            await Wait(3.2);
+            Check("a hold carried past the practise step doesn't open the gate", !layer.IsOpen && layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode);
+            Esc(false);
+            await Wait(0.2);
             Check("the passcode step is the parent area's passcode form", layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode && layer.Area != null);
             layer.GuideSkipStep(); // Children
             Check("the first child added takes over \"Player 1\"", layer.Area != null && layer.Area.AddChild("Thabo", null)

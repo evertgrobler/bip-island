@@ -294,6 +294,9 @@ public partial class ParentArea : VBoxContainer
         if (_only == null)
             _body.AddChild(ParentUi.Text("Each child picks their animal when the game opens. Their age sets where they start; the game then adjusts to how they do.",
                 16, colour: ParentUi.Secondary, wrap: true));
+        // Redrawn with the list, so it goes once Player 1 has been replaced or changed.
+        if (_only != null && UntouchedPlayerOne(Coordinator) != null)
+            _body.AddChild(ParentUi.Text("The first child you add replaces \"Player 1\".", 16, colour: ParentUi.Secondary, wrap: true));
         var children = Coordinator.Children;
         foreach (var child in children) _body.AddChild(ChildRow(child, children.Count > 1));
 
@@ -462,6 +465,8 @@ public partial class ParentArea : VBoxContainer
             SetSettings(Coordinator.Store.Settings with { DailyMaxMinutes = on ? Coordinator.Store.Settings.DailyMaxMinutes ?? 60 : null });
             daily.Visible = on;
         };
+        // In the setup guide there's no break to end yet.
+        if (_only != null) return;
         // Each child has their own break: this ends the break of the child who was playing.
         var whose = Coordinator.Children.Count > 1 && Coordinator.CurrentChild is { } current ? $"{current.Name}'s" : "Bip's";
         var endBreak = ParentUi.Button($"End {whose} break now", () => { });
@@ -472,8 +477,7 @@ public partial class ParentArea : VBoxContainer
             _layer.MarkChanged();
             ended.Text = "Done: games are open again.";
         };
-        // In the setup guide there's no break to end yet.
-        if (_only == null) play.AddChild(ParentUi.Row(12, endBreak, ended));
+        play.AddChild(ParentUi.Row(12, endBreak, ended));
     }
 
     private void BuildAbout()

@@ -107,7 +107,4 @@ public sealed class SetupGuide(bool gatedAlready = false)
         TourCard = 0;
         return true;
     }
-
-    /// <summary>Ends the guide straight away (the grown-up can open it again from Settings).</summary>
-    public void SkipAll() => Done = true;
 }

@@ -75,7 +75,11 @@ public partial class ParentLayer : CanvasLayer
         if (@event is not InputEventKey { Keycode: Key.Escape } key) return;
         GetViewport().SetInputAsHandled();
         // During the setup guide, Esc only does something on the step that practises it.
-        if (Guide != null && !IsOpen && !PractisingGate) return;
+        if (Guide != null && !IsOpen && !PractisingGate)
+        {
+            Flow.EscapeReleased();
+            return;
+        }
         if (IsOpen)
         {
             // A fresh press goes back to the game; the first press's repeats and release don't.

@@ -90,8 +90,6 @@ public sealed class SetupGuideTests
         Assert.True(guide.SkipStep()); // GrownUpArea → Passcode
         Assert.True(guide.SkipStep()); // Passcode → Children
         Assert.False(guide.SkipStep()); // Children must be seen
-        guide.SkipAll();
-        Assert.True(guide.Done);
     }
 
     [Fact]
@@ -106,22 +104,21 @@ public sealed class SetupGuideTests
             var store = new SaveStore(folder);
             Assert.False(store.SetupDone);
             store.MarkSetupDone();
-            var reopened = new SaveStore(folder);
-            Assert.True(reopened.SetupDone);
-            Assert.False(store.IsNew || reopened.IsNew, "a save file existed: not a first run");
+            Assert.True(new SaveStore(folder).SetupDone);
         }
         finally { Directory.Delete(folder, recursive: true); }
     }
 
     [Fact]
-    public void OnlyAComputerWithNoSaveFileIsNew()
+    public void AFirstRunCutShortStillHasTheGuideToCome()
     {
         var folder = Path.Combine(Path.GetTempPath(), "bip-setup-" + Guid.NewGuid());
         Directory.CreateDirectory(folder);
         try
         {
-            Assert.True(new SaveStore(folder).IsNew);
-            Assert.False(new SaveStore(folder).IsNew); // the first run wrote "Player 1"
+            Assert.False(new SaveStore(folder).SetupDone);
+            // The first run wrote "Player 1", then the computer restarted before the guide was done.
+            Assert.False(new SaveStore(folder).SetupDone);
         }
         finally { Directory.Delete(folder, recursive: true); }
     }

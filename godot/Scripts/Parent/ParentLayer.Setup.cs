@@ -10,7 +10,7 @@ namespace BipIsland.Parent;
 /// The first-time setup guide for grown-ups (steps in <see cref="SetupGuide"/>): what the child lock
 /// does and practising the way into the grown-up area, an optional passcode, the children, play time,
 /// a short tour of what the child sees, then handing over. It opens by itself the first time the game
-/// runs on a computer (<see cref="SaveStore.IsNew"/>), and again from Settings. The game is paused
+/// runs on a computer, until it's finished or skipped (<see cref="SaveStore.SetupDone"/>), and again from Settings. The game is paused
 /// behind it, as behind the parent area. On a first run nobody has passed the gate, so the parent
 /// controls in it come only after practising the gate (<see cref="SetupGuide.GatedAlready"/>).
 /// </summary>
@@ -19,14 +19,13 @@ public partial class ParentLayer
     /// <summary>The guide while it's showing (for the walk-through test and screenshots).</summary>
     public SetupGuide? Guide { get; private set; }
 
-    private bool _guideFirstRun;
-
     /// <summary>Opens the setup guide at its first step: by itself on a first run, or from Settings.</summary>
     public void ShowSetupGuide(bool firstRun = false)
     {
         var wasOpen = IsOpen || Guide != null;
+        // Restarted from inside a first-run guide: it's still the first run (the game starts afresh at the end).
+        firstRun |= Guide is { GatedAlready: false };
         Guide = new SetupGuide(gatedAlready: !firstRun);
-        _guideFirstRun = firstRun;
         if (firstRun) _changed = false;
         if (Flow.Phase != GatePhase.Closed)
         {
@@ -66,7 +65,8 @@ public partial class ParentLayer
     /// <summary>Ends the guide (finished or skipped): marks it done and hands the game to the child.</summary>
     public void FinishGuide()
     {
-        if (Guide == null) return;
+        if (Guide is not { } guide) return;
+        var firstRun = !guide.GatedAlready;
         Guide = null;
         Coordinator.Store.MarkSetupDone();
         ClearPanel();
@@ -74,7 +74,7 @@ public partial class ParentLayer
         Coordinator.ResumeBreakClock();
         var changed = _changed;
         _changed = false;
-        if (_guideFirstRun)
+        if (firstRun)
         {
             // The child's first look at the game: "Who's playing?" or the map, with Bip's welcome.
             Coordinator.ResetWelcome();
@@ -93,6 +93,8 @@ public partial class ParentLayer
     private void ShowGuideStep()
     {
         if (Guide is not { } guide) return;
+        // A hold started while practising mustn't carry on into another step and open the gate there.
+        if (!PractisingGate && !IsOpen) Flow.EscapeReleased();
         var column = Card(860);
         column.AddChild(ParentUi.Row(12,
             ParentUi.Text($"Setting up Bip Island · step {guide.Number} of {SetupGuide.Count}", 16, colour: ParentUi.Secondary),
@@ -107,9 +109,7 @@ public partial class ParentLayer
                 "If you'd rather not answer a maths question each time, set a passcode of 4 to 8 digits. You can skip this and use the maths questions.",
                 ParentArea.Part.Passcode); break;
             case SetupGuide.Step.Children: GuidePart(column, "Your children",
-                "Add each child who will play (up to four), with their name, age and an animal picture." +
-                (ParentArea.UntouchedPlayerOne(Coordinator) != null ? " The first child you add replaces \"Player 1\"." : "") +
-                " Each child picks their animal when the game opens; their age sets where they start, and the game then adjusts to how they do.",
+                "Add each child who will play (up to four), with their name, age and an animal picture. Each child picks their animal when the game opens; their age sets where they start, and the game then adjusts to how they do.",
                 ParentArea.Part.Children); break;
             case SetupGuide.Step.PlayTime: GuidePart(column, "Play time and breaks",
                 "After the play time, Bip's battery runs low: your child finishes the game they're in, then Bip charges and the games stay closed for the break. Quitting and reopening the game doesn't skip a break. You can change these any time.",

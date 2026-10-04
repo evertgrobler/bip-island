@@ -30,7 +30,11 @@ public sealed class SaveFile
     public PlayTimeSettings Settings { get; set; } = new();
     /// <summary>The optional parent passcode (only a salted hash is kept).</summary>
     public ParentPasscode? Passcode { get; set; }
-    /// <summary>A grown-up has been through (or skipped) the first-time setup guide. Older saves read as false, so they see it once.</summary>
+    /// <summary>
+    /// A grown-up has been through (or skipped) the first-time setup guide. Until then it opens by itself
+    /// at every launch, so a first run cut short (a crash, a restart) still gets it. Older saves read as
+    /// false, so a family updating sees it once too.
+    /// </summary>
     public bool SetupDone { get; set; }
 }
 
@@ -72,11 +76,6 @@ public sealed class SaveStore
     public string? LoadError { get; private set; }
     /// <summary>True when the save file couldn't be read and no copy could be kept: nothing is written this run.</summary>
     public bool SavingPaused { get; private set; }
-    /// <summary>
-    /// True when there was no save file at all: the game's first run on this computer, so the setup
-    /// guide opens by itself. An existing family upgrading never sees it pop up uninvited.
-    /// </summary>
-    public bool IsNew { get; private set; }
 
     /// <param name="readFile">Reads a file's text; tests pass one that fails like a locked file.</param>
     public SaveStore(string folder, Func<DateTimeOffset>? now = null, Func<string, string>? readFile = null)
@@ -197,9 +196,9 @@ public sealed class SaveStore
     public bool SetupDone => _file.SetupDone;
 
     /// <summary>The setup guide is finished or skipped: it doesn't open again by itself.</summary>
-    public void MarkSetupDone(bool done = true)
+    public void MarkSetupDone()
     {
-        _file.SetupDone = done;
+        _file.SetupDone = true;
         Save();
     }
 
@@ -207,11 +206,7 @@ public sealed class SaveStore
 
     private SaveFile Load()
     {
-        if (!File.Exists(FilePath))
-        {
-            IsNew = true;
-            return new SaveFile();
-        }
+        if (!File.Exists(FilePath)) return new SaveFile();
         string json;
         try
         {
