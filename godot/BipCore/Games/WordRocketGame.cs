@@ -25,9 +25,10 @@ public sealed partial class WordRocketGame : IMiniGame<WordRocketGame.Round, str
 
     /// <summary>
     /// One window of the rocket: the letter that shows once typed, every key that fills it (lower
-    /// case), and what Bip says after two misses on it.
+    /// case), what Bip says after two misses on it, and whether it is the last letter of its sound
+    /// (the h of "ch"), where a word being spelt says that sound.
     /// </summary>
-    public sealed record Slot(string Letter, IReadOnlySet<string> Keys, string HintClip);
+    public sealed record Slot(string Letter, IReadOnlySet<string> Keys, string HintClip, bool EndsSound = false);
 
     /// <param name="Answer">What a right typing spells (lower case).</param>
     /// <param name="Clip">What Bip says: the sound (snd_) or the word (word_).</param>
@@ -142,7 +143,8 @@ public sealed partial class WordRocketGame : IMiniGame<WordRocketGame.Round, str
     {
         // Each letter's hint is the sound it is part of: both windows of "ch" say /ch/.
         var slots = word.Graphemes.Select(_course.Sound).OfType<PhonicsSound>()
-            .SelectMany(sound => sound.Grapheme.Select(letter => new Slot(letter.ToString(), new HashSet<string> { letter.ToString() }, sound.SoundClip)))
+            .SelectMany(sound => sound.Grapheme.Select((letter, i) =>
+                new Slot(letter.ToString(), new HashSet<string> { letter.ToString() }, sound.SoundClip, EndsSound: i == sound.Grapheme.Length - 1)))
             .ToList();
         return new Round(mode, word.Text, word.Audio, slots, NearMisses(word.Text, rng), Word: word);
     }

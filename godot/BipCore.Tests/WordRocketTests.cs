@@ -109,6 +109,9 @@ public sealed class WordRocketTests
                     var hints = word.Graphemes.Select(id => _course.Sound(id)!)
                         .SelectMany(s => Enumerable.Repeat(s.SoundClip, s.Grapheme.Length));
                     Assert.Equal(hints, round.Slots.Select(s => s.HintClip));
+                    // One sound said per sound in the word, on its last letter.
+                    Assert.Equal(word.Graphemes.Count, round.Slots.Count(s => s.EndsSound));
+                    Assert.True(round.Slots[^1].EndsSound);
                     break;
                 default:
                     Assert.Contains(round.Answer, _content.TrickyWords.Stage2.Words);

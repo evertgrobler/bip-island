@@ -199,7 +199,7 @@ public partial class WordRocketScreen : GameScreen
         }
         // Spelling a word, each sound is said as its last letter lands: c-a-t, sh-o-p.
         var slot = round.Slots[index];
-        if (round.Mode is WordRocketGame.Mode.Cvc or WordRocketGame.Mode.Longer && round.Slots[index + 1].HintClip != slot.HintClip)
+        if (round.Mode is WordRocketGame.Mode.Cvc or WordRocketGame.Mode.Longer && slot.EndsSound)
             Voice.Play([slot.HintClip]);
         MarkNextWindow();
     }
@@ -216,7 +216,12 @@ public partial class WordRocketScreen : GameScreen
         // Two misses on this letter: Bip helps, and the right key glows on the keyboard.
         var slot = round.Slots[index];
         _keyboard.Glow(slot.Letter);
-        After(0.3, () => Voice.Play([Coordinator.RandomHint(), slot.HintClip]));
+        // Only while that letter is still the one to type: a hint starting after the word is done
+        // would cut off the launch sentence, whose end moves the game on.
+        After(0.3, () =>
+        {
+            if (!InputLocked && _round == round && _typed.Count == index) Voice.Play([Coordinator.RandomHint(), slot.HintClip]);
+        });
     }
 
     private void TakeBack()
