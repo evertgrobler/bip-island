@@ -277,3 +277,8 @@
   `RandomHint(followedBySound: false)` gives "Look for the one that's wiggling!" (Mirror Magic, Bip's
   Path). The South African check now walks every content file (graphemes, skills, objectives) and the
   strings inside C# interpolation holes; `yak` prints as WAITING until `word_yoyo` is recorded.
+- **4 Oct, morning:** Owner's ear-check of the 33 re-cut clips: 30 right first time; `word_leaf` and
+  `word_pie` re-cut to keep their quiet endings (approved in round 2). `snd_h` is back to the original
+  recording (it still has a small "uh"; two trims were rejected) until it can be re-recorded.
+  **Waiting on the ElevenLabs upgrade:** `snd_h`, `word_yoyo` (then switch y's picture word from yak),
+  `vo_bip_charging`, `vo_day_done`.
