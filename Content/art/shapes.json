@@ -448,41 +448,40 @@
       ]
     },
     {
-      "id": "snowman",
-      "name": "a snowman",
+      "id": "rondavel",
+      "name": "a rondavel",
       "pieces": [
-        {
-          "shape": "circle",
-          "x": 0,
-          "y": -100,
-          "w": 210,
-          "h": 210,
-          "colour": "white"
-        },
-        {
-          "shape": "circle",
-          "x": 0,
-          "y": 55,
-          "w": 150,
-          "h": 150,
-          "colour": "white"
-        },
         {
           "shape": "rectangle",
           "x": 0,
-          "y": 150,
-          "w": 120,
-          "h": 70,
-          "colour": "ink"
+          "y": -70,
+          "w": 290,
+          "h": 160,
+          "colour": "white"
         },
         {
           "shape": "triangle",
           "x": 0,
-          "y": 55,
-          "w": 40,
-          "h": 30,
-          "colour": "orange",
-          "rotation": -90,
+          "y": 85,
+          "w": 420,
+          "h": 150,
+          "colour": "sand"
+        },
+        {
+          "shape": "circle",
+          "x": -85,
+          "y": -55,
+          "w": 70,
+          "h": 70,
+          "colour": "sky"
+        },
+        {
+          "shape": "semicircle",
+          "x": 45,
+          "y": -110,
+          "w": 90,
+          "h": 80,
+          "colour": "brown",
           "fixed": true
         }
       ]
