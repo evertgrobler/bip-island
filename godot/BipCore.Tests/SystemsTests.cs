@@ -139,10 +139,33 @@ public sealed class SystemsTests
     [Fact]
     public void MovingAwayFromARestingChildNeedsAGrownUp()
     {
-        Assert.False(PlayBreaks.SwitchNeedsGrownUp(BreakPhase.Playing, sameChild: false));
-        Assert.True(PlayBreaks.SwitchNeedsGrownUp(BreakPhase.BreakTime, sameChild: false));
-        Assert.True(PlayBreaks.SwitchNeedsGrownUp(BreakPhase.DayDone, sameChild: false));
-        Assert.False(PlayBreaks.SwitchNeedsGrownUp(BreakPhase.BreakTime, sameChild: true));
+        // The child at the computer is resting: picking someone who can play would skip their break.
+        Assert.True(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: false, targetResting: false));
+        // Picking themselves, or another resting child, skips nothing.
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: true, targetResting: true));
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: false, targetResting: true));
+        // A child who can still play picks anyone.
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: false, targetIsAtComputer: false, targetResting: false));
+    }
+
+    [Fact]
+    public void PeekingAtARestingSiblingDoesNotLockTheChildOut()
+    {
+        var lily = Guid.NewGuid();
+        var sam = Guid.NewGuid();
+        var bob = Guid.NewGuid();
+        // Lily can play and taps resting Sam's picture: she's still the one at the computer, so going
+        // back to her own picture needs no grown-up.
+        var atComputer = PlayBreaks.AtComputerAfterSwitch(lily, atComputerResting: false, sam, targetResting: true);
+        Assert.Equal(lily, atComputer);
+        Assert.False(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: false, targetIsAtComputer: true, targetResting: false));
+        // Sam is resting and taps resting Bob: Bob is at the computer now, and still resting, so
+        // picking Lily (who can play) asks a grown-up.
+        atComputer = PlayBreaks.AtComputerAfterSwitch(sam, atComputerResting: true, bob, targetResting: true);
+        Assert.Equal(bob, atComputer);
+        Assert.True(PlayBreaks.SwitchNeedsGrownUp(atComputerResting: true, targetIsAtComputer: false, targetResting: false));
+        // Picking a child who can play (after the grown-up said yes) makes them the one at the computer.
+        Assert.Equal(lily, PlayBreaks.AtComputerAfterSwitch(sam, atComputerResting: true, lily, targetResting: false));
     }
 
     [Fact]

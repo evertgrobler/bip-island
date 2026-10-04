@@ -158,7 +158,19 @@ public partial class GameCoordinator : Node
     /// Whether picking <paramref name="id"/> needs a grown-up first: the child who was playing is
     /// resting, and picking someone else would skip their break (see <see cref="PlayBreaks.SwitchNeedsGrownUp"/>).
     /// </summary>
-    public bool SwitchNeedsGrownUp(Guid id) => PlayBreaks.SwitchNeedsGrownUp(CurrentBreakPhase(), id == ChildId);
+    public bool SwitchNeedsGrownUp(Guid id)
+    {
+        CurrentBreakPhase(); // Bank play time first.
+        var atComputer = AtComputer;
+        return PlayBreaks.SwitchNeedsGrownUp(IsResting(atComputer), id == atComputer, IsResting(id));
+    }
+
+    /// <summary>
+    /// The child whose break the switch rule protects: usually the one playing, but a child who could
+    /// still play and only peeked at a resting sibling's picture stays the one at the computer.
+    /// </summary>
+    private Guid AtComputer => _atComputer is Guid id && Children.Any(c => c.Id == id) ? id : ChildId;
+    private Guid? _atComputer;
 
     /// <summary>Whether a child is resting (charging or done for the day), for their picture in "Who's playing?".</summary>
     public bool IsResting(Guid id) => id == ChildId
@@ -170,6 +182,8 @@ public partial class GameCoordinator : Node
     {
         if (Children.All(c => c.Id != id)) return;
         CurrentBreakPhase(); // Bank play time to the child who was playing.
+        var atComputer = AtComputer;
+        _atComputer = PlayBreaks.AtComputerAfterSwitch(atComputer, IsResting(atComputer), id, IsResting(id));
         ChildId = id;
         Progress = Store.Progress(id);
         LoadBreak();
@@ -271,6 +285,8 @@ public partial class GameCoordinator : Node
             Progress.NotePlayTime(Math.Min(elapsed, MaxPlayCreditSeconds), Today);
             Store.Save(Progress, ChildId);
         }
+        // The child on screen is playing, so they're the one at the computer now.
+        if (phase == BreakPhase.Playing) _atComputer = null;
         return phase;
     }
 

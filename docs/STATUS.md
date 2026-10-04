@@ -268,3 +268,5 @@
   `PlayBreaks.SwitchNeedsGrownUp`), so quitting, reopening or switching can't skip a break. Parent
   area: "End Lily's break now" names the playing child. Tests: save carry-over, the switch rule, the
   gate hand-over; walk-through: Lily rests → grown-up lets the other child play → back to Lily's break.
+  Review fix: the rule follows the child at the computer (`PlayBreaks.AtComputerAfterSwitch`), so a
+  child who can play and taps a resting sibling's picture can go back to their own without the gate.

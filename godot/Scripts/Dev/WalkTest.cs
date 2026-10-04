@@ -180,6 +180,18 @@ public static class WalkTest
             Check("picking Lily needs no grown-up (the other child wasn't resting), and her break carries on",
                   Screen() is ChargingScreen && game.ChildId == lily.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
         }
+        // The other child only peeked at resting Lily's picture: they can go back to their own without a grown-up.
+        if (await Tap("profiles"))
+        {
+            await Expect<ProfilesScreen>("from Lily's charging screen, back to Who's playing?");
+            await Tap("child:" + other.Id);
+            await WaitFor(() => Screen() is MapScreen, 5);
+            Check("the child who only peeked at Lily goes back to their own picture with no grown-up",
+                  Screen() is MapScreen && game.ChildId == other.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
+        }
+        // Tidy up: Lily's break ends, and the walk carries on as the other child.
+        game.Choose(lily.Id);
+        await WaitFor(() => Screen() is ChargingScreen, 5);
         game.EndBreakEarly();
         game.Store.Settings = game.Store.Settings with { PlayMinutes = 20, BreakMinutes = 20 };
         await WaitFor(() => Screen() is MapScreen, 10);

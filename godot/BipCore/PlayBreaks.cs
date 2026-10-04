@@ -108,11 +108,21 @@ public static class PlayBreaks
 
     /// <summary>
     /// Each child has their own break, so a child who is resting (charging or done for the day) could
-    /// skip it by picking a brother's or sister's picture. Moving away from a resting child needs a
-    /// grown-up; picking yourself again, or leaving while you can still play, doesn't.
+    /// skip it by picking a brother's or sister's picture. The rule follows the child at the computer
+    /// (see <see cref="AtComputerAfterSwitch"/>): when they're resting, picking a child who can play
+    /// needs a grown-up. Picking themselves, or another resting child, doesn't skip anything.
     /// </summary>
-    public static bool SwitchNeedsGrownUp(BreakPhase currentChild, bool sameChild) =>
-        !sameChild && currentChild != BreakPhase.Playing;
+    public static bool SwitchNeedsGrownUp(bool atComputerResting, bool targetIsAtComputer, bool targetResting) =>
+        atComputerResting && !targetIsAtComputer && !targetResting;
+
+    /// <summary>
+    /// Who is at the computer after picking <paramref name="target"/>. A child who can still play and
+    /// taps a resting brother's or sister's picture (by mistake, or to lock them out) only sees that
+    /// child charging: they stay the one at the computer, so they can go back to their own picture
+    /// without a grown-up. Otherwise the picked child is.
+    /// </summary>
+    public static Guid AtComputerAfterSwitch(Guid atComputer, bool atComputerResting, Guid target, bool targetResting) =>
+        targetResting && !atComputerResting ? atComputer : target;
 
     /// <summary>
     /// Whether a child is resting right now (charging, or their daily play used up), without banking
