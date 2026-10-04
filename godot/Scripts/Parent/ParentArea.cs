@@ -434,10 +434,10 @@ public partial class ParentArea : VBoxContainer
 
     private static string KidLockText() => KidLock.Status switch
     {
-        "mac" or "windows" => "Kid lock: on. To play in a normal window without it, hold Option (Mac) or Alt (Windows) while the game opens.",
-        "parent mode" => "Kid lock: off (parent mode, because Option or Alt was held as the game opened).",
-        "off" => "Kid lock: off on this computer.",
-        var problem => $"Kid lock: couldn't start ({problem}).",
+        "mac" or "windows" => "Child lock: on. To play in a normal window without it, hold Option (Mac) or Alt (Windows) while the game opens.",
+        "parent mode" => "Child lock: off (parent mode, because Option or Alt was held as the game opened).",
+        "off" => "Child lock: off on this computer.",
+        var problem => $"Child lock: couldn't start ({problem}).",
     };
 
     private void SetSettings(PlayTimeSettings settings)

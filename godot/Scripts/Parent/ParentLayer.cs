@@ -97,6 +97,8 @@ public partial class ParentLayer : CanvasLayer
         _changed = false;
         // Bip's voice and every screen's timers pause with the tree and carry on afterwards.
         GetTree().Paused = true;
+        // Time with the gate or the parent area open isn't play time.
+        Coordinator.PauseBreakClock();
         ShowQuestion();
     }
 
@@ -104,6 +106,7 @@ public partial class ParentLayer : CanvasLayer
     {
         ClearPanel();
         GetTree().Paused = false;
+        Coordinator.ResumeBreakClock();
         if (_switchAfterClose is Guid id)
         {
             _switchAfterClose = null;

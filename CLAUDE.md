@@ -14,7 +14,14 @@ The game follows the **Cambridge curriculum** (Early Years, then Primary English
 
 ## Who this is for right now
 
-The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only. UK / South African spelling everywhere (colour, mum, favourite) — in code comments, UI text and docs. All words the child hears or sees are proper South African English: no slang (say "corner shop", not "spaza"; "picnic", not "braai").
+The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only.
+
+**South African English, always (owner rule, 3 October 2026; non-negotiable).** Everything in Bip Island is South African: the words, the spelling, the voice, the pictures and the everyday things in them. Not British, not American, not any other country.
+- **Spelling:** South African spelling, which follows British spelling: colour, favourite, realise, grey, centre, maths, practise (verb), mum. Never American spelling (color, favorite, realize, gray, center, math, mom). This applies to UI text, voice lines, content, code comments and docs.
+- **Words:** the words a South African child and parent actually use: takkies (not trainers or sneakers), gumboots (not wellies), chips (not crisps or fries), cooldrink (not soda or fizzy drink), biscuit (not cookie), sweets (not candy), nappy, dummy, plaster, torch, truck (not lorry), cellphone, dustbin, brinjal, baby marrow, Grade R and Grade 1, "puppy" (not "pup"), "child" (never "kid"; the parent area says "child lock"). A picture of a cob is a "mealie", so "corn" is never shown as a picture.
+- **No slang** even when it's South African: say "corner shop", not "spaza"; "picnic", not "braai".
+- **South African life:** money is rand and cents; seasons, food, animals, places and weather are South African. No snow-day, Thanksgiving, Halloween, Bonfire Night, robins or squirrels as everyday things.
+- **Enforced:** `scripts/sa_english.py` lists the words and spellings; `validate_content.py` runs it over the content, `audio/script.csv`, every on-screen string in `godot/Scripts` and the download page, and fails the build on any hit. When the owner flags a word, add it to `sa_english.py` in the same change.
 
 ## How the owner works
 
@@ -50,7 +57,7 @@ Versioning: `0.MINOR.PATCH`, with the patch number from the GitHub run, so every
 - No network access except the update check. No ads, analytics, accounts or data collection.
 - No time pressure inside games: no countdown timers, lives or "game over". Wrong answer → soft sound, retry, then a spoken hint after 2 misses.
 - Click targets at least 120 pt. Design for a mouse, not a trackpad. Any key = "play that sound again".
-- **Play-time breaks:** after 20 minutes of play, Bip's battery runs low; the child finishes the current game, then Bip "charges" for a 20-minute break during which games stay closed. Each child has their own play clock, break and daily total (owner decision, 3 October 2026); while one child rests, another can play, but switching away from a resting child needs the parent gate. Track time with the wall clock in persisted storage so quitting and reopening the app cannot skip a break. Parents set play length, break length and an optional daily maximum (shared by all children) behind the parent gate, and can end the playing child's break early.
+- **Play-time breaks:** after 20 minutes of play, Bip's battery runs low; the child finishes the current game, then Bip "charges" for a 20-minute break during which games stay closed. Each child has their own play clock, break and daily total (owner decision, 3 October 2026); while one child rests, another can play, but switching away from a resting child to one who would then play needs the parent gate (a child who only tapped a resting sibling's picture can go back to their own freely; straight after the game opens, a sibling with play time left can start without the gate, owner decision 4 October 2026). Track time with the wall clock in persisted storage so quitting and reopening the app cannot skip a break. Parents set play length, break length and an optional daily maximum (shared by all children) behind the parent gate, and can end the playing child's break early.
 - **Free choice:** children pick any unlocked game on the map. Bip only recommends (one island glows), and nudges towards another island when one island dominates recent play. Never force a game.
 - **Rewards** are collected, never bought: stars → stickers → creatures → decorations → new areas (see `docs/GAMES.md`).
 

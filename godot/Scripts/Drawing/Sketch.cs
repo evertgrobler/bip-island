@@ -163,6 +163,9 @@ public static class Sketch
     }
 
     /// <summary>A label in the game font, centred on its position.</summary>
+    /// <summary>"1 star", "3 stars": a count with its word, singular for one.</summary>
+    public static string Plural(int count, string word) => $"{count} {word}{(count == 1 ? "" : "s")}";
+
     public static Label Label(string text, int size, Color colour, Font? font = null)
     {
         var label = new Label

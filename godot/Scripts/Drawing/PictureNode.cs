@@ -31,14 +31,14 @@ public static class PictureNode
         "pic_pig" => Pig(),
         "pic_igloo" => Igloo(),
         "pic_nest" => Nest(),
-        _ => StepPictures.Make(id) ?? EmojiPictures.Make(id) ?? Placeholder(word),
+        _ => WordPictures.Make(id) ?? StepPictures.Make(id) ?? EmojiPictures.Make(id) ?? Placeholder(word),
     };
 
     public static Node2D Make(string word) => Make($"pic_{word}", word);
 
     /// <summary>True when an id has a real picture (hand-drawn, a step scene or an emoji), not the placeholder.</summary>
     public static bool HasArt(string id) =>
-        HandDrawnIds.Contains(id) || StepPictures.Make(id) is { } step && Free(step) || EmojiPictures.Icons.ContainsKey(id);
+        HandDrawnIds.Contains(id) || WordPictures.Ids.Contains(id) || StepPictures.Make(id) is { } step && Free(step) || EmojiPictures.Icons.ContainsKey(id);
 
     private static bool Free(Node node)
     {
@@ -46,7 +46,7 @@ public static class PictureNode
         return true;
     }
 
-    /// <summary>Every picture id drawn by hand here (the rest come from StepPictures or EmojiPictures).</summary>
+    /// <summary>Every picture id drawn by hand here (the rest come from WordPictures, StepPictures or EmojiPictures).</summary>
     public static readonly string[] HandDrawnIds =
     {
         "pic_sun", "pic_ant", "pic_ants", "pic_tap", "pic_pan", "pic_ink", "pic_net", "pic_pin", "pic_pins",

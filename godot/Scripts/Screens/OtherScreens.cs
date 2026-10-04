@@ -266,7 +266,7 @@ public partial class ChargingScreen : BaseScreen
         for (var i = 0; i < _bars.Count; i++) _bars[i].Modulate = new Color(1, 1, 1, i < lit ? 1f : 0.18f);
         if (Coordinator.BreakEndsAt is not { } ends) return;
         var minutes = Coordinator.BreakMinutesLeft();
-        SetGrownUpLine($"Games open again at {ends.ToLocalTime():HH:mm} (in {minutes} minute{(minutes == 1 ? "" : "s")}).");
+        SetGrownUpLine($"Games open again at {ends.ToLocalTime():HH:mm} (in {Sketch.Plural(minutes, "minute")}).");
     }
 
     private void Check()
@@ -336,7 +336,7 @@ public partial class StickerScreen : BaseScreen
         AddBip(P(-640, -380), 0.7f);
 
         var jar = new Node2D { Position = P(0, 400) };
-        jar.AddChild(Sketch.Label($"{Coordinator.Progress.Stars} stars in the jar", 56, Palette.Ink));
+        jar.AddChild(Sketch.Label($"{Sketch.Plural(Coordinator.Progress.Stars, "star")} in the jar", 56, Palette.Ink));
         Stage.AddChild(jar);
 
         var toggle = Buttons.Tappable(Buttons.Next(), "page");

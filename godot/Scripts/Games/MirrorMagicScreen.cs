@@ -237,7 +237,7 @@ public partial class MirrorMagicScreen : GameScreen
             if (_pegMisses >= 2)
             {
                 if (_holes.TryGetValue(round.PegsToPlace.First(p => !_placed.Contains(p)), out var next)) ShowHint(next);
-                After(0.4, () => Voice.Play([Coordinator.RandomHint()]));
+                After(0.4, () => Voice.Play([Coordinator.RandomHint(followedBySound: false)]));
             }
             return;
         }

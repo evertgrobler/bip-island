@@ -189,6 +189,19 @@ public static class WalkTest
             Check("the child who only peeked at Lily goes back to their own picture with no grown-up",
                   Screen() is MapScreen && game.ChildId == other.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
         }
+        // Owner decision: straight after the game opens, a brother or sister with play time left can
+        // start without a grown-up, even though the last child (Lily) is resting.
+        game.Choose(lily.Id);
+        await WaitFor(() => Screen() is ChargingScreen, 5);
+        game.OpenSaves(System.IO.Path.GetDirectoryName(game.Store.FilePath)!);
+        game.Start();
+        await Expect<ProfilesScreen>("reopened while Lily rests: Who's playing?");
+        await Tap("child:" + other.Id);
+        await WaitFor(() => Screen() is MapScreen, 5);
+        Check("straight after opening, the other child starts without a grown-up",
+              Screen() is MapScreen && game.ChildId == other.Id && !game.Parent.IsOpen, Screen()?.GetType().Name ?? "no screen");
+        Check("...and Lily is still on her break", game.IsResting(lily.Id));
+
         // Tidy up: Lily's break ends, and the walk carries on as the other child.
         game.Choose(lily.Id);
         await WaitFor(() => Screen() is ChargingScreen, 5);
@@ -443,13 +456,13 @@ public static class WalkTest
             }
             await Wait(0.6);
 
-            // Feed the Monster's foods start at phonics group 4: before that the monster button
-            // meets the sound instead of an empty visit.
-            if (await Tap("monster")) await Expect<MeetSoundScreen>("with no foods yet, the monster button meets the sound instead");
-            if (await Tap("home")) await Expect<LettersIslandScreen>("home from that goes back to letters island");
+            // Feed the Monster's foods start at phonics group 4: before that the monster stays away.
+            Check("with no foods yet, there's no monster button", Screen()?.FindTappable("monster") == null);
             ScreenPreview.LearnGroups(game, 3);
             Check("after learning groups 1-3, group 4 is open", game.LettersProgress?.HighestUnlockedGroup >= 4,
                   $"highest group {game.LettersProgress?.HighestUnlockedGroup}");
+            game.ShowIsland(Island.Letters, greet: false);
+            await Expect<LettersIslandScreen>("letters island again, now with group 4 open");
             starsBefore = game.Progress.Stars;
             if (await Tap("monster")) await Expect<FeedMonsterScreen>("Feed the Monster opens from the island");
             Check("Feed the Monster shows foods", await WaitFor(() => Screen() is FeedMonsterScreen { RightIndex: >= 0, InputLocked: false }, 3));

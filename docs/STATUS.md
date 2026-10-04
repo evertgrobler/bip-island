@@ -44,7 +44,8 @@
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
 - No timers/lives/game-over. Wrong → boop → retry → hint after 2 misses. 120 pt targets.
 - 20 min play → finish game → 20 min break (wall clock, persisted). Parents configure it.
-  **Each child has their own break** (owner, 3 Oct); leaving a resting child for another needs the parent gate.
+  **Each child has their own break** (owner, 3 Oct); leaving a resting child for another needs the parent gate,
+  except straight after the game opens (owner, 4 Oct).
 - Free choice: Bip recommends, never forces. Rewards collected, never bought.
 - Content lives in `Content/` JSON (never hard-code). Validator must pass after content edits.
 - No paid signing for now: Mac ad-hoc signed, Windows unsigned (one-time "Run anyway").
@@ -260,6 +261,24 @@
   `Scenes/Screens/charging.tscn` and `day_done.tscn`.
 - **3 Oct, evening:** Shape Builder's snowman picture became a rondavel (snow isn't everyday South African life):
   rectangle wall, thatched triangle roof, round window, semicircle door. No new voice clips needed.
+- **3 Oct, evening:** Audit of main (agent, report in the session): content, phonics order, coding levels,
+  safety rules all correct. Fixed from it: Bip's Path blocks 120 pt and a hint that doesn't trail off,
+  "1 star", play time paused while the parent gate is open and not banked after the daily maximum (a new
+  day starts with a full battery), the monster button waits for group 4 foods, false rhyme pairs split.
+  Voice: 22 word clips trimmed (stray noise or long silence), b d g dd j h shortened, new f/ff/th, puff,
+  hook (eleven_v3; ElevenLabs then blocked the free tier, so no more clips until the plan is upgraded).
+  25 pictures a child could name another way are now hand-drawn (`WordPictures.cs`; parts get an orange
+  arrow). The gallery takes `--bip-gallery-ids` for close-ups.
+- **3 Oct, evening (2):** South African wording (owner): removed `pup` (we say puppy), `kid` (slang) and
+  `yak` from the word bank, and `corn` is never a picture (a child says "mealie"). The validator now
+  rejects these. **Pending:** the y sound's picture word becomes **yo-yo** (owner's choice) once
+  ElevenLabs can record `word_yoyo` again; until then `yak` stays as y's picture word only.
+- **4 Oct:** Review fixes for #36. The play clock ticks every 30 s while the game runs; a gap over 90 s
+  (sleep, a frozen game, overnight) counts as no play (`PlayBreaks.Credit`), so a new day never starts
+  with a break. A child's minutes get exactly what the break banked (none on the night screen). Hints:
+  `RandomHint(followedBySound: false)` gives "Look for the one that's wiggling!" (Mirror Magic, Bip's
+  Path). The South African check now walks every content file (graphemes, skills, objectives) and the
+  strings inside C# interpolation holes; `yak` prints as WAITING until `word_yoyo` is recorded.
 - **4 Oct:** Per-child breaks (owner: "each child"). Each child's play clock, break and daily total
   live on their save row (`SavedChild.Break`); the old shared break is copied to every child on load,
   so updating can't end a running break. Settings stay shared. While one child rests, the charging
@@ -270,3 +289,5 @@
   gate hand-over; walk-through: Lily rests → grown-up lets the other child play → back to Lily's break.
   Review fix: the rule follows the child at the computer (`PlayBreaks.AtComputerAfterSwitch`), so a
   child who can play and taps a resting sibling's picture can go back to their own without the gate.
+  Owner decision (4 Oct): straight after the game opens, a sibling with play time left can pick their
+  own picture without the gate, even if the last child is resting (they stay on their break).
