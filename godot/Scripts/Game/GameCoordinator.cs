@@ -315,15 +315,11 @@ public partial class GameCoordinator : Node
             Progress.NotePlayTime(banked, Today);
             Store.Save(Progress, ChildId);
         }
-        if (_atComputer is Guid other && other != ChildId)
+        // The child on screen is playing (and nobody else at the computer is resting), so they're the
+        // one at the computer now. While the child at the computer rests, games stay closed for the
+        // child they're looking at (SomeoneElseResting), so nothing changes here.
+        if (phase == BreakPhase.Playing && (_nobodyYet || !IsResting(AtComputer)))
         {
-            // Another child is at the computer, only looking at this one: once their own rest is
-            // over, the child on screen counts as the one at the computer again.
-            if (!IsResting(other)) _atComputer = null;
-        }
-        else if (phase == BreakPhase.Playing)
-        {
-            // The child on screen is playing, so they're the one at the computer now.
             _atComputer = null;
             _nobodyYet = false;
         }
