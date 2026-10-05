@@ -31,6 +31,7 @@ public static class WalkTest
 
         async Task Wait(double seconds) => await host.ToSignal(tree.CreateTimer(seconds), SceneTreeTimer.SignalName.Timeout);
         BaseScreen? Screen() => tree.CurrentScene as BaseScreen;
+        void Escape(bool down) => Input.ParseInputEvent(new InputEventKey { Keycode = Godot.Key.Escape, PhysicalKeycode = Godot.Key.Escape, Pressed = down });
         void Check(string name, bool ok, string detail = "") => steps.Add(new Step(name, ok, detail));
 
         async Task<bool> Tap(string name)
@@ -320,7 +321,6 @@ public static class WalkTest
         }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.
         var parent = game.Parent;
-        void Escape(bool down) => Input.ParseInputEvent(new InputEventKey { Keycode = Key.Escape, PhysicalKeycode = Key.Escape, Pressed = down });
         Escape(true);
         await Wait(1.5);
         Check("a short Esc press doesn't open the gate", !parent.IsOpen);
@@ -441,7 +441,76 @@ public static class WalkTest
                 Check("the next word comes", await WaitFor(() => Screen() is WordBuilderScreen { InputLocked: false } w && w.Spelling.All(s => s.Length == 0), 10));
             }
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Word Builder goes back to words island");
+            await PlayWordRocket();
             if (await Tap("home")) await Expect<MapScreen>("home from words island after the games");
+        }
+
+        // Word Rocket types with real key events, through the same input path as a keyboard.
+        async Task PressKey(Key keycode, string? text = null)
+        {
+            var unicode = text is { Length: 1 } ? text[0] : 0;
+            foreach (var down in new[] { true, false })
+                Input.ParseInputEvent(new InputEventKey { Keycode = keycode, PhysicalKeycode = keycode, Unicode = unicode, Pressed = down });
+            await Wait(0.15);
+        }
+        async Task TypeLetter(string letter) => await PressKey(Godot.Key.A + (letter.ToLowerInvariant()[0] - 'a'), letter);
+
+        async Task PlayWordRocket()
+        {
+            if (await Tap("rocket")) await Expect<WordRocketScreen>("Word Rocket opens from the island");
+            Check("Word Rocket shows a craft with a window for each letter",
+                  await WaitFor(() => Screen() is WordRocketScreen { Answer: not null, InputLocked: false }, 3));
+            if (Screen() is not WordRocketScreen rocket) return;
+            var answer = rocket.Answer!;
+            var stars = game.Progress.Stars;
+            var wrong = PhonicsCourse.Alphabet.First(l => !rocket.NextKeys.Contains(l));
+            await TypeLetter(wrong);
+            Check("a wrong key boops and types nothing", rocket.Typed == "" && rocket.Misses == 1 && rocket.GlowingKey == null);
+            await TypeLetter(wrong);
+            Check("two misses on a letter: the right key glows", rocket.Typed == "" && rocket.GlowingKey == answer[..1], $"glowing {rocket.GlowingKey}");
+            await PressKey(Godot.Key.Space, " ");
+            await PressKey(Godot.Key.Enter);
+            await PressKey(Godot.Key.Key7, "7");
+            Check("Space replays, Enter and numbers type nothing", rocket.Typed == "" && Screen() is WordRocketScreen { InputLocked: false });
+            // The first letter in upper case (Shift): both cases count.
+            await TypeLetter(answer[..1].ToUpperInvariant());
+            Check("an upper-case key counts, and shows lower case", rocket.Typed == answer[..1], rocket.Typed);
+            foreach (var letter in answer[1..]) await TypeLetter(letter.ToString());
+            Check("the last letter launches the craft; after misses no star, but the answer counts",
+                  Screen() is WordRocketScreen { InputLocked: true } && game.Progress.Stars == stars
+                  && game.Progress.GameLevels.ContainsKey(WordRocketGame.GameId), $"typed {rocket.Typed}, stars {stars} → {game.Progress.Stars}");
+            Check("the next question comes with empty windows",
+                  await WaitFor(() => rocket is { InputLocked: false, Typed: "", Answer: not null }, 12));
+
+            // Esc is never typed: holding it still opens the parent gate.
+            Escape(true);
+            await Wait(3.4);
+            Check("holding Esc in Word Rocket opens the parent gate, and nothing is typed",
+                  game.Parent.Flow.Phase == GatePhase.Question && rocket.Typed == "");
+            Escape(false);
+            game.Parent.Close();
+            await Wait(0.5);
+
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Word Rocket goes back to words island");
+
+            // The three-letter word level: a letter taken back with Backspace isn't a miss.
+            game.Progress.GameLevels[WordRocketGame.GameId] = new SkillMastery(1);
+            if (await Tap("rocket")) await Expect<WordRocketScreen>("Word Rocket opens again at the word level");
+            if (!await WaitFor(() => Screen() is WordRocketScreen { Answer.Length: 3, InputLocked: false }, 3) || Screen() is not WordRocketScreen words)
+            {
+                Check("the word level asks a three-letter word", false, (Screen() as WordRocketScreen)?.Answer ?? "no question");
+                return;
+            }
+            var word = words.Answer!;
+            stars = game.Progress.Stars;
+            await TypeLetter(word[..1]);
+            Check("the right key fills the first window", words.Typed == word[..1], words.Typed);
+            await PressKey(Godot.Key.Backspace);
+            Check("Backspace takes the letter back", words.Typed == "");
+            foreach (var letter in word) await TypeLetter(letter.ToString());
+            Check("a word typed right first time launches and earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 3),
+                  $"{word}: stars {stars} → {game.Progress.Stars}");
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Word Rocket goes back to words island");
         }
 
         async Task PlayLetters()
