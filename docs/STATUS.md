@@ -4,13 +4,13 @@
 > for the design. **When you finish work, update this file**: append a dated entry under
 > "Session log", refresh "Where things stand", and commit it with your changes.
 
-## Where things stand (3 October 2026)
+## Where things stand (4 October 2026)
 
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** 14 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
-  Trace, Feed the Monster), Numbers (Count & Tap, Quick Look), Words (Sound Buttons, Word Builder),
+- **Games:** 15 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
   game, 8-question visits, star celebration.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
@@ -32,6 +32,11 @@
   screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
 - **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
   review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
+- **Word Rocket (4 Oct):** the typing game, ages 4–8. Levels: find the letter (Bip says a sound, the child
+  presses that key; c and k both count for /k/), three-letter words, longer words, Stage 2 tricky words.
+  **Keys are the one exception to "any key replays":** letter keys type here, so Space, the replay
+  button or a click on the craft say it again, Enter does nothing, and Esc is never typed (the parent
+  layer takes it first, so the Esc hold still opens the gate). Skins: rocket, hot-air balloon, submarine.
 - **Known open items:** cover second screens in the kid lock; Windows exe
   icon; more games (waves 2b/3/4), real art, music; paid signing only if shared beyond the family.
 
@@ -283,7 +288,7 @@
   `word_pie` re-cut to keep their quiet endings (approved in round 2). `snd_h` is back to the original
   recording (it still has a small "uh"; two trims were rejected) until it can be re-recorded.
   **Waiting on the ElevenLabs upgrade:** `snd_h`, `word_yoyo` (then switch y's picture word from yak),
-  `vo_bip_charging`, `vo_day_done`.
+  `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`.
 - **4 Oct:** Per-child breaks (owner: "each child"). Each child's play clock, break and daily total
   live on their save row (`SavedChild.Break`); the old shared break is copied to every child on load,
   so updating can't end a running break. Settings stay shared. While one child rests, the charging
@@ -299,3 +304,17 @@
   the break now" always mean the child at the computer.
   Owner decision (4 Oct): straight after the game opens, a sibling with play time left can pick their
   own picture without the gate, even if the last child is resting (they stay on their break).
+- **4 Oct:** Word Rocket, the typing game (owner request), on Words Island as its third button, for ages
+  4–8 (was 7–8). Bip says a sound or a word; each right key fills the next window of the craft (one
+  window per letter, Atkinson Hyperlegible, lower case even with Shift or Caps Lock); the last one
+  launches it with stars and Bip says the word again. A wrong key boops, shakes the window and types
+  nothing; two misses on a letter bring a spoken hint (the letter's sound; for tricky words its name once
+  letter names are taught) and that key glows on the keyboard picture. Backspace takes a letter back.
+  Four levels in games.json (`modes`: letter, cvc, longer, tricky; the validator checks them); a level
+  with nothing fresh falls back to an easier kind. Split-digraph words and Mr/Mrs stay out. Exception to
+  "any key replays": Space and the replay button replay instead, Enter does nothing, Esc still opens the
+  gate (all in the walk-through with real key events). Rocket, hot-air balloon and submarine skins
+  (`Scripts/Drawing/RocketDrawing.cs`); previews `Scenes/Games/word_rocket*.tscn`. New line
+  `vo_word_rocket` ("Listen, then type what you hear on the keyboard.") plays silence until recorded:
+  **waiting on the ElevenLabs upgrade.** Review fix: a letter question only asks sounds the child has
+  met; with none met yet, the Word Rocket button opens Meet the Sound (as Sound Hunt does).
