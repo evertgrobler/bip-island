@@ -121,7 +121,7 @@ public sealed class ChildProgress : IEquatable<ChildProgress>
 {
     public const int CurrentVersion = 2;
     public const int RecentGamesKept = 20;
-    /// <summary>Stars in Bip's jar: one per right answer. Every 10 earn a sticker.</summary>
+    /// <summary>Stars in Bip's jar: one per first-try right answer. Every 10 earn a picture sticker.</summary>
     public const int StarsPerSticker = 10;
     /// <summary>Bonus stars from Bip's mystery box, once a day.</summary>
     public const int MysteryBonusStars = 5;
@@ -136,6 +136,10 @@ public sealed class ChildProgress : IEquatable<ChildProgress>
     [JsonInclude] public List<string> RecentGames { get; private set; } = [];
     /// <summary>Stars in Bip's jar.</summary>
     [JsonInclude] public int Stars { get; private set; }
+    /// <summary>Picture stickers collected (picture ids from words.json), in the order they were won.</summary>
+    [JsonInclude] public List<string> PictureStickers { get; private set; } = [];
+    /// <summary>How many lots of <see cref="StarsPerSticker"/> stars have been turned into stickers.</summary>
+    [JsonInclude] public int StarStickersGiven { get; private set; }
     /// <summary>The day Bip's mystery box was last opened (null if never).</summary>
     [JsonInclude] public int? LastMysteryDay { get; private set; }
     /// <summary>
@@ -207,6 +211,16 @@ public sealed class ChildProgress : IEquatable<ChildProgress>
         LastMysteryDay = day;
         Stars += MysteryBonusStars;
         return true;
+    }
+
+    /// <summary>Lots of 10 stars not yet turned into a sticker.</summary>
+    [JsonIgnore] public int StarStickersOwed => Math.Max(0, Stars / StarsPerSticker - StarStickersGiven);
+
+    /// <summary>Adds a picture sticker to the book. <paramref name="forStars"/>: it was won with 10 stars.</summary>
+    public void AddPictureSticker(string pictureId, bool forStars)
+    {
+        if (!PictureStickers.Contains(pictureId)) PictureStickers.Add(pictureId);
+        if (forStars) StarStickersGiven += 1;
     }
 
     /// <summary>Records play-time break progress. See <see cref="PlayBreaks"/>.</summary>

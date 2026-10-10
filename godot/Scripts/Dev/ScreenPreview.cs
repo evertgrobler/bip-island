@@ -61,6 +61,19 @@ public partial class ScreenPreview : Node
         return new ChargingScreen();
     }
 
+    /// <summary>The sticker book with a dozen picture stickers won (37 stars and nine finished games).</summary>
+    private static StickerScreen StickersPreview(GameCoordinator game)
+    {
+        if (game.Content is { } content)
+        {
+            for (var i = 0; i < 37; i++) game.Progress.RecordAnswer(true, "count_10", null, game.Today, content.MasteryRules);
+            for (var i = 0; i < 9; i++)
+                StickerBook.AwardStickers(game.Progress, content, i % 2 == 0 ? "s" : null, finishedGame: true, game.Rng);
+            game.Store.Save(game.Progress, game.ChildId);
+        }
+        return new StickerScreen();
+    }
+
     /// <summary>"Who's playing?" with the playing child (Player 1) resting, so their card shows "z z".</summary>
     private static ProfilesScreen ProfilesPreview(GameCoordinator game)
     {
@@ -100,7 +113,7 @@ public partial class ScreenPreview : Node
             "charging" => ChargingPreview(game, dayDone: false),
             "day_done" => ChargingPreview(game, dayDone: true),
             "art" => new ArtIslandScreen(greet: false),
-            "stickers" => new StickerScreen(),
+            "stickers" => StickersPreview(game),
             _ => new MapScreen(greet: false),
         };
         game.Present(screen);

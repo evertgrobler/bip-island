@@ -5,9 +5,13 @@ namespace BipCore;
 /// creatures and decorations (docs/GAMES.md). Stickers are earned, never bought, and the book
 /// shows what isn't earned yet as grey outlines.
 ///
-/// Stickers are derived from progress, not stored: one per phonics sound (mastered) and one per
-/// mastered skill. Stars are the counter towards the next sticker: every 10 stars earn a page
-/// visit, and Bip's mystery box adds bonus stars once a day.
+/// Two kinds of sticker:
+/// - Picture stickers (the first pages): won, not learnt. One for every 10 stars and one for every
+///   finished game, so a child sees a reward on their very first day. Each is a picture from
+///   words.json, matching the sound just practised when it can ("a sun for s").
+/// - Learning stickers: one per phonics sound and one per skill, earned by mastering it (derived
+///   from progress, not stored).
+/// Bip's mystery box adds bonus stars once a day.
 /// </summary>
 public static class StickerBook
 {
@@ -39,6 +43,46 @@ public static class StickerBook
         return AllStickers(content).Where(s => !got.Contains(s)).ToList();
     }
 
-    /// <summary>Stars towards the next sticker page (10 stars a page).</summary>
+    /// <summary>Stars towards the next picture sticker (10 stars a sticker).</summary>
     public static int StarsTowardsNextPage(ChildProgress progress) => progress.Stars % ChildProgress.StarsPerSticker;
+
+    /// <summary>Every picture sticker there is: each picture word in words.json, in list order.</summary>
+    public static List<string> AllPictureStickers(ContentLibrary content) =>
+        content.Words.Words.Where(w => w.Picturable && w.Picture != null).Select(w => w.Picture!).Distinct().ToList();
+
+    /// <summary>
+    /// The next picture sticker to win: one the child hasn't got yet, starting with the sound they
+    /// just practised ("a sun for s"), else any at random. Null once the whole set is collected.
+    /// </summary>
+    public static string? NextPictureSticker(ChildProgress progress, ContentLibrary content, string? soundId, IRandomSource rng)
+    {
+        var have = progress.PictureStickers.ToHashSet();
+        var left = content.Words.Words
+            .Where(w => w.Picturable && w.Picture != null && !have.Contains(w.Picture))
+            .GroupBy(w => w.Picture!).Select(g => g.First()).ToList();
+        if (left.Count == 0) return null;
+        var matching = soundId == null ? [] : left.Where(w => w.FirstSound == soundId).ToList();
+        return rng.Pick(matching.Count > 0 ? matching : left)!.Picture;
+    }
+
+    /// <summary>
+    /// Turns every 10 stars into a picture sticker (and, with <paramref name="finishedGame"/>, adds one
+    /// for the game just finished). Returns the stickers won, in order.
+    /// </summary>
+    public static List<string> AwardStickers(ChildProgress progress, ContentLibrary content, string? soundId, bool finishedGame, IRandomSource rng)
+    {
+        var won = new List<string>();
+        for (var owed = progress.StarStickersOwed; owed > 0; owed--)
+        {
+            if (NextPictureSticker(progress, content, soundId, rng) is not { } sticker) break;
+            progress.AddPictureSticker(sticker, forStars: true);
+            won.Add(sticker);
+        }
+        if (finishedGame && NextPictureSticker(progress, content, soundId, rng) is { } prize)
+        {
+            progress.AddPictureSticker(prize, forStars: false);
+            won.Add(prize);
+        }
+        return won;
+    }
 }

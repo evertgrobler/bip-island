@@ -76,6 +76,9 @@ public static class WalkTest
         await PlayArt();
 
         if (await Tap("stickers")) await Expect<StickerScreen>("the sticker book opens");
+        Check("the sticker book opens on the child's picture stickers", Screen() is StickerScreen book
+              && book.FindChildren("*", "Node2D", true, false).Count > 0 && game.Progress.PictureStickers.Count > 0,
+              $"{game.Progress.PictureStickers.Count} picture stickers");
         if (await Tap("page")) Check("the sticker page turns", Screen() is StickerScreen);
         if (await Tap("home")) await Expect<MapScreen>("home from the sticker book");
 
@@ -306,13 +309,23 @@ public static class WalkTest
             if (await TapNumeral(right: true))
                 Check("right after a miss: no star, but the answer still counts", game.Progress.Stars == starsBefore
                       && game.Progress.Skill("subitise_5").TotalAttempts + game.Progress.Skill("subitise_10").TotalAttempts > 0);
+            var stickersBefore = game.Progress.PictureStickers.Count;
+            var starStickersBefore = game.Progress.StarStickersGiven;
             for (var round = 2; round <= 8; round++)
             {
                 if (!await WaitFor(() => Screen() is NumeralGameScreen { RightIndex: >= 0, InputLocked: false }, 6)) break;
                 await TapNumeral(right: true);
             }
+            Check("the end card shows the new picture sticker for finishing",
+                  await WaitFor(() => Screen()?.FindChild("NewSticker", true, false) != null, 10), $"showing {Screen()?.GetType().Name}");
             Check("eight questions make a visit: the stars are counted and Bip goes back to the island",
                   await WaitFor(() => Screen() is GameIslandScreen, 15), $"showing {Screen()?.GetType().Name}");
+            var starStickers = game.Progress.StarStickersGiven - starStickersBefore;
+            Check("finishing a game wins a picture sticker, and every 10 stars another",
+                  game.Progress.PictureStickers.Count == stickersBefore + 1 + starStickers
+                  && game.Progress.StarStickersGiven == game.Progress.Stars / BipCore.ChildProgress.StarsPerSticker,
+                  $"stickers {stickersBefore} → {game.Progress.PictureStickers.Count}, stars {game.Progress.Stars}");
+            Check("the stickers are saved", game.Store.Progress(game.ChildId).PictureStickers.Count == game.Progress.PictureStickers.Count);
             Check("seven first-try answers, seven stars", game.Progress.Stars == starsBefore + 7, $"stars {starsBefore} → {game.Progress.Stars}");
             Check("both games are in the recent games", game.Progress.RecentGames.TakeLast(2).SequenceEqual(
                 [BipCore.CountTapGame.GameId, BipCore.QuickLookGame.GameId]));

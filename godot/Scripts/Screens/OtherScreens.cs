@@ -368,22 +368,38 @@ public partial class ChargingScreen : BaseScreen
 }
 
 /// <summary>
-/// The sticker book (Swift: StickerScene): a sticker for every sound and skill, bright when earned.
-/// The arrow switches between the sound page and the skill page.
+/// The sticker book: first the picture stickers (won with stars and finished games, the child's
+/// own first and grey outlines for the rest), then a sticker for every sound and every skill,
+/// bright once learnt. The arrow turns the page.
 /// </summary>
 public partial class StickerScreen : BaseScreen
 {
-    private bool _showingSkills;
+    private const int PicturesPerPage = 40;
+    /// <summary>Which page is open: the picture pages first, then the sounds, then the skills.</summary>
+    private int _pageIndex;
     private Node2D? _page;
+
+    /// <summary>How many pages the book has (for the walk-through test).</summary>
+    public int PageCount => PicturePageCount + 2;
+    private int PicturePageCount =>
+        Coordinator.Content is { } content
+            ? Math.Max(1, (StickerBook.AllPictureStickers(content).Count + PicturesPerPage - 1) / PicturesPerPage)
+            : 1;
 
     protected override void Build()
     {
         AddHomeButton();
         AddBip(P(-640, -380), 0.7f);
 
-        var jar = new Node2D { Position = P(0, 400) };
-        jar.AddChild(Sketch.Label($"{Sketch.Plural(Coordinator.Progress.Stars, "star")} in the jar", 56, Palette.Ink));
+        var progress = Coordinator.Progress;
+        var jar = new Node2D { Position = P(0, 410) };
+        jar.AddChild(Sketch.Label($"{Sketch.Plural(progress.Stars, "star")} in the jar", 56, Palette.Ink));
         Stage.AddChild(jar);
+        // How close the next picture sticker is, for grown-ups reading along.
+        var toGo = ChildProgress.StarsPerSticker - StickerBook.StarsTowardsNextPage(progress);
+        var next = new Node2D { Position = P(0, 355) };
+        next.AddChild(Sketch.Label($"{Sketch.Plural(toGo, "more star")} for the next sticker", 28, Palette.Ink.WithAlpha(0.6)));
+        Stage.AddChild(next);
 
         var toggle = Buttons.Tappable(Buttons.Next(), "page");
         toggle.Position = P(640, 360);
@@ -399,18 +415,37 @@ public partial class StickerScreen : BaseScreen
         _page = new Node2D { ZIndex = 5 };
         Stage.AddChild(_page);
         if (Coordinator.Content is not { } content) return;
-        var earned = StickerBook.Earned(Coordinator.Progress, content);
-        if (_showingSkills)
+        var progress = Coordinator.Progress;
+        if (_pageIndex < PicturePageCount)
+        {
+            // Picture stickers: the child's own first (in the order they were won), then grey outlines
+            // of the ones still to find.
+            var got = progress.PictureStickers.ToList();
+            var all = got.Concat(StickerBook.AllPictureStickers(content).Where(id => !got.Contains(id))).ToList();
+            const int perRow = 10;
+            var onPage = all.Skip(_pageIndex * PicturesPerPage).Take(PicturesPerPage).ToList();
+            for (var i = 0; i < onPage.Count; i++)
+            {
+                var have = i + _pageIndex * PicturesPerPage < got.Count;
+                var sticker = StickerArt.Make(onPage[i], (ulong)(1200 + i), have);
+                sticker.Scale = Vector2.One * 0.9f;
+                sticker.Position = P(-562 + i % perRow * 125, 255 - i / perRow * 128);
+                _page.AddChild(sticker);
+            }
+            return;
+        }
+        var earned = StickerBook.Earned(progress, content);
+        if (_pageIndex == PicturePageCount + 1)
         {
             const int perRow = 8;
             var skills = content.Skills.Skills;
             for (var i = 0; i < skills.Count; i++)
             {
-                var got = earned.Contains("skill_" + skills[i].Id);
+                var gotSkill = earned.Contains("skill_" + skills[i].Id);
                 var star = Pen(Polygon(Star(Vector2.Zero, 40)), (ulong)(1110 + i),
-                    fill: got ? Palette.Sun : Palette.Card.WithAlpha(0.5), lineWidth: 4);
+                    fill: gotSkill ? Palette.Sun : Palette.Card.WithAlpha(0.5), lineWidth: 4);
                 star.Position = P(-420 + i % perRow * 120, 260 - i / perRow * 95);
-                star.Modulate = new Color(1, 1, 1, got ? 1 : 0.45f);
+                star.Modulate = new Color(1, 1, 1, gotSkill ? 1 : 0.45f);
                 _page.AddChild(star);
             }
         }
@@ -420,12 +455,12 @@ public partial class StickerScreen : BaseScreen
             var sounds = new PhonicsCourse(content).AllSounds;
             for (var i = 0; i < sounds.Count; i++)
             {
-                var got = earned.Contains("sound_" + sounds[i].Id);
+                var gotSound = earned.Contains("sound_" + sounds[i].Id);
                 var badge = Group(
-                    Pen(Ellipse(Vector2.Zero, 56, 56), (ulong)(1120 + i), fill: got ? Palette.Sun : Palette.Card.WithAlpha(0.5), lineWidth: 4),
+                    Pen(Ellipse(Vector2.Zero, 56, 56), (ulong)(1120 + i), fill: gotSound ? Palette.Sun : Palette.Card.WithAlpha(0.5), lineWidth: 4),
                     Sketch.Letter(sounds[i].Grapheme, 64, withShadow: false));
                 badge.Position = P(-520 + i % perRow * 130, 240 - i / perRow * 105);
-                badge.Modulate = new Color(1, 1, 1, got ? 1 : 0.45f);
+                badge.Modulate = new Color(1, 1, 1, gotSound ? 1 : 0.45f);
                 _page.AddChild(badge);
             }
         }
@@ -436,7 +471,7 @@ public partial class StickerScreen : BaseScreen
         if (name != "page") return;
         Sfx.Play(BipSounds.Effect.Tick);
         Buttons.Press(node);
-        _showingSkills = !_showingSkills;
+        _pageIndex = (_pageIndex + 1) % PageCount;
         DrawPage();
     }
 }

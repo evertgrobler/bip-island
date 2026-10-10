@@ -534,6 +534,10 @@ public partial class GameCoordinator : Node
     public string? CurrentGameId { get; private set; }
     private int _visitStartStars;
     private int _visitStartLevel;
+    /// <summary>Picture stickers won this visit (every 10 stars, and one for finishing), for the end card.</summary>
+    private readonly List<string> _visitStickers = [];
+    private string? _visitSound;
+    private bool _visitCompleted;
 
     /// <summary>Skins the game screens can draw; a session picks one of these when the game has it.</summary>
     public static readonly IReadOnlySet<string> DrawnSkins = new HashSet<string>
@@ -564,12 +568,15 @@ public partial class GameCoordinator : Node
         CurrentGameId = gameId;
         _visitStartStars = Progress.Stars;
         _visitStartLevel = GameLevel(gameId);
+        _visitStickers.Clear();
+        _visitSound = null;
+        _visitCompleted = false;
         Progress.NotePlayed(gameId);
         Store.Save(Progress, ChildId);
     }
 
     /// <summary>What happened this visit, for the celebration at the end.</summary>
-    public sealed record VisitSummary(int StarsEarned, int LevelBefore, int LevelNow, int LevelCount)
+    public sealed record VisitSummary(int StarsEarned, int LevelBefore, int LevelNow, int LevelCount, IReadOnlyList<string> NewStickers)
     {
         public bool LevelledUp => LevelNow > LevelBefore;
     }
@@ -578,7 +585,19 @@ public partial class GameCoordinator : Node
     {
         var id = CurrentGameId ?? "";
         return new VisitSummary(Math.Max(0, Progress.Stars - _visitStartStars), _visitStartLevel,
-                                CurrentGameId == null ? _visitStartLevel : GameLevel(id), LevelCount(id));
+                                CurrentGameId == null ? _visitStartLevel : GameLevel(id), LevelCount(id), _visitStickers.ToList());
+    }
+
+    /// <summary>
+    /// The game was played to its end: a picture sticker for finishing (once per visit), matching the
+    /// sound practised when there was one.
+    /// </summary>
+    public void CompleteVisit()
+    {
+        if (_visitCompleted || Content == null || CurrentGameId == null) return;
+        _visitCompleted = true;
+        _visitStickers.AddRange(StickerBook.AwardStickers(Progress, Content, _visitSound, finishedGame: true, Rng));
+        Store.Save(Progress, ChildId);
     }
 
     /// <summary>
@@ -591,6 +610,9 @@ public partial class GameCoordinator : Node
         var change = Progress.RecordAnswer(correct, skillId, soundId, Today, Content.MasteryRules);
         if (CurrentGameId is { } gameId && Content.Game(gameId) is { } entry)
             Progress.RecordGameAnswer(correct, gameId, entry.StartingLevel(StartingBand), entry.LevelSteps.Count, Content.MasteryRules);
+        // Every 10 stars (the mystery box's too) become a picture sticker, shown at the end of the visit.
+        _visitSound = soundId ?? _visitSound;
+        _visitStickers.AddRange(StickerBook.AwardStickers(Progress, Content, _visitSound, finishedGame: false, Rng));
         Store.Save(Progress, ChildId);
         return change;
     }
