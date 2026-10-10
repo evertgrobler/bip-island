@@ -121,7 +121,7 @@ step "Diff hygiene (whitespace, build files, secrets)" diff_hygiene
 
 summary="$out/summary.md"
 {
-  echo "### Local checks ($(date -u '+%d %b %Y %H:%M UTC'), $(git rev-parse --short HEAD))"
+  echo "### Local checks ($(TZ=Africa/Johannesburg date '+%d %b %Y %H:%M SAST'), $(git rev-parse --short HEAD))"
   printf '%s\n' "${results[@]}" | sed 's/^/- /'
   shots="$(find "$out/screenshots" -name '*.png' | wc -l | tr -d ' ')"
   if grep -q -- "--bip-scene" godot/Scripts/App/Boot.cs; then
