@@ -17,10 +17,12 @@ public static class StickerArt
     {
         var sticker = new Node2D();
         sticker.AddChild(Pen(Ellipse(Vector2.Zero, Radius, Radius), seed,
-                             fill: got ? Palette.Card : Palette.Card.WithAlpha(0.5f), lineWidth: 5));
+                             fill: got ? Palette.Card : Palette.Card.WithAlpha(0.4f),
+                             ink: got ? null : Palette.Ink.WithAlpha(0.3f), lineWidth: got ? 5 : 3));
         var picture = PictureNode.Make(pictureId, pictureId.StartsWith("pic_") ? pictureId[4..] : pictureId);
         picture.Scale = Vector2.One * 0.4f;
-        if (!got) picture.Modulate = new Color(0.55f, 0.55f, 0.55f, 0.35f);
+        // Still to find: a faint grey shadow of the picture.
+        if (!got) picture.Modulate = new Color(0.5f, 0.5f, 0.5f, 0.18f);
         sticker.AddChild(picture);
         return sticker;
     }
