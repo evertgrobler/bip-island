@@ -318,6 +318,9 @@
   `vo_word_rocket` ("Listen, then type what you hear on the keyboard.") plays silence until recorded:
   **waiting on the ElevenLabs upgrade.** Review fix: a letter question only asks sounds the child has
   met; with none met yet, the Word Rocket button opens Meet the Sound (as Sound Hunt does).
+- **4 Oct, evening:** Owner rule: South African time (SAST, UTC+2) everywhere. CLAUDE.md says so;
+  `.claude/settings.json` sets `TZ=Africa/Johannesburg` for every session (cloud machines run on UTC);
+  `check_all.sh`'s summary is stamped in SAST. The game itself already uses the computer's own clock.
 - **10 Oct:** Maths plan (docs only, no code): games for adding, taking away, times and sharing, Cambridge
   0096 Stages 1–3. Three new games (Bip's Balance, Picnic Plates, Number Machine) and new levels for Number
   Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers, planned around
