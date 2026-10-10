@@ -332,4 +332,9 @@
   play-time steps come only after the gate is really opened (from Settings it can be skipped); the
   hold ring draws above the card; the first child added replaces the untouched "Player 1"; finishing
   from Settings returns to the same screen; a typed passcode is saved on Next. Second round: an Esc
-  hold left running from the practice step is released when the guide moves on.
+  hold left running from the practice step is released when the guide moves on. Third round (10 Oct):
+  the lock step says when the lock is off, Skip setup releases a hold, a typed passcode is kept on Back
+  and Skip setup too, and the Player 1 rule is `SaveStore.UntouchedFirstChild` (tested).
+- **4 Oct, evening:** Owner rule: South African time (SAST, UTC+2) everywhere. CLAUDE.md says so;
+  `.claude/settings.json` sets `TZ=Africa/Johannesburg` for every session (cloud machines run on UTC);
+  `check_all.sh`'s summary is stamped in SAST. The game itself already uses the computer's own clock.
