@@ -62,6 +62,7 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | Sound Detective | 5–8 | 1Rw.01, 1Rw.02, 1Rw.03, 1Rw.05, 1Ww.02 |
 | Count & Tap | 4–5 | 1Nc.01, 1Ni.01, 1Np.01 |
 | Quick Look | 4–6 | 1Nc.02, 1Nc.03, 2Nc.02 |
+| Block Towers | 4–8 | 1Nc.01, 1Ni.01–06, 1Np.02, 1Np.03, 1Nc.05, 2Nc.05, 2Np.01, 2Np.02, 2Nc.06, 3Nc.05, 3Nc.06 |
 | Feed the Monster: Numbers | 4–6 | 1Nc.01, 1Ni.01, 1Ni.02, 1Ni.03, 1Ni.05, 1Np.01, 3Nc.04 |
 | Number Train | 5–7 | 1Nc.04, 1Nc.05, 1Np.03, 1Np.04, 2Nc.01, 2Nc.04, 2Nc.05, 2Nc.06, 2Ni.01, 2Ni.07, 2Np.01–04, 3Nc.05 |
 | More or Less | 4–7 | 1Ni.02, 1Ni.03, 1Ni.05, 1Np.03, 1Ss.03, 2Ni.02, 2Ni.04 |

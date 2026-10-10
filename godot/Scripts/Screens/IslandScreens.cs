@@ -166,7 +166,7 @@ public partial class LettersIslandScreen : BaseScreen
 
 /// <summary>
 /// Numbers, Words and Coding Islands (Swift: NumbersIslandScene, WordsIslandScene, CodingIslandScene):
-/// the same layout with a row of game buttons (two each; Words has Word Rocket too). Bip starts the left game.
+/// the same layout with a row of game buttons (three on Numbers and Words, two on Coding). Bip starts the left game.
 /// </summary>
 public partial class GameIslandScreen : BaseScreen
 {
@@ -202,7 +202,7 @@ public partial class GameIslandScreen : BaseScreen
 
         Node2D[] games = _island switch
         {
-            Island.Numbers => [CountButton(), QuickButton()],
+            Island.Numbers => [CountButton(), BlocksButton(), QuickButton()],
             Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton()],
             _ => [OrderButton(), PathButton()],
         };
@@ -237,6 +237,19 @@ public partial class GameIslandScreen : BaseScreen
         foreach (var (i, p) in Indexed(P(-70, 70), P(70, 70), P(0, 0), P(-70, -70), P(70, -70)))
             quick.AddChild(Pen(Ellipse(p, 24, 24), (ulong)(804 + i), fill: Palette.Ink, lineWidth: 3));
         return quick;
+    }
+
+    /// <summary>Block Towers: towers of one, two and three cubes, like steps.</summary>
+    private static Node2D BlocksButton()
+    {
+        var blocks = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 170, 160), 806, fill: Palette.Card, lineWidth: 6)), "blocks");
+        foreach (var (i, colour) in Indexed(Palette.Teal, Palette.Orange, Palette.Purple))
+        {
+            var tower = BlockDrawing.Tower(i + 1, colour, 54, (ulong)(807 + i * 5));
+            tower.Position = P((i - 1) * 64, -85);
+            blocks.AddChild(tower);
+        }
+        return blocks;
     }
 
     private static Node2D SoundButtonsButton()
@@ -316,6 +329,7 @@ public partial class GameIslandScreen : BaseScreen
     {
         "count" => CountTapGame.GameId,
         "quick" => QuickLookGame.GameId,
+        "blocks" => BlockTowersGame.GameId,
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
         "rocket" => WordRocketGame.GameId,

@@ -34,12 +34,13 @@ Seven games that move from hearing a sound, to spotting it, to writing it.
 
 ## Numbers
 
-Seven games that start with counting real things and end with simple sums and money.
+Eight games that start with counting real things and end with simple sums and money.
 
 | Game | How it plays | Skill | Ages | Skins |
 | --- | --- | --- | --- | --- |
 | Count & Tap | Tap each animal as the narrator counts aloud | Counting to 10, then 20 | 4–5 | Ducks, sheep, ladybirds |
 | Quick Look | Dots or objects flash for 2 seconds: how many? | Seeing amounts without counting | 4–6 | Dice, dominoes, ten-frames |
+| Block Towers | Numbers as towers of cubes: build them, find the tallest, join two, take some away, make 10, odd or even, tens and ones, what comes next | Counting, comparing, adding and taking away within 20, bonds, doubles, place value | 4–8 | Building blocks (cubes in the child's badge colour) |
 | Feed the Monster: Numbers | Give the monster exactly the number of apples it asks for | Counting out a set | 4–6 | Shares the monsters from Letters |
 | Number Train | Put carriages in order, or find the missing number | Order and number lines | 5–7 | Train, caterpillar, washing line |
 | More or Less | Which basket has more? Then: how many more? | Comparing | 4–7 | Baskets, nests, jars |

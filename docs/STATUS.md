@@ -9,8 +9,8 @@
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** 15 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
-  Trace, Feed the Monster), Numbers (Count & Tap, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
+- **Games:** 16 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
   game, 8-question visits, star celebration.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
@@ -318,3 +318,12 @@
   `vo_word_rocket` ("Listen, then type what you hear on the keyboard.") plays silence until recorded:
   **waiting on the ElevenLabs upgrade.** Review fix: a letter question only asks sounds the child has
   met; with none met yet, the Word Rocket button opens Meet the Sound (as Sound Hunt does).
+- **10 Oct:** Block Towers on Numbers Island (owner request: a Numberblocks-style game, in our own style with no
+  characters). Numbers are towers of cubes in the colour of the child's animal badge. Eight levels from games.json
+  "modes": build (to 5), build and which (to 10; tallest, shortest), join (to 10), join and take away (within 20),
+  make 10 and doubles, odd or even (pairs), tens and ones (to 99; ten ones snap into a ten), growing patterns.
+  Everything is a tap: the pile adds a cube (counted aloud), the tower takes one off, the tick checks. Game type
+  `BlockTowersGame`, tests `BlockTowersTests`, screen `BlockTowersScreen`, drawing `Scripts/Drawing/BlockDrawing.cs`
+  (cube fills are plain polygons under the hand-drawn outline: a wobbly outline that small crosses itself and the
+  sketch pen drops its fill). 14 new narrator lines (ElevenLabs works again; some requests still fail with
+  "unusual activity", retry one at a time).

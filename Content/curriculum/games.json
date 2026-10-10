@@ -384,6 +384,106 @@
       "buildPhase": 3
     },
     {
+      "id": "block_towers",
+      "island": "numbers",
+      "name": "Block Towers",
+      "ages": "4-8",
+      "skills": [
+        "count_10",
+        "count_20",
+        "compare",
+        "add_sub_20",
+        "bonds_10",
+        "doubles",
+        "even_odd",
+        "count_100",
+        "sequences"
+      ],
+      "objectives": [
+        "1Nc.01",
+        "1Ni.01",
+        "1Np.03",
+        "1Ni.02",
+        "1Ni.03",
+        "1Ni.04",
+        "1Ni.05",
+        "1Ni.06",
+        "1Nc.05",
+        "2Nc.05",
+        "1Np.02",
+        "2Np.01",
+        "2Np.02",
+        "2Nc.06",
+        "3Nc.05",
+        "3Nc.06"
+      ],
+      "content": "curriculum/games.json (levels)",
+      "buildPhase": 3,
+      "levels": [
+        {
+          "modes": [
+            "build"
+          ],
+          "countTo": 5,
+          "note": "Build towers up to 5"
+        },
+        {
+          "modes": [
+            "build",
+            "which"
+          ],
+          "countTo": 10,
+          "note": "Build and find towers up to 10; tallest and shortest"
+        },
+        {
+          "band": "stage1",
+          "modes": [
+            "join"
+          ],
+          "countTo": 10,
+          "note": "Join two towers, totals up to 10"
+        },
+        {
+          "modes": [
+            "join",
+            "takeaway"
+          ],
+          "countTo": 20,
+          "note": "Join and take away within 20"
+        },
+        {
+          "modes": [
+            "maketen",
+            "doubles"
+          ],
+          "countTo": 20,
+          "note": "Add cubes to make 10; doubles up to double 10"
+        },
+        {
+          "modes": [
+            "oddeven"
+          ],
+          "countTo": 20,
+          "note": "Odd or even? Towers split into pairs, up to 20"
+        },
+        {
+          "band": "stage2",
+          "modes": [
+            "tensones"
+          ],
+          "countTo": 99,
+          "note": "Build two-digit numbers from tens and ones"
+        },
+        {
+          "modes": [
+            "pattern"
+          ],
+          "countTo": 20,
+          "note": "Which tower comes next? Steps of 1, 2 and 3"
+        }
+      ]
+    },
+    {
       "id": "corner_shop",
       "island": "numbers",
       "name": "Corner Shop",

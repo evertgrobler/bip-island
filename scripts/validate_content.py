@@ -186,7 +186,8 @@ for s_ in skills_doc["skills"]:
     if s_["island"] not in ISLANDS: err(f"skill {s_['id']}: unknown island {s_['island']}")
 GAME_MODES = {"shape_builder": {"find", "fill", "sides", "turn", "count", "regular"},
               "paint_pots": {"make", "predict"}, "mirror_magic": {"same", "finish", "pegs", "line"},
-              "word_rocket": {"letter", "cvc", "longer", "tricky"}}
+              "word_rocket": {"letter", "cvc", "longer", "tricky"},
+              "block_towers": {"build", "which", "join", "takeaway", "maketen", "doubles", "oddeven", "tensones", "pattern"}}
 SHAPES = {sh["id"]: sh for sh in shapes_doc["shapes"]}
 COLOURS = {c["id"]: c for c in paints_doc["colours"]}
 POTS = {pt["colour"]: pt for pt in paints_doc["pots"]}
@@ -285,6 +286,12 @@ for gm in games:
             made = [MIX.get(frozenset((x, y))) for i2, x in enumerate(pots) for y in pots[i2 + 1:]]
             if None in made: err(f"{where}: some pairs of these pots have no mix")
             elif len(made) != len(set(made)): err(f"{where}: two pairs of pots make the same colour")
+        elif gm["id"] == "block_towers":
+            up = lv.get("countTo", 0)
+            if not 3 <= up <= 99: err(f"{where}: countTo must be 3 to 99")
+            if "tensones" in lv["modes"] and up < 20: err(f"{where}: tens and ones needs numbers past 20")
+            if set(lv["modes"]) - {"tensones"} and up > 20: err(f"{where}: towers stop at 20 (only tens and ones go higher)")
+            if "pattern" in lv["modes"] and up < 4: err(f"{where}: patterns need towers up to at least 4")
         elif gm["id"] == "mirror_magic":
             if lv["modes"] != ["line"] and lv.get("mirror", "vertical") not in ("vertical", "horizontal"): err(f"{where}: mirror is vertical or horizontal")
             if "finish" in lv["modes"] and sum(p["mirror"] == lv.get("mirror", "vertical") for p in mirror_doc["pictures"]) < 3:
