@@ -61,7 +61,7 @@ public static class WalkTest
             await Wait(0.3);
             Check("a first run opens the setup guide, with the game paused behind it", layer.Guide is { Current: BipCore.SetupGuide.Step.Welcome } && tree.Paused);
             layer.GuideNext();
-            Check("on a first run the practise step can't be skipped (the parent controls come after it)",
+            Check("on a first run the practice step can't be skipped (the parent controls come after it)",
                   layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanGoOn: false, CanSkipStep: false });
             Esc(true);
             await Wait(1.5);
@@ -74,12 +74,12 @@ public static class WalkTest
             await Wait(0.2);
             Check("the right answer comes back to the guide, not the parent area",
                   layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, PractisedGate: true, CanGoOn: true } && layer.Area == null && !layer.IsOpen && tree.Paused);
-            // A hold started on the practise step and still going when Next is clicked doesn't open the gate.
+            // A hold started on the practice step and still going when Next is clicked doesn't open the gate.
             Esc(true);
             await Wait(0.5);
             layer.GuideNext(); // Passcode
             await Wait(3.2);
-            Check("a hold carried past the practise step doesn't open the gate", !layer.IsOpen && layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode);
+            Check("a hold carried past the practice step doesn't open the gate", !layer.IsOpen && layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode);
             Esc(false);
             await Wait(0.2);
             Check("the passcode step is the parent area's passcode form", layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode && layer.Area != null);
@@ -107,8 +107,14 @@ public static class WalkTest
             layer.ShowSetupGuide();
             await Wait(0.2);
             layer.GuideNext();
-            Check("from Settings the practise step can be skipped", layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanSkipStep: true } && tree.Paused);
+            Check("from Settings the practice step can be skipped", layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanSkipStep: true } && tree.Paused);
+            // "Skip setup" mid-hold: the hold ends with the guide, so no gate pops up over the game.
+            Esc(true);
+            await Wait(0.5);
             layer.FinishGuide();
+            await Wait(3.2);
+            Check("a hold running when the guide ends doesn't open the gate", !layer.IsOpen);
+            Esc(false);
             await Wait(0.3);
             Check("skipping the guide from Settings goes back to the same screen", layer.Guide == null && !tree.Paused && Screen() == before && before != null);
         }

@@ -19,7 +19,9 @@
 - **Systems:** profiles (up to 4, "Who's playing?"), Bip's recommendations and nudge, wall-clock play
   breaks with Bip charging, sticker book, daily mystery box, keyboard play, big cursor, Bip's sounds.
 - **Parent side:** hold Esc 3 s → maths or passcode → parent area (Progress, Children, Settings: play
-  time, passcode, updates, quit). "Update ready" button installs only after the gate.
+  time, passcode, updates, quit, setup guide). "Update ready" button installs only after the gate. A
+  setup guide for grown-ups opens at launch until finished or skipped: practise the Esc hold for real
+  (required when it opens by itself), passcode, children, play time, a 3-card tour.
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
@@ -326,8 +328,8 @@
   `BipCore.SetupGuide` (tested); the cards are `ParentLayer.Setup.cs`, reusing the parent area's
   children, passcode and play-time parts (`ParentArea.Part`). Settings has "Show the setup guide
   again". Previews: `Scenes/Parent/setup_*.tscn`; the walk-through runs it first.
-  Review fixes: on a first run the practise step can't be skipped, so the passcode, children and
+  Review fixes: on a first run the practice step can't be skipped, so the passcode, children and
   play-time steps come only after the gate is really opened (from Settings it can be skipped); the
   hold ring draws above the card; the first child added replaces the untouched "Player 1"; finishing
   from Settings returns to the same screen; a typed passcode is saved on Next. Second round: an Esc
-  hold left running from the practise step is released when the guide moves on.
+  hold left running from the practice step is released when the guide moves on.

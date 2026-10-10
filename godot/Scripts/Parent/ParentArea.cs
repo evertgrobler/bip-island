@@ -295,7 +295,7 @@ public partial class ParentArea : VBoxContainer
             _body.AddChild(ParentUi.Text("Each child picks their animal when the game opens. Their age sets where they start; the game then adjusts to how they do.",
                 16, colour: ParentUi.Secondary, wrap: true));
         // Redrawn with the list, so it goes once Player 1 has been replaced or changed.
-        if (_only != null && UntouchedPlayerOne(Coordinator) != null)
+        if (_only != null && Coordinator.Store.UntouchedFirstChild() != null)
             _body.AddChild(ParentUi.Text("The first child you add replaces \"Player 1\".", 16, colour: ParentUi.Secondary, wrap: true));
         var children = Coordinator.Children;
         foreach (var child in children) _body.AddChild(ChildRow(child, children.Count > 1));
@@ -326,7 +326,7 @@ public partial class ParentArea : VBoxContainer
         if (ProfileRules.CleanName(name) == null) return false;
         // In the setup guide, the first child added takes over the untouched "Player 1" the game made
         // on its first run, so the family doesn't end up with a spare profile.
-        if (_only == Part.Children && UntouchedPlayerOne(Coordinator) is { } placeholder)
+        if (_only == Part.Children && Coordinator.Store.UntouchedFirstChild() is { } placeholder)
         {
             Change(placeholder with { Name = name, Age = age });
             return true;
@@ -335,14 +335,6 @@ public partial class ParentArea : VBoxContainer
         _layer.MarkChanged();
         Refresh();
         return true;
-    }
-
-    /// <summary>The only child, when it's still the "Player 1" made on the first run and has never played.</summary>
-    public static ChildSummary? UntouchedPlayerOne(GameCoordinator game)
-    {
-        if (game.Children is not [var only] || only.Name != SaveStore.FirstChildName || only.Age != null) return null;
-        var progress = game.Store.Progress(only.Id);
-        return progress.Stars == 0 && progress.RecentGames.Count == 0 ? only : null;
     }
 
     private Control ChildRow(ChildSummary child, bool canRemove)
@@ -499,7 +491,8 @@ public partial class ParentArea : VBoxContainer
         about.AddChild(_versionNote);
     }
 
-    private static string KidLockText() => KidLock.Status switch
+    /// <summary>The child lock's state in one line (Settings, and the setup guide when the lock isn't on).</summary>
+    public static string KidLockText() => KidLock.Status switch
     {
         "mac" or "windows" => "Child lock: on. To play in a normal window without it, hold Option (Mac) or Alt (Windows) while the game opens.",
         "parent mode" => "Child lock: off (parent mode, because Option or Alt was held as the game opened).",

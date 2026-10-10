@@ -96,6 +96,17 @@ public sealed class SaveStore
 
     public string FilePath => Path.Combine(_folder, FileName);
 
+    /// <summary>
+    /// The only child, while it's still the "Player 1" the first run made and has never played: the setup
+    /// guide's first added child takes it over instead of sitting next to it.
+    /// </summary>
+    public ChildSummary? UntouchedFirstChild()
+    {
+        if (Children() is not [var only] || only.Name != FirstChildName || only.Age != null) return null;
+        var progress = Progress(only.Id);
+        return progress.Stars == 0 && progress.RecentGames.Count == 0 ? only : null;
+    }
+
     // Children
 
     /// <summary>Every child, in the order they were added. There is always at least one ("Player 1").</summary>

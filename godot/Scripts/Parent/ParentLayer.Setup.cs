@@ -45,8 +45,7 @@ public partial class ParentLayer
     public void GuideNext()
     {
         if (Guide is not { } guide) return;
-        // A passcode typed but not saved yet is saved now; if it can't be, stay and show why.
-        if (guide.Current == SetupGuide.Step.Passcode && Area?.SavePendingPasscode() != null) return;
+        if (!KeptPendingPasscode()) return;
         if (!guide.Next()) return;
         if (guide.Done) FinishGuide();
         else ShowGuideStep();
@@ -54,8 +53,17 @@ public partial class ParentLayer
 
     public void GuideBack()
     {
+        if (!KeptPendingPasscode()) return;
         if (Guide?.Back() == true) ShowGuideStep();
     }
+
+    /// <summary>
+    /// On the passcode step, a passcode typed but not saved is saved before leaving the step (Next, Back or
+    /// Skip setup); if it can't be, the step stays and says why. "Skip this step" is the one way to leave
+    /// it unsaved on purpose.
+    /// </summary>
+    private bool KeptPendingPasscode() =>
+        Guide?.Current != SetupGuide.Step.Passcode || Area?.SavePendingPasscode() == null;
 
     public void GuideSkipStep()
     {
@@ -65,7 +73,9 @@ public partial class ParentLayer
     /// <summary>Ends the guide (finished or skipped): marks it done and hands the game to the child.</summary>
     public void FinishGuide()
     {
-        if (Guide is not { } guide) return;
+        if (Guide is not { } guide || !KeptPendingPasscode()) return;
+        // A hold still running from the practice step mustn't open the gate over the child's map.
+        Flow.EscapeReleased();
         var firstRun = !guide.GatedAlready;
         Guide = null;
         Coordinator.Store.MarkSetupDone();
@@ -159,7 +169,8 @@ public partial class ParentLayer
     {
         "mac" => "While Bip Island is open, the child lock stops your child switching to other apps or quitting by accident: the Dock, menu bar, Cmd-Tab and Cmd-Q are blocked. Shutting down and restarting always work.",
         "windows" => "While Bip Island is open, the child lock stops your child switching to other apps or quitting by accident: the Windows key, Alt-Tab and Alt-F4 are blocked. Ctrl-Alt-Del always works.",
-        _ => "On the family computer, the child lock stops your child switching to other apps or quitting by accident. Shutting down always works.",
+        // Not on right now (parent mode, switched off, or it couldn't start): say so, as Settings does.
+        _ => $"{ParentArea.KidLockText()} When it's on, the child lock stops your child switching to other apps or quitting by accident. Shutting down always works.",
     };
 
     private void GuidePart(VBoxContainer column, string title, string text, ParentArea.Part part)

@@ -8,7 +8,7 @@ namespace BipCore;
 /// </summary>
 /// <param name="gatedAlready">
 /// The grown-up already passed the gate to open the guide (from Settings). On a first run nobody has,
-/// so the practise step can't be skipped: the passcode, children and play-time steps are parent
+/// so the practice step can't be skipped: the passcode, children and play-time steps are parent
 /// controls, and only someone who has opened the gate reaches them.
 /// </param>
 public sealed class SetupGuide(bool gatedAlready = false)
@@ -39,7 +39,7 @@ public sealed class SetupGuide(bool gatedAlready = false)
     public Step Current { get; private set; } = Step.Welcome;
     /// <summary>Which tour card is showing while on <see cref="Step.Tour"/>.</summary>
     public int TourCard { get; private set; }
-    /// <summary>The grown-up has opened the gate once during this guide (the practise step's goal).</summary>
+    /// <summary>The grown-up has opened the gate once during this guide (the practice step's goal).</summary>
     public bool PractisedGate { get; private set; }
     /// <summary>The guide is over (finished or skipped).</summary>
     public bool Done { get; private set; }
@@ -96,7 +96,7 @@ public sealed class SetupGuide(bool gatedAlready = false)
         return true;
     }
 
-    /// <summary>Whether the current step offers "Skip": the passcode and the tour, and the practise step from Settings.</summary>
+    /// <summary>Whether the current step offers "Skip": the passcode and the tour, and the practice step from Settings.</summary>
     public bool CanSkipStep => !Done && (Current is Step.Tour or Step.Passcode || (Current == Step.GrownUpArea && GatedAlready));
 
     /// <summary>Skips the practice (from Settings), the passcode or the tour, and goes to the next step.</summary>

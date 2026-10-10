@@ -110,6 +110,31 @@ public sealed class SetupGuideTests
     }
 
     [Fact]
+    public void OnlyAnUntouchedPlayerOneIsTakenOver()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "bip-setup-" + Guid.NewGuid());
+        Directory.CreateDirectory(folder);
+        try
+        {
+            var store = new SaveStore(folder);
+            var first = store.UntouchedFirstChild();
+            Assert.NotNull(first);
+            Assert.Equal(SaveStore.FirstChildName, first.Name);
+
+            // A name, an age or any play means a grown-up or a child has made it theirs.
+            store.Update(first with { Age = 5 });
+            Assert.Null(store.UntouchedFirstChild());
+            store.Update(first with { Age = null });
+            Assert.NotNull(store.UntouchedFirstChild());
+            var progress = store.Progress(first.Id);
+            progress.NotePlayed("meet_the_sound");
+            store.Save(progress, first.Id);
+            Assert.Null(store.UntouchedFirstChild());
+        }
+        finally { Directory.Delete(folder, recursive: true); }
+    }
+
+    [Fact]
     public void AFirstRunCutShortStillHasTheGuideToCome()
     {
         var folder = Path.Combine(Path.GetTempPath(), "bip-setup-" + Guid.NewGuid());
