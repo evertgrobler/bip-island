@@ -321,3 +321,7 @@
 - **4 Oct, evening:** Owner rule: South African time (SAST, UTC+2) everywhere. CLAUDE.md says so;
   `.claude/settings.json` sets `TZ=Africa/Johannesburg` for every session (cloud machines run on UTC);
   `check_all.sh`'s summary is stamped in SAST. The game itself already uses the computer's own clock.
+- **4 Oct:** Download page lists minimum requirements ("What you need" on each card): Mac — macOS 14+,
+  Apple chip or Intel (universal build), 4 GB memory, ~500 MB free; Windows — 10/11 64-bit, OpenGL 3.3
+  graphics (Compatibility renderer), 4 GB memory, ~500 MB free. Shared line: speakers or headphones,
+  a mouse, a keyboard for grown-ups; internet only to download and update.
