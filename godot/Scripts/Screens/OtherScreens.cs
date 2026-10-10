@@ -430,7 +430,7 @@ public partial class StickerScreen : BaseScreen
                 var sticker = StickerArt.Make(onPage[i], (ulong)(1200 + i), have);
                 sticker.Scale = Vector2.One * 0.9f;
                 // Clear of the page arrow (top right) and Bip (bottom left).
-                sticker.Position = P(-540 + i % perRow * 120, 205 - i / perRow * 123);
+                sticker.Position = P(-510 + i % perRow * 117, 205 - i / perRow * 123);
                 _page.AddChild(sticker);
             }
             return;
