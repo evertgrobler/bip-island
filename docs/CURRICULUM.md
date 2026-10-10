@@ -67,6 +67,9 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | More or Less | 4–7 | 1Ni.02, 1Ni.03, 1Ni.05, 1Np.03, 1Ss.03, 2Ni.02, 2Ni.04 |
 | Ten-Frame Garden | 6–8 | 1Ni.04, 1Ni.06, 1Np.02, 2Ni.03 |
 | Corner Shop | 6–8 | 1Nm.01, 2Nm.01, 2Nm.02, 3Nm.01, 3Nm.02 |
+| Bip's Balance (planned) | 5–8 | 1Ni.01, 1Ni.02, 1Ni.03, 1Ni.04, 1Ni.05, 1Np.02, 2Nc.03, 2Ni.02, 2Ni.04, 2Np.02, 3Nc.04, 3Ni.02 |
+| Picnic Plates (planned) | 6–8 | 2Nc.04, 2Ni.05, 2Ni.06, 2Np.02, 3Ni.04, 3Ni.07 |
+| Number Machine (planned) | 6–8 | 2Ni.05, 2Ni.06, 2Ni.07, 3Ni.03, 3Ni.04, 3Ni.05, 3Ni.06, 3Ni.07 |
 | Sound Buttons | 4–6 | 1Rw.03, 1Rw.05, 1Rw.06, 2Rw.05, 2Rw.06 |
 | Word Builder | 5–7 | 1Rw.04, 1Ww.02, 1Ww.04, 1Ww.05, 2Ww.05 |
 | Missing Letter | 5–7 | 1Ww.02, 1Ww.05 |
@@ -85,7 +88,7 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | Paint Pots (Art) | 4–7 | AD1.colour, AD2.colour (Art & Design 0067, codes to be confirmed) |
 | Mirror Magic (Art) | 4–8 | 1Nf.01, 2Gg.09, 3Gg.09 |
 
-The authoritative mapping is `Content/curriculum/games.json`, generated from the skills each game practises. If this table and the JSON ever differ, the JSON wins.
+The three planned games and the new levels for existing games are in "Maths plan" below; they join `games.json` when they are built. The authoritative mapping is `Content/curriculum/games.json`, generated from the skills each game practises. If this table and the JSON ever differ, the JSON wins.
 
 **Gaps (objectives listed but not yet covered by a game):** 2Rw.03 (prefixes and suffixes), 3Gp.01 (compass directions), 3Rw.03 and 3Ww.05 (strategies for unfamiliar words). They are good candidates for future games.
 
@@ -160,3 +163,111 @@ Three games on a fifth island, in the Godot version only.
 **To confirm:** 1Gg.07 and 3Gg.09 were checked against summaries of the 0096 framework, not the document itself. The Art & Design 0067 framework is only open to registered schools, so `AD1.colour` and `AD2.colour` are placeholder codes for its Making strand: swap in the real codes once someone has the framework.
 
 The validator checks the art content too: each shape's sides, regular flag and turn count against its outline; that every pair of pots a level offers has exactly one, distinct mix; and that every mirror picture folds along its own line and no other.
+
+## Maths plan: adding, taking away, times and sharing (planned 10 October 2026)
+
+The games are described in `docs/GAMES.md`, "Maths plan". Nothing below is in the JSON yet: each piece goes into `objectives.json`, `skills.json` and `games.json` when its game is built, and the validator then checks it.
+
+### Objective codes to add
+
+These Mathematics 0096 codes are not in `objectives.json` yet. The summaries are our own short paraphrases. **To confirm:** they were written from summaries of the 2020 framework, not the document itself. Check each code against the framework PDF before it goes into the JSON.
+
+| Code | Our summary |
+| --- | --- |
+| 2Nc.03 | Use an object or shape to stand for an unknown number in adding and taking away |
+| 2Ni.05 | Understand multiplication as repeated adding and as an array |
+| 2Ni.06 | Understand division as sharing and as grouping |
+| 3Ni.01 | Recognise pairs that make 100, and multiples of 10 or 100 that make 100 or 1000 |
+| 3Ni.02 | Add and subtract numbers up to three digits, with carrying and exchanging |
+| 3Ni.03 | Understand how multiplication and division undo each other |
+| 3Ni.04 | Use the order rules of multiplication (3 × 4 = 4 × 3) to make sums easier |
+| 3Ni.05 | Know the 1, 2, 3, 4, 5, 8 and 10 times tables |
+| 3Ni.06 | Multiply numbers up to 100 by 2, 3, 4 and 5 |
+| 3Ni.07 | Divide numbers up to 100 by 2, 3, 4 and 5 |
+| 3Ni.08 | Recognise multiples of 2, 5 and 10 |
+
+Early Years statements are still not available to us (see the top of this guide), so the foundation band's counting on and back uses the Stage 1 targets 1Nc.04, 1Ni.02 and 1Ni.03. Two-digit adding with carrying uses 3Ni.02; three-digit numbers are left for later (number clips stop at 100).
+
+### Skills to add or change (`skills.json`)
+
+| Skill | Band | Objectives | Needs first |
+| --- | --- | --- | --- |
+| `count_on_back` (new) | foundation | 1Nc.04, 1Ni.02, 1Ni.03 | `count_10` |
+| `missing_number` (change: stage 2, add 2Nc.03) | stage2 | 2Nc.03, 3Nc.04 | `add_sub_20` |
+| `add_sub_regroup` (new) | stage3 | 3Ni.02 | `add_sub_100` |
+| `bonds_100` (new) | stage3 | 3Ni.01 | `bonds_20` |
+| `equal_groups` (new) | stage2 | 2Ni.05 | `count_steps` |
+| `share_group` (new) | stage2 | 2Ni.06 | `equal_groups` |
+| `tables_3_4_8` (new) | stage3 | 3Ni.05, 3Ni.08 | `count_steps` |
+| `times_divide` (new) | stage3 | 3Ni.03, 3Ni.04, 3Ni.06, 3Ni.07 | `share_group`, `tables_3_4_8` |
+
+The 2, 5 and 10 tables stay in `count_steps` (it already holds 2Ni.07).
+
+### Every level against the curriculum
+
+| Game | Level | Band | Objectives |
+| --- | --- | --- | --- |
+| Bip's Balance | 1. Add within 10, cubes shown | stage1 | 1Ni.01, 1Ni.02, 1Ni.05 |
+| | 2. Take away within 10, cubes shown | stage1 | 1Ni.03, 1Ni.05 |
+| | 3. Add and take away within 20, past 10 | stage1 | 1Ni.05, 1Np.02 |
+| | 4. Missing numbers | stage2 | 1Ni.04, 2Nc.03, 3Nc.04 |
+| | 5. Fact families | stage2 | 2Ni.02 |
+| | 6. Two-digit, no carrying | stage2 | 2Ni.04, 2Np.02 |
+| | 7. Two-digit with carrying | stage3 | 3Ni.02 |
+| | Story sums (any level) | as the level | 1Ni.02, 1Ni.03 and the level's codes |
+| Picnic Plates | 1. Equal groups | stage2 | 2Ni.05, 2Nc.04 |
+| | 2. Make equal groups | stage2 | 2Ni.05 |
+| | 3. Arrays | stage2 | 2Ni.05 |
+| | 4. Sharing | stage2 | 2Ni.06 |
+| | 5. Grouping | stage2 | 2Ni.06 |
+| | 6. Turn the tray | stage3 | 3Ni.04 |
+| | 7. Bigger shares, with tens | stage3 | 3Ni.07, 2Np.02 |
+| Number Machine | 1. × 2 and × 10 | stage2 | 2Ni.05, 2Ni.07 |
+| | 2. × 5, then 2, 5, 10 mixed | stage2 | 2Ni.07 |
+| | 3. What went in? | stage2 | 2Ni.06, 2Ni.07 |
+| | 4. × 3 and × 4 | stage3 | 3Ni.05, 3Ni.06 |
+| | 5. × 8 by doubling | stage3 | 3Ni.04, 3Ni.05 |
+| | 6. The ÷ machine | stage3 | 3Ni.03, 3Ni.07 |
+| | 7. What's the rule? | stage3 | 3Ni.03, 3Ni.05 |
+| Number Train | Hops | foundation, stage1 | 1Nc.04, 1Ni.02, 1Ni.03 |
+| | Tens hops | stage2 | 2Nc.04, 2Ni.04 |
+| | Skip hops | stage2, stage3 | 2Nc.04, 2Ni.07, 3Ni.05, 3Ni.08 |
+| Ten-Frame Garden | Past 10; near doubles | stage1 | 1Ni.05, 1Np.02, 1Ni.06 |
+| | Bonds to 20; tens to 100 | stage2 | 2Ni.03 |
+| | Bonds to 100 | stage3 | 3Ni.01 |
+| More or Less | How many more? | stage1 | 1Ni.03 |
+| | Two-digit difference | stage2 | 2Np.03, 2Ni.04 |
+| Corner Shop | How much altogether? | stage2 | 2Ni.04, 2Nm.02 |
+| | 3 at R2 each; share R20 | stage3 | 3Ni.06, 3Ni.07, 3Nm.02 |
+| Count & Tap | Count the groups | stage2 | 2Nc.04, 2Ni.05 |
+| Quick Look | Two dice | stage1 | 1Nc.02, 1Ni.02 |
+| | Arrays | stage2 | 2Nc.02, 2Ni.05 |
+| Block Towers (proposed, after its PR) | Join and break tens and ones | stage2, stage3 | 2Np.02, 2Ni.04, 3Ni.02 |
+
+Changes to the planned games' rows above once they are built: Ten-Frame Garden drops `doubles` (Block Towers has it) and gains 1Ni.05, 2Ni.03 and 3Ni.01; More or Less keeps 2Ni.04 for the difference but 2Ni.02 moves to Bip's Balance.
+
+### Coverage check: every objective in scope has a game
+
+| Objectives | Covered by |
+| --- | --- |
+| 1Nc.04 (counting on and back) | Number Train hops, Block Towers |
+| 1Ni.02, 1Ni.03, 1Ni.05 (add and take away to 20) | Block Towers, Bip's Balance, Number Train, More or Less |
+| 1Ni.04, 2Ni.03, 3Ni.01 (bonds to 10, 20, 100) | Block Towers, Ten-Frame Garden, Bip's Balance level 4 |
+| 2Nc.03, 3Nc.04 (unknown numbers) | Bip's Balance level 4 |
+| 2Ni.02, 3Ni.03 (inverse operations) | Bip's Balance level 5, Number Machine levels 6–7 |
+| 2Ni.04, 3Ni.02 (two-digit adding and taking away) | Bip's Balance levels 6–7, Number Train tens hops, Block Towers proposal |
+| 2Ni.05, 2Ni.06 (groups, arrays, sharing, grouping) | Picnic Plates, Number Machine, Count & Tap, Quick Look |
+| 2Ni.07, 3Ni.05, 3Ni.08 (tables) | Number Machine, Number Train skip hops |
+| 3Ni.04, 3Ni.06, 3Ni.07 (bigger times and sharing) | Picnic Plates, Number Machine, Corner Shop |
+
+### New content (`Content/numbers/arithmetic.json`)
+
+Level settings (number range, tables, carrying or not, which modes) go in each game's `levels` in `games.json`. The shared lists go in one new file:
+
+- `storySums`: templates for story sums (joining, taking away, how many more), each naming its clips and which counting objects fit (ducks on the dam, bees on a flower).
+- `picnicFood`: id, picture, plural clip (sandwiches, naartjies, strawberries, biscuits).
+- `groups`: things that come in equal groups, with their size and picture: pair of takkies 2, tricycle 3, car 4, hand 5, octopus 8, box of crayons 10. The validator checks each size is one of the tables the games use.
+- `trays`: array containers (muffin tray, seedling tray) with the rows and columns they can show.
+- `machineRules`: the rule cards (× 2 … × 10, ÷ 2 … ÷ 10, and + n for the "what's the rule?" distractors).
+
+The validator should also check that every level's numbers stay within 0 to 100 (the recorded number clips) and that every clip the file names is in `audio/script.csv` or the asset manifest.
