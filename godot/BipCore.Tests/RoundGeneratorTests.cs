@@ -526,7 +526,8 @@ public sealed class RoundGeneratorTests
     [Fact]
     public void EveryGameListsAtLeastThreeSkins()
     {
-        IMiniGame[] games = [_f.Meet, _f.Hunt, _f.Pop, _f.Trace, _f.Monster, _f.Count, _f.Quick, _f.Buttons, _f.Builder, _f.Order, _f.Path];
+        IMiniGame[] games = [_f.Meet, _f.Hunt, _f.Pop, _f.Trace, _f.Monster, _f.Count, _f.Quick, _f.Buttons, _f.Builder, _f.Order, _f.Path,
+                             new WordRocketGame(_f.Content, _f.Course)];
         foreach (var game in games) Assert.True(game.Skins.Count >= 3, game.Id);
     }
 

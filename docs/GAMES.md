@@ -58,7 +58,7 @@ Seven games that turn known sounds into words, then words into sentences.
 | Rhyme Time | Which one rhymes with cat: hat, dog or sun? | Rhyming | 4–7 | Frogs on lily pads, birds on a wire |
 | Tricky Word Memory | Flip cards to pair words that don't sound out (the, said, was) | Sight words | 6–8 | Cards, shells, cupcakes |
 | Silly Sentences | Read a short sentence and pick the matching (silly) picture | Reading for meaning | 6–8 | New sentences every round |
-| Word Rocket | Hear a word, type it on the keyboard to launch the rocket | Typing and spelling | 7–8 | Rocket, hot-air balloon, submarine |
+| Word Rocket | Hear a sound or word, type it on the keyboard to launch the rocket. Levels: find the letter (a sound, one key), three-letter words, longer words with digraphs and blends, tricky words | Typing and spelling | 4–8 | Rocket, hot-air balloon, submarine |
 
 ## Coding
 
@@ -150,7 +150,7 @@ The plug-in template and Bip's planner come first, so every later game is quick 
 | 2a. Core of each island | Letter Trace, Feed the Monster, Count & Tap, Quick Look, Sound Buttons, Word Builder, Morning Order, Bip's Path | Bip's recommendations, play-time breaks, sticker book, mystery box |
 | 2b. Second wave | Number Train, More or Less, Missing Letter, Rhyme Time, Pattern Party, Fix-It | Skins (3 per game), golden rounds |
 | 3. Polish | Letter Fishing, Sound Detective, Ten-Frame Garden, Tricky Word Memory, Silly Sentences, Repeat Robot, Bip's Dance Party | Island grows, creature collection, decorations |
-| 4. Older kids | Corner Shop, Word Rocket, Puddle Rules | Special days |
+| 4. Older kids | Corner Shop, Word Rocket (built 4 Oct 2026, for ages 4–8, all three skins), Puddle Rules | Special days |
 | Ongoing | A new game, skin or word list with each update | “New!” flag on the map |
 
 ## Decisions
