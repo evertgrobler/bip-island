@@ -325,3 +325,11 @@
   Apple chip or Intel (universal build), 4 GB memory, ~500 MB free; Windows — 10/11 64-bit, OpenGL 3.3
   graphics (Compatibility renderer), 4 GB memory, ~500 MB free. Shared line: speakers or headphones,
   a mouse, a keyboard for grown-ups; internet only to download and update.
+- **10 Oct:** Rewards check (owner asked): stars, the visit card, the mystery box and the sticker book
+  all worked, but stickers only came from mastery (right answers on two days), so a new child saw an
+  empty book. Picture stickers added (`StickerBook.AwardStickers`): every 10 stars and every finished
+  game win one, a words.json picture matching the sound just practised ("a sun for s"), never repeated;
+  `ChildProgress.PictureStickers` / `StarStickersGiven` (old saves catch up on the next right answer).
+  The end card shows them; the sticker book opens on picture pages (own first, grey outlines after) and
+  says how many stars the next one needs. Still to build: creatures, decorations, new areas, golden
+  round, creature visits, special days, the "New!" flag; the mystery box still gives stars.
