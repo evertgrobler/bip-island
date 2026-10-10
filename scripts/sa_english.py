@@ -38,7 +38,6 @@ BANNED = {k: v for k, v in NOT_SOUTH_AFRICAN.items() if v is not None}
 # Known hits waiting on something outside the code, printed as WAITING on every run so they can't be
 # forgotten. Keep this short, and remove an entry the moment its reason is gone.
 TEMPORARY = {
-    "yak": "the y sound's picture word until word_yoyo can be recorded (owner chose yo-yo; ElevenLabs is blocked)",
 }
 
 # American spellings → South African (British) spelling. Whole words, case-insensitive.

@@ -72,7 +72,8 @@ public static partial class AudioCatalogue
     public const int PraiseCount = 10;
     public const int HintCount = 4;
 
-    public static string WordClip(string word) => $"word_{word}";
+    /// <summary>A word's clip: yo-yo → word_yoyo (file names have no hyphens).</summary>
+    public static string WordClip(string word) => $"word_{word.Replace("-", "")}";
     public static string NumberClip(int n) => $"num_{n}";
 
     public static readonly IReadOnlyList<string> PraiseClips = Enumerable.Range(1, PraiseCount).Select(n => $"praise_{n:00}").ToList();

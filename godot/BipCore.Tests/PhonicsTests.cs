@@ -78,7 +78,7 @@ public sealed class PhonicsTests
         foreach (var sound in Course().AllSounds)
         {
             Assert.Equal($"snd_{sound.Id}", sound.SoundClip);
-            Assert.Equal($"pic_{sound.PictureWord}", sound.Picture);
+            Assert.Equal($"pic_{sound.PictureWord.Replace("-", "")}", sound.Picture);
             Assert.True(content.AudioIds.Contains(sound.SoundClip), sound.Id);
             Assert.True(content.AudioIds.Contains(sound.WordClip), sound.Id);
             Assert.True(content.PictureIds.Contains(sound.Picture), sound.Id);

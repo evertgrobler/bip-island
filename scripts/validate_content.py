@@ -362,7 +362,7 @@ for g in ph["graphemes"]:
     a(g["audio"], g["grapheme"], f"PURE SOUND /{g['ipa']}/ ({g['kind']}). {g['narratorHint']}")
     if g.get("letterName"): a(f"name_{g['id']}", g["letterName"], "Letter name, for the letter-names activity only.")
     p(g["mnemonicPicture"], f"{g['mnemonicWord']} (picture for the sound {g['grapheme']})")
-    a(f"word_{g['mnemonicWord']}", g["mnemonicWord"])
+    a(f"word_{g['mnemonicWord'].replace('-', '')}", g["mnemonicWord"])
 for w in words_doc["words"]:
     a(w["audio"], w["word"])
     if w["picturable"]: p(w["picture"], w["word"])
