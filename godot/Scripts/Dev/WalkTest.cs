@@ -316,6 +316,33 @@ public static class WalkTest
             Check("both games are in the recent games", game.Progress.RecentGames.TakeLast(2).SequenceEqual(
                 [BipCore.CountTapGame.GameId, BipCore.QuickLookGame.GameId]));
             await Wait(0.5);
+
+            // Block Towers: build the tower Bip asks for, one cube at a time, then the tick.
+            if (await Tap("blocks")) await Expect<BlockTowersScreen>("Block Towers opens from the island");
+            Check("Block Towers asks for a tower", await WaitFor(() => Screen() is BlockTowersScreen { Round: not null }, 3));
+            if (Screen() is BlockTowersScreen towers && towers.Round is { Mode: BipCore.BlockTowersGame.Mode.Build } build)
+            {
+                var stars = game.Progress.Stars;
+                for (var i = 0; i < build.Target + 1; i++) await Tap("pile");
+                await Tap("tick");
+                Check("one cube too many boops and gives no star", game.Progress.Stars == stars && towers is { InputLocked: false });
+                await Tap("tower");
+                await Tap("tick");
+                Check("taking the extra cube off, the tower is right: the answer is saved, no star after a miss",
+                      await WaitFor(() => game.Progress.Skill("count_10").TotalAttempts > 0, 6) && game.Progress.Stars == stars,
+                      $"stars {stars} → {game.Progress.Stars}");
+                Check("...and the next tower comes", await WaitFor(() => towers.Round != build && towers.Round != null, 8));
+                if (towers.Round is { Mode: BipCore.BlockTowersGame.Mode.Build } next)
+                {
+                    stars = game.Progress.Stars;
+                    for (var i = 0; i < next.Target; i++) await Tap("pile");
+                    await Tap("tick");
+                    Check("the right tower first time earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6),
+                          $"stars {stars} → {game.Progress.Stars}");
+                }
+            }
+            else Check("Block Towers starts with building at the first level", false, Screen() is BlockTowersScreen t ? $"{t.Round?.Mode}" : "no screen");
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Block Towers goes back to numbers island");
             if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
         }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.

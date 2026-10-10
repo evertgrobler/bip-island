@@ -166,7 +166,7 @@ public partial class LettersIslandScreen : BaseScreen
 
 /// <summary>
 /// Numbers, Words and Coding Islands (Swift: NumbersIslandScene, WordsIslandScene, CodingIslandScene):
-/// the same layout with two game buttons each. Bip starts the left game.
+/// the same layout with a row of game buttons (three on Numbers, two elsewhere). Bip starts the left game.
 /// </summary>
 public partial class GameIslandScreen : BaseScreen
 {
@@ -200,21 +200,24 @@ public partial class GameIslandScreen : BaseScreen
         inner.ZIndex = -49;
         Stage.AddChild(inner);
 
-        var (left, right) = _island switch
+        Node2D[] buttons = _island switch
         {
-            Island.Numbers => (CountButton(), QuickButton()),
-            Island.Words => (SoundButtonsButton(), BuilderButton()),
-            _ => (OrderButton(), PathButton()),
+            Island.Numbers => [CountButton(), BlocksButton(), QuickButton()],
+            Island.Words => [SoundButtonsButton(), BuilderButton()],
+            _ => [OrderButton(), PathButton()],
         };
-        _leftGame = GameFor(Buttons.TapName(left)!);
-        foreach (var (button, x) in new[] { (left, -350.0), (right, 350.0) })
+        _leftGame = GameFor(Buttons.TapName(buttons[0])!);
+        // Two games sit either side; three spread across the island.
+        var spacing = buttons.Length == 3 ? 420.0 : 700.0;
+        for (var i = 0; i < buttons.Length; i++)
         {
-            button.Position = P(x, 80);
+            var button = buttons[i];
+            button.Position = P((i - (buttons.Length - 1) / 2.0) * spacing, buttons.Length == 3 ? 100 : 80);
             button.ZIndex = 5;
             Stage.AddChild(button);
             _keyNodes.Add(button);
         }
-        Buttons.Pulse(left);
+        Buttons.Pulse(buttons[0]);
 
         AddHomeButton();
         AddBip(P(0, -360), 0.85f);
@@ -236,6 +239,19 @@ public partial class GameIslandScreen : BaseScreen
         foreach (var (i, p) in Indexed(P(-70, 70), P(70, 70), P(0, 0), P(-70, -70), P(70, -70)))
             quick.AddChild(Pen(Ellipse(p, 24, 24), (ulong)(804 + i), fill: Palette.Ink, lineWidth: 3));
         return quick;
+    }
+
+    /// <summary>Block Towers: towers of one, two and three cubes, like steps.</summary>
+    private static Node2D BlocksButton()
+    {
+        var blocks = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 170, 160), 806, fill: Palette.Card, lineWidth: 6)), "blocks");
+        foreach (var (i, colour) in Indexed(Palette.Teal, Palette.Orange, Palette.Purple))
+        {
+            var tower = BlockDrawing.Tower(i + 1, colour, 54, (ulong)(807 + i * 5));
+            tower.Position = P((i - 1) * 64, -85);
+            blocks.AddChild(tower);
+        }
+        return blocks;
     }
 
     private static Node2D SoundButtonsButton()
@@ -298,6 +314,7 @@ public partial class GameIslandScreen : BaseScreen
     {
         "count" => CountTapGame.GameId,
         "quick" => QuickLookGame.GameId,
+        "blocks" => BlockTowersGame.GameId,
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
         "order" => MorningOrderGame.GameId,

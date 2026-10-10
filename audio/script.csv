@@ -61,3 +61,17 @@ vo_mirror_same.m4a,Which picture is the same on both sides?,Art Island.,Which pi
 vo_mirror_finish.m4a,Which piece finishes the picture?,Art Island.,Which piece finishes the picture?
 vo_mirror_pegs.m4a,Put pegs on the other side of the mirror to finish the pattern.,Art Island.,Put pegs on the other side of the mirror to finish the pattern.
 vo_mirror_line.m4a,Where is the mirror line? Find the line that folds the picture into two matching halves.,Art Island.,Where is the mirror line? Find the line that folds the picture into two matching halves.
+vo_build_tower.m4a,Build a tower of,"Followed straight away by a number (""four""). Rising, unfinished intonation.",Build a tower of
+vo_find_tower.m4a,Can you find the tower of,"Followed straight away by a number (""seven""). Rising, unfinished intonation.",Can you find the tower of
+vo_tallest_tower.m4a,Which tower is the tallest?,Block Towers: three towers side by side.,Which tower is the tallest?
+vo_shortest_tower.m4a,Which tower is the shortest?,Block Towers: three towers side by side.,Which tower is the shortest?
+vo_how_many_altogether.m4a,How many altogether?,"After ""three and two"" as two towers join. Curious, inviting.",How many altogether?
+vo_take_away.m4a,take away,"Middle of ""six take away two"". Just the two words, even tone.",take away
+vo_how_many_left.m4a,How many are left?,After the child has taken cubes off a tower.,How many are left?
+vo_make_ten.m4a,Add cubes to make ten!,Block Towers: a tower with a dotted outline up to ten.,Add cubes to make ten!
+vo_double.m4a,Double,"Followed straight away by a number (""double four""). Even tone.",Double
+vo_how_many.m4a,How many is that?,"After ""double four"". Curious, inviting.",How many is that?
+vo_odd_or_even.m4a,Is it odd or even?,Block Towers: the tower has split into pairs of cubes.,Is it odd or even?
+vo_odd.m4a,odd,"The word ""odd"" on its own, as in odd and even. Clear, even tone.",odd
+vo_build_number.m4a,Build the number,"Followed straight away by a two-digit number (""thirty-four""). Rising, unfinished intonation.",Build the number
+vo_what_comes_next.m4a,Which tower comes next?,Block Towers: three towers growing by the same step.,Which tower comes next?

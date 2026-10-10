@@ -112,7 +112,7 @@ public partial class GameCoordinator : Node
             _ = new LetterTraceGame(Content, Course);
             _monster = new FeedMonsterGame(Content, Course);
         });
-        NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); });
+        NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); _ = new BlockTowersGame(Content); });
         WordsOpen = Try("Words", () => { _ = new SoundButtonsGame(Content, new PhonicsCourse(Content)); _ = new WordBuilderGame(Content); });
         CodingOpen = Try("Coding", () => { _ = new MorningOrderGame(Content); _ = new BipsPathGame(Content); });
         ArtOpen = Try("Art", () => { _ = new ShapeBuilderGame(Content); _ = new PaintPotsGame(Content); _ = new MirrorMagicGame(Content); });
@@ -459,6 +459,7 @@ public partial class GameCoordinator : Node
             FeedMonsterGame.GameId when LettersReady && sound != null => new FeedMonsterScreen(new FeedMonsterGame(Content, Course!), sound),
             CountTapGame.GameId when NumbersOpen => new CountTapScreen(new CountTapGame(Content)),
             QuickLookGame.GameId when NumbersOpen => new QuickLookScreen(new QuickLookGame(Content)),
+            BlockTowersGame.GameId when NumbersOpen => new BlockTowersScreen(new BlockTowersGame(Content)),
             SoundButtonsGame.GameId when WordsOpen => new SoundButtonsScreen(new SoundButtonsGame(Content, Course ?? new PhonicsCourse(Content)),
                                                                               Course ?? new PhonicsCourse(Content)),
             WordBuilderGame.GameId when WordsOpen => new WordBuilderScreen(new WordBuilderGame(Content)),
@@ -531,7 +532,7 @@ public partial class GameCoordinator : Node
     public static readonly IReadOnlySet<string> DrawnSkins = new HashSet<string>
     {
         "paper_desk", "treasure_chests", "bubbles", "sparkles", "monster_blue",
-        "ducks", "dice", "buttons", "tiles", "picture_cards", "island", "studio", "pegs",
+        "ducks", "dice", "buttons", "tiles", "picture_cards", "island", "studio", "pegs", "blocks",
     };
 
     /// <summary>The child's level in a game (games.json "levels"), starting where their band does.</summary>

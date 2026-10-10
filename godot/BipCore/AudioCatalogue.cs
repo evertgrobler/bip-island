@@ -47,6 +47,21 @@ public static class VoiceLine
     public const string MirrorFinish = "vo_mirror_finish";
     public const string MirrorPegs = "vo_mirror_pegs";
     public const string MirrorLine = "vo_mirror_line";
+    // Block Towers (Numbers Island)
+    public const string BuildTower = "vo_build_tower";
+    public const string FindTower = "vo_find_tower";
+    public const string TallestTower = "vo_tallest_tower";
+    public const string ShortestTower = "vo_shortest_tower";
+    public const string HowManyAltogether = "vo_how_many_altogether";
+    public const string TakeAway = "vo_take_away";
+    public const string HowManyLeft = "vo_how_many_left";
+    public const string MakeTen = "vo_make_ten";
+    public const string Double = "vo_double";
+    public const string HowMany = "vo_how_many";
+    public const string OddOrEven = "vo_odd_or_even";
+    public const string Odd = "vo_odd";
+    public const string BuildNumber = "vo_build_number";
+    public const string WhatComesNext = "vo_what_comes_next";
 
     /// <summary>Every instruction clip, in the order above.</summary>
     public static readonly IReadOnlyList<string> All =
@@ -57,6 +72,8 @@ public static class VoiceLine
         BipCharging, DayDone,
         ArtIsland, FindTheShape, WhichShapeFits, ShapeSides, StraightSides, ShapeCurved, ShapeTurn, ShapeCountTurns,
         ShapeRegular, PaintMake, PaintPredict, Make, MirrorSame, MirrorFinish, MirrorPegs, MirrorLine,
+        BuildTower, FindTower, TallestTower, ShortestTower, HowManyAltogether, TakeAway, HowManyLeft, MakeTen,
+        Double, HowMany, OddOrEven, Odd, BuildNumber, WhatComesNext,
     ];
 }
 
