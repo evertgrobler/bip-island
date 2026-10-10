@@ -30,6 +30,7 @@ public partial class ParentLayer : CanvasLayer
     private Control? _panel;
     private LineEdit? _answer;
     private bool _changed;
+    private Control _ringCorner = null!;
     private bool _updateButtonForTest;
     private string? _installProblem;
     private Guid? _switchAfterClose;
@@ -51,10 +52,15 @@ public partial class ParentLayer : CanvasLayer
         var corner = new Control { MouseFilter = Control.MouseFilterEnum.Ignore };
         corner.SetAnchorsPreset(Control.LayoutPreset.FullRect);
         AddChild(corner);
+        // The ring has its own layer, kept above any card (Card moves it up): while practising from
+        // the setup guide, the hold starts with the guide's backdrop showing.
+        _ringCorner = new Control { MouseFilter = Control.MouseFilterEnum.Ignore };
+        _ringCorner.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        AddChild(_ringCorner);
         _ring = new HoldRing { Visible = false };
         _ring.SetAnchorsPreset(Control.LayoutPreset.TopRight);
         _ring.Position = new Vector2(-24 - HoldRing.Size, 24);
-        corner.AddChild(_ring);
+        _ringCorner.AddChild(_ring);
 
         _updateButton = MakeUpdateButton();
         corner.AddChild(_updateButton);
@@ -68,6 +74,12 @@ public partial class ParentLayer : CanvasLayer
     {
         if (@event is not InputEventKey { Keycode: Key.Escape } key) return;
         GetViewport().SetInputAsHandled();
+        // During the setup guide, Esc only does something on the step that practises it.
+        if (Guide != null && !IsOpen && !PractisingGate)
+        {
+            Flow.EscapeReleased();
+            return;
+        }
         if (IsOpen)
         {
             // A fresh press goes back to the game; the first press's repeats and release don't.
@@ -87,13 +99,19 @@ public partial class ParentLayer : CanvasLayer
         var progress = Flow.HoldProgress(now);
         _ring.Visible = progress > 0;
         _ring.Progress = (float)progress;
-        _updateButton.Visible = !IsOpen && progress <= 0 && (Updater.ReadyVersion != null || _updateButtonForTest);
+        _updateButton.Visible = !IsOpen && Guide == null && progress <= 0 && (Updater.ReadyVersion != null || _updateButtonForTest);
     }
 
     // Opening and closing
 
     private void OnOpened()
     {
+        // Practising from the setup guide: the game is already paused behind the guide.
+        if (Guide != null)
+        {
+            ShowQuestion();
+            return;
+        }
         _changed = false;
         // Bip's voice and every screen's timers pause with the tree and carry on afterwards.
         GetTree().Paused = true;
@@ -105,6 +123,12 @@ public partial class ParentLayer : CanvasLayer
     private void OnClosed()
     {
         ClearPanel();
+        // Back to the setup guide (after practising, or opened from Settings): still paused.
+        if (Guide != null)
+        {
+            ShowGuideStep();
+            return;
+        }
         GetTree().Paused = false;
         Coordinator.ResumeBreakClock();
         if (_switchAfterClose is Guid id)
@@ -145,6 +169,7 @@ public partial class ParentLayer : CanvasLayer
         var column = ParentUi.Column(16);
         card.AddChild(column);
         AddChild(backdrop);
+        MoveChild(_ringCorner, -1);
         _panel = backdrop;
         return column;
     }
@@ -187,7 +212,7 @@ public partial class ParentLayer : CanvasLayer
             };
             Centred(column, forgot);
         }
-        var buttons = ParentUi.Row(16, ParentUi.Button("Back to the game", Flow.Close), ParentUi.Button("Continue", Submit));
+        var buttons = ParentUi.Row(16, ParentUi.Button(PractisingGate ? "Back to setup" : "Back to the game", Flow.Close), ParentUi.Button("Continue", Submit));
         buttons.Alignment = BoxContainer.AlignmentMode.Center;
         column.AddChild(buttons);
         _answer.CallDeferred(Control.MethodName.GrabFocus);
@@ -227,6 +252,12 @@ public partial class ParentLayer : CanvasLayer
     private void ShowArea()
     {
         if (Flow.Phase != GatePhase.Unlocked) return;
+        if (PractisingGate)
+        {
+            Guide!.GateOpened();
+            Flow.Close();
+            return;
+        }
         var column = Card(940, 640);
         Area = new ParentArea(this) { SizeFlagsVertical = Control.SizeFlags.ExpandFill };
         column.AddChild(Area);
