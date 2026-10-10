@@ -674,27 +674,59 @@
       "id": "word_rocket",
       "island": "words",
       "name": "Word Rocket",
-      "ages": "7-8",
+      "ages": "4-8",
       "skills": [
+        "snd_g1",
+        "snd_g2",
+        "snd_g3",
+        "snd_g4",
+        "snd_g5",
+        "spell_cvc",
+        "spell_digraph",
         "spell_typed",
-        "tricky_s2",
-        "endings",
-        "homophones"
+        "tricky_s2"
       ],
       "objectives": [
-        "1Rw.04",
-        "1Ww.04",
+        "1Rw.01",
+        "1Ww.01",
+        "1Ww.02",
+        "1Ww.05",
         "1Ww.06",
         "2Rw.04",
-        "2Rw.07",
-        "2Ww.05",
         "2Ww.08",
-        "2Ww.09",
-        "3Rw.01",
-        "3Ww.04"
+        "2Ww.09"
       ],
-      "content": "words/words.json + words/tricky_words.json + words/homophones.json",
-      "buildPhase": 4
+      "content": "phonics/graphemes.json + words/words.json + words/tricky_words.json",
+      "buildPhase": 4,
+      "levels": [
+        {
+          "modes": [
+            "letter"
+          ],
+          "note": "Bip says a letter sound; press that key"
+        },
+        {
+          "band": "stage1",
+          "modes": [
+            "cvc"
+          ],
+          "note": "Three-letter words: sat, dog"
+        },
+        {
+          "band": "stage2",
+          "modes": [
+            "longer"
+          ],
+          "note": "Longer words with digraphs and blends: chip, frog"
+        },
+        {
+          "band": "stage3",
+          "modes": [
+            "tricky"
+          ],
+          "note": "Stage 2 tricky words: door, because"
+        }
+      ]
     },
     {
       "id": "pattern_party",

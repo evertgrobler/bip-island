@@ -186,6 +186,7 @@ for s_ in skills_doc["skills"]:
     if s_["island"] not in ISLANDS: err(f"skill {s_['id']}: unknown island {s_['island']}")
 GAME_MODES = {"shape_builder": {"find", "fill", "sides", "turn", "count", "regular"},
               "paint_pots": {"make", "predict"}, "mirror_magic": {"same", "finish", "pegs", "line"},
+              "word_rocket": {"letter", "cvc", "longer", "tricky"},
               "block_towers": {"build", "which", "join", "takeaway", "maketen", "doubles", "oddeven", "tensones", "pattern"}}
 SHAPES = {sh["id"]: sh for sh in shapes_doc["shapes"]}
 COLOURS = {c["id"]: c for c in paints_doc["colours"]}
@@ -262,9 +263,10 @@ for gm in games:
     modes = GAME_MODES.get(gm["id"])
     for i, lv in enumerate(gm.get("levels", [])):
         where = f"game {gm['id']} level {i + 1}"
-        if ("modes" in lv) != (modes is not None): err(f"{where}: modes are only for games that mix kinds of question"); continue
+        if ("modes" in lv) != (modes is not None): err(f"{where}: modes are only for {sorted(GAME_MODES)}"); continue
         if modes is None: continue
         if not lv["modes"] or not set(lv["modes"]) <= modes: err(f"{where}: modes must be some of {sorted(modes)}")
+        if gm["id"] == "word_rocket" and len(lv["modes"]) != 1: err(f"{where}: a Word Rocket level asks one kind of question")
         if gm["id"] == "shape_builder":
             shs = lv.get("shapes", [])
             if any(x not in SHAPES for x in shs): err(f"{where}: unknown shape")

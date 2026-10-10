@@ -62,6 +62,7 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | Sound Detective | 5–8 | 1Rw.01, 1Rw.02, 1Rw.03, 1Rw.05, 1Ww.02 |
 | Count & Tap | 4–5 | 1Nc.01, 1Ni.01, 1Np.01 |
 | Quick Look | 4–6 | 1Nc.02, 1Nc.03, 2Nc.02 |
+| Block Towers | 4–8 | 1Nc.01, 1Ni.01–06, 1Np.02, 1Np.03, 1Nc.05, 2Nc.05, 2Np.01, 2Np.02, 2Nc.06, 3Nc.05, 3Nc.06 |
 | Feed the Monster: Numbers | 4–6 | 1Nc.01, 1Ni.01, 1Ni.02, 1Ni.03, 1Ni.05, 1Np.01, 3Nc.04 |
 | Number Train | 5–7 | 1Nc.04, 1Nc.05, 1Np.03, 1Np.04, 2Nc.01, 2Nc.04, 2Nc.05, 2Nc.06, 2Ni.01, 2Ni.07, 2Np.01–04, 3Nc.05 |
 | More or Less | 4–7 | 1Ni.02, 1Ni.03, 1Ni.05, 1Np.03, 1Ss.03, 2Ni.02, 2Ni.04 |
@@ -73,7 +74,7 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | Rhyme Time | 4–7 | 1Ww.03, 2Ww.03 |
 | Tricky Word Memory | 6–8 | 1Rw.07, 1Ww.06, 2Rw.04, 2Rw.07, 2Ww.09, 3Rw.01, 3Rw.02 |
 | Silly Sentences | 6–8 | 1Rw.05, 1Rw.07 |
-| Word Rocket | 7–8 | 1Rw.04, 1Ww.04, 1Ww.06, 2Rw.04, 2Rw.07, 2Ww.05, 2Ww.08, 2Ww.09, 3Rw.01, 3Ww.04 |
+| Word Rocket | 4–8 | 1Rw.01, 1Ww.01, 1Ww.02, 1Ww.05, 1Ww.06, 2Rw.04, 2Ww.08, 2Ww.09 |
 | Pattern Party | 4–5 | 1Nc.06, 2Sp.01, 3Nc.06 |
 | Morning Order | 4–5 | 1CT.01, 1CT.05, 1CT.06 |
 | Bip's Path | 4–6 | 1CT.03, 1CT.04, 1Gp.01, 1P.02, 1P.03, 1P.05, 2CT.05, 2CT.06, 2Gp.01, 2P.08 |
@@ -111,8 +112,8 @@ All game content is data. Games never hard-code words, numbers or levels. The ga
 | `words/words.json` | 221 decodable words (158 with pictures) with grapheme splits, phonics group, first sound and rhyme family | Letters and Words islands |
 | `words/tricky_words.json` | Stage 1 and Stage 2 common exception words | Tricky Word Memory, Silly Sentences, Word Rocket |
 | `words/sentences.json` | 16 silly sentences, each fully decodable at its group, with a right and a wrong picture brief | Silly Sentences |
-| `words/endings.json` | Plurals (-s, -es) and verb endings (-s, -ed, -ing) with no change to the root | Word Builder, Word Rocket |
-| `words/homophones.json` | 8 homophone sets with fill-the-gap sentences | Word Rocket (stage 3) |
+| `words/endings.json` | Plurals (-s, -es) and verb endings (-s, -ed, -ing) with no change to the root | Word Builder |
+| `words/homophones.json` | 8 homophone sets with fill-the-gap sentences | Not used yet (planned for a later game) |
 | `words/contractions.json` | 10 contraction pairs (do not / don't) | Tricky Word Memory (stage 3) |
 | `numbers/numbers.json` | Ranges per band, counting objects, rand coins and notes, shop items | Numbers island |
 | `coding/sequences.json` | 8 picture-card sequences for Morning Order | Coding island |

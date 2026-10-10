@@ -34,12 +34,13 @@ Seven games that move from hearing a sound, to spotting it, to writing it.
 
 ## Numbers
 
-Seven games that start with counting real things and end with simple sums and money.
+Eight games that start with counting real things and end with simple sums and money.
 
 | Game | How it plays | Skill | Ages | Skins |
 | --- | --- | --- | --- | --- |
 | Count & Tap | Tap each animal as the narrator counts aloud | Counting to 10, then 20 | 4–5 | Ducks, sheep, ladybirds |
 | Quick Look | Dots or objects flash for 2 seconds: how many? | Seeing amounts without counting | 4–6 | Dice, dominoes, ten-frames |
+| Block Towers | Numbers as towers of cubes: build them, find the tallest, join two, take some away, make 10, odd or even, tens and ones, what comes next | Counting, comparing, adding and taking away within 20, bonds, doubles, place value | 4–8 | Building blocks (cubes in the child's badge colour) |
 | Feed the Monster: Numbers | Give the monster exactly the number of apples it asks for | Counting out a set | 4–6 | Shares the monsters from Letters |
 | Number Train | Put carriages in order, or find the missing number | Order and number lines | 5–7 | Train, caterpillar, washing line |
 | More or Less | Which basket has more? Then: how many more? | Comparing | 4–7 | Baskets, nests, jars |
@@ -58,7 +59,7 @@ Seven games that turn known sounds into words, then words into sentences.
 | Rhyme Time | Which one rhymes with cat: hat, dog or sun? | Rhyming | 4–7 | Frogs on lily pads, birds on a wire |
 | Tricky Word Memory | Flip cards to pair words that don't sound out (the, said, was) | Sight words | 6–8 | Cards, shells, cupcakes |
 | Silly Sentences | Read a short sentence and pick the matching (silly) picture | Reading for meaning | 6–8 | New sentences every round |
-| Word Rocket | Hear a word, type it on the keyboard to launch the rocket | Typing and spelling | 7–8 | Rocket, hot-air balloon, submarine |
+| Word Rocket | Hear a sound or word, type it on the keyboard to launch the rocket. Levels: find the letter (a sound, one key), three-letter words, longer words with digraphs and blends, tricky words | Typing and spelling | 4–8 | Rocket, hot-air balloon, submarine |
 
 ## Coding
 
@@ -150,7 +151,7 @@ The plug-in template and Bip's planner come first, so every later game is quick 
 | 2a. Core of each island | Letter Trace, Feed the Monster, Count & Tap, Quick Look, Sound Buttons, Word Builder, Morning Order, Bip's Path | Bip's recommendations, play-time breaks, sticker book, mystery box |
 | 2b. Second wave | Number Train, More or Less, Missing Letter, Rhyme Time, Pattern Party, Fix-It | Skins (3 per game), golden rounds |
 | 3. Polish | Letter Fishing, Sound Detective, Ten-Frame Garden, Tricky Word Memory, Silly Sentences, Repeat Robot, Bip's Dance Party | Island grows, creature collection, decorations |
-| 4. Older kids | Corner Shop, Word Rocket, Puddle Rules | Special days |
+| 4. Older kids | Corner Shop, Word Rocket (built 4 Oct 2026, for ages 4–8, all three skins), Puddle Rules | Special days |
 | Ongoing | A new game, skin or word list with each update | “New!” flag on the map |
 
 ## Decisions

@@ -166,7 +166,7 @@ public partial class LettersIslandScreen : BaseScreen
 
 /// <summary>
 /// Numbers, Words and Coding Islands (Swift: NumbersIslandScene, WordsIslandScene, CodingIslandScene):
-/// the same layout with a row of game buttons (three on Numbers, two elsewhere). Bip starts the left game.
+/// the same layout with a row of game buttons (three on Numbers and Words, two on Coding). Bip starts the left game.
 /// </summary>
 public partial class GameIslandScreen : BaseScreen
 {
@@ -200,24 +200,22 @@ public partial class GameIslandScreen : BaseScreen
         inner.ZIndex = -49;
         Stage.AddChild(inner);
 
-        Node2D[] buttons = _island switch
+        Node2D[] games = _island switch
         {
             Island.Numbers => [CountButton(), BlocksButton(), QuickButton()],
-            Island.Words => [SoundButtonsButton(), BuilderButton()],
+            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton()],
             _ => [OrderButton(), PathButton()],
         };
-        _leftGame = GameFor(Buttons.TapName(buttons[0])!);
-        // Two games sit either side; three spread across the island.
-        var spacing = buttons.Length == 3 ? 420.0 : 700.0;
-        for (var i = 0; i < buttons.Length; i++)
+        _leftGame = GameFor(Buttons.TapName(games[0])!);
+        var spacing = games.Length > 2 ? 480.0 : 700.0;
+        for (var i = 0; i < games.Length; i++)
         {
-            var button = buttons[i];
-            button.Position = P((i - (buttons.Length - 1) / 2.0) * spacing, buttons.Length == 3 ? 100 : 80);
-            button.ZIndex = 5;
-            Stage.AddChild(button);
-            _keyNodes.Add(button);
+            games[i].Position = P((i - (games.Length - 1) / 2.0) * spacing, 80);
+            games[i].ZIndex = 5;
+            Stage.AddChild(games[i]);
+            _keyNodes.Add(games[i]);
         }
-        Buttons.Pulse(buttons[0]);
+        Buttons.Pulse(games[0]);
 
         AddHomeButton();
         AddBip(P(0, -360), 0.85f);
@@ -282,6 +280,23 @@ public partial class GameIslandScreen : BaseScreen
         return builder;
     }
 
+    /// <summary>Word Rocket: a little rocket standing ready, with a letter in its window.</summary>
+    private static Node2D RocketButton()
+    {
+        var rocket = Buttons.Tappable(new Node2D(), "rocket");
+        rocket.AddChild(Pen(Ellipse(Vector2.Zero, 130, 130), 830, fill: Palette.Card, lineWidth: 6));
+        foreach (var (i, side) in Indexed(-1.0, 1.0))
+            rocket.AddChild(Pen(Polygon(P(side * 30, -40), P(side * 78, -92), P(side * 78, -40), P(side * 30, 10)), (ulong)(831 + i), fill: Palette.Red, lineWidth: 4));
+        rocket.AddChild(Pen(Polygon(P(-22, -70), P(0, -112), P(22, -70)), 833, fill: Palette.Orange, lineWidth: 4));
+        rocket.AddChild(Pen(Polygon(P(-44, 40), P(0, 112), P(44, 40)), 834, fill: Palette.Red, lineWidth: 5));
+        rocket.AddChild(Pen(RoundRect(R(-44, -76, 88, 122), 30), 835, fill: Palette.White, lineWidth: 5));
+        rocket.AddChild(Pen(Ellipse(P(0, 4), 30, 30), 836, fill: Palette.Ice, lineWidth: 4));
+        var letter = Sketch.Letter("a", 46, shadow: Palette.Sun);
+        letter.Position = P(0, 6);
+        rocket.AddChild(letter);
+        return rocket;
+    }
+
     private static Node2D OrderButton()
     {
         var order = Buttons.Tappable(new Node2D(), "order");
@@ -317,6 +332,7 @@ public partial class GameIslandScreen : BaseScreen
         "blocks" => BlockTowersGame.GameId,
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
+        "rocket" => WordRocketGame.GameId,
         "order" => MorningOrderGame.GameId,
         _ => BipsPathGame.GameId,
     };
