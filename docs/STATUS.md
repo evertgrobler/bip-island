@@ -374,3 +374,5 @@
   practise again wins no sticker for finishing; the mystery box's stars give their sticker on the map;
   the end card shows every new sticker (smaller, in rows, when an old save catches up), and stickers
   won before Home wait for the next card.
+- **11 Oct:** Download page's "Play-time breaks" card says each child has their own play time and break,
+  so a sibling can play while one rests (owner request; matches the 3 Oct per-child breaks decision).
