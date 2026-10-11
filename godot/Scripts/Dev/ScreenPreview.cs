@@ -87,6 +87,7 @@ public partial class ScreenPreview : Node
             BipIsland.Games.WordRocketScreen.PreviewSkin = Skin.Length > 0 ? Skin : null;
             BipIsland.Games.WordRocketScreen.PreviewLetters = Typed;
         }
+        if (Screen == BipsBalanceGame.GameId && Level >= 0) game.Progress.GameLevels[BipsBalanceGame.GameId] = new SkillMastery(Level);
         // A game opens the way an island opens it, with its first question straight away.
         BipIsland.Games.GameScreen.StartDelay = 0;
         if (game.StartGame(Screen)) return;

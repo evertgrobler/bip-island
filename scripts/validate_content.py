@@ -177,6 +177,22 @@ for gm in games:
     check_objs(f"game {gm['id']}", gm["objectives"])
 
 
+# --- Bip's Balance story sums: known animals, recorded clips, both numbers and the animals said
+script_clips = set()
+with open(ROOT.parent / "audio" / "script.csv", encoding="utf-8") as f:
+    for row in csv.DictReader(f): script_clips.add(row["file"].rsplit(".", 1)[0])
+for st in load("numbers/numbers.json").get("storySums", []):
+    where = f"story sum {st['id']}"
+    if st["op"] not in ("plus", "minus"): err(f"{where}: op must be plus or minus")
+    for slot in ("{a}", "{b}", "{things}"):
+        if st["clips"].count(slot) != 1: err(f"{where}: says {slot} {st['clips'].count(slot)} times (once needed)")
+    for clip in st["clips"]:
+        if not clip.startswith("{") and clip not in script_clips: err(f"{where}: clip {clip} is not in audio/script.csv")
+    known = {o["id"] for o in load("numbers/numbers.json")["countingObjects"]}
+    for thing in st["things"]:
+        if thing not in known: err(f"{where}: unknown counting object {thing}")
+    if not st["things"]: err(f"{where}: needs at least one counting object")
+
 # --- Art Island: shapes, paints and mirror pictures
 import math
 ISLANDS = {"letters", "numbers", "words", "coding", "art"}
@@ -187,7 +203,8 @@ for s_ in skills_doc["skills"]:
 GAME_MODES = {"shape_builder": {"find", "fill", "sides", "turn", "count", "regular"},
               "paint_pots": {"make", "predict"}, "mirror_magic": {"same", "finish", "pegs", "line"},
               "word_rocket": {"letter", "cvc", "longer", "tricky"},
-              "block_towers": {"build", "which", "join", "takeaway", "maketen", "doubles", "oddeven", "tensones", "pattern"}}
+              "block_towers": {"build", "which", "join", "takeaway", "maketen", "doubles", "oddeven", "tensones", "pattern"},
+              "bips_balance": {"add", "takeaway", "past10", "missing", "factfamily"}}
 SHAPES = {sh["id"]: sh for sh in shapes_doc["shapes"]}
 COLOURS = {c["id"]: c for c in paints_doc["colours"]}
 POTS = {pt["colour"]: pt for pt in paints_doc["pots"]}
@@ -292,6 +309,10 @@ for gm in games:
             if "tensones" in lv["modes"] and up < 20: err(f"{where}: tens and ones needs numbers past 20")
             if set(lv["modes"]) - {"tensones"} and up > 20: err(f"{where}: towers stop at 20 (only tens and ones go higher)")
             if "pattern" in lv["modes"] and up < 4: err(f"{where}: patterns need towers up to at least 4")
+        elif gm["id"] == "bips_balance":
+            up = lv.get("countTo", 0)
+            if not 5 <= up <= 20: err(f"{where}: countTo must be 5 to 20")
+            if "past10" in lv["modes"] and up < 12: err(f"{where}: going past 10 needs numbers up to at least 12")
         elif gm["id"] == "mirror_magic":
             if lv["modes"] != ["line"] and lv.get("mirror", "vertical") not in ("vertical", "horizontal"): err(f"{where}: mirror is vertical or horizontal")
             if "finish" in lv["modes"] and sum(p["mirror"] == lv.get("mirror", "vertical") for p in mirror_doc["pictures"]) < 3:

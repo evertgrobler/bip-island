@@ -63,6 +63,19 @@ public static class VoiceLine
     public const string Odd = "vo_odd";
     public const string BuildNumber = "vo_build_number";
     public const string WhatComesNext = "vo_what_comes_next";
+    // Bip's Balance (Numbers Island)
+    public const string Balance = "vo_balance";
+    public const string Plus = "vo_plus";
+    public const string EqualsWord = "vo_equals";
+    public const string WhatNumber = "vo_what_number";
+    public const string WhichNumber = "vo_which_number";
+    public const string BalanceHelps = "vo_balance_helps";
+    public const string CountOnTogether = "vo_count_on_together";
+    public const string CountBackTogether = "vo_count_back_together";
+    public const string StoryThereAre = "vo_story_there_are";
+    public const string StoryComeAlong = "vo_story_come_along";
+    public const string StoryGoAway = "vo_story_go_away";
+    public const string StoryHowManyNow = "vo_story_how_many_now";
 
     /// <summary>Every instruction clip, in the order above.</summary>
     public static readonly IReadOnlyList<string> All =
@@ -75,6 +88,8 @@ public static class VoiceLine
         ShapeRegular, PaintMake, PaintPredict, Make, MirrorSame, MirrorFinish, MirrorPegs, MirrorLine,
         BuildTower, FindTower, TallestTower, ShortestTower, HowManyAltogether, TakeAway, HowManyLeft, MakeTen,
         Double, HowMany, OddOrEven, Odd, BuildNumber, WhatComesNext,
+        Balance, Plus, EqualsWord, WhatNumber, WhichNumber, BalanceHelps, CountOnTogether, CountBackTogether,
+        StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow,
     ];
 }
 
