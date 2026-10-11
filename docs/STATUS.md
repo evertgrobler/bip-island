@@ -9,8 +9,8 @@
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** 16 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
-  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
+- **Games:** 17 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
   game, 8-question visits, star celebration.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
@@ -383,3 +383,19 @@
   framework PDF), skills, content file and 40 voice lines in `docs/GAMES.md` and `docs/CURRICULUM.md`
   ("Maths plan"). Ten-Frame Garden's third skin is now a taxi rank (the word flagged in the brief is gone). The owner left the choice to
   Claude: **Bip's Balance first** (levels 1–5).
+- **10 Oct, evening:** Bip's Balance on Numbers Island, the first game from the maths plan (PR #44; the owner
+  left the choice of first game to Claude). A see-saw: the sum on the left card, its answer on the right, "="
+  over the stand, one number a box with "?". Tap one of three number cards: the right one levels the see-saw;
+  a wrong one shows in the box in red and tips the see-saw the way it really would, then comes back out. Five
+  levels from games.json "modes": add (to 10, cubes), takeaway (to 10, cubes crossed out), past10 (within 20),
+  factfamily (3 + 5 = 8 on a sign, then 8 − 5 = ?), missing (up to 10: 7 + ? = 10, ? − 3 = 5). About 1 add or take-away
+  round in 4 is a story sum ("There are 5 ducks. 3 more come along. How many are there now?") from the new
+  numbers.json `storySums` (validator checks them). Two misses: the right card wiggles and Bip counts the short way
+  (on from the bigger number, back, or between the numbers shown; never the missing number alone), with cubes;
+  a fact family points back to its sign. Uses Block Towers' cubes and "take away" line. Game type `BipsBalanceGame`, tests `BipsBalanceTests` (1,000 rounds a level, exactly one
+  card balances), screen `BipsBalanceScreen`, previews `Scenes/Games/bips_balance*.tscn`. 12 new narrator lines
+  recorded with the ElevenLabs connector (about 230 credits; one "unusual activity" refusal, fine on retry).
+  Review fixes (11 Oct): hints count the short way (2 + 18 counts 18, 19, 20) and never give a missing number
+  away; missing numbers are at most 10; fact families record `add_sub_20` (they stay within 20); missing numbers
+  moved to the last level (stage 3, like `missing_number`), and the validator checks each level's band against
+  its skill; only the drawn see-saw skin is listed; `BlockDrawing.ChildColour` shared with Block Towers.

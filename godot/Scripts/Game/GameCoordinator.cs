@@ -112,7 +112,7 @@ public partial class GameCoordinator : Node
             _ = new LetterTraceGame(Content, Course);
             _monster = new FeedMonsterGame(Content, Course);
         });
-        NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); _ = new BlockTowersGame(Content); });
+        NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); _ = new BlockTowersGame(Content); _ = new BipsBalanceGame(Content); });
         WordsOpen = Try("Words", () =>
         {
             var course = new PhonicsCourse(Content);
@@ -477,6 +477,7 @@ public partial class GameCoordinator : Node
             CountTapGame.GameId when NumbersOpen => new CountTapScreen(new CountTapGame(Content)),
             QuickLookGame.GameId when NumbersOpen => new QuickLookScreen(new QuickLookGame(Content)),
             BlockTowersGame.GameId when NumbersOpen => new BlockTowersScreen(new BlockTowersGame(Content)),
+            BipsBalanceGame.GameId when NumbersOpen => new BipsBalanceScreen(new BipsBalanceGame(Content)),
             SoundButtonsGame.GameId when WordsOpen => new SoundButtonsScreen(new SoundButtonsGame(Content, Course ?? new PhonicsCourse(Content)),
                                                                               Course ?? new PhonicsCourse(Content)),
             WordBuilderGame.GameId when WordsOpen => new WordBuilderScreen(new WordBuilderGame(Content)),
@@ -559,7 +560,7 @@ public partial class GameCoordinator : Node
     public static readonly IReadOnlySet<string> DrawnSkins = new HashSet<string>
     {
         "paper_desk", "treasure_chests", "bubbles", "sparkles", "monster_blue",
-        "ducks", "dice", "buttons", "tiles", "picture_cards", "island", "studio", "pegs", "blocks",
+        "ducks", "dice", "buttons", "tiles", "picture_cards", "island", "studio", "pegs", "blocks", "seesaw",
         "rocket", "balloon", "submarine",
     };
 

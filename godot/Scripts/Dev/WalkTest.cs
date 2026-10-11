@@ -433,6 +433,26 @@ public static class WalkTest
             }
             else Check("Block Towers starts with building at the first level", false, Screen() is BlockTowersScreen t ? $"{t.Round?.Mode}" : "no screen");
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Block Towers goes back to numbers island");
+
+            // Bip's Balance: a wrong card tips the see-saw and is taken back out; the right one levels it.
+            if (await Tap("balance")) await Expect<BipsBalanceScreen>("Bip's Balance opens from the island");
+            Check("Bip's Balance shows a sum and three cards", await WaitFor(() => Screen() is BipsBalanceScreen { RightIndex: >= 0, InputLocked: false }, 3));
+            if (Screen() is BipsBalanceScreen balance && balance.Round is { } sum)
+            {
+                var stars = game.Progress.Stars;
+                await Tap($"choice:{(balance.RightIndex + 1) % 3}");
+                Check("a wrong card stays on the same sum, with no star", balance.Round == sum && !balance.InputLocked && game.Progress.Stars == stars);
+                await Wait(0.8);
+                await Tap($"choice:{balance.RightIndex}");
+                Check("the right card levels the see-saw", await WaitFor(() => Math.Abs(balance.Tilt) < 0.01f, 3), $"tilt {balance.Tilt}");
+                Check("right after a miss: no star, but the answer still counts",
+                      await WaitFor(() => game.Progress.Skill("add_sub_20").TotalAttempts > 0, 6) && game.Progress.Stars == stars);
+                Check("...and the next sum comes", await WaitFor(() => balance.Round != sum && balance is { RightIndex: >= 0, InputLocked: false }, 10));
+                stars = game.Progress.Stars;
+                await Tap($"choice:{balance.RightIndex}");
+                Check("the right card first time earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6), $"stars {stars} → {game.Progress.Stars}");
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Balance goes back to numbers island");
             if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
         }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.

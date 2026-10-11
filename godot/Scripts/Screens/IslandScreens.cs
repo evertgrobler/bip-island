@@ -166,7 +166,7 @@ public partial class LettersIslandScreen : BaseScreen
 
 /// <summary>
 /// Numbers, Words and Coding Islands (Swift: NumbersIslandScene, WordsIslandScene, CodingIslandScene):
-/// the same layout with a row of game buttons (three on Numbers and Words, two on Coding). Bip starts the left game.
+/// the same layout with a row of game buttons (four on Numbers, three on Words, two on Coding). Bip starts the left game.
 /// </summary>
 public partial class GameIslandScreen : BaseScreen
 {
@@ -202,12 +202,12 @@ public partial class GameIslandScreen : BaseScreen
 
         Node2D[] games = _island switch
         {
-            Island.Numbers => [CountButton(), BlocksButton(), QuickButton()],
+            Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton()],
             Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton()],
             _ => [OrderButton(), PathButton()],
         };
         _leftGame = GameFor(Buttons.TapName(games[0])!);
-        var spacing = games.Length > 2 ? 480.0 : 700.0;
+        var spacing = games.Length switch { > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
         for (var i = 0; i < games.Length; i++)
         {
             games[i].Position = P((i - (games.Length - 1) / 2.0) * spacing, 80);
@@ -250,6 +250,25 @@ public partial class GameIslandScreen : BaseScreen
             blocks.AddChild(tower);
         }
         return blocks;
+    }
+
+    /// <summary>Bip's Balance: a little see-saw, level, with a cube on each end.</summary>
+    private static Node2D BalanceButton()
+    {
+        var balance = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 160, 150), 840, fill: Palette.Card, lineWidth: 6)), "balance");
+        balance.AddChild(Pen(Polygon(P(-34, -70), P(34, -70), P(0, -10)), 841, fill: Palette.Orange, lineWidth: 5));
+        balance.AddChild(new BlockPatch(BlockDrawing.RoundedBox(-120, -6, 240, 22, 8), Palette.LightBrown));
+        balance.AddChild(Pen(RoundRect(R(-120, -16, 240, 22), 8), 842, lineWidth: 5));
+        foreach (var (i, x) in Indexed(-90.0, 90.0))
+        {
+            var cube = BlockDrawing.Cube(i == 0 ? Palette.Teal : Palette.Purple, 44, (ulong)(843 + i * 3));
+            cube.Position = P(x, 28);
+            balance.AddChild(cube);
+        }
+        var equals = Sketch.Letter("=", 64, shadow: Palette.Orange);
+        equals.Position = P(0, 50);
+        balance.AddChild(equals);
+        return balance;
     }
 
     private static Node2D SoundButtonsButton()
@@ -330,6 +349,7 @@ public partial class GameIslandScreen : BaseScreen
         "count" => CountTapGame.GameId,
         "quick" => QuickLookGame.GameId,
         "blocks" => BlockTowersGame.GameId,
+        "balance" => BipsBalanceGame.GameId,
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
         "rocket" => WordRocketGame.GameId,
