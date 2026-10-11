@@ -9,8 +9,8 @@
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** 15 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
-  Trace, Feed the Monster), Numbers (Count & Tap, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
+- **Games:** 16 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
   game, 8-question visits, star celebration.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
@@ -342,6 +342,18 @@
   Apple chip or Intel (universal build), 4 GB memory, ~500 MB free; Windows — 10/11 64-bit, OpenGL 3.3
   graphics (Compatibility renderer), 4 GB memory, ~500 MB free. Shared line: speakers or headphones,
   a mouse, a keyboard for grown-ups; internet only to download and update.
+- **10 Oct:** Block Towers on Numbers Island (owner request: a Numberblocks-style game, in our own style with no
+  characters). Numbers are towers of cubes in the colour of the child's animal badge. Eight levels from games.json
+  "modes": build (to 5), build and which (to 10; tallest, shortest), join (to 10), join and take away (within 20),
+  make 10 and doubles, odd or even (pairs), tens and ones (to 99; ten ones snap into a ten), growing patterns.
+  Everything is a tap: the pile adds a cube (counted aloud), the tower takes one off, the tick checks. Game type
+  `BlockTowersGame`, tests `BlockTowersTests`, screen `BlockTowersScreen`, drawing `Scripts/Drawing/BlockDrawing.cs`
+  (cube fills are plain polygons under the hand-drawn outline: a wobbly outline that small crosses itself and the
+  sketch pen drops its fill). 14 new narrator lines (ElevenLabs works again; some requests still fail with
+  "unusual activity", retry one at a time). Review fixes: the two-miss hint wiggles the pile when more cubes are
+  needed and the tower (or tens or ones) when some must come off; make ten lets the child overshoot; an empty tick
+  is ignored in every building round; "which" rounds don't repeat in a visit; pattern steps and the tens-and-ones
+  start are level fields in games.json ("steps", "from").
 - **10 Oct:** Rewards check (owner asked): stars, the visit card, the mystery box and the sticker book
   all worked, but stickers only came from mastery (right answers on two days), so a new child saw an
   empty book. Picture stickers added (`StickerBook.AwardStickers`): every 10 stars and every finished
