@@ -52,8 +52,76 @@ public static class WalkTest
             Check(step, Screen() is T, $"showing {Screen()?.GetType().Name ?? "nothing"}");
         }
 
+        // The first-time setup guide: a fresh save shows it over the game, a grown-up practises the way
+        // into the grown-up area, adds a child, changes play time and hands over to the map.
+        async Task WalkSetupGuide()
+        {
+            var layer = game.Parent;
+            void Esc(bool down) => Input.ParseInputEvent(new InputEventKey { Keycode = Key.Escape, PhysicalKeycode = Key.Escape, Pressed = down });
+            await Wait(0.3);
+            Check("a first run opens the setup guide, with the game paused behind it", layer.Guide is { Current: BipCore.SetupGuide.Step.Welcome } && tree.Paused);
+            layer.GuideNext();
+            Check("on a first run the practice step can't be skipped (the parent controls come after it)",
+                  layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanGoOn: false, CanSkipStep: false });
+            Esc(true);
+            await Wait(1.5);
+            Check("the hold ring shows above the guide while Esc is held", layer.RingShowsOverCard);
+            await Wait(1.9);
+            Check("holding Esc in the guide opens the real question", layer.Flow.Phase == GatePhase.Question);
+            Esc(false);
+            await Wait(0.2);
+            layer.Submit(layer.Flow.Challenge.Answer.ToString());
+            await Wait(0.2);
+            Check("the right answer comes back to the guide, not the parent area",
+                  layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, PractisedGate: true, CanGoOn: true } && layer.Area == null && !layer.IsOpen && tree.Paused);
+            // A hold started on the practice step and still going when Next is clicked doesn't open the gate.
+            Esc(true);
+            await Wait(0.5);
+            layer.GuideNext(); // Passcode
+            await Wait(3.2);
+            Check("a hold carried past the practice step doesn't open the gate", !layer.IsOpen && layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode);
+            Esc(false);
+            await Wait(0.2);
+            Check("the passcode step is the parent area's passcode form", layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode && layer.Area != null);
+            layer.GuideSkipStep(); // Children
+            Check("the first child added takes over \"Player 1\"", layer.Area != null && layer.Area.AddChild("Thabo", null)
+                  && game.Children is [{ Name: "Thabo", Age: null }], string.Join(", ", game.Children.Select(c => c.Name)));
+            layer.GuideNext(); // Play time
+            Check("the play-time step shows the settings", layer.Guide?.Current == BipCore.SetupGuide.Step.PlayTime && layer.Area != null);
+            layer.GuideNext(); // Tour
+            for (var i = 0; i < BipCore.SetupGuide.TourCards; i++) layer.GuideNext();
+            Check("after the tour comes All set", layer.Guide?.Current == BipCore.SetupGuide.Step.AllSet);
+            layer.GuideNext();
+            await Wait(0.8);
+            Check("handing over ends the guide and saves that it's done", layer.Guide == null && game.Store.SetupDone && !tree.Paused);
+            Check("with one child the game opens on the map", Screen() is MapScreen, $"showing {Screen()?.GetType().Name}");
+            game.Start();
+            await Wait(0.3);
+            Check("the guide doesn't open again by itself", layer.Guide == null);
+
+            // From Settings: the gate was passed, so practising can be skipped; leaving changes nothing.
+            var before = Screen();
+            layer.Flow.Open();
+            layer.Submit(layer.Flow.Challenge.Answer.ToString());
+            await Wait(0.2);
+            layer.ShowSetupGuide();
+            await Wait(0.2);
+            layer.GuideNext();
+            Check("from Settings the practice step can be skipped", layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanSkipStep: true } && tree.Paused);
+            // "Skip setup" mid-hold: the hold ends with the guide, so no gate pops up over the game.
+            Esc(true);
+            await Wait(0.5);
+            layer.FinishGuide();
+            await Wait(3.2);
+            Check("a hold running when the guide ends doesn't open the gate", !layer.IsOpen);
+            Esc(false);
+            await Wait(0.3);
+            Check("skipping the guide from Settings goes back to the same screen", layer.Guide == null && !tree.Paused && Screen() == before && before != null);
+        }
+
         game.EndBreakEarly(); // A fresh test save starts outside any break.
         game.Start();
+        await WalkSetupGuide();
         await Expect<MapScreen>("one child: the game opens on the map");
 
         if (await Tap("island:letters")) await Expect<LettersIslandScreen>("letters island opens");
@@ -344,26 +412,6 @@ public static class WalkTest
             }
             else Check("Block Towers starts with building at the first level", false, Screen() is BlockTowersScreen t ? $"{t.Round?.Mode}" : "no screen");
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Block Towers goes back to numbers island");
-
-            // Bip's Balance: a wrong card tips the see-saw and is taken back out; the right one levels it.
-            if (await Tap("balance")) await Expect<BipsBalanceScreen>("Bip's Balance opens from the island");
-            Check("Bip's Balance shows a sum and three cards", await WaitFor(() => Screen() is BipsBalanceScreen { RightIndex: >= 0, InputLocked: false }, 3));
-            if (Screen() is BipsBalanceScreen balance && balance.Round is { } sum)
-            {
-                var stars = game.Progress.Stars;
-                await Tap($"choice:{(balance.RightIndex + 1) % 3}");
-                Check("a wrong card stays on the same sum, with no star", balance.Round == sum && !balance.InputLocked && game.Progress.Stars == stars);
-                await Wait(0.8);
-                await Tap($"choice:{balance.RightIndex}");
-                Check("the right card levels the see-saw", await WaitFor(() => Math.Abs(balance.Tilt) < 0.01f, 3), $"tilt {balance.Tilt}");
-                Check("right after a miss: no star, but the answer still counts",
-                      await WaitFor(() => game.Progress.Skill("add_sub_20").TotalAttempts > 0, 6) && game.Progress.Stars == stars);
-                Check("...and the next sum comes", await WaitFor(() => balance.Round != sum && balance is { RightIndex: >= 0, InputLocked: false }, 10));
-                stars = game.Progress.Stars;
-                await Tap($"choice:{balance.RightIndex}");
-                Check("the right card first time earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6), $"stars {stars} → {game.Progress.Stars}");
-            }
-            if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Balance goes back to numbers island");
             if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
         }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.

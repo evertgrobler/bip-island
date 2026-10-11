@@ -112,7 +112,7 @@ public partial class GameCoordinator : Node
             _ = new LetterTraceGame(Content, Course);
             _monster = new FeedMonsterGame(Content, Course);
         });
-        NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); _ = new BlockTowersGame(Content); _ = new BipsBalanceGame(Content); });
+        NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); _ = new BlockTowersGame(Content); });
         WordsOpen = Try("Words", () =>
         {
             var course = new PhonicsCourse(Content);
@@ -162,7 +162,14 @@ public partial class GameCoordinator : Node
     {
         if (Children.Count > 1) ShowProfiles();
         else ShowMap();
+        // The first time on this computer, a grown-up is guided through setting up (over the screen, paused).
+        // Until it's finished or skipped, so a first run cut short gets it again. Nobody has passed the gate
+        // yet, so the parent controls in it wait until the gate has really been opened.
+        if (!Store.SetupDone && Parent.Guide == null) Parent.ShowSetupGuide(firstRun: true);
     }
+
+    /// <summary>The next map greets the child again (after the first-run setup guide).</summary>
+    public void ResetWelcome() => _hasWelcomed = false;
 
     // Children
 
@@ -466,7 +473,6 @@ public partial class GameCoordinator : Node
             CountTapGame.GameId when NumbersOpen => new CountTapScreen(new CountTapGame(Content)),
             QuickLookGame.GameId when NumbersOpen => new QuickLookScreen(new QuickLookGame(Content)),
             BlockTowersGame.GameId when NumbersOpen => new BlockTowersScreen(new BlockTowersGame(Content)),
-            BipsBalanceGame.GameId when NumbersOpen => new BipsBalanceScreen(new BipsBalanceGame(Content)),
             SoundButtonsGame.GameId when WordsOpen => new SoundButtonsScreen(new SoundButtonsGame(Content, Course ?? new PhonicsCourse(Content)),
                                                                               Course ?? new PhonicsCourse(Content)),
             WordBuilderGame.GameId when WordsOpen => new WordBuilderScreen(new WordBuilderGame(Content)),
@@ -541,7 +547,7 @@ public partial class GameCoordinator : Node
     public static readonly IReadOnlySet<string> DrawnSkins = new HashSet<string>
     {
         "paper_desk", "treasure_chests", "bubbles", "sparkles", "monster_blue",
-        "ducks", "dice", "buttons", "tiles", "picture_cards", "island", "studio", "pegs", "blocks", "seesaw",
+        "ducks", "dice", "buttons", "tiles", "picture_cards", "island", "studio", "pegs", "blocks",
         "rocket", "balloon", "submarine",
     };
 

@@ -195,6 +195,10 @@ public sealed record GameLevel
     public List<string>? Pots { get; init; }
     /// <summary>Mirror Magic: "vertical" (left and right match) or "horizontal" (top and bottom).</summary>
     public string? Mirror { get; init; }
+    /// <summary>Block Towers: the smallest number asked (tens and ones start past the teens' tens).</summary>
+    public int? From { get; init; }
+    /// <summary>Block Towers: the steps a growing pattern of towers can take.</summary>
+    public List<int>? Steps { get; init; }
     /// <summary>For people reading the file.</summary>
     public string? Note { get; init; }
 

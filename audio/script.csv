@@ -76,15 +76,3 @@ vo_odd_or_even.m4a,Is it odd or even?,Block Towers: the tower has split into pai
 vo_odd.m4a,odd,"The word ""odd"" on its own, as in odd and even. Clear, even tone.",odd
 vo_build_number.m4a,Build the number,"Followed straight away by a two-digit number (""thirty-four""). Rising, unfinished intonation.",Build the number
 vo_what_comes_next.m4a,Which tower comes next?,Block Towers: three towers growing by the same step.,Which tower comes next?
-vo_balance.m4a,Make both sides of the see-saw balance!,"Bip's Balance, said once as a visit starts. Bright and inviting.",Make it balance!
-vo_plus.m4a,plus,"Middle of ""four plus three"". Just the one word, even tone.",plus
-vo_equals.m4a,equals,"Middle of ""four plus three equals seven"". Just the one word, even tone.",equals
-vo_what_number.m4a,what number?,"Stands for the box in a sum: ""seven plus… what number?… equals ten"". Curious, gently rising.",what number?
-vo_which_number.m4a,Which number goes in the box?,"Bip's Balance, after the sum is said.",Which number goes in the box?
-vo_balance_helps.m4a,That one helps with this one.,"Bip's Balance fact families: after the finished sum (""three plus five equals eight""), before the new one. Warm, a little knowing.",That one helps with this one.
-vo_count_on_together.m4a,Let's count on together.,"Bip's Balance hint, followed by numbers counting up from the first number. Encouraging.",Let's count on together.
-vo_count_back_together.m4a,Let's count back together.,"Bip's Balance hint, followed by numbers counting down from the first number. Encouraging.",Let's count back together.
-vo_story_there_are.m4a,There are,"Start of a story sum, followed by a number and animals (""There are… five… ducks""). Storytelling tone, unfinished.",There are
-vo_story_come_along.m4a,more come along.,"Story sum, after a number: ""three… more come along.""",more come along.
-vo_story_go_away.m4a,go away.,"Story sum, after a number: ""three… go away.""",go away.
-vo_story_how_many_now.m4a,How many are there now?,"Ends a story sum. Curious, inviting.",How many are there now?

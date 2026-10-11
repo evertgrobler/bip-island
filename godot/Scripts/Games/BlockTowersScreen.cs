@@ -39,6 +39,8 @@ public partial class BlockTowersScreen : GameScreen
     private Node2D? _tensGroup;
     private Node2D? _onesGroup;
     private Node2D? _tick;
+    /// <summary>Make ten: the dotted outline up to ten (hidden once the tower goes past ten).</summary>
+    private Node2D? _ghost;
     private readonly Color _colour;
     private readonly Color _other;
 
@@ -85,7 +87,7 @@ public partial class BlockTowersScreen : GameScreen
         _choices.Clear();
         _extras.Clear();
         _keys.Clear();
-        _tower = _pile = _tensPile = _tensGroup = _onesGroup = _tick = null;
+        _tower = _pile = _tensPile = _tensGroup = _onesGroup = _tick = _ghost = null;
         _built = _tens = _ones = _taken = 0;
         _joining = null;
     }
@@ -137,7 +139,7 @@ public partial class BlockTowersScreen : GameScreen
     {
         _extras.Add(Add(BlockDrawing.NumberCard(round.Mode == Mode.MakeTen ? BlockTowersGame.Ten : round.Target, Seed(1)), CardAt));
         if (round.Mode == Mode.MakeTen)
-            _extras.Add(Add(BlockDrawing.Ghost(round.A, BlockTowersGame.Ten, Size, Seed(2)), P(0, -230), 4));
+            _extras.Add(_ghost = Add(BlockDrawing.Ghost(round.A, BlockTowersGame.Ten, Size, Seed(2)), P(0, -230), 4));
         _pile = Add(Buttons.Tappable(BlockDrawing.Pile(_colour, Seed(3)), "pile"), PileAt, 10);
         _tick = Add(Buttons.Tappable(BlockDrawing.Tick(Seed(4)), "tick"), TickAt, 10);
         AddBoard(P(0, -230), 260);
@@ -153,6 +155,7 @@ public partial class BlockTowersScreen : GameScreen
         _tower?.QueueFree();
         var given = round.Mode == Mode.MakeTen ? round.A : 0;
         var cubes = Enumerable.Repeat(_other, given).Concat(Enumerable.Repeat(_colour, _built)).ToList();
+        if (_ghost != null) _ghost.Visible = cubes.Count <= BlockTowersGame.Ten;
         var tower = Buttons.Tappable(BlockDrawing.Tower(cubes, Size, Seed(10)), "tower");
         Hit.SetArea(tower, BlockDrawing.TowerArea(cubes.Count, Size, 160));
         _tower = Add(tower, P(0, -230), 6);
@@ -164,8 +167,11 @@ public partial class BlockTowersScreen : GameScreen
         }
     }
 
-    private int MostToAdd(BlockTowersGame.Round round) =>
-        round.Mode == Mode.MakeTen ? BlockTowersGame.Ten - round.A : round.MostCubes;
+    /// <summary>
+    /// How many cubes the pile gives. Make ten lets the child go past ten (up to ten more), so the
+    /// pile running out never gives the answer away.
+    /// </summary>
+    private static int MostToAdd(BlockTowersGame.Round round) => round.MostCubes;
 
     private void AddCube(BlockTowersGame.Round round)
     {
@@ -265,8 +271,10 @@ public partial class BlockTowersScreen : GameScreen
         }
         RedrawTensOnes();
         InputLocked = true;
+        var round = _round;
         After(0.35, () =>
         {
+            if (_round != round || !IsInsideTree()) return; // the round (or the screen) has moved on
             _ones = 0;
             _tens += 1;
             Sfx.Play(BipSounds.Effect.Whirr);
@@ -282,9 +290,21 @@ public partial class BlockTowersScreen : GameScreen
     {
         Buttons.Press(tick);
         var value = BuiltValue(round);
-        if (value == 0 && round.Mode != Mode.MakeTen) return; // nothing built yet: nothing to check
+        if (value == 0) return; // nothing built (or added) yet: nothing to check, in every building round
         var correct = _game.IsCorrect(value.ToString(), round);
-        AnswerChoice(_attempt, correct, tick, _pile, _game.SkillId(round), SayWhenRight(round), _session, AskQuestion);
+        AnswerChoice(_attempt, correct, tick, HintFor(round, value), _game.SkillId(round), SayWhenRight(round), _session, AskQuestion);
+    }
+
+    /// <summary>
+    /// What wiggles after two misses in a building round: the pile when more is needed, the tower
+    /// (or the tens or ones) when something has to come off.
+    /// </summary>
+    private Node2D? HintFor(BlockTowersGame.Round round, int value)
+    {
+        if (round.Mode != Mode.TensOnes) return value < round.Target ? _pile : _tower;
+        var (tens, ones) = (round.Target / 10, round.Target % 10);
+        if (_tens != tens) return _tens < tens ? _tensPile : _tensGroup;
+        return _ones < ones ? _pile : _onesGroup;
     }
 
     // MARK: - Rounds with choices

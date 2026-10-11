@@ -9,8 +9,8 @@
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** 17 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
-  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance), Words (Sound Buttons, Word Builder, Word Rocket),
+- **Games:** 16 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
   game, 8-question visits, star celebration.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
@@ -19,7 +19,9 @@
 - **Systems:** profiles (up to 4, "Who's playing?"), Bip's recommendations and nudge, wall-clock play
   breaks with Bip charging, sticker book, daily mystery box, keyboard play, big cursor, Bip's sounds.
 - **Parent side:** hold Esc 3 s → maths or passcode → parent area (Progress, Children, Settings: play
-  time, passcode, updates, quit). "Update ready" button installs only after the gate.
+  time, passcode, updates, quit, setup guide). "Update ready" button installs only after the gate. A
+  setup guide for grown-ups opens at launch until finished or skipped: practise the Esc hold for real
+  (required when it opens by itself), passcode, children, play time, a 3-card tour.
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
@@ -318,6 +320,21 @@
   `vo_word_rocket` ("Listen, then type what you hear on the keyboard.") plays silence until recorded:
   **waiting on the ElevenLabs upgrade.** Review fix: a letter question only asks sounds the child has
   met; with none met yet, the Word Rocket button opens Meet the Sound (as Sound Hunt does).
+- **4 Oct, midday:** First-time setup guide for grown-ups (owner request). Until a grown-up finishes
+  or skips it (`SaveStore.SetupDone`; older saves read false, so updating families see it once, and a
+  first run cut short gets it again) a guide opens over the paused game at launch: welcome; the child lock and practising the way in (hold Esc 3 s and answer, for real; it comes
+  back to the guide instead of opening the parent area); optional passcode; children; play time; a
+  3-card tour of what the child sees; all set, then "Hand over to your child". Steps are
+  `BipCore.SetupGuide` (tested); the cards are `ParentLayer.Setup.cs`, reusing the parent area's
+  children, passcode and play-time parts (`ParentArea.Part`). Settings has "Show the setup guide
+  again". Previews: `Scenes/Parent/setup_*.tscn`; the walk-through runs it first.
+  Review fixes: on a first run the practice step can't be skipped, so the passcode, children and
+  play-time steps come only after the gate is really opened (from Settings it can be skipped); the
+  hold ring draws above the card; the first child added replaces the untouched "Player 1"; finishing
+  from Settings returns to the same screen; a typed passcode is saved on Next. Second round: an Esc
+  hold left running from the practice step is released when the guide moves on. Third round (10 Oct):
+  the lock step says when the lock is off, Skip setup releases a hold, a typed passcode is kept on Back
+  and Skip setup too, and the Player 1 rule is `SaveStore.UntouchedFirstChild` (tested).
 - **4 Oct, evening:** Owner rule: South African time (SAST, UTC+2) everywhere. CLAUDE.md says so;
   `.claude/settings.json` sets `TZ=Africa/Johannesburg` for every session (cloud machines run on UTC);
   `check_all.sh`'s summary is stamped in SAST. The game itself already uses the computer's own clock.
@@ -333,16 +350,7 @@
   `BlockTowersGame`, tests `BlockTowersTests`, screen `BlockTowersScreen`, drawing `Scripts/Drawing/BlockDrawing.cs`
   (cube fills are plain polygons under the hand-drawn outline: a wobbly outline that small crosses itself and the
   sketch pen drops its fill). 14 new narrator lines (ElevenLabs works again; some requests still fail with
-  "unusual activity", retry one at a time).
-- **10 Oct, evening:** Bip's Balance on Numbers Island, the first game from the maths plan (PR #44; the owner
-  left the choice of first game to Claude). A see-saw: the sum on the left card, its answer on the right, "="
-  over the stand, one number a box with "?". Tap one of three number cards: the right one levels the see-saw;
-  a wrong one shows in the box in red and tips the see-saw the way it really would, then comes back out. Five
-  levels from games.json "modes": add (to 10, cubes), takeaway (to 10, cubes crossed out), past10 (within 20),
-  missing (7 + ? = 10, ? − 3 = 5), factfamily (3 + 5 = 8 on a sign, then 8 − 5 = ?). About 1 add or take-away
-  round in 4 is a story sum ("There are 5 ducks. 3 more come along. How many are there now?") from the new
-  numbers.json `storySums` (validator checks them). Two misses: the right card wiggles and Bip counts on or back
-  from the first number, with cubes. Built on the Block Towers branch (its cubes and "take away" line); PR base is
-  #43 until that merges. Game type `BipsBalanceGame`, tests `BipsBalanceTests` (1,000 rounds a level, exactly one
-  card balances), screen `BipsBalanceScreen`, previews `Scenes/Games/bips_balance*.tscn`. 12 new narrator lines
-  recorded with the ElevenLabs connector (about 230 credits; one "unusual activity" refusal, fine on retry).
+  "unusual activity", retry one at a time). Review fixes: the two-miss hint wiggles the pile when more cubes are
+  needed and the tower (or tens or ones) when some must come off; make ten lets the child overshoot; an empty tick
+  is ignored in every building round; "which" rounds don't repeat in a visit; pattern steps and the tens-and-ones
+  start are level fields in games.json ("steps", "from").
