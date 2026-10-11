@@ -181,17 +181,34 @@ for gm in games:
 script_clips = set()
 with open(ROOT.parent / "audio" / "script.csv", encoding="utf-8") as f:
     for row in csv.DictReader(f): script_clips.add(row["file"].rsplit(".", 1)[0])
-for st in load("numbers/numbers.json").get("storySums", []):
+numbers_json = load("numbers/numbers.json")
+known_things = {o["id"] for o in numbers_json["countingObjects"]}
+for st in numbers_json.get("storySums", []):
     where = f"story sum {st['id']}"
     if st["op"] not in ("plus", "minus"): err(f"{where}: op must be plus or minus")
     for slot in ("{a}", "{b}", "{things}"):
         if st["clips"].count(slot) != 1: err(f"{where}: says {slot} {st['clips'].count(slot)} times (once needed)")
     for clip in st["clips"]:
         if not clip.startswith("{") and clip not in script_clips: err(f"{where}: clip {clip} is not in audio/script.csv")
-    known = {o["id"] for o in load("numbers/numbers.json")["countingObjects"]}
     for thing in st["things"]:
-        if thing not in known: err(f"{where}: unknown counting object {thing}")
+        if thing not in known_things: err(f"{where}: unknown counting object {thing}")
     if not st["things"]: err(f"{where}: needs at least one counting object")
+
+# --- Bip's Balance: each level starts no earlier than the skill it records (a stage 3 skill isn't
+# offered to a stage 2 child as their first level)
+BALANCE_SKILL = {"add": "add_sub_20", "takeaway": "add_sub_20", "past10": "add_sub_20", "factfamily": "add_sub_20",
+                 "missing": "missing_number"}
+for gm in games:
+    if gm["id"] != "bips_balance": continue
+    band = 0
+    for i, lv in enumerate(gm.get("levels", [])):
+        band = BANDS.index(lv["band"]) if lv.get("band") in BANDS else band
+        for mode in lv.get("modes", []):
+            skill = SK.get(BALANCE_SKILL.get(mode, ""))
+            if skill is None: err(f"game bips_balance level {i + 1}: no skill for mode {mode}")
+            elif BANDS.index(skill["band"]) > band:
+                err(f"game bips_balance level {i + 1}: band {BANDS[band]} is before {skill['id']}'s band {skill['band']}")
+            elif skill["id"] not in gm["skills"]: err(f"game bips_balance: skill {skill['id']} is not in its skills list")
 
 # --- Art Island: shapes, paints and mirror pictures
 import math

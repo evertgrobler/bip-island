@@ -73,7 +73,7 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     public string Id => GameId;
     public GameEntry Entry { get; } = content.EntryForGame(GameId);
     public IReadOnlyList<GameSkin> Skins { get; } =
-        [new("seesaw", "See-saw at the park"), new("fruit_scale", "Fruit scale at the market"), new("kitchen_scale", "Kitchen scale")];
+        [new("seesaw", "See-saw at the park")];
 
     public static Mode ParseMode(string mode) => mode switch
     {
@@ -129,6 +129,17 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     /// <summary>Every sentence a kind of question can ask at this level, with the number that's the box.</summary>
     public static List<(Sentence Sentence, Slot Hidden)> Sentences(Mode mode, int upTo)
     {
+        lock (SentenceCache)
+        {
+            if (!SentenceCache.TryGetValue((mode, upTo), out var all)) SentenceCache[(mode, upTo)] = all = AllSentences(mode, upTo);
+            return all;
+        }
+    }
+
+    private static readonly Dictionary<(Mode, int), List<(Sentence, Slot)>> SentenceCache = [];
+
+    private static List<(Sentence Sentence, Slot Hidden)> AllSentences(Mode mode, int upTo)
+    {
         var adds = (from a in Enumerable.Range(1, upTo) from b in Enumerable.Range(1, upTo)
                     where a + b <= upTo select new Sentence(a, Op.Plus, b, a + b)).ToList();
         var takes = (from a in Enumerable.Range(2, Math.Max(0, upTo - 1)) from b in Enumerable.Range(1, a - 1)
@@ -141,8 +152,10 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
             Mode.Past10 => adds.Where(s => s.Left < 10 && s.Right < 10 && s.Result > 10)
                 .Concat(takes.Where(s => s.Left > 10 && s.Right < 10 && s.Result < 10))
                 .Select(s => (s, Slot.Result)).ToList(),
+            // The missing number is at most 10, so the hint's count stays short.
             Mode.Missing => adds.SelectMany(s => new[] { (s, Slot.Left), (s, Slot.Right) })
-                .Concat(takes.SelectMany(s => new[] { (s, Slot.Left), (s, Slot.Right) })).ToList(),
+                .Concat(takes.SelectMany(s => new[] { (s, Slot.Left), (s, Slot.Right) }))
+                .Where(o => o.Item1[o.Item2] <= MostMissing).ToList(),
             // Ask c − b, c − a or b + a after a + b = c (b + a only when it's a different sum). No 1s:
             // "1 + 18 = 19, so 18 + 1" teaches little.
             _ => adds.Where(s => s.Left >= 2 && s.Right >= 2).SelectMany(s => new[] { new Sentence(s.Result, Op.Minus, s.Right, s.Left), new Sentence(s.Result, Op.Minus, s.Left, s.Right) }
@@ -164,7 +177,7 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     public string SkillId(Round round) => round.Mode switch
     {
         Mode.Missing => "missing_number",
-        Mode.FactFamily => "add_sub_100",
+        // Fact families stay within 20: adding and taking away to 20 (they also show 2Ni.02).
         _ => "add_sub_20",
     };
 
@@ -197,16 +210,37 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     public static List<string> SayWhenRight(Round round) => Say(round.Sentence);
 
     /// <summary>
-    /// The spoken hint after two misses. When the box is the answer, Bip counts on (or back) from the
-    /// first number, one at a time: "Let's count on together. 8… 9, 10, 11, 12, 13." Otherwise he says
-    /// the whole sentence while the right card wiggles.
+    /// The spoken hint after two misses: Bip counts, one number at a time, along the short way, and
+    /// never says the missing number on its own. Adding counts on from the bigger number (2 + 18:
+    /// "18… 19, 20"); taking away counts back, or counts on from the number taken away when that is
+    /// shorter (20 − 18: "18… 19, 20"); a missing number counts between the two numbers shown
+    /// (7 + ? = 10: "7… 8, 9, 10"). A fact family points back to the finished sum on the sign.
     /// </summary>
     public static List<string> Hint(Round round)
     {
         var s = round.Sentence;
-        if (round.Hidden != Slot.Result) return Say(s);
-        var step = s.Op == Op.Plus ? 1 : -1;
-        var count = Enumerable.Range(0, s.Right + 1).Select(i => AudioCatalogue.NumberClip(s.Left + step * i));
-        return [s.Op == Op.Plus ? VoiceLine.CountOnTogether : VoiceLine.CountBackTogether, .. count];
+        if (round.Helper is { } helper) return [VoiceLine.BalanceHelps, .. Say(helper)];
+        return round.Hidden switch
+        {
+            // a + b = ?: on from the bigger.  a − b = ?: back by b, or on from b up to a when that's shorter.
+            Slot.Result when s.Op == Op.Plus => Count(Math.Max(s.Left, s.Right), s.Result),
+            Slot.Result => s.Right <= s.Result ? Count(s.Left, s.Result) : Count(s.Right, s.Left),
+            // a + ? = c and ? + b = c: on from the number shown to c.  a − ? = c: back from a to c.
+            // ? − b = c: on from c by b.
+            _ when s.Op == Op.Plus => Count(round.Hidden == Slot.Right ? s.Left : s.Right, s.Result),
+            Slot.Right => Count(s.Left, s.Result),
+            _ => Count(s.Result, s.Left),
+        };
     }
+
+    /// <summary>"Let's count on (or back) together", then every number from <paramref name="from"/> to <paramref name="to"/>.</summary>
+    private static List<string> Count(int from, int to)
+    {
+        var step = to >= from ? 1 : -1;
+        var numbers = Enumerable.Range(0, Math.Abs(to - from) + 1).Select(i => AudioCatalogue.NumberClip(from + step * i));
+        return [step > 0 ? VoiceLine.CountOnTogether : VoiceLine.CountBackTogether, .. numbers];
+    }
+
+    /// <summary>The longest count a hint can make (a missing number is at most this).</summary>
+    public const int MostMissing = 10;
 }

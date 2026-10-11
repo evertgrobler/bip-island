@@ -5,4 +5,4 @@
 [node name="ScreenPreview" type="Node"]
 script = ExtResource("1")
 Screen = "bips_balance"
-Level = 4
+Level = 3

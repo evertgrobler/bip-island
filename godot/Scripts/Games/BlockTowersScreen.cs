@@ -55,9 +55,7 @@ public partial class BlockTowersScreen : GameScreen
     {
         _game = game;
         _session = Coordinator.NewSession(game);
-        _colour = Coordinator.CurrentChild?.Avatar is { } avatar && Avatars.Colours.TryGetValue(avatar, out var c) ? c : Palette.Teal;
-        // Pale badges (sun, light teal) still need cubes that stand out on the paper.
-        if (_colour.V > 0.85f && _colour.S < 0.6f) _colour = _colour.Darkened(0.15f);
+        _colour = BlockDrawing.ChildColour(Coordinator.CurrentChild?.Avatar);
         _other = BlockDrawing.Lighter(_colour);
     }
 

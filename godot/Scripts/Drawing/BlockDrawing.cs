@@ -16,6 +16,16 @@ public static class BlockDrawing
     /// <summary>A tower taller than this stands as a column of ten with the rest beside it (14 = ten and four).</summary>
     public const int Column = 10;
 
+    /// <summary>
+    /// Cubes come in the colour of the child's animal badge (teal with no badge). Pale badges (sun,
+    /// light teal) are darkened a little so the cubes still stand out on the paper.
+    /// </summary>
+    public static Color ChildColour(string? avatar)
+    {
+        var colour = avatar != null && Avatars.Colours.TryGetValue(avatar, out var c) ? c : Palette.Teal;
+        return colour.V > 0.85f && colour.S < 0.6f ? colour.Darkened(0.15f) : colour;
+    }
+
     /// <summary>A second shade of a colour, for the other tower when two join.</summary>
     public static Color Lighter(Color colour) => colour.Lerp(Palette.White, 0.45f);
 

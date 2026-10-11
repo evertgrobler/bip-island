@@ -496,8 +496,7 @@
       "ages": "5-8",
       "skills": [
         "add_sub_20",
-        "missing_number",
-        "add_sub_100"
+        "missing_number"
       ],
       "objectives": [
         "1Ni.01",
@@ -537,17 +536,18 @@
         {
           "band": "stage2",
           "modes": [
-            "missing"
-          ],
-          "countTo": 20,
-          "note": "Missing numbers: 7 + ? = 10, ? - 3 = 5"
-        },
-        {
-          "modes": [
             "factfamily"
           ],
           "countTo": 20,
           "note": "Fact families: 3 + 5 = 8, so 8 - 5 = ?"
+        },
+        {
+          "band": "stage3",
+          "modes": [
+            "missing"
+          ],
+          "countTo": 20,
+          "note": "Missing numbers up to 10: 7 + ? = 10, ? - 3 = 5"
         }
       ]
     },

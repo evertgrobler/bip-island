@@ -359,9 +359,14 @@
   over the stand, one number a box with "?". Tap one of three number cards: the right one levels the see-saw;
   a wrong one shows in the box in red and tips the see-saw the way it really would, then comes back out. Five
   levels from games.json "modes": add (to 10, cubes), takeaway (to 10, cubes crossed out), past10 (within 20),
-  missing (7 + ? = 10, ? − 3 = 5), factfamily (3 + 5 = 8 on a sign, then 8 − 5 = ?). About 1 add or take-away
+  factfamily (3 + 5 = 8 on a sign, then 8 − 5 = ?), missing (up to 10: 7 + ? = 10, ? − 3 = 5). About 1 add or take-away
   round in 4 is a story sum ("There are 5 ducks. 3 more come along. How many are there now?") from the new
-  numbers.json `storySums` (validator checks them). Two misses: the right card wiggles and Bip counts on or back
-  from the first number, with cubes. Uses Block Towers' cubes and "take away" line. Game type `BipsBalanceGame`, tests `BipsBalanceTests` (1,000 rounds a level, exactly one
+  numbers.json `storySums` (validator checks them). Two misses: the right card wiggles and Bip counts the short way
+  (on from the bigger number, back, or between the numbers shown; never the missing number alone), with cubes;
+  a fact family points back to its sign. Uses Block Towers' cubes and "take away" line. Game type `BipsBalanceGame`, tests `BipsBalanceTests` (1,000 rounds a level, exactly one
   card balances), screen `BipsBalanceScreen`, previews `Scenes/Games/bips_balance*.tscn`. 12 new narrator lines
   recorded with the ElevenLabs connector (about 230 credits; one "unusual activity" refusal, fine on retry).
+  Review fixes (11 Oct): hints count the short way (2 + 18 counts 18, 19, 20) and never give a missing number
+  away; missing numbers are at most 10; fact families record `add_sub_20` (they stay within 20); missing numbers
+  moved to the last level (stage 3, like `missing_number`), and the validator checks each level's band against
+  its skill; only the drawn see-saw skin is listed; `BlockDrawing.ChildColour` shared with Block Towers.

@@ -52,9 +52,7 @@ public partial class BipsBalanceScreen : GameScreen
     {
         _game = game;
         _session = Coordinator.NewSession(game);
-        // Cubes in the child's badge colour, as in Block Towers.
-        _colour = Coordinator.CurrentChild?.Avatar is { } avatar && Avatars.Colours.TryGetValue(avatar, out var c) ? c : Palette.Teal;
-        if (_colour.V > 0.85f && _colour.S < 0.6f) _colour = _colour.Darkened(0.15f);
+        _colour = BlockDrawing.ChildColour(Coordinator.CurrentChild?.Avatar);
         _other = BlockDrawing.Lighter(_colour);
     }
 
