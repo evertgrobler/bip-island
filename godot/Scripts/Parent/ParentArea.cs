@@ -23,7 +23,16 @@ public partial class ParentArea : VBoxContainer
         Settings,
     }
 
+    /// <summary>One part of the parent area on its own, for the first-time setup guide.</summary>
+    public enum Part
+    {
+        Children,
+        PlayTime,
+        Passcode,
+    }
+
     private readonly ParentLayer _layer;
+    private readonly Part? _only;
     private TabBar _tabs = null!;
     private VBoxContainer _body = null!;
     private Guid? _reportChild;
@@ -36,9 +45,24 @@ public partial class ParentArea : VBoxContainer
 
     public ParentArea(ParentLayer layer) => _layer = layer;
 
+    /// <summary>Just one part (the children, play time or the passcode), with no header or tabs: the setup guide's steps.</summary>
+    public ParentArea(ParentLayer layer, Part only)
+    {
+        _layer = layer;
+        _only = only;
+    }
+
     public override void _Ready()
     {
         AddThemeConstantOverride("separation", 14);
+        if (_only != null)
+        {
+            _body = ParentUi.Column(18);
+            _body.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            AddChild(_body);
+            Refresh();
+            return;
+        }
         var close = ParentUi.Button("Back to the game", _layer.Close);
         AddChild(ParentUi.Row(12, ParentUi.Text("Parent area", 30, bold: true), ParentUi.Spacer(), close));
 
@@ -79,6 +103,17 @@ public partial class ParentArea : VBoxContainer
     {
         foreach (var child in _body.GetChildren()) child.QueueFree();
         _versionNote = null;
+        _pendingPasscode = null;
+        if (_only is { } part)
+        {
+            switch (part)
+            {
+                case Part.Children: BuildChildren(); break;
+                case Part.PlayTime: BuildPlayTime(); break;
+                case Part.Passcode: BuildPasscode(); break;
+            }
+            return;
+        }
         switch (Showing)
         {
             case Tab.Progress: BuildProgress(); break;
@@ -255,8 +290,13 @@ public partial class ParentArea : VBoxContainer
 
     private void BuildChildren()
     {
-        _body.AddChild(ParentUi.Text("Each child picks their animal when the game opens. Their age sets where they start; the game then adjusts to how they do.",
-            16, colour: ParentUi.Secondary, wrap: true));
+        // The setup guide says this itself.
+        if (_only == null)
+            _body.AddChild(ParentUi.Text("Each child picks their animal when the game opens. Their age sets where they start; the game then adjusts to how they do.",
+                16, colour: ParentUi.Secondary, wrap: true));
+        // Redrawn with the list, so it goes once Player 1 has been replaced or changed.
+        if (_only != null && Coordinator.Store.UntouchedFirstChild() != null)
+            _body.AddChild(ParentUi.Text("The first child you add replaces \"Player 1\".", 16, colour: ParentUi.Secondary, wrap: true));
         var children = Coordinator.Children;
         foreach (var child in children) _body.AddChild(ChildRow(child, children.Count > 1));
 
@@ -283,7 +323,15 @@ public partial class ParentArea : VBoxContainer
     /// <summary>Adds a child from the Children tab (also used by the walk-through test).</summary>
     public bool AddChild(string name, int? age)
     {
-        if (ProfileRules.CleanName(name) == null || !Coordinator.AddChildProfile(name, age, null)) return false;
+        if (ProfileRules.CleanName(name) == null) return false;
+        // In the setup guide, the first child added takes over the untouched "Player 1" the game made
+        // on its first run, so the family doesn't end up with a spare profile.
+        if (_only == Part.Children && Coordinator.Store.UntouchedFirstChild() is { } placeholder)
+        {
+            Change(placeholder with { Name = name, Age = age });
+            return true;
+        }
+        if (!Coordinator.AddChildProfile(name, age, null)) return false;
         _layer.MarkChanged();
         Refresh();
         return true;
@@ -315,7 +363,7 @@ public partial class ParentArea : VBoxContainer
         age.ItemSelected += _ => Change(child with { Age = AgeFrom(age) });
 
         var row = ParentUi.Row(12, avatar, name, save, age);
-        if (child.Id == Coordinator.ChildId) row.AddChild(ParentUi.Text("playing now", 15, colour: ParentUi.Secondary));
+        if (child.Id == Coordinator.ChildId && _only == null) row.AddChild(ParentUi.Text("playing now", 15, colour: ParentUi.Secondary));
         row.AddChild(ParentUi.Spacer());
         var remove = ParentUi.Button("Remove", () => ConfirmRemove(child), danger: true);
         remove.Disabled = !canRemove;
@@ -385,6 +433,13 @@ public partial class ParentArea : VBoxContainer
             _settingsMessage = null;
         }
 
+        BuildPlayTime();
+        BuildPasscode();
+        BuildAbout();
+    }
+
+    private void BuildPlayTime()
+    {
         var play = ParentUi.Section(_body, "Play time");
         var settings = Coordinator.Store.Settings;
         play.AddChild(Stepper("Play for", "minutes", settings.PlayMinutes, 5, 120, 5,
@@ -402,6 +457,8 @@ public partial class ParentArea : VBoxContainer
             SetSettings(Coordinator.Store.Settings with { DailyMaxMinutes = on ? Coordinator.Store.Settings.DailyMaxMinutes ?? 60 : null });
             daily.Visible = on;
         };
+        // In the setup guide there's no break to end yet.
+        if (_only != null) return;
         // Each child has their own break: this ends the break of the child who was playing.
         var whose = Coordinator.Children.Count > 1 && Coordinator.CurrentChild is { } current ? $"{current.Name}'s" : "Bip's";
         var endBreak = ParentUi.Button($"End {whose} break now", () => { });
@@ -413,9 +470,10 @@ public partial class ParentArea : VBoxContainer
             ended.Text = "Done: games are open again.";
         };
         play.AddChild(ParentUi.Row(12, endBreak, ended));
+    }
 
-        BuildPasscode();
-
+    private void BuildAbout()
+    {
         var about = ParentUi.Section(_body, "This copy of Bip Island");
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
         about.AddChild(ParentUi.Text($"Version {Updater.InstalledVersion ?? version}", 17));
@@ -428,11 +486,13 @@ public partial class ParentArea : VBoxContainer
             : ParentUi.Button("Install the update", InstallUpdate);
         updates.Disabled = Updater.FeedUrl == null;
         about.AddChild(ParentUi.Row(12, updates, ParentUi.Button("Quit Bip Island", () => Boot.Instance.Quit(), danger: true)));
+        about.AddChild(ParentUi.Row(12, ParentUi.Button("Show the setup guide again", () => _layer.ShowSetupGuide())));
         if (Updater.FeedUrl == null) _versionNote.Text = "Automatic updates aren't switched on in this build.";
         about.AddChild(_versionNote);
     }
 
-    private static string KidLockText() => KidLock.Status switch
+    /// <summary>The child lock's state in one line (Settings, and the setup guide when the lock isn't on).</summary>
+    public static string KidLockText() => KidLock.Status switch
     {
         "mac" or "windows" => "Child lock: on. To play in a normal window without it, hold Option (Mac) or Alt (Windows) while the game opens.",
         "parent mode" => "Child lock: off (parent mode, because Option or Alt was held as the game opened).",
@@ -486,12 +546,16 @@ public partial class ParentArea : VBoxContainer
         editing.Visible = false;
         var idle = ParentUi.Row(12);
 
-        void Save()
+        string? Save()
         {
-            if (SetPasscode(first.Text, second.Text) is { } why) problem.Text = why;
+            var why = SetPasscode(first.Text, second.Text);
+            if (why != null) problem.Text = why;
+            return why;
         }
+        // Typed but not saved when the setup guide's Next is pressed: save it then (or say why not).
+        _pendingPasscode = () => editing.Visible && (first.Text != "" || second.Text != "") ? Save() : null;
         second.TextSubmitted += _ => Save();
-        editing.AddChild(ParentUi.Button("Save", Save));
+        editing.AddChild(ParentUi.Button("Save", () => Save()));
         editing.AddChild(ParentUi.Button("Cancel", Refresh));
 
         idle.AddChild(ParentUi.Button(has ? "Change passcode" : "Set a passcode", () =>
@@ -506,6 +570,11 @@ public partial class ParentArea : VBoxContainer
         section.AddChild(editing);
         section.AddChild(problem);
     }
+
+    private Func<string?>? _pendingPasscode;
+
+    /// <summary>Saves a passcode typed but not saved yet. Returns what's wrong, or null when saved or nothing was typed.</summary>
+    public string? SavePendingPasscode() => _pendingPasscode?.Invoke();
 
     /// <summary>Sets the passcode from the two boxes. Returns what's wrong, or null when it was saved.</summary>
     public string? SetPasscode(string first, string second)
