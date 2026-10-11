@@ -52,8 +52,76 @@ public static class WalkTest
             Check(step, Screen() is T, $"showing {Screen()?.GetType().Name ?? "nothing"}");
         }
 
+        // The first-time setup guide: a fresh save shows it over the game, a grown-up practises the way
+        // into the grown-up area, adds a child, changes play time and hands over to the map.
+        async Task WalkSetupGuide()
+        {
+            var layer = game.Parent;
+            void Esc(bool down) => Input.ParseInputEvent(new InputEventKey { Keycode = Key.Escape, PhysicalKeycode = Key.Escape, Pressed = down });
+            await Wait(0.3);
+            Check("a first run opens the setup guide, with the game paused behind it", layer.Guide is { Current: BipCore.SetupGuide.Step.Welcome } && tree.Paused);
+            layer.GuideNext();
+            Check("on a first run the practice step can't be skipped (the parent controls come after it)",
+                  layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanGoOn: false, CanSkipStep: false });
+            Esc(true);
+            await Wait(1.5);
+            Check("the hold ring shows above the guide while Esc is held", layer.RingShowsOverCard);
+            await Wait(1.9);
+            Check("holding Esc in the guide opens the real question", layer.Flow.Phase == GatePhase.Question);
+            Esc(false);
+            await Wait(0.2);
+            layer.Submit(layer.Flow.Challenge.Answer.ToString());
+            await Wait(0.2);
+            Check("the right answer comes back to the guide, not the parent area",
+                  layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, PractisedGate: true, CanGoOn: true } && layer.Area == null && !layer.IsOpen && tree.Paused);
+            // A hold started on the practice step and still going when Next is clicked doesn't open the gate.
+            Esc(true);
+            await Wait(0.5);
+            layer.GuideNext(); // Passcode
+            await Wait(3.2);
+            Check("a hold carried past the practice step doesn't open the gate", !layer.IsOpen && layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode);
+            Esc(false);
+            await Wait(0.2);
+            Check("the passcode step is the parent area's passcode form", layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode && layer.Area != null);
+            layer.GuideSkipStep(); // Children
+            Check("the first child added takes over \"Player 1\"", layer.Area != null && layer.Area.AddChild("Thabo", null)
+                  && game.Children is [{ Name: "Thabo", Age: null }], string.Join(", ", game.Children.Select(c => c.Name)));
+            layer.GuideNext(); // Play time
+            Check("the play-time step shows the settings", layer.Guide?.Current == BipCore.SetupGuide.Step.PlayTime && layer.Area != null);
+            layer.GuideNext(); // Tour
+            for (var i = 0; i < BipCore.SetupGuide.TourCards; i++) layer.GuideNext();
+            Check("after the tour comes All set", layer.Guide?.Current == BipCore.SetupGuide.Step.AllSet);
+            layer.GuideNext();
+            await Wait(0.8);
+            Check("handing over ends the guide and saves that it's done", layer.Guide == null && game.Store.SetupDone && !tree.Paused);
+            Check("with one child the game opens on the map", Screen() is MapScreen, $"showing {Screen()?.GetType().Name}");
+            game.Start();
+            await Wait(0.3);
+            Check("the guide doesn't open again by itself", layer.Guide == null);
+
+            // From Settings: the gate was passed, so practising can be skipped; leaving changes nothing.
+            var before = Screen();
+            layer.Flow.Open();
+            layer.Submit(layer.Flow.Challenge.Answer.ToString());
+            await Wait(0.2);
+            layer.ShowSetupGuide();
+            await Wait(0.2);
+            layer.GuideNext();
+            Check("from Settings the practice step can be skipped", layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanSkipStep: true } && tree.Paused);
+            // "Skip setup" mid-hold: the hold ends with the guide, so no gate pops up over the game.
+            Esc(true);
+            await Wait(0.5);
+            layer.FinishGuide();
+            await Wait(3.2);
+            Check("a hold running when the guide ends doesn't open the gate", !layer.IsOpen);
+            Esc(false);
+            await Wait(0.3);
+            Check("skipping the guide from Settings goes back to the same screen", layer.Guide == null && !tree.Paused && Screen() == before && before != null);
+        }
+
         game.EndBreakEarly(); // A fresh test save starts outside any break.
         game.Start();
+        await WalkSetupGuide();
         await Expect<MapScreen>("one child: the game opens on the map");
 
         if (await Tap("island:letters")) await Expect<LettersIslandScreen>("letters island opens");
