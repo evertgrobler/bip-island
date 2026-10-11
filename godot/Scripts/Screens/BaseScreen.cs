@@ -16,6 +16,9 @@ namespace BipIsland.Screens;
 /// </summary>
 public abstract partial class BaseScreen : Node2D
 {
+    /// <summary>The background loop for this screen (MusicRules); null keeps it quiet, as in the games.</summary>
+    public virtual string? MusicTrack => null;
+
     /// <summary>Ignore clicks while something important is animating or being said.</summary>
     public bool InputLocked { get; set; }
 

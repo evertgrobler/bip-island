@@ -36,6 +36,8 @@ public sealed class SaveFile
     /// false, so a family updating sees it once too.
     /// </summary>
     public bool SetupDone { get; set; }
+    /// <summary>How loud the background music plays on the map and islands. Older saves read as Normal.</summary>
+    public MusicLevel Music { get; set; } = MusicLevel.Normal;
 }
 
 public sealed class SavedChild
@@ -199,6 +201,17 @@ public sealed class SaveStore
         set
         {
             _file.Passcode = value;
+            Save();
+        }
+    }
+
+    /// <summary>How loud the background music plays (one setting for the whole computer).</summary>
+    public MusicLevel Music
+    {
+        get => Enum.IsDefined(_file.Music) ? _file.Music : MusicLevel.Normal;
+        set
+        {
+            _file.Music = Enum.IsDefined(value) ? value : MusicLevel.Normal;
             Save();
         }
     }

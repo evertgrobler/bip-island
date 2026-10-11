@@ -399,3 +399,14 @@
   away; missing numbers are at most 10; fact families record `add_sub_20` (they stay within 20); missing numbers
   moved to the last level (stage 3, like `missing_number`), and the validator checks each level's band against
   its skill; only the drawn see-saw skin is listed; `BlockDrawing.ChildColour` shared with Block Towers.
+- **11 Oct:** Background music (owner: calm and gentle; music first, then Story Time in its own Story
+  Corner on the map). `MusicPlayer` (Scripts/Audio) fades between loops on the map and island screens,
+  goes quiet in games and on the other screens, dips to 30% while the narrator speaks, and keeps playing
+  behind the parent gate. Settings → Music: On / Quiet / Off (`SaveStore.Music`, one setting per computer;
+  older saves read On). Loops live in `Resources/Music/` (`music_map`, `music_<island>`), made with
+  ElevenLabs Music v2.5 (instrumental, 90 s) and `scripts/make_music_loop.sh` (3 s blended seam, fixed
+  gain to -20 LUFS); `prepare_assets.py` makes stereo `.ogg`. All six loops are in (the map one from the
+  first ElevenLabs account, the five island ones from the owner's second account after the first ran out
+  of credits; prompts in the "Bip Island music" and "Bip Island island music" flows). An island without
+  its own loop would play the map's. The validator checks the file names, the self-test
+  needs `music_map`, and the walk-through checks the map plays it and games are quiet.

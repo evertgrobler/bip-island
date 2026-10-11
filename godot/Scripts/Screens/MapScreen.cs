@@ -12,6 +12,8 @@ namespace BipIsland.Screens;
 /// <summary>The island map (Swift: MapScene). An island is open when its games loaded; the rest stay asleep.</summary>
 public partial class MapScreen : BaseScreen
 {
+    public override string? MusicTrack => MusicRules.MapTrack;
+
     private readonly bool _greet;
     private readonly Dictionary<Island, Node2D> _islands = new();
 
