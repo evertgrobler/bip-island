@@ -73,7 +73,6 @@ public partial class GameCoordinator : Node
 
         LoadContent();
         OpenSaves(SaveFolder());
-        Music.Level = Store.Music;
         Parent = new ParentLayer { Name = "Parent" };
         AddChild(Parent);
         // A steady tick keeps the play clock accurate during long games, so any much longer gap
@@ -147,6 +146,7 @@ public partial class GameCoordinator : Node
     public void OpenSaves(string folder)
     {
         Store = new SaveStore(folder);
+        Music.Level = Store.Music;
         if (Store.LoadError is { } loadError) GD.PrintErr($"Bip Island: {loadError}");
         Children = Store.Children();
         ChildId = Store.LastChildId();

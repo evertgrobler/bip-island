@@ -14,7 +14,7 @@ Unit tests check that the two lists cover every clip the game can play.
 | `notes` | How to say it, and how to trim it (important for the pure sounds) |
 | `placeholder` | Optional: what the temporary computer voice says instead, if different from `text` |
 
-The narrator's details, a preview and a cloning sample (for moving the voice to another ElevenLabs account) are in `NARRATOR_VOICE.md`.
+The narrator's details and how to move the voice to another ElevenLabs account are in `NARRATOR_VOICE.md`.
 
 ## Placeholders until the real voice is ready
 
