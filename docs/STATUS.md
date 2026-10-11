@@ -405,7 +405,8 @@
   behind the parent gate. Settings → Music: On / Quiet / Off (`SaveStore.Music`, one setting per computer;
   older saves read On). Loops live in `Resources/Music/` (`music_map`, `music_<island>`), made with
   ElevenLabs Music v2.5 (instrumental, 90 s) and `scripts/make_music_loop.sh` (3 s blended seam, fixed
-  gain to -20 LUFS); `prepare_assets.py` makes stereo `.ogg`. Only `music_map` exists so far: the
-  ElevenLabs account ran out of credits, so islands play the map's loop until theirs are made (prompts
-  for all five are on the "Bip Island music" flow). The validator checks the file names, the self-test
+  gain to -20 LUFS); `prepare_assets.py` makes stereo `.ogg`. All six loops are in (the map one from the
+  first ElevenLabs account, the five island ones from the owner's second account after the first ran out
+  of credits; prompts in the "Bip Island music" and "Bip Island island music" flows). An island without
+  its own loop would play the map's. The validator checks the file names, the self-test
   needs `music_map`, and the walk-through checks the map plays it and games are quiet.
