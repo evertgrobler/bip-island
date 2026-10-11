@@ -41,6 +41,7 @@ Eight games that start with counting real things and end with simple sums and mo
 | Count & Tap | Tap each animal as the narrator counts aloud | Counting to 10, then 20 | 4–5 | Ducks, sheep, ladybirds |
 | Quick Look | Dots or objects flash for 2 seconds: how many? | Seeing amounts without counting | 4–6 | Dice, dominoes, ten-frames |
 | Block Towers | Numbers as towers of cubes: build them, find the tallest, join two, take some away, make 10, odd or even, tens and ones, what comes next | Counting, comparing, adding and taking away within 20, bonds, doubles, place value | 4–8 | Building blocks (cubes in the child's badge colour) |
+| Bip's Balance | A see-saw with a sum on one side and its answer on the other; tap the number card that makes it balance. Cubes on the first levels, story sums now and then | Adding and taking away with + − =, going past 10, missing numbers, fact families | 5–8 | See-saw at the park |
 | Feed the Monster: Numbers | Give the monster exactly the number of apples it asks for | Counting out a set | 4–6 | Shares the monsters from Letters |
 | Number Train | Put carriages in order, or find the missing number | Order and number lines | 5–7 | Train, caterpillar, washing line |
 | More or Less | Which basket has more? Then: how many more? | Comparing | 4–7 | Baskets, nests, jars |
@@ -112,7 +113,7 @@ Block Towers (`block_towers`) shows numbers as towers of cubes. Its eight levels
 
 The one proposed addition to Block Towers itself: two levels where tens and ones towers join (ten loose cubes snap into a ten stick) and break apart (a ten stick breaks into ten cubes to take some away). That is the picture of carrying and exchanging, before Bip's Balance shows the same sums in numbers. Its session has no more levels planned, so this waits for its pull request to merge.
 
-### New game: Bip's Balance
+### New game: Bip's Balance (built 11 October 2026, levels 1–5)
 
 A hand-drawn see-saw. One side holds a sum (4 + 3), the other a box with a question mark. Bip says the sum; the child taps one of three number cards (each at least 120 pt). The right card levels the see-saw, the cubes drop in and Bip cheers. A wrong card tips it the wrong way with a soft sound; try again. After 2 misses Bip's hint shows the cubes and counts on from the bigger number out loud.
 
@@ -123,10 +124,12 @@ Early levels show cubes next to the numbers; they fade as the levels go up, and 
 | 1 | stage1 | Add within 10, cubes shown | 4 + 3 = ? |
 | 2 | stage1 | Take away within 10, cubes shown (crossed out) | 9 − 4 = ? |
 | 3 | stage1 | Add and take away within 20, going past 10; cubes fade | 8 + 5 = ?, 14 − 6 = ? |
-| 4 | stage2 | Missing numbers, hidden in a bag | 7 + ? = 10, ? − 3 = 5 |
-| 5 | stage2 | Fact families: one sum helps with the next | 3 + 5 = 8, so 8 − 5 = ? |
-| 6 | stage2 | Two-digit add and take away, no carrying, with ten sticks | 34 + 25 = ?, 47 − 20 = ? |
+| 4 | stage2 | Fact families: one sum helps with the next | 3 + 5 = 8, so 8 − 5 = ? |
+| 5 | stage3 | Missing numbers up to 10 | 7 + ? = 10, ? − 3 = 5 |
+| 6 | stage3 | Two-digit add and take away, no carrying, with ten sticks | 34 + 25 = ?, 47 − 20 = ? |
 | 7 | stage3 | Two-digit add and take away with carrying, ten sticks in the hint | 38 + 27 = ?, 52 − 18 = ? |
+
+As built, the two-miss hint counts the short way instead of always showing cubes (on from the bigger number, or between the two numbers shown), so it never says a missing number on its own. Levels 6 and 7 (two-digit sums) are still to come; level 6 starts at stage 3 because level bands can't go back.
 
 Skins: see-saw at the park, fruit scale at the market, kitchen scale.
 
@@ -232,7 +235,7 @@ Pictures (hand-drawn, or emoji stand-ins until drawn): naartjie, strawberry, a p
 
 Suggested order:
 
-1. **Bip's Balance**, levels 1–5: it picks up straight after Block Towers' join and take-away levels and adds the written sum.
+1. **Bip's Balance**, levels 1–5 (built): it picks up straight after Block Towers' join and take-away levels and adds the written sum.
 2. **Number Train** with hops (and its planned ordering levels): counting on and back for the youngest.
 3. **Picnic Plates**: the first times and sharing.
 4. **Number Machine**: the 2, 5 and 10 tables, then 3, 4 and 8.

@@ -391,6 +391,22 @@ public sealed record NumbersFile
     public required Dictionary<string, NumberBand> Bands { get; init; }
     public required List<CountingObject> CountingObjects { get; init; }
     public required Currency Currency { get; init; }
+    /// <summary>Bip's Balance: little spoken stories for adding and taking away.</summary>
+    public List<StorySum>? StorySums { get; init; }
+}
+
+/// <summary>
+/// A story sum: the clips Bip says, in order. "{a}" and "{b}" are the sum's numbers and "{things}"
+/// the animals' plural ("ducks"); every other entry is a voice clip.
+/// </summary>
+public sealed record StorySum
+{
+    public required string Id { get; init; }
+    /// <summary>"plus" (more come along) or "minus" (some go away).</summary>
+    public required string Op { get; init; }
+    public required List<string> Clips { get; init; }
+    /// <summary>Counting objects (ids in countingObjects) that fit the story.</summary>
+    public required List<string> Things { get; init; }
 }
 
 /// <summary>What each band works on in the Numbers island. Fields only appear where they apply.</summary>

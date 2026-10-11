@@ -63,12 +63,12 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | Count & Tap | 4–5 | 1Nc.01, 1Ni.01, 1Np.01 |
 | Quick Look | 4–6 | 1Nc.02, 1Nc.03, 2Nc.02 |
 | Block Towers | 4–8 | 1Nc.01, 1Ni.01–06, 1Np.02, 1Np.03, 1Nc.05, 2Nc.05, 2Np.01, 2Np.02, 2Nc.06, 3Nc.05, 3Nc.06 |
+| Bip's Balance | 5–8 | 1Ni.01, 1Ni.02, 1Ni.03, 1Ni.04, 1Ni.05, 1Np.02, 2Ni.02, 3Nc.04 |
 | Feed the Monster: Numbers | 4–6 | 1Nc.01, 1Ni.01, 1Ni.02, 1Ni.03, 1Ni.05, 1Np.01, 3Nc.04 |
 | Number Train | 5–7 | 1Nc.04, 1Nc.05, 1Np.03, 1Np.04, 2Nc.01, 2Nc.04, 2Nc.05, 2Nc.06, 2Ni.01, 2Ni.07, 2Np.01–04, 3Nc.05 |
 | More or Less | 4–7 | 1Ni.02, 1Ni.03, 1Ni.05, 1Np.03, 1Ss.03, 2Ni.02, 2Ni.04 |
 | Ten-Frame Garden | 6–8 | 1Ni.04, 1Ni.06, 1Np.02, 2Ni.03 |
 | Corner Shop | 6–8 | 1Nm.01, 2Nm.01, 2Nm.02, 3Nm.01, 3Nm.02 |
-| Bip's Balance (planned) | 5–8 | 1Ni.01, 1Ni.02, 1Ni.03, 1Ni.04, 1Ni.05, 1Np.02, 2Nc.03, 2Ni.02, 2Ni.04, 2Np.02, 3Nc.04, 3Ni.02 |
 | Picnic Plates (planned) | 6–8 | 2Nc.04, 2Ni.05, 2Ni.06, 2Np.02, 3Ni.04, 3Ni.07 |
 | Number Machine (planned) | 6–8 | 2Ni.05, 2Ni.06, 2Ni.07, 3Ni.03, 3Ni.04, 3Ni.05, 3Ni.06, 3Ni.07 |
 | Sound Buttons | 4–6 | 1Rw.03, 1Rw.05, 1Rw.06, 2Rw.05, 2Rw.06 |
@@ -211,9 +211,9 @@ The 2, 5 and 10 tables stay in `count_steps` (it already holds 2Ni.07).
 | Bip's Balance | 1. Add within 10, cubes shown | stage1 | 1Ni.01, 1Ni.02, 1Ni.05 |
 | | 2. Take away within 10, cubes shown | stage1 | 1Ni.03, 1Ni.05 |
 | | 3. Add and take away within 20, past 10 | stage1 | 1Ni.05, 1Np.02 |
-| | 4. Missing numbers | stage2 | 1Ni.04, 2Nc.03, 3Nc.04 |
-| | 5. Fact families | stage2 | 2Ni.02 |
-| | 6. Two-digit, no carrying | stage2 | 2Ni.04, 2Np.02 |
+| | 4. Fact families | stage2 | 2Ni.02 |
+| | 5. Missing numbers (up to 10) | stage3 | 1Ni.04, 3Nc.04 (2Nc.03 once confirmed) |
+| | 6. Two-digit, no carrying | stage3 | 2Ni.04, 2Np.02 |
 | | 7. Two-digit with carrying | stage3 | 3Ni.02 |
 | | Story sums (any level) | as the level | 1Ni.02, 1Ni.03 and the level's codes |
 | Picnic Plates | 1. Equal groups | stage2 | 2Ni.05, 2Nc.04 |
@@ -253,9 +253,9 @@ Changes to the planned games' rows above once they are built: Ten-Frame Garden d
 | --- | --- |
 | 1Nc.04 (counting on and back) | Number Train hops, Block Towers |
 | 1Ni.02, 1Ni.03, 1Ni.05 (add and take away to 20) | Block Towers, Bip's Balance, Number Train, More or Less |
-| 1Ni.04, 2Ni.03, 3Ni.01 (bonds to 10, 20, 100) | Block Towers, Ten-Frame Garden, Bip's Balance level 4 |
-| 2Nc.03, 3Nc.04 (unknown numbers) | Bip's Balance level 4 |
-| 2Ni.02, 3Ni.03 (inverse operations) | Bip's Balance level 5, Number Machine levels 6–7 |
+| 1Ni.04, 2Ni.03, 3Ni.01 (bonds to 10, 20, 100) | Block Towers, Ten-Frame Garden, Bip's Balance level 5 |
+| 2Nc.03, 3Nc.04 (unknown numbers) | Bip's Balance level 5 |
+| 2Ni.02, 3Ni.03 (inverse operations) | Bip's Balance level 4, Number Machine levels 6–7 |
 | 2Ni.04, 3Ni.02 (two-digit adding and taking away) | Bip's Balance levels 6–7, Number Train tens hops, Block Towers proposal |
 | 2Ni.05, 2Ni.06 (groups, arrays, sharing, grouping) | Picnic Plates, Number Machine, Count & Tap, Quick Look |
 | 2Ni.07, 3Ni.05, 3Ni.08 (tables) | Number Machine, Number Train skip hops |

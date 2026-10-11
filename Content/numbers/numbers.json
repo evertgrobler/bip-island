@@ -288,5 +288,47 @@
         "picture": "pic_sandwich"
       }
     ]
-  }
+  },
+  "storySums": [
+    {
+      "id": "come_along",
+      "op": "plus",
+      "clips": [
+        "vo_story_there_are",
+        "{a}",
+        "{things}",
+        "{b}",
+        "vo_story_come_along",
+        "vo_story_how_many_now"
+      ],
+      "things": [
+        "duck",
+        "sheep",
+        "ladybird",
+        "fish",
+        "bee",
+        "frog"
+      ]
+    },
+    {
+      "id": "go_away",
+      "op": "minus",
+      "clips": [
+        "vo_story_there_are",
+        "{a}",
+        "{things}",
+        "{b}",
+        "vo_story_go_away",
+        "vo_story_how_many_now"
+      ],
+      "things": [
+        "duck",
+        "sheep",
+        "ladybird",
+        "fish",
+        "bee",
+        "frog"
+      ]
+    }
+  ]
 }
