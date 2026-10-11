@@ -30,6 +30,12 @@ public sealed class SaveFile
     public PlayTimeSettings Settings { get; set; } = new();
     /// <summary>The optional parent passcode (only a salted hash is kept).</summary>
     public ParentPasscode? Passcode { get; set; }
+    /// <summary>
+    /// A grown-up has been through (or skipped) the first-time setup guide. Until then it opens by itself
+    /// at every launch, so a first run cut short (a crash, a restart) still gets it. Older saves read as
+    /// false, so a family updating sees it once too.
+    /// </summary>
+    public bool SetupDone { get; set; }
 }
 
 public sealed class SavedChild
@@ -80,12 +86,26 @@ public sealed class SaveStore
         _file = Load();
         if (_file.Children.Count == 0)
         {
-            AddChildRecord("Player 1", null, ProfileRules.Avatars[0], new ChildProgress());
+            AddChildRecord(FirstChildName, null, ProfileRules.Avatars[0], new ChildProgress());
             Save();
         }
     }
 
+    /// <summary>The name of the child the first run makes, until a grown-up names them.</summary>
+    public const string FirstChildName = "Player 1";
+
     public string FilePath => Path.Combine(_folder, FileName);
+
+    /// <summary>
+    /// The only child, while it's still the "Player 1" the first run made and has never played: the setup
+    /// guide's first added child takes it over instead of sitting next to it.
+    /// </summary>
+    public ChildSummary? UntouchedFirstChild()
+    {
+        if (Children() is not [var only] || only.Name != FirstChildName || only.Age != null) return null;
+        var progress = Progress(only.Id);
+        return progress.Stars == 0 && progress.RecentGames.Count == 0 ? only : null;
+    }
 
     // Children
 
@@ -181,6 +201,16 @@ public sealed class SaveStore
             _file.Passcode = value;
             Save();
         }
+    }
+
+    /// <summary>Whether the first-time setup guide has been finished or skipped on this computer.</summary>
+    public bool SetupDone => _file.SetupDone;
+
+    /// <summary>The setup guide is finished or skipped: it doesn't open again by itself.</summary>
+    public void MarkSetupDone()
+    {
+        _file.SetupDone = true;
+        Save();
     }
 
     // Loading and saving
