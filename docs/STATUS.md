@@ -125,7 +125,7 @@
   them), or every check run leaves untracked files behind.
 - ElevenLabs keys are often created **restricted** (no `voices_read`/`user_read`): reads fail but
   TTS works. A transient `401` under parallel load goes away with 2 workers + backoff.
-- The narrator voice belongs to one ElevenLabs account; keys from other accounts get
+- The narrator voice belongs to one ElevenLabs account (since 11 Oct: `P7kHKZAtnEEhLBZBK8pP`, the owner's new account); keys from other accounts get
   `voice_not_found`. Ask the owner for a key from the voice-owner account.
 - Session-only secrets live in `/tmp` (`opencode/.elkey`, `gen_batch.py`, `jobs.json`,
   `bip-full/raw/`, `bip-test/`): never commit, never print.
@@ -406,5 +406,8 @@
   `num_<n>_mid` clips (0–20, said so they lead on) plus `vo_and` for sentences still joined from pieces (bigger
   numbers, Bip's Balance, counting hints). The player leaves only 0.03 s after a lead-on clip. Until a clip is
   recorded the game plays the old pieces (`VoicePlayer.Prefer`, and `num_7_mid` falls back to `num_7`).
-  **Blocked on recording:** the ElevenLabs connector no longer finds the narrator voice
-  (`Mq5hYfc3xyDzuW3pPMck` "does not resolve"); the owner must reconnect it to the account that owns the voice.
+  The ElevenLabs connector is now on the owner's new, free account, where the old narrator
+  (`Mq5hYfc3xyDzuW3pPMck`) doesn't exist and a free plan can't share or clone a voice. Owner chose a new design:
+  "Bip Island Narrator" **`P7kHKZAtnEEhLBZBK8pP`** (Voice Design `eleven_ttv_v3` from the saved brief, preview A
+  of 3). New clips use it; older clips stay in the first voice until re-recorded. A clip costs about 1 credit a
+  character (free plan: 10,000 a month); the account limits back-to-back generations.
