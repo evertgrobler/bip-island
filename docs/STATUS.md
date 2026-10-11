@@ -321,10 +321,15 @@
 - **4 Oct, evening:** Owner rule: South African time (SAST, UTC+2) everywhere. CLAUDE.md says so;
   `.claude/settings.json` sets `TZ=Africa/Johannesburg` for every session (cloud machines run on UTC);
   `check_all.sh`'s summary is stamped in SAST. The game itself already uses the computer's own clock.
+- **4 Oct:** Download page lists minimum requirements ("What you need" on each card): Mac — macOS 14+,
+  Apple chip or Intel (universal build), 4 GB memory, ~500 MB free; Windows — 10/11 64-bit, OpenGL 3.3
+  graphics (Compatibility renderer), 4 GB memory, ~500 MB free. Shared line: speakers or headphones,
+  a mouse, a keyboard for grown-ups; internet only to download and update.
+
 - **10 Oct:** Recorded the waiting clips with the ElevenLabs connector (narrator voice, `eleven_v3`):
   `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`, a new `snd_h` (a whispered "hhhh" cut before
   "hat", raised to match the other sounds) and `word_yoyo`. The y sound's picture word is now **yo-yo**
   (`pic_yoyo`, label "yo-yo"; `AudioCatalogue.WordClip` drops the hyphen for the file name), `yak` and
   `word_yak` are gone, and the South African check enforces `yak` again (no more WAITING). Every clip the
   game needs now has a recording. ElevenLabs still refuses some requests ("unusual activity", free tier)
-  and rate-limits: retrying one at a time worked. **Owner ear-check wanted:** `snd_h` and `word_yoyo`.
+  and rate-limits: retrying one at a time worked. Owner ear-checked `snd_h` and `word_yoyo` and approved them (10 Oct).
