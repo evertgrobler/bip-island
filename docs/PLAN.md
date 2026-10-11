@@ -144,6 +144,7 @@ Prove the hardest part first: if the phonics audio and the core click-and-hear l
 | 2. All islands | Groups 2–5, Numbers, Words, Coding tiers 1–3, profiles, progress | Each island has 15+ activities and mastery tracking | In progress: all five islands, 15 games with levels (Word Rocket added 4 Oct), profiles and the parent progress view are built; more activities per island to come |
 | 3. Polish | Art, music, sticker book, parent gate and dashboard, ages 6–8 content, Coding tiers 4–6 | Kids ask to play it again | Partly: sticker book, parent gate and dashboard done; art (emoji stand-ins), music and higher tiers to come |
 | 4. Release | Signing, notarisation or App Store review, website page | Installs cleanly on a fresh Mac | Download page done (Mac + Windows, unsigned); paid signing only if the game is shared beyond the family |
+| Maths: + − × ÷ | Bip's Balance, Picnic Plates and Number Machine, plus new levels in Number Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers (`docs/GAMES.md`, "Maths plan") | Every Stage 1–3 adding, taking away, times and sharing objective has a game (`docs/CURRICULUM.md`, "Maths plan") | Planned 10 Oct 2026; Bip's Balance comes first (owner left the choice to Claude) |
 | Godot move | Rebuild in Godot 4 (C#) for Mac + Windows, auto-updating, direct downloads (see `docs/GODOT_MIGRATION.md`) | The owner plays the Godot build on both computers and switches the family feed over | Done 3 Oct 2026: all phases complete, Swift app retired |
 
 ## Decisions
