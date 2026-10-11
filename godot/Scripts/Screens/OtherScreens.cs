@@ -378,13 +378,12 @@ public partial class StickerScreen : BaseScreen
     /// <summary>Which page is open: the picture pages first, then the sounds, then the skills.</summary>
     private int _pageIndex;
     private Node2D? _page;
+    /// <summary>The whole picture set, worked out once when the book opens.</summary>
+    private List<string> _allPictures = [];
 
     /// <summary>How many pages the book has (for the walk-through test).</summary>
     public int PageCount => PicturePageCount + 2;
-    private int PicturePageCount =>
-        Coordinator.Content is { } content
-            ? Math.Max(1, (StickerBook.AllPictureStickers(content).Count + PicturesPerPage - 1) / PicturesPerPage)
-            : 1;
+    private int PicturePageCount => Math.Max(1, (_allPictures.Count + PicturesPerPage - 1) / PicturesPerPage);
 
     protected override void Build()
     {
@@ -392,14 +391,20 @@ public partial class StickerScreen : BaseScreen
         AddBip(P(-640, -380), 0.7f);
 
         var progress = Coordinator.Progress;
+        if (Coordinator.Content is { } content) _allPictures = StickerBook.AllPictureStickers(content);
         var jar = new Node2D { Position = P(0, 410) };
         jar.AddChild(Sketch.Label($"{Sketch.Plural(progress.Stars, "star")} in the jar", 56, Palette.Ink));
         Stage.AddChild(jar);
-        // How close the next picture sticker is, for grown-ups reading along.
-        var toGo = ChildProgress.StarsPerSticker - StickerBook.StarsTowardsNextPage(progress);
-        var next = new Node2D { Position = P(0, 355) };
-        next.AddChild(Sketch.Label($"{Sketch.Plural(toGo, "more star")} for the next sticker", 28, Palette.Ink.WithAlpha(0.6)));
-        Stage.AddChild(next);
+        // How close the next picture sticker is, for grown-ups reading along (nothing once the set is
+        // complete; stickers already owed are handed out with the next right answer).
+        var toGo = (progress.StarStickersGiven + 1) * ChildProgress.StarsPerSticker - progress.Stars;
+        var allCollected = _allPictures.All(new HashSet<string>(progress.PictureStickers).Contains);
+        if (!allCollected && toGo > 0)
+        {
+            var next = new Node2D { Position = P(0, 355) };
+            next.AddChild(Sketch.Label($"{Sketch.Plural(toGo, "more star")} for the next sticker", 28, Palette.Ink.WithAlpha(0.6)));
+            Stage.AddChild(next);
+        }
 
         var toggle = Buttons.Tappable(Buttons.Next(), "page");
         toggle.Position = P(640, 360);
@@ -420,8 +425,11 @@ public partial class StickerScreen : BaseScreen
         {
             // Picture stickers: the child's own first (in the order they were won), then grey outlines
             // of the ones still to find.
-            var got = progress.PictureStickers.ToList();
-            var all = got.Concat(StickerBook.AllPictureStickers(content).Where(id => !got.Contains(id))).ToList();
+            // Saved stickers whose picture has since left words.json are skipped.
+            var inSet = _allPictures.ToHashSet();
+            var got = progress.PictureStickers.Where(inSet.Contains).ToList();
+            var gotSet = got.ToHashSet();
+            var all = got.Concat(_allPictures.Where(id => !gotSet.Contains(id))).ToList();
             const int perRow = 10;
             var onPage = all.Skip(_pageIndex * PicturesPerPage).Take(PicturesPerPage).ToList();
             for (var i = 0; i < onPage.Count; i++)

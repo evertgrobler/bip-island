@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Godot;
 using static BipIsland.Drawing.Up;
 
@@ -25,5 +27,33 @@ public static class StickerArt
         if (!got) picture.Modulate = new Color(0.5f, 0.5f, 0.5f, 0.18f);
         sticker.AddChild(picture);
         return sticker;
+    }
+
+    /// <summary>Where <paramref name="count"/> stickers sit, and how big, to fit a box round a centre.</summary>
+    public sealed record Layout(List<Vector2> Centres, float Scale);
+
+    /// <summary>
+    /// Lays stickers out in rows inside a <paramref name="width"/> × <paramref name="height"/> box
+    /// round <paramref name="centre"/>, as big as they fit (never bigger than full size).
+    /// </summary>
+    public static Layout Grid(int count, Vector2 centre, float width, float height)
+    {
+        const float cell = 150;
+        var (cols, scale) = (1, 0f);
+        for (var c = 1; c <= Math.Max(count, 1); c++)
+        {
+            var rows = (count + c - 1) / c;
+            var fit = Math.Min(1f, Math.Min(width / (c * cell), height / (rows * cell)));
+            if (fit > scale) (cols, scale) = (c, fit);
+        }
+        var rowCount = (count + cols - 1) / Math.Max(cols, 1);
+        var centres = new List<Vector2>();
+        for (var i = 0; i < count; i++)
+        {
+            var (row, col) = (i / cols, i % cols);
+            var inRow = Math.Min(cols, count - row * cols);
+            centres.Add(centre + new Vector2((col - (inRow - 1) / 2f) * cell * scale, (row - (rowCount - 1) / 2f) * cell * scale));
+        }
+        return new Layout(centres, scale);
     }
 }

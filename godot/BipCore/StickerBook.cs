@@ -48,7 +48,11 @@ public static class StickerBook
 
     /// <summary>Every picture sticker there is: each picture word in words.json, in list order.</summary>
     public static List<string> AllPictureStickers(ContentLibrary content) =>
-        content.Words.Words.Where(w => w.Picturable && w.Picture != null).Select(w => w.Picture!).Distinct().ToList();
+        PictureWords(content).Select(w => w.Picture!).ToList();
+
+    /// <summary>The first word in words.json for each picture: the one set both the book and the awards use.</summary>
+    private static IEnumerable<Word> PictureWords(ContentLibrary content) =>
+        content.Words.Words.Where(w => w.Picturable && w.Picture != null).DistinctBy(w => w.Picture);
 
     /// <summary>
     /// The next picture sticker to win: one the child hasn't got yet, starting with the sound they
@@ -57,9 +61,7 @@ public static class StickerBook
     public static string? NextPictureSticker(ChildProgress progress, ContentLibrary content, string? soundId, IRandomSource rng)
     {
         var have = progress.PictureStickers.ToHashSet();
-        var left = content.Words.Words
-            .Where(w => w.Picturable && w.Picture != null && !have.Contains(w.Picture))
-            .GroupBy(w => w.Picture!).Select(g => g.First()).ToList();
+        var left = PictureWords(content).Where(w => !have.Contains(w.Picture!)).ToList();
         if (left.Count == 0) return null;
         var matching = soundId == null ? [] : left.Where(w => w.FirstSound == soundId).ToList();
         return rng.Pick(matching.Count > 0 ? matching : left)!.Picture;

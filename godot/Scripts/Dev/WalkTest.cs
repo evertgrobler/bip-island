@@ -153,9 +153,17 @@ public static class WalkTest
         var starsBefore = game.Progress.Stars;
         var mysteryShown = Screen()?.FindTappable("mystery") != null;
         Check("the mystery box is there once a day", mysteryShown == game.MysteryAvailable);
+        var mysteryStickersBefore = game.Progress.PictureStickers.Count;
+        var mysteryMakesTen = (starsBefore + BipCore.ChildProgress.MysteryBonusStars) / BipCore.ChildProgress.StarsPerSticker
+                              > game.Progress.StarStickersGiven;
         if (mysteryShown && await Tap("mystery"))
         {
-            await Wait(1.5);
+            await Wait(1.0);
+            Check(mysteryMakesTen ? "the mystery box's stars make up 10, and the sticker pops out" : "the mystery box's stars don't make up 10: no sticker",
+                  mysteryMakesTen == (Screen()?.FindChild("NewSticker", true, false) != null)
+                  && game.Progress.PictureStickers.Count == mysteryStickersBefore + (mysteryMakesTen ? 1 : 0),
+                  $"stars {starsBefore} + {BipCore.ChildProgress.MysteryBonusStars}, stickers {mysteryStickersBefore} → {game.Progress.PictureStickers.Count}");
+            await Wait(2.5);
             Check("the mystery box gives 5 stars, once", game.Progress.Stars == starsBefore + BipCore.ChildProgress.MysteryBonusStars && !game.MysteryAvailable,
                 $"stars {starsBefore} → {game.Progress.Stars}");
             Check("the stars are saved", game.Store.Progress(game.ChildId).Stars == game.Progress.Stars);
@@ -677,7 +685,9 @@ public static class WalkTest
                 foreach (var point in points) trace._UnhandledInput(new InputEventMouseMotion { GlobalPosition = point, ButtonMask = MouseButtonMask.Left });
                 trace._UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = points[^1] });
                 Check("tracing round the letter earns a star", game.Progress.Stars == starsBefore + 1, $"stars {starsBefore} → {game.Progress.Stars}");
-                Check("Letter Trace goes back to the island", await WaitFor(() => Screen() is LettersIslandScreen, 6));
+                Check("Letter Trace ends on the end card, with a picture sticker for finishing",
+                      await WaitFor(() => Screen() is LetterTraceScreen && Screen()?.FindChild("NewSticker", true, false) != null, 8));
+                Check("Letter Trace goes back to the island", await WaitFor(() => Screen() is LettersIslandScreen, 12));
             }
             await Wait(0.6);
 

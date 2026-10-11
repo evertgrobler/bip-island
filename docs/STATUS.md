@@ -362,3 +362,7 @@
   The end card shows them; the sticker book opens on picture pages (own first, grey outlines after) and
   says how many stars the next one needs. Still to build: creatures, decorations, new areas, golden
   round, creature visits, special days, the "New!" flag; the mystery box still gives stars.
+  Review fixes (11 Oct): Letter Trace ends on the end card like the other games; a game cut short to
+  practise again wins no sticker for finishing; the mystery box's stars give their sticker on the map;
+  the end card shows every new sticker (smaller, in rows, when an old save catches up), and stickers
+  won before Home wait for the next card.
