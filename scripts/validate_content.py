@@ -357,25 +357,29 @@ def a(id_, text, notes=""):
     audio[id_] = {"id": id_, "text": text, "notes": notes}
 def p(id_, brief):
     pictures.setdefault(id_, {"id": id_, "brief": brief})
+def word_clip(text):
+    """A word's clip, as AudioCatalogue.WordClip names it: yo-yo -> word_yoyo (file names have no hyphens)."""
+    return f"word_{text.lower().replace('-', '')}"
 
 for g in ph["graphemes"]:
     a(g["audio"], g["grapheme"], f"PURE SOUND /{g['ipa']}/ ({g['kind']}). {g['narratorHint']}")
     if g.get("letterName"): a(f"name_{g['id']}", g["letterName"], "Letter name, for the letter-names activity only.")
     p(g["mnemonicPicture"], f"{g['mnemonicWord']} (picture for the sound {g['grapheme']})")
-    a(f"word_{g['mnemonicWord'].replace('-', '')}", g["mnemonicWord"])
+    a(word_clip(g["mnemonicWord"]), g["mnemonicWord"])
 for w in words_doc["words"]:
+    if w["audio"] != word_clip(w["word"]): err(f"word {w['word']}: audio must be {word_clip(w['word'])}")
     a(w["audio"], w["word"])
     if w["picturable"]: p(w["picture"], w["word"])
 for t in tricky["stage1"]["words"] + tricky["stage2"]["words"]:
-    a(f"word_{t.lower()}", t)
+    a(word_clip(t), t)
 for s in sentences:
     a(s["audio"], s["text"])
     p(s["pictureRight"], s["pictureRightBrief"]); p(s["pictureWrong"], s["pictureWrongBrief"])
 for e in endings["plurals_s"] + endings["plurals_es"]:
-    a(f"word_{e['plural']}", e["plural"])
+    a(word_clip(e["plural"]), e["plural"])
 for e in endings["verbs"]:
     for k in ("s", "ed", "ing"):
-        if k in e: a(f"word_{e[k]}", e[k])
+        if k in e: a(word_clip(e[k]), e[k])
 for i, hs in enumerate(homophones, 1):
     for j, s in enumerate(hs["sentences"], 1):
         a(f"vo_hom_{i:02d}_{j}", s["text"].replace("___", s["answer"]), "Read the whole sentence naturally.")

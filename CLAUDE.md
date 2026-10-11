@@ -78,7 +78,7 @@ Versioning: `0.MINOR.PATCH`, with the patch number from the GitHub run, so every
 
 Audio file-name contract (`Resources/Audio/`):
 - `snd_<sound>.m4a` — pure phonemes (`snd_s`, `snd_sh`)
-- `word_<word>.m4a` — words (`word_sun`)
+- `word_<word>.m4a` — words (`word_sun`); hyphens are dropped (yo-yo → `word_yoyo`, picture `pic_yoyo`)
 - `num_<n>.m4a` — numbers
 - `vo_<key>.m4a` — instructions (`vo_find_the_sound`)
 - `praise_NN.m4a`, `hint_NN.m4a`

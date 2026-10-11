@@ -86,6 +86,13 @@ public sealed class PhonicsTests
     }
 
     [Fact]
+    public void WordClipsDropHyphens()
+    {
+        Assert.Equal("word_sun", AudioCatalogue.WordClip("sun"));
+        Assert.Equal("word_yoyo", AudioCatalogue.WordClip("yo-yo"));
+    }
+
+    [Fact]
     public void SoundsThatCouldBeMixedUp()
     {
         var course = Course();
