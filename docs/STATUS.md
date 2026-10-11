@@ -25,7 +25,7 @@
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
-- **Voice:** all narrator clips recorded (ElevenLabs "Bip Island Narrator"), `vo_who_is_playing` included.
+- **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
 - **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
   123 Morning Order step scenes.
 - **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
@@ -290,7 +290,7 @@
   `word_pie` re-cut to keep their quiet endings (approved in round 2). `snd_h` is back to the original
   recording (it still has a small "uh"; two trims were rejected) until it can be re-recorded.
   **Waiting on the ElevenLabs upgrade:** `snd_h`, `word_yoyo` (then switch y's picture word from yak),
-  `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`.
+  `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`. (All recorded 10 Oct, see below.)
 - **4 Oct:** Per-child breaks (owner: "each child"). Each child's play clock, break and daily total
   live on their save row (`SavedChild.Break`); the old shared break is copied to every child on load,
   so updating can't end a running break. Settings stay shared. While one child rests, the charging
@@ -354,6 +354,14 @@
   needed and the tower (or tens or ones) when some must come off; make ten lets the child overshoot; an empty tick
   is ignored in every building round; "which" rounds don't repeat in a visit; pattern steps and the tens-and-ones
   start are level fields in games.json ("steps", "from").
+- **10 Oct:** Recorded the waiting clips with the ElevenLabs connector (narrator voice, `eleven_v3`):
+  `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`, a new `snd_h` (a whispered "hhhh" cut before
+  "hat", levelled with `snd_f` and `snd_th` after review) and `word_yoyo`. The y sound's picture word is now **yo-yo**
+  (`pic_yoyo`, label "yo-yo"; `AudioCatalogue.WordClip` drops the hyphen for the file name), `yak` and
+  `word_yak` are gone, and the South African check enforces `yak` again (no more WAITING). Every clip the
+  game needs now has a recording. ElevenLabs still refuses some requests ("unusual activity", free tier)
+  and rate-limits: retrying one at a time worked. Owner ear-checked `snd_h` and `word_yoyo` and approved them (10 Oct), and the quieter `snd_h` (11 Oct).
+  Word clips drop hyphens everywhere (`word_clip()` in the validator matches `AudioCatalogue.WordClip`).
 - **10 Oct:** Rewards check (owner asked): stars, the visit card, the mystery box and the sticker book
   all worked, but stickers only came from mastery (right answers on two days), so a new child saw an
   empty book. Picture stickers added (`StickerBook.AwardStickers`): every 10 stars and every finished
