@@ -383,3 +383,13 @@
   framework PDF), skills, content file and 40 voice lines in `docs/GAMES.md` and `docs/CURRICULUM.md`
   ("Maths plan"). Ten-Frame Garden's third skin is now a taxi rank (the word flagged in the brief is gone). The owner left the choice to
   Claude: **Bip's Balance first** (levels 1–5).
+- **11 Oct:** Background music (owner: calm and gentle; music first, then Story Time in its own Story
+  Corner on the map). `MusicPlayer` (Scripts/Audio) fades between loops on the map and island screens,
+  goes quiet in games and on the other screens, dips to 30% while the narrator speaks, and keeps playing
+  behind the parent gate. Settings → Music: On / Quiet / Off (`SaveStore.Music`, one setting per computer;
+  older saves read On). Loops live in `Resources/Music/` (`music_map`, `music_<island>`), made with
+  ElevenLabs Music v2.5 (instrumental, 90 s) and `scripts/make_music_loop.sh` (3 s blended seam, fixed
+  gain to -20 LUFS); `prepare_assets.py` makes stereo `.ogg`. Only `music_map` exists so far: the
+  ElevenLabs account ran out of credits, so islands play the map's loop until theirs are made (prompts
+  for all five are on the "Bip Island music" flow). The validator checks the file names, the self-test
+  needs `music_map`, and the walk-through checks the map plays it and games are quiet.

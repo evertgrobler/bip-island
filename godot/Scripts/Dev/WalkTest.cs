@@ -123,6 +123,7 @@ public static class WalkTest
         game.Start();
         await WalkSetupGuide();
         await Expect<MapScreen>("one child: the game opens on the map");
+        Check("the map plays its music", game.Music.Track == MusicRules.MapTrack, game.Music.Track ?? "quiet");
 
         if (await Tap("island:letters")) await Expect<LettersIslandScreen>("letters island opens");
         await PlayLetters();
@@ -133,6 +134,7 @@ public static class WalkTest
             if (await Tap("island:" + island)) await Expect<GameIslandScreen>($"{island} island opens");
             // Tapping Bip starts the island's first game.
             if (await Tap("bip")) await Expect<GameScreen>($"tapping Bip on {island} island starts its first game");
+            Check($"the music goes quiet in a {island} game", game.Music.Track == null, game.Music.Track ?? "quiet");
             if (await Tap("home")) await Expect<GameIslandScreen>($"home from that game goes back to {island} island");
             await Wait(2.2);
             if (await Tap("home")) await Expect<MapScreen>($"home from {island} island");

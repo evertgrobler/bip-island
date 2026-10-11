@@ -28,6 +28,9 @@ public partial class VoicePlayer : Node
         AddChild(_player);
     }
 
+    /// <summary>The narrator is talking right now (the background music dips while she is).</summary>
+    public bool Speaking => _player.Playing;
+
     public static string PathFor(string clip) => AudioFolder + clip + ".ogg";
 
     public static bool HasClip(string clip) => ResourceLoader.Exists(PathFor(clip));

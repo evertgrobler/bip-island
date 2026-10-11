@@ -468,6 +468,16 @@ for path in sorted((REPO / "godot" / "Scripts").rglob("*.cs")):
 site = REPO / "site" / "index.html"
 if site.exists(): sa_check("site/index.html", sa_english.html_text(site.read_text(encoding="utf-8")))
 
+# Background music: Resources/Music/<track>.m4a, one loop for the map and one per island (BipCore.MusicRules).
+MUSIC_TRACKS = {"music_map"} | {f"music_{island}" for island in ISLANDS}
+music_dir = REPO / "Resources" / "Music"
+music_files = sorted(music_dir.glob("*")) if music_dir.exists() else []
+for path in music_files:
+    if path.suffix != ".m4a" or path.stem not in MUSIC_TRACKS:
+        err(f"Resources/Music/{path.name}: music files are .m4a named one of {sorted(MUSIC_TRACKS)}")
+if not (music_dir / "music_map.m4a").exists():
+    err("Resources/Music/music_map.m4a is missing (the map loop; islands without their own play it)")
+
 for note in sorted(sa_waiting): print(f"WAITING (South African English): {note}")
 
 if errors:
@@ -476,4 +486,4 @@ if errors:
     sys.exit(1)
 print(f"Content OK: {len(objectives)} objectives, {len(G)} graphemes, {len(WORDS)} words, "
       f"{len(levels_doc['levels'])} grid levels, {len(SK)} skills, {len(games)} games. "
-      f"Manifest: {len(audio)} voice clips, {len(pictures)} pictures.")
+      f"Manifest: {len(audio)} voice clips, {len(pictures)} pictures. Music loops: {len(music_files)}.")

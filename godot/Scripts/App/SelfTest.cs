@@ -113,11 +113,12 @@ public static class SelfTest
         var contentFiles = CountFiles("res://assets/content", ".json");
         var clipCount = VoicePlayer.CountClips();
         var sampleClip = VoicePlayer.HasClip("snd_s") && GD.Load<AudioStream>(VoicePlayer.PathFor("snd_s"))?.GetLength() > 0;
+        var musicTracks = BipCore.MusicRules.AllTracks.Count(MusicPlayer.HasTrack);
         var graphemes = ReadsAsJson("res://assets/content/phonics/graphemes.json");
         var game = BipIsland.Game.GameCoordinator.Instance;
         var islandsOpen = new[] { game.LettersOpen, game.NumbersOpen, game.WordsOpen, game.CodingOpen }.Count(open => open);
         var ok = error == null && game.Content != null && islandsOpen == 4 && Fonts.IsInstalled && Fonts.EmojiInstalled && contentFiles > 0 && clipCount > 0
-                 && sampleClip && graphemes;
+                 && sampleClip && graphemes && MusicPlayer.HasTrack(BipCore.MusicRules.MapTrack);
 
         var report = new Dictionary<string, object?>
         {
@@ -135,6 +136,7 @@ public static class SelfTest
             ["graphemesReadable"] = graphemes,
             ["clipCount"] = clipCount,
             ["sampleClipPlays"] = sampleClip,
+            ["musicTracks"] = musicTracks,
             ["saveMarker"] = FileAccess.FileExists(MarkerPath) ? FileAccess.GetFileAsString(MarkerPath) : null,
             ["userDataDir"] = OS.GetUserDataDir(),
             ["kidLock"] = KidLock.Check(),

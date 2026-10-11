@@ -434,6 +434,7 @@ public partial class ParentArea : VBoxContainer
         }
 
         BuildPlayTime();
+        BuildMusic();
         BuildPasscode();
         BuildAbout();
     }
@@ -470,6 +471,21 @@ public partial class ParentArea : VBoxContainer
             ended.Text = "Done: games are open again.";
         };
         play.AddChild(ParentUi.Row(12, endBreak, ended));
+    }
+
+    private void BuildMusic()
+    {
+        var section = ParentUi.Section(_body, "Music");
+        section.AddChild(ParentUi.Text("Calm music plays on the map and the islands, never during a game, and goes quieter while the narrator speaks.", 15, colour: ParentUi.Secondary, wrap: true));
+        var picker = new OptionButton();
+        var levels = new[] { MusicLevel.Normal, MusicLevel.Quiet, MusicLevel.Off };
+        foreach (var level in levels)
+        {
+            picker.AddItem(MusicRules.Label(level));
+            if (level == Coordinator.Store.Music) picker.Selected = picker.ItemCount - 1;
+        }
+        picker.ItemSelected += index => Coordinator.SetMusic(levels[(int)index]);
+        section.AddChild(ParentUi.Row(12, ParentUi.Text("Music", 18, bold: true), picker));
     }
 
     private void BuildAbout()

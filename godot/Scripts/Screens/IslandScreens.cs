@@ -16,6 +16,8 @@ namespace BipIsland.Screens;
 /// </summary>
 public partial class LettersIslandScreen : BaseScreen
 {
+    public override string? MusicTrack => MusicRules.IslandTrack(Island.Letters);
+
     private readonly bool _greet;
     private readonly List<Node2D> _keyNodes = [];
 
@@ -170,6 +172,8 @@ public partial class LettersIslandScreen : BaseScreen
 /// </summary>
 public partial class GameIslandScreen : BaseScreen
 {
+    public override string? MusicTrack => MusicRules.IslandTrack(_island);
+
     private readonly Island _island;
     private readonly bool _greet;
     private readonly List<Node2D> _keyNodes = [];
