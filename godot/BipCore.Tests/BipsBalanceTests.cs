@@ -153,15 +153,16 @@ public sealed class BipsBalanceTests
     public void TheSentenceIsSaidWithWhatNumberForTheBox()
     {
         var sentence = new Sum(7, Op.Plus, 3, 10);
-        Assert.Equal(["num_7", VoiceLine.Plus, VoiceLine.WhatNumber, VoiceLine.EqualsWord, "num_10"], BipsBalanceGame.Say(sentence, Slot.Right));
-        Assert.Equal(["num_9", VoiceLine.TakeAway, "num_4", VoiceLine.EqualsWord, "num_5"],
+        Assert.Equal(["num_7_mid", VoiceLine.Plus, VoiceLine.WhatNumber, VoiceLine.EqualsWord, "num_10"], BipsBalanceGame.Say(sentence, Slot.Right));
+        Assert.Equal(["num_9_mid", VoiceLine.TakeAway, "num_4_mid", VoiceLine.EqualsWord, "num_5"],
                      BipsBalanceGame.Say(new Sum(9, Op.Minus, 4, 5)));
     }
 
     [Fact]
     public void TheHintCountsTheShortWay()
     {
-        string[] Nums(params int[] n) => n.Select(AudioCatalogue.NumberClip).ToArray();
+        // Every number but the last leads on ("8… 9, 10").
+        string[] Nums(params int[] n) => n.Select((x, i) => i < n.Length - 1 ? AudioCatalogue.MidNumberClip(x) : AudioCatalogue.NumberClip(x)).ToArray();
         var on = new BipsBalanceGame.Round(Mode.Past10, new Sum(8, Op.Plus, 5, 13), Slot.Result, [12, 13, 14]);
         Assert.Equal([VoiceLine.CountOnTogether, .. Nums(8, 9, 10, 11, 12, 13)], BipsBalanceGame.Hint(on));
         // 2 + 18: on from the bigger number, not 18 steps from 2.
@@ -177,7 +178,8 @@ public sealed class BipsBalanceTests
     [Fact]
     public void AMissingNumberHintCountsBetweenTheNumbersShown()
     {
-        string[] Nums(params int[] n) => n.Select(AudioCatalogue.NumberClip).ToArray();
+        // Every number but the last leads on ("8… 9, 10").
+        string[] Nums(params int[] n) => n.Select((x, i) => i < n.Length - 1 ? AudioCatalogue.MidNumberClip(x) : AudioCatalogue.NumberClip(x)).ToArray();
         var round = new BipsBalanceGame.Round(Mode.Missing, new Sum(7, Op.Plus, 3, 10), Slot.Right, [2, 3, 4]);
         Assert.Equal([VoiceLine.CountOnTogether, .. Nums(7, 8, 9, 10)], BipsBalanceGame.Hint(round));
         Assert.Equal([VoiceLine.CountOnTogether, .. Nums(3, 4, 5, 6, 7, 8, 9, 10)], BipsBalanceGame.Hint(round with { Hidden = Slot.Left }));
@@ -216,7 +218,7 @@ public sealed class BipsBalanceTests
         var story = _content.Numbers.StorySums!.First(s => s.Op == "plus");
         var duck = _content.Numbers.CountingObjects.First(o => o.Id == "duck");
         var round = new BipsBalanceGame.Round(Mode.Add, new Sum(5, Op.Plus, 3, 8), Slot.Result, [7, 8, 9], Story: story, Thing: duck);
-        Assert.Equal([VoiceLine.StoryThereAre, "num_5", "word_ducks", "num_3", VoiceLine.StoryComeAlong, VoiceLine.StoryHowManyNow],
+        Assert.Equal([VoiceLine.StoryThereAre, "num_5_mid", "word_ducks", "num_3_mid", VoiceLine.StoryComeAlong, VoiceLine.StoryHowManyNow],
                      game.Prompt(round));
     }
 }

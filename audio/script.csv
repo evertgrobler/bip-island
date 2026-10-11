@@ -88,3 +88,4 @@ vo_story_there_are.m4a,There are,"Start of a story sum, followed by a number and
 vo_story_come_along.m4a,more come along.,"Story sum, after a number: ""three… more come along.""",more come along.
 vo_story_go_away.m4a,go away.,"Story sum, after a number: ""three… go away.""",go away.
 vo_story_how_many_now.m4a,How many are there now?,"Ends a story sum. Curious, inviting.",How many are there now?
+vo_and.m4a,and,"Middle of ""three and two"". Just the one word, even tone, leading on.",and

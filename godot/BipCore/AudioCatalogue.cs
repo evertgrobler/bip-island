@@ -76,6 +76,8 @@ public static class VoiceLine
     public const string StoryComeAlong = "vo_story_come_along";
     public const string StoryGoAway = "vo_story_go_away";
     public const string StoryHowManyNow = "vo_story_how_many_now";
+    /// <summary>"and" in the middle of a sum ("three and two"), not the reading word word_and.</summary>
+    public const string And = "vo_and";
 
     /// <summary>Every instruction clip, in the order above.</summary>
     public static readonly IReadOnlyList<string> All =
@@ -89,7 +91,7 @@ public static class VoiceLine
         BuildTower, FindTower, TallestTower, ShortestTower, HowManyAltogether, TakeAway, HowManyLeft, MakeTen,
         Double, HowMany, OddOrEven, Odd, BuildNumber, WhatComesNext,
         Balance, Plus, EqualsWord, WhatNumber, WhichNumber, BalanceHelps, CountOnTogether, CountBackTogether,
-        StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow,
+        StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow, And,
     ];
 }
 
@@ -107,6 +109,27 @@ public static partial class AudioCatalogue
     /// <summary>A word's clip: yo-yo → word_yoyo (file names have no hyphens).</summary>
     public static string WordClip(string word) => $"word_{word.Replace("-", "")}";
     public static string NumberClip(int n) => $"num_{n}";
+
+    /// <summary>The highest number with a mid-sentence clip (numbers.json spokenNumbers.joinTo).</summary>
+    public const int MidNumbersTo = 20;
+
+    /// <summary>
+    /// A number in the middle of a sentence ("seven… plus three"), said so it carries on rather than
+    /// finishing; numbers above <see cref="MidNumbersTo"/> use the plain clip.
+    /// </summary>
+    public static string MidNumberClip(int n) => n is >= 0 and <= MidNumbersTo ? $"num_{n}_mid" : NumberClip(n);
+
+    /// <summary>
+    /// A whole sentence with numbers in it, recorded as one clip (numbers.json spokenNumbers):
+    /// SentenceClip("join", 3, 2) → vo_say_join_3_2. Games play it when it's in the build and join
+    /// smaller clips otherwise.
+    /// </summary>
+    public static string SentenceClip(string id, int a, int? b = null) => b is { } second ? $"vo_say_{id}_{a}_{second}" : $"vo_say_{id}_{a}";
+
+    /// <summary>Clips that lead straight into the next one, so the player leaves almost no gap after them.</summary>
+    public static bool LeadsOn(string clip) =>
+        clip.EndsWith("_mid", StringComparison.Ordinal)
+        || clip is VoiceLine.And or VoiceLine.Plus or VoiceLine.TakeAway or VoiceLine.EqualsWord or VoiceLine.Make;
 
     public static readonly IReadOnlyList<string> PraiseClips = Enumerable.Range(1, PraiseCount).Select(n => $"praise_{n:00}").ToList();
     /// <summary>The one hint that stands alone ("Look for the one that's wiggling!"); the others lead into a sound.</summary>

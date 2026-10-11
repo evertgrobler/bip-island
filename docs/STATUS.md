@@ -399,3 +399,12 @@
   away; missing numbers are at most 10; fact families record `add_sub_20` (they stay within 20); missing numbers
   moved to the last level (stage 3, like `missing_number`), and the validator checks each level's band against
   its skill; only the drawn see-saw skin is listed; `BlockDrawing.ChildColour` shared with Block Towers.
+- **11 Oct:** Natural-sounding sums (owner: Block Towers "sounds very robotic"; it joined separately recorded
+  numbers that each ended like a full stop). Owner picked "both, mixed": whole recorded sentences for the
+  common small numbers (`numbers.json` `spokenNumbers`: 254 `vo_say_<id>_<a>[_<b>]` clips such as "Three and
+  two. How many altogether?", build/find a tower, take away within 10, make ten, doubles, odd or even), and
+  `num_<n>_mid` clips (0–20, said so they lead on) plus `vo_and` for sentences still joined from pieces (bigger
+  numbers, Bip's Balance, counting hints). The player leaves only 0.03 s after a lead-on clip. Until a clip is
+  recorded the game plays the old pieces (`VoicePlayer.Prefer`, and `num_7_mid` falls back to `num_7`).
+  **Blocked on recording:** the ElevenLabs connector no longer finds the narrator voice
+  (`Mq5hYfc3xyDzuW3pPMck` "does not resolve"); the owner must reconnect it to the account that owns the voice.

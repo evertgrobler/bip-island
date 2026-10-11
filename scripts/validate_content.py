@@ -437,6 +437,40 @@ for pr in contractions:
     a(f"word_contraction_{key}", pr["short"]); a(f"word_{pr['long'].lower().replace(' ', '_')}", pr["long"])
 for n in range(0, 101):
     a(f"num_{n}", str(n), "Say the number.")
+
+# Numbers said inside a sentence: whole recorded sentences (vo_say_...) and, for bigger numbers,
+# num_<n>_mid clips the game joins to the linking words (numbers.json "spokenNumbers").
+NUMBER_WORDS = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+                "fifteen sixteen seventeen eighteen nineteen twenty").split()
+def number_word(n): return NUMBER_WORDS[n]
+spoken = numbers.get("spokenNumbers") or {}
+join_to = spoken.get("joinTo", 0)
+if not 10 <= join_to <= 20: err("spokenNumbers.joinTo must be 10-20")
+for n in range(0, join_to + 1):
+    a(f"num_{n}_mid", number_word(n).capitalize() + ",",
+      "A number in the middle of a sentence (\"seven… plus three\"): carry on, don't finish.")
+def number_pairs(sen):
+    kind, lo, hi = sen.get("numbers"), sen.get("from", 1), sen.get("to", 0)
+    if not 1 <= lo <= hi <= 20: err(f"spoken sentence {sen.get('id')}: from/to must be 1-20"); return []
+    if kind == "one": return [(x, None) for x in range(lo, hi + 1)]
+    if kind == "sum": return [(x, y) for x in range(1, hi) for y in range(1, hi) if x + y <= hi]
+    if kind == "takeaway": return [(x, y) for x in range(max(lo, 2), hi + 1) for y in range(1, x)]
+    err(f"spoken sentence {sen.get('id')}: numbers must be one, sum or takeaway"); return []
+seen_spoken = set()
+for sen in spoken.get("sentences", []):
+    sid = sen.get("id", "")
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", sid) or sid in seen_spoken: err(f"spoken sentence id {sid!r}: lower-case and unique")
+    seen_spoken.add(sid)
+    for x, y in number_pairs(sen):
+        values = {"a": x, "b": y, "sum": x + (y or 0), "left": x - (y or 0), "double": 2 * x, "rest": 10 - x}
+        def fill(m):
+            key = m.group(1)
+            if key == "parity": return "even" if x % 2 == 0 else "odd"
+            if values.get(key) is None or not 0 <= values[key] <= 20: err(f"spoken sentence {sid}: no number for {{{key}}}"); return "?"
+            return number_word(values[key])
+        text = re.sub(r"\{([a-z]+)\}", fill, sen.get("text", ""))
+        text = text[0].upper() + text[1:]
+        a(f"vo_say_{sid}_{x}" + (f"_{y}" if y is not None else ""), text, "One whole sentence, said naturally.")
 for o in numbers["countingObjects"]:
     p(o["picture"], o["id"])
     plural = o["audioPlural"][len("word_"):]

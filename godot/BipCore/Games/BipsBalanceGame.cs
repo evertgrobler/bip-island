@@ -186,7 +186,9 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     /// <summary>The sentence out loud, with "what number" for the box (or the answer, once found).</summary>
     public static List<string> Say(Sentence sentence, Slot? hidden = null)
     {
-        string Part(Slot slot) => slot == hidden ? VoiceLine.WhatNumber : AudioCatalogue.NumberClip(sentence[slot]);
+        // The first two numbers lead on into the rest of the sentence; the last one finishes it.
+        string Part(Slot slot) => slot == hidden ? VoiceLine.WhatNumber
+            : slot == Slot.Result ? AudioCatalogue.NumberClip(sentence[slot]) : AudioCatalogue.MidNumberClip(sentence[slot]);
         return [Part(Slot.Left), sentence.Op == Op.Plus ? VoiceLine.Plus : VoiceLine.TakeAway, Part(Slot.Right),
                 VoiceLine.EqualsWord, Part(Slot.Result)];
     }
@@ -197,8 +199,8 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
         if (round.Story is { } story && round.Thing is { } thing)
             return story.Clips.Select(clip => clip switch
             {
-                "{a}" => AudioCatalogue.NumberClip(round.Sentence.Left),
-                "{b}" => AudioCatalogue.NumberClip(round.Sentence.Right),
+                "{a}" => AudioCatalogue.MidNumberClip(round.Sentence.Left),
+                "{b}" => AudioCatalogue.MidNumberClip(round.Sentence.Right),
                 "{things}" => thing.AudioPlural,
                 _ => clip,
             }).ToList();
@@ -237,7 +239,10 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     private static List<string> Count(int from, int to)
     {
         var step = to >= from ? 1 : -1;
-        var numbers = Enumerable.Range(0, Math.Abs(to - from) + 1).Select(i => AudioCatalogue.NumberClip(from + step * i));
+        var count = Math.Abs(to - from) + 1;
+        // "8… 9, 10": every number but the last carries on.
+        var numbers = Enumerable.Range(0, count)
+            .Select(i => i < count - 1 ? AudioCatalogue.MidNumberClip(from + step * i) : AudioCatalogue.NumberClip(from + step * i));
         return [step > 0 ? VoiceLine.CountOnTogether : VoiceLine.CountBackTogether, .. numbers];
     }
 
