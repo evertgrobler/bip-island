@@ -376,3 +376,10 @@
   won before Home wait for the next card.
 - **11 Oct:** Download page's "Play-time breaks" card says each child has their own play time and break,
   so a sibling can play while one rests (owner request; matches the 3 Oct per-child breaks decision).
+- **10 Oct:** Maths plan (docs only, no code): games for adding, taking away, times and sharing, Cambridge
+  0096 Stages 1–3. Three new games (Bip's Balance, Picnic Plates, Number Machine) and new levels for Number
+  Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers, planned around
+  Block Towers' scope (asked its session). Levels, objective codes (11 new codes still to confirm against the
+  framework PDF), skills, content file and 40 voice lines in `docs/GAMES.md` and `docs/CURRICULUM.md`
+  ("Maths plan"). Ten-Frame Garden's third skin is now a taxi rank (the word flagged in the brief is gone). The owner left the choice to
+  Claude: **Bip's Balance first** (levels 1–5).
