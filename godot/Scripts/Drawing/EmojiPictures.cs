@@ -193,7 +193,7 @@ public static class EmojiPictures
         ["pic_wig"] = "👱",
         ["pic_wing"] = "🪽",
         ["pic_wood"] = "🪓🪵",
-        ["pic_yak"] = "🦬",
+        ["pic_yoyo"] = "🪀",
         ["pic_zip"] = "🤐",
         ["pic_zoo"] = "🦁🐵",
     };
