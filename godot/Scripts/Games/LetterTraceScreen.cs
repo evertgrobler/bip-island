@@ -102,7 +102,9 @@ public partial class LetterTraceScreen : GameScreen
         Sfx.Play(BipSounds.Effect.Chime);
         Bip.Celebrate();
         Record(true, _game.SkillId(new LetterTraceGame.Round(_sound)), _sound.Id);
-        Voice.Play([Coordinator.RandomPraise(), _sound.SoundClip], completion: () => Coordinator.ShowIsland(Island.Letters, greet: false));
+        // One trace is the whole game: the end card shows the star and any new picture stickers.
+        Voice.Play([Coordinator.RandomPraise(), _sound.SoundClip],
+                   completion: () => FinishVisit(() => Coordinator.ShowIsland(Island.Letters, greet: false)));
     }
 
     protected override void HandleTap(string name, Node2D node)
