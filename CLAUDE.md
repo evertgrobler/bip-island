@@ -29,6 +29,7 @@ The owner's own family first, to test how it plays. Not for sale yet, no App Sto
 - Cloud sessions run on Linux. They can build, test, screenshot and export the Godot game (`scripts/check_all.sh`; setup in `docs/STATUS.md`), but not run it on a real Mac or Windows PC. GitHub Actions does that: the `godot.yml` Mac and Windows jobs install an older build, update it and check the kid lock.
 - The app **updates itself** on the family's Mac and Windows PC via **Velopack**. Every merge to `main` produces a new versioned build, published to the Vercel Blob store, that installed copies pick up (a grown-up confirms the install).
 - Keep explanations to the owner short and non-technical; they run a digital agency and are comfortable with web tech.
+- **Time zone: South African time (SAST, UTC+2), always (owner rule, 4 October 2026).** Every time told to the owner, written in docs, PR bodies and STATUS, or used for check-ins is SAST, written like "19:40 SAST". Cloud sessions run on UTC: `.claude/settings.json` sets `TZ=Africa/Johannesburg` so `date` shows SAST; when a tool reports UTC (GitHub, scheduled check-ins), add 2 hours before telling the owner.
 
 ## Tech decisions (fixed)
 
