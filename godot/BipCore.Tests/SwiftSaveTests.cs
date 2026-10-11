@@ -57,8 +57,13 @@ public sealed class SwiftSaveTests
     [Fact]
     public void ASwiftSaveSavesAgainInTheSameShape()
     {
-        var again = ChildProgress.Decode(SwiftSave).Encode();
-        Assert.True(JsonNode.DeepEquals(JsonNode.Parse(SwiftSave), JsonNode.Parse(again)), again);
+        var again = JsonNode.Parse(ChildProgress.Decode(SwiftSave).Encode())!.AsObject();
+        // Picture stickers came after the Swift app: their (empty) fields are the only addition.
+        Assert.Equal(0, again["starStickersGiven"]!.GetValue<int>());
+        Assert.Empty(again["pictureStickers"]!.AsArray());
+        again.Remove("starStickersGiven");
+        again.Remove("pictureStickers");
+        Assert.True(JsonNode.DeepEquals(JsonNode.Parse(SwiftSave), again), again.ToJsonString());
     }
 
     [Fact]

@@ -3822,11 +3822,6 @@
       "notes": ""
     },
     {
-      "id": "word_yak",
-      "text": "yak",
-      "notes": ""
-    },
-    {
       "id": "word_yellow",
       "text": "yellow",
       "notes": ""
@@ -3849,6 +3844,11 @@
     {
       "id": "word_your",
       "text": "your",
+      "notes": ""
+    },
+    {
+      "id": "word_yoyo",
+      "text": "yo-yo",
       "notes": ""
     },
     {
@@ -5212,8 +5212,8 @@
       "brief": "wood"
     },
     {
-      "id": "pic_yak",
-      "brief": "yak (picture for the sound y)"
+      "id": "pic_yoyo",
+      "brief": "yo-yo (picture for the sound y)"
     },
     {
       "id": "pic_zip",

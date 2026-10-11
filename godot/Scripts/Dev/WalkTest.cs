@@ -144,15 +144,26 @@ public static class WalkTest
         await PlayArt();
 
         if (await Tap("stickers")) await Expect<StickerScreen>("the sticker book opens");
+        Check("the sticker book opens on the child's picture stickers", Screen() is StickerScreen book
+              && book.FindChildren("*", "Node2D", true, false).Count > 0 && game.Progress.PictureStickers.Count > 0,
+              $"{game.Progress.PictureStickers.Count} picture stickers");
         if (await Tap("page")) Check("the sticker page turns", Screen() is StickerScreen);
         if (await Tap("home")) await Expect<MapScreen>("home from the sticker book");
 
         var starsBefore = game.Progress.Stars;
         var mysteryShown = Screen()?.FindTappable("mystery") != null;
         Check("the mystery box is there once a day", mysteryShown == game.MysteryAvailable);
+        var mysteryStickersBefore = game.Progress.PictureStickers.Count;
+        var mysteryMakesTen = (starsBefore + BipCore.ChildProgress.MysteryBonusStars) / BipCore.ChildProgress.StarsPerSticker
+                              > game.Progress.StarStickersGiven;
         if (mysteryShown && await Tap("mystery"))
         {
-            await Wait(1.5);
+            await Wait(1.0);
+            Check(mysteryMakesTen ? "the mystery box's stars make up 10, and the sticker pops out" : "the mystery box's stars don't make up 10: no sticker",
+                  mysteryMakesTen == (Screen()?.FindChild("NewSticker", true, false) != null)
+                  && game.Progress.PictureStickers.Count == mysteryStickersBefore + (mysteryMakesTen ? 1 : 0),
+                  $"stars {starsBefore} + {BipCore.ChildProgress.MysteryBonusStars}, stickers {mysteryStickersBefore} → {game.Progress.PictureStickers.Count}");
+            await Wait(2.5);
             Check("the mystery box gives 5 stars, once", game.Progress.Stars == starsBefore + BipCore.ChildProgress.MysteryBonusStars && !game.MysteryAvailable,
                 $"stars {starsBefore} → {game.Progress.Stars}");
             Check("the stars are saved", game.Store.Progress(game.ChildId).Stars == game.Progress.Stars);
@@ -374,13 +385,23 @@ public static class WalkTest
             if (await TapNumeral(right: true))
                 Check("right after a miss: no star, but the answer still counts", game.Progress.Stars == starsBefore
                       && game.Progress.Skill("subitise_5").TotalAttempts + game.Progress.Skill("subitise_10").TotalAttempts > 0);
+            var stickersBefore = game.Progress.PictureStickers.Count;
+            var starStickersBefore = game.Progress.StarStickersGiven;
             for (var round = 2; round <= 8; round++)
             {
                 if (!await WaitFor(() => Screen() is NumeralGameScreen { RightIndex: >= 0, InputLocked: false }, 6)) break;
                 await TapNumeral(right: true);
             }
+            Check("the end card shows the new picture sticker for finishing",
+                  await WaitFor(() => Screen()?.FindChild("NewSticker", true, false) != null, 10), $"showing {Screen()?.GetType().Name}");
             Check("eight questions make a visit: the stars are counted and Bip goes back to the island",
                   await WaitFor(() => Screen() is GameIslandScreen, 15), $"showing {Screen()?.GetType().Name}");
+            var starStickers = game.Progress.StarStickersGiven - starStickersBefore;
+            Check("finishing a game wins a picture sticker, and every 10 stars another",
+                  game.Progress.PictureStickers.Count == stickersBefore + 1 + starStickers
+                  && game.Progress.StarStickersGiven == game.Progress.Stars / BipCore.ChildProgress.StarsPerSticker,
+                  $"stickers {stickersBefore} → {game.Progress.PictureStickers.Count}, stars {game.Progress.Stars}");
+            Check("the stickers are saved", game.Store.Progress(game.ChildId).PictureStickers.Count == game.Progress.PictureStickers.Count);
             Check("seven first-try answers, seven stars", game.Progress.Stars == starsBefore + 7, $"stars {starsBefore} → {game.Progress.Stars}");
             Check("both games are in the recent games", game.Progress.RecentGames.TakeLast(2).SequenceEqual(
                 [BipCore.CountTapGame.GameId, BipCore.QuickLookGame.GameId]));
@@ -578,6 +599,10 @@ public static class WalkTest
             if (Screen() is not WordRocketScreen rocket) return;
             var answer = rocket.Answer!;
             var stars = game.Progress.Stars;
+            // A miss on this sound in an earlier game would make the two misses below drop it back,
+            // ending the visit before the next question; start the sound with no misses.
+            if (rocket.SoundId is { } soundId)
+                game.Progress.Sounds.Skills[soundId] = new SkillMastery(game.Progress.Sounds.Mastery(soundId).Level);
             var wrong = PhonicsCourse.Alphabet.First(l => !rocket.NextKeys.Contains(l));
             await TypeLetter(wrong);
             Check("a wrong key boops and types nothing", rocket.Typed == "" && rocket.Misses == 1 && rocket.GlowingKey == null);
@@ -680,7 +705,9 @@ public static class WalkTest
                 foreach (var point in points) trace._UnhandledInput(new InputEventMouseMotion { GlobalPosition = point, ButtonMask = MouseButtonMask.Left });
                 trace._UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = points[^1] });
                 Check("tracing round the letter earns a star", game.Progress.Stars == starsBefore + 1, $"stars {starsBefore} → {game.Progress.Stars}");
-                Check("Letter Trace goes back to the island", await WaitFor(() => Screen() is LettersIslandScreen, 6));
+                Check("Letter Trace ends on the end card, with a picture sticker for finishing",
+                      await WaitFor(() => Screen() is LetterTraceScreen && Screen()?.FindChild("NewSticker", true, false) != null, 8));
+                Check("Letter Trace goes back to the island", await WaitFor(() => Screen() is LettersIslandScreen, 12));
             }
             await Wait(0.6);
 

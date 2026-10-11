@@ -384,11 +384,15 @@ public partial class GameCoordinator : Node
 
     public bool MysteryAvailable => Progress.LastMysteryDay != Today;
 
-    /// <summary>Bip's mystery box: once a day, bonus stars. Returns true when the box was full.</summary>
+    /// <summary>
+    /// Bip's mystery box: once a day, bonus stars, and the picture sticker they make up when they reach
+    /// the next 10 (shown by the map, from <see cref="TakeNewStickers"/>). Returns true when the box was full.
+    /// </summary>
     public bool ClaimMystery()
     {
         if (!Progress.ClaimMysteryBox(Today)) return false;
-        Store.Save(Progress, ChildId);
+        _visitSound = null;
+        AwardStickers(finishedGame: false);
         return true;
     }
 
@@ -543,6 +547,14 @@ public partial class GameCoordinator : Node
     public string? CurrentGameId { get; private set; }
     private int _visitStartStars;
     private int _visitStartLevel;
+    /// <summary>
+    /// Picture stickers won but not shown yet (every 10 stars, and one for finishing). They wait for the
+    /// next end card or mystery box, so one won just before Home is still seen; they belong to one child.
+    /// </summary>
+    private readonly List<string> _newStickers = [];
+    private Guid? _newStickersChild;
+    private string? _visitSound;
+    private bool _visitCompleted;
 
     /// <summary>Skins the game screens can draw; a session picks one of these when the game has it.</summary>
     public static readonly IReadOnlySet<string> DrawnSkins = new HashSet<string>
@@ -573,6 +585,8 @@ public partial class GameCoordinator : Node
         CurrentGameId = gameId;
         _visitStartStars = Progress.Stars;
         _visitStartLevel = GameLevel(gameId);
+        _visitSound = null;
+        _visitCompleted = false;
         Progress.NotePlayed(gameId);
         Store.Save(Progress, ChildId);
     }
@@ -591,6 +605,42 @@ public partial class GameCoordinator : Node
     }
 
     /// <summary>
+    /// The game was played to its end (not cut short to practise again): a picture sticker for
+    /// finishing, once per visit, matching the sound practised when there was one.
+    /// </summary>
+    public void CompleteVisit()
+    {
+        if (_visitCompleted || Content == null || CurrentGameId == null) return;
+        _visitCompleted = true;
+        AwardStickers(finishedGame: true);
+    }
+
+    private void AwardStickers(bool finishedGame)
+    {
+        if (Content == null) return;
+        PendingStickers().AddRange(StickerBook.AwardStickers(Progress, Content, _visitSound, finishedGame, Rng));
+        Store.Save(Progress, ChildId);
+    }
+
+    private List<string> PendingStickers()
+    {
+        if (_newStickersChild != ChildId)
+        {
+            _newStickers.Clear();
+            _newStickersChild = ChildId;
+        }
+        return _newStickers;
+    }
+
+    /// <summary>The picture stickers won since the last were shown; they count as shown from now on.</summary>
+    public List<string> TakeNewStickers()
+    {
+        var stickers = PendingStickers().ToList();
+        _newStickers.Clear();
+        return stickers;
+    }
+
+    /// <summary>
     /// Records one answered question against its skill and sound, and moves the game's own level
     /// (it shows at the end of the visit). Saves straight away. Returns the sound's level change.
     /// </summary>
@@ -600,7 +650,9 @@ public partial class GameCoordinator : Node
         var change = Progress.RecordAnswer(correct, skillId, soundId, Today, Content.MasteryRules);
         if (CurrentGameId is { } gameId && Content.Game(gameId) is { } entry)
             Progress.RecordGameAnswer(correct, gameId, entry.StartingLevel(StartingBand), entry.LevelSteps.Count, Content.MasteryRules);
-        Store.Save(Progress, ChildId);
+        // Every 10 stars become a picture sticker, shown at the end of the visit (or the next one, after Home).
+        _visitSound = soundId ?? _visitSound;
+        AwardStickers(finishedGame: false);
         return change;
     }
 

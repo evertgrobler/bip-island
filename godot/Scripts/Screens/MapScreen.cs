@@ -204,7 +204,10 @@ public partial class MapScreen : BaseScreen
                 pop.TweenProperty(node, "modulate:a", 0f, 0.2);
                 pop.TweenCallback(Callable.From(node.QueueFree));
                 if (Coordinator.ClaimMystery()) Voice.Play([Coordinator.RandomPraise()]);
-                After(1.2, () => InputLocked = false);
+                // The bonus stars can make up the next 10: that picture sticker pops out of the box.
+                var stickers = Coordinator.TakeNewStickers();
+                if (stickers.Count > 0) ShowMysteryStickers(stickers);
+                After(stickers.Count > 0 ? 3.2 : 1.2, () => InputLocked = false);
                 break;
             case var other when other.StartsWith("island:", StringComparison.Ordinal):
                 Sfx.Play(BipSounds.Effect.Boop);
@@ -226,4 +229,32 @@ public partial class MapScreen : BaseScreen
     protected override void DidTapBip() => Voice.Play([VoiceLine.Welcome]);
     public override void ReplayPrompt() => SayWelcome();
     protected override void GoHome() { }
+
+    /// <summary>A card with the picture stickers the mystery box's stars made up; it fades after a moment.</summary>
+    private void ShowMysteryStickers(List<string> stickers)
+    {
+        var card = new Node2D { Name = "MysteryStickers", ZIndex = 80, Scale = Vector2.One * 0.01f };
+        card.AddChild(Pen(RoundRect(R(-400, -150, 800, 330), 40), 640, fill: Palette.Card, lineWidth: 6));
+        var heading = Sketch.Label(stickers.Count == 1 ? "New sticker!" : "New stickers!", 40, Palette.Ink);
+        heading.Position += P(0, 115);
+        card.AddChild(heading);
+        var spots = StickerArt.Grid(stickers.Count, P(0, -40), width: 720, height: 170);
+        for (var i = 0; i < stickers.Count; i++)
+        {
+            var sticker = StickerArt.Make(stickers[i], (ulong)(650 + i));
+            sticker.Name = "NewSticker";
+            sticker.Position = spots.Centres[i];
+            sticker.Scale = Vector2.One * spots.Scale;
+            card.AddChild(sticker);
+        }
+        Stage.AddChild(card);
+        var show = card.CreateTween();
+        show.TweenInterval(0.3);
+        show.TweenCallback(Callable.From(() => Sfx.Play(BipSounds.Effect.Chime)));
+        show.TweenProperty(card, "scale", Vector2.One * 1.05f, 0.2);
+        show.TweenProperty(card, "scale", Vector2.One, 0.1);
+        show.TweenInterval(2.2);
+        show.TweenProperty(card, "modulate:a", 0f, 0.3);
+        show.TweenCallback(Callable.From(card.QueueFree));
+    }
 }

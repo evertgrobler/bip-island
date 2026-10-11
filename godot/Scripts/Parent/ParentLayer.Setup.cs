@@ -195,7 +195,7 @@ public partial class ParentLayer
             0 => ("The island map",
                 "Your child picks any island and any game. Bip suggests one by making it glow, and nudges towards another island when one gets all the attention, but never forces a game."),
             1 => ("Stars and stickers",
-                "Right answers earn stars, stars fill the sticker book, and a mystery box opens once a day. Nothing is ever bought, and there are no timers or \"game over\": a wrong answer just gets another go, then a spoken hint."),
+                "Right answers earn stars. Every 10 stars, and every finished game, win a picture sticker; learning a sound or skill adds its own sticker. A mystery box opens once a day. Nothing is ever bought, and there are no timers or \"game over\": a wrong answer just gets another go, then a spoken hint."),
             _ => ("Bip's breaks",
                 "When the play time is up, Bip charges his battery and the games stay closed until the break ends. When a new version is ready, an \"Update ready\" button appears for you; it installs only after the grown-up question."),
         };

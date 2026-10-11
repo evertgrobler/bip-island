@@ -95,7 +95,7 @@ Rewards are things to collect: every correct answer moves the child up a ladder 
 | Tier | How it's earned | What the child gets |
 | --- | --- | --- |
 | 1. Stars | Every correct answer | A star drops into Bip's star jar |
-| 2. Stickers | Every 10 stars, and every finished game | A sticker for the sticker book that matches what was learnt (a sun for “s”, seven ladybirds for 7) |
+| 2. Stickers | Every 10 stars, and every finished game (picture stickers); mastering a sound or skill (learning stickers) | A picture sticker from words.json that matches the sound just practised when there is one (a sun for “s”); a sound or skill sticker once it's mastered. Built: picture stickers, the sound and skill pages. Still to come: number pictures (seven ladybirds for 7) |
 | 3. Creatures | Filling a sticker page, such as all six sounds in a group | A creature moves onto the island and stays on the map: a penguin, a tortoise, a hadeda, a crab |
 | 4. Decorations | Mastering a skill, or a creature asking for a home | Something to place anywhere on the map: palm trees, a lighthouse, flags, a treehouse |
 | 5. New areas | Mastering a whole group of skills | A new part of the island opens, with its own games |

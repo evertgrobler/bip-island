@@ -276,6 +276,57 @@ public sealed class SystemsTests
     }
 
     [Fact]
+    public void EveryTenStarsWinAPictureStickerForTheSoundJustPractised()
+    {
+        var content = Library();
+        var progress = new ChildProgress();
+        var rng = new SeededGenerator(7);
+        for (var i = 0; i < 9; i++) progress.RecordAnswer(true, "snd_g1", "s", 0, Rules);
+        Assert.Empty(StickerBook.AwardStickers(progress, content, "s", finishedGame: false, rng)); // 9 stars: not yet
+        progress.RecordAnswer(true, "snd_g1", "s", 0, Rules);
+        var won = StickerBook.AwardStickers(progress, content, "s", finishedGame: false, rng);
+        Assert.Single(won);
+        // "A sun for s": the sticker's word starts with the sound just practised.
+        Assert.Equal("s", content.Words.Words.First(w => w.Picture == won[0]).FirstSound);
+        Assert.Empty(StickerBook.AwardStickers(progress, content, "s", finishedGame: false, rng)); // only once per 10
+        Assert.Equal(won, progress.PictureStickers);
+    }
+
+    [Fact]
+    public void AFinishedGameWinsAStickerAndSavedStarsCatchUp()
+    {
+        var content = Library();
+        var progress = new ChildProgress();
+        var rng = new SeededGenerator(11);
+        // A child who had 25 stars before picture stickers existed: two stickers owed, plus one for finishing.
+        for (var i = 0; i < 25; i++) progress.RecordAnswer(true, "count_10", null, 0, Rules);
+        var won = StickerBook.AwardStickers(progress, content, soundId: null, finishedGame: true, rng);
+        Assert.Equal(3, won.Count);
+        Assert.Equal(3, won.Distinct().Count());
+        Assert.All(won, id => Assert.Contains(id, StickerBook.AllPictureStickers(content)));
+        Assert.Equal(2, progress.StarStickersGiven);
+        Assert.Equal(0, progress.StarStickersOwed);
+
+        // Saved and loaded again, nothing is lost or given twice.
+        var loaded = ChildProgress.Decode(progress.Encode());
+        Assert.Equal(won, loaded.PictureStickers);
+        Assert.Empty(StickerBook.AwardStickers(loaded, content, null, finishedGame: false, rng));
+    }
+
+    [Fact]
+    public void TheWholePictureSetCanBeCollectedWithoutRepeats()
+    {
+        var content = Library();
+        var progress = new ChildProgress();
+        var rng = new SeededGenerator(3);
+        var all = StickerBook.AllPictureStickers(content);
+        Assert.True(all.Count >= 100, $"{all.Count} picture stickers");
+        for (var i = 0; i < all.Count + 5; i++) StickerBook.AwardStickers(progress, content, "b", finishedGame: true, rng);
+        Assert.Equal(all.OrderBy(x => x), progress.PictureStickers.OrderBy(x => x));
+        Assert.Null(StickerBook.NextPictureSticker(progress, content, "b", rng));
+    }
+
+    [Fact]
     public void OldSavesStillLoad()
     {
         // Version 1 had no stars, mystery box or breaks: they decode as empty.
@@ -284,5 +335,7 @@ public sealed class SystemsTests
         Assert.Null(loaded.LastMysteryDay);
         Assert.Null(loaded.Breaks);
         Assert.Empty(loaded.RecentGames);
+        Assert.Empty(loaded.PictureStickers);
+        Assert.Equal(0, loaded.StarStickersGiven);
     }
 }

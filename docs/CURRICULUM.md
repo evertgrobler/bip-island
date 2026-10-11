@@ -137,7 +137,7 @@ All game content is data. Games never hard-code words, numbers or levels. The ga
    - every grid level is solvable;
    - its stored solution really is a shortest route;
    - every Fix-It bug really breaks the program.
-3. **A new word** needs its grapheme split. If it is picturable, it also needs a `pic_<word>` artwork. Every word needs a `word_<word>` voice clip.
+3. **A new word** needs its grapheme split. If it is picturable, it also needs a `pic_<word>` artwork. Every word needs a `word_<word>` voice clip. File names drop hyphens: yo-yo is `word_yoyo` and `pic_yoyo`.
 4. **New objectives:** add the code to `objectives.json` with your own short paraphrase, then link it from a skill.
 5. **Voice clips** come from the asset manifest and are recorded only in the official narrator voice ("Bip Island Narrator" in ElevenLabs). Cloud sessions can't reach ElevenLabs, so list the missing clips in the pull request and the owner has them generated.
 6. Language rule: proper South African English, UK spelling, no slang.
