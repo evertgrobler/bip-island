@@ -329,4 +329,7 @@
   `BlockTowersGame`, tests `BlockTowersTests`, screen `BlockTowersScreen`, drawing `Scripts/Drawing/BlockDrawing.cs`
   (cube fills are plain polygons under the hand-drawn outline: a wobbly outline that small crosses itself and the
   sketch pen drops its fill). 14 new narrator lines (ElevenLabs works again; some requests still fail with
-  "unusual activity", retry one at a time).
+  "unusual activity", retry one at a time). Review fixes: the two-miss hint wiggles the pile when more cubes are
+  needed and the tower (or tens or ones) when some must come off; make ten lets the child overshoot; an empty tick
+  is ignored in every building round; "which" rounds don't repeat in a visit; pattern steps and the tens-and-ones
+  start are level fields in games.json ("steps", "from").

@@ -147,7 +147,7 @@ if not isinstance(games_doc.get("session", {}).get("roundsPerSession"), int) or 
 game_ids = [gm["id"] for gm in games]
 if len(game_ids) != len(set(game_ids)): err("games.json: duplicate game id")
 LEVEL_KEYS = {"band", "countTo", "choices", "flashTenths", "bubbles", "speedPercent", "soundCounts", "gridBand", "cards", "spares",
-              "modes", "shapes", "pots", "mirror", "note"}
+              "modes", "shapes", "pots", "mirror", "from", "steps", "note"}
 BANDS = ["foundation", "stage1", "stage2", "stage3"]
 for gm in games:
     levels = gm.get("levels", [])
@@ -291,7 +291,11 @@ for gm in games:
             if not 3 <= up <= 99: err(f"{where}: countTo must be 3 to 99")
             if "tensones" in lv["modes"] and up < 20: err(f"{where}: tens and ones needs numbers past 20")
             if set(lv["modes"]) - {"tensones"} and up > 20: err(f"{where}: towers stop at 20 (only tens and ones go higher)")
-            if "pattern" in lv["modes"] and up < 4: err(f"{where}: patterns need towers up to at least 4")
+            steps = lv.get("steps", [])
+            if ("pattern" in lv["modes"]) != bool(steps): err(f"{where}: pattern levels (and only they) list their steps")
+            elif steps and (any(not isinstance(d, int) or d < 1 for d in steps) or 1 + 3 * min(steps) > up):
+                err(f"{where}: steps must be whole numbers from 1 that fit a pattern of four towers up to {up}")
+            if "tensones" in lv["modes"] and not 11 <= lv.get("from", 11) <= up: err(f"{where}: tens and ones start from 11 up to countTo")
         elif gm["id"] == "mirror_magic":
             if lv["modes"] != ["line"] and lv.get("mirror", "vertical") not in ("vertical", "horizontal"): err(f"{where}: mirror is vertical or horizontal")
             if "finish" in lv["modes"] and sum(p["mirror"] == lv.get("mirror", "vertical") for p in mirror_doc["pictures"]) < 3:

@@ -66,6 +66,8 @@ public sealed class BlockTowersTests
                         break;
                     case BlockTowersGame.Mode.Which:
                         asksSeen.Add(round.Ask);
+                        // The answer the round was built for is the one the rules accept (and the hint wiggles).
+                        Assert.Equal(round.Target.ToString(), Assert.Single(game.CorrectChoices(round)));
                         Assert.Equal(3, round.Towers!.Count);
                         Assert.Equal(3, round.Towers.Distinct().Count());
                         Assert.All(round.Towers, h => Assert.InRange(h, 1, step.CountTo!.Value));
@@ -93,12 +95,13 @@ public sealed class BlockTowersTests
                         Assert.InRange(round.A, 1, 20);
                         break;
                     case BlockTowersGame.Mode.TensOnes:
-                        Assert.InRange(round.Target, 11, 99);
+                        Assert.InRange(round.Target, step.From!.Value, 99);
                         Assert.Equal(round.Target.ToString(), Assert.Single(game.CorrectChoices(round)));
                         break;
                     case BlockTowersGame.Mode.Pattern:
                         Assert.Equal(new[] { round.A, round.A + round.B, round.A + 2 * round.B }, round.Towers);
                         Assert.Equal(round.A + 3 * round.B, round.Target);
+                        Assert.Contains(round.B, step.Steps!); // the steps come from games.json
                         Assert.Equal(3, round.Choices.Count);
                         Assert.All(round.Choices, c => Assert.InRange(int.Parse(c), 1, 20));
                         break;
@@ -145,6 +148,23 @@ public sealed class BlockTowersTests
             var session = GameSession.Start(game, _content.Games.Session, new HashSet<string>(), rng);
             var asked = new List<string>();
             while (session.NextRound(game, learner, rng) is { } round) asked.Add($"{round.A}+{round.B}");
+            Assert.Equal(asked.Count, asked.Distinct().Count());
+        }
+    }
+
+    [Fact]
+    public void WhichRoundsDoNotRepeatInAVisit()
+    {
+        var game = new BlockTowersGame(_content);
+        var learner = new Learner(Band.Foundation, 1, new HashSet<string>(), GameLevel: 1); // build + which, up to 10
+        var rng = new SeededGenerator(78);
+        for (var i = 0; i < 60; i++)
+        {
+            var session = GameSession.Start(game, _content.Games.Session, new HashSet<string>(), rng);
+            var asked = new List<string>();
+            while (session.NextRound(game, learner, rng) is { } round)
+                if (round.Mode == BlockTowersGame.Mode.Which)
+                    asked.Add($"{round.Ask}:{round.Target}:{string.Join(",", round.Towers!.Order())}");
             Assert.Equal(asked.Count, asked.Distinct().Count());
         }
     }

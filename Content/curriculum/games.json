@@ -472,6 +472,7 @@
             "tensones"
           ],
           "countTo": 99,
+          "from": 11,
           "note": "Build two-digit numbers from tens and ones"
         },
         {
@@ -479,6 +480,11 @@
             "pattern"
           ],
           "countTo": 20,
+          "steps": [
+            1,
+            2,
+            3
+          ],
           "note": "Which tower comes next? Steps of 1, 2 and 3"
         }
       ]

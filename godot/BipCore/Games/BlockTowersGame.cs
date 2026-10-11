@@ -73,8 +73,8 @@ public sealed class BlockTowersGame(ContentLibrary content) : IMiniGame<BlockTow
                 Mode.MakeTen => MakeTen(session, rng),
                 Mode.Doubles => Doubles(Math.Min(upTo, 20), session, rng),
                 Mode.OddEven => OddEven(Math.Min(upTo, 20), session, rng),
-                Mode.TensOnes => TensOnes(upTo, session, rng),
-                _ => Pattern(Math.Min(upTo, 20), session, rng),
+                Mode.TensOnes => TensOnes(level.From ?? 11, upTo, session, rng),
+                _ => Pattern(level.Steps ?? [], Math.Min(upTo, 20), session, rng),
             };
             if (round != null) return round;
         }
@@ -112,12 +112,20 @@ public sealed class BlockTowersGame(ContentLibrary content) : IMiniGame<BlockTow
 
     private Round? Which(int upTo, GameSession session, IRandomSource rng)
     {
-        var ask = rng.NextIndex(3) switch { 0 => Ask.Tallest, 1 => Ask.Shortest, _ => Ask.Number };
-        var heights = rng.Shuffled(Enumerable.Range(1, upTo)).Take(3).ToList();
-        if (heights.Count < 3) return null;
-        var target = ask switch { Ask.Tallest => heights.Max(), Ask.Shortest => heights.Min(), _ => heights[0] };
-        var towers = rng.Shuffled(heights);
-        return new Round(Mode.Which, target, Numerals(towers), Towers: towers, Ask: ask);
+        if (upTo < 3) return null;
+        // Too many possible rounds to list, so draw a few and keep the first not asked this visit.
+        (Ask Ask, int Target, List<int> Heights) Draw()
+        {
+            var ask = rng.NextIndex(3) switch { 0 => Ask.Tallest, 1 => Ask.Shortest, _ => Ask.Number };
+            var heights = rng.Shuffled(Enumerable.Range(1, upTo)).Take(3).ToList();
+            var target = ask switch { Ask.Tallest => heights.Max(), Ask.Shortest => heights.Min(), _ => heights[0] };
+            return (ask, target, heights);
+        }
+        static string Key((Ask Ask, int Target, List<int> Heights) d) => $"which:{d.Ask}:{d.Target}:{string.Join(",", d.Heights.Order())}";
+        var draws = Enumerable.Range(0, 30).Select(_ => Draw()).ToList();
+        var pick = draws.FirstOrDefault(d => !session.UsedItems.Contains(Key(d)), draws[0]);
+        var towers = rng.Shuffled(pick.Heights);
+        return new Round(Mode.Which, pick.Target, Numerals(towers), Towers: towers, Ask: pick.Ask, Used: [Key(pick)]);
     }
 
     private Round? Join(int upTo, GameSession session, IRandomSource rng)
@@ -143,10 +151,10 @@ public sealed class BlockTowersGame(ContentLibrary content) : IMiniGame<BlockTow
         return new Round(Mode.MakeTen, Ten - a, Heights(Ten), a, MostCubes: Ten, Used: used);
     }
 
-    /// <summary>Doubles up to double 10 (1Ni.06).</summary>
+    /// <summary>Doubles whose total stays within the level's numbers (countTo 20: up to double 10, 1Ni.06).</summary>
     private Round? Doubles(int upTo, GameSession session, IRandomSource rng)
     {
-        var most = Math.Min(Ten, upTo / 2);
+        var most = upTo / 2;
         if (!PickFresh(Enumerable.Range(1, most).ToList(), n => $"double:{n}", session, rng, out var n, out var used)) return null;
         return new Round(Mode.Doubles, 2 * n, Numerals(NumeralChoices.Three(2 * n, rng)), n, n, Used: used);
     }
@@ -158,22 +166,25 @@ public sealed class BlockTowersGame(ContentLibrary content) : IMiniGame<BlockTow
     }
 
     /// <summary>Two-digit numbers from tens and ones (2Np.01, 2Np.02). Ten ones snap into a ten.</summary>
-    private Round? TensOnes(int upTo, GameSession session, IRandomSource rng)
+    private Round? TensOnes(int from, int upTo, GameSession session, IRandomSource rng)
     {
         var most = Math.Min(upTo, 99);
-        if (most < 11 || !PickFresh(Enumerable.Range(11, most - 10).ToList(), n => $"tens:{n}", session, rng, out var n, out var used))
+        if (most < from || !PickFresh(Enumerable.Range(from, most - from + 1).ToList(), n => $"tens:{n}", session, rng, out var n, out var used))
             return null;
         return new Round(Mode.TensOnes, n, Heights(99), MostCubes: 99, Used: used);
     }
 
-    /// <summary>Towers growing by the same step (2Nc.06, 3Nc.05): which comes next?</summary>
-    private Round? Pattern(int upTo, GameSession session, IRandomSource rng)
+    /// <summary>
+    /// Towers growing by the same step (2Nc.06, 3Nc.05): which comes next? The steps come from the level
+    /// (games.json "steps"); the first tower is 1 up to one more than the biggest step.
+    /// </summary>
+    private Round? Pattern(IReadOnlyList<int> steps, int upTo, GameSession session, IRandomSource rng)
     {
-        var starts = (from a in Enumerable.Range(1, 4) from d in Enumerable.Range(1, 3) where a + 3 * d <= upTo select (a, d)).ToList();
+        if (steps.Count == 0) return null;
+        var starts = (from a in Enumerable.Range(1, steps.Max() + 1) from d in steps where a + 3 * d <= upTo select (a, d)).ToList();
         if (!PickFresh(starts, s => $"pattern:{s.a}+{s.d}", session, rng, out var s, out var used)) return null;
         var next = s.a + 3 * s.d;
-        var wrong = rng.Shuffled(new[] { next - 2, next - 1, next + 1, next + 2 }.Where(h => h >= 1 && h <= 20)).Take(2);
-        var choices = rng.Shuffled(wrong.Append(next)).ToList();
+        var choices = NumeralChoices.Three(next, rng, lowest: 1, highest: upTo);
         return new Round(Mode.Pattern, next, Numerals(choices), s.a, s.d, Towers: [s.a, s.a + s.d, s.a + 2 * s.d], Used: used);
     }
 
