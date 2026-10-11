@@ -34,12 +34,13 @@ Seven games that move from hearing a sound, to spotting it, to writing it.
 
 ## Numbers
 
-Seven games that start with counting real things and end with simple sums and money.
+Eight games that start with counting real things and end with simple sums and money.
 
 | Game | How it plays | Skill | Ages | Skins |
 | --- | --- | --- | --- | --- |
 | Count & Tap | Tap each animal as the narrator counts aloud | Counting to 10, then 20 | 4–5 | Ducks, sheep, ladybirds |
 | Quick Look | Dots or objects flash for 2 seconds: how many? | Seeing amounts without counting | 4–6 | Dice, dominoes, ten-frames |
+| Block Towers | Numbers as towers of cubes: build them, find the tallest, join two, take some away, make 10, odd or even, tens and ones, what comes next | Counting, comparing, adding and taking away within 20, bonds, doubles, place value | 4–8 | Building blocks (cubes in the child's badge colour) |
 | Feed the Monster: Numbers | Give the monster exactly the number of apples it asks for | Counting out a set | 4–6 | Shares the monsters from Letters |
 | Number Train | Put carriages in order, or find the missing number | Order and number lines | 5–7 | Train, caterpillar, washing line |
 | More or Less | Which basket has more? Then: how many more? | Comparing | 4–7 | Baskets, nests, jars |
@@ -254,7 +255,7 @@ Rewards are things to collect: every correct answer moves the child up a ladder 
 | Tier | How it's earned | What the child gets |
 | --- | --- | --- |
 | 1. Stars | Every correct answer | A star drops into Bip's star jar |
-| 2. Stickers | Every 10 stars, and every finished game | A sticker for the sticker book that matches what was learnt (a sun for “s”, seven ladybirds for 7) |
+| 2. Stickers | Every 10 stars, and every finished game (picture stickers); mastering a sound or skill (learning stickers) | A picture sticker from words.json that matches the sound just practised when there is one (a sun for “s”); a sound or skill sticker once it's mastered. Built: picture stickers, the sound and skill pages. Still to come: number pictures (seven ladybirds for 7) |
 | 3. Creatures | Filling a sticker page, such as all six sounds in a group | A creature moves onto the island and stays on the map: a penguin, a tortoise, a hadeda, a crab |
 | 4. Decorations | Mastering a skill, or a creature asking for a home | Something to place anywhere on the map: palm trees, a lighthouse, flags, a treehouse |
 | 5. New areas | Mastering a whole group of skills | A new part of the island opens, with its own games |

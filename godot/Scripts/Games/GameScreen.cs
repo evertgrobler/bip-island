@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BipCore;
 using BipIsland.Audio;
 using BipIsland.Drawing;
@@ -159,20 +160,27 @@ public abstract partial class GameScreen : BaseScreen
             Ending.PractiseAgain => VoiceLine.LetsPractiseAgain,
             _ => VoiceLine.RoundDone,
         };
-        Voice.Play([line], completion: () => FinishVisit(() => Coordinator.ShowIsland(HomeIsland, greet: false)));
+        // Cut short to practise again isn't a finished game, so it wins no sticker for finishing.
+        Voice.Play([line], completion: () => FinishVisit(() => Coordinator.ShowIsland(HomeIsland, greet: false),
+                                                         finished: ending != Ending.PractiseAgain));
     }
 
     /// <summary>
-    /// The end of a visit: a star pops in for every star earned, and a level-up gets a bigger burst
-    /// and a fuller badge. Then <paramref name="next"/> runs (usually back to the island).
+    /// The end of a visit: a star pops in for every star earned, then every picture sticker not shown
+    /// yet (one for a <paramref name="finished"/> game, one for every 10 stars), and a level-up gets a
+    /// bigger burst and a fuller badge. Then <paramref name="next"/> runs (usually back to the island).
     /// </summary>
-    protected void FinishVisit(Action next)
+    protected void FinishVisit(Action next, bool finished = true)
     {
         if (!IsInsideTree()) return;
+        if (finished) Coordinator.CompleteVisit();
         var summary = Coordinator.CurrentVisit();
         InputLocked = true;
+        var stickers = Coordinator.TakeNewStickers();
         var card = new Node2D { Name = "VisitCard", ZIndex = 80, Scale = Vector2.One * 0.01f };
-        card.AddChild(Pen(RoundRect(R(-420, -170, 840, 340), 40), 570, fill: Palette.Card, lineWidth: 6));
+        // Taller when there are stickers to show under the stars.
+        card.AddChild(Pen(stickers.Count > 0 ? RoundRect(R(-420, -330, 840, 500), 40) : RoundRect(R(-420, -170, 840, 340), 40),
+                          570, fill: Palette.Card, lineWidth: 6));
         Stage.AddChild(card);
         var pop = card.CreateTween();
         pop.TweenProperty(card, "scale", Vector2.One * 1.05f, 0.2);
@@ -198,10 +206,40 @@ public abstract partial class GameScreen : BaseScreen
         card.AddChild(total);
 
         var wait = 0.6 + 0.15 * shown;
+        if (stickers.Count > 0)
+        {
+            // "New sticker!" and the stickers themselves, popping in one by one after the stars.
+            var heading = Sketch.Label(stickers.Count == 1 ? "New sticker!" : "New stickers!", 36, Palette.Ink);
+            heading.Position += P(0, -125);
+            heading.Modulate = new Color(1, 1, 1, 0);
+            card.AddChild(heading);
+            var show = heading.CreateTween();
+            show.TweenInterval(wait);
+            show.TweenProperty(heading, "modulate:a", 1f, 0.2);
+            // All of them, however many: one row of up to 5, smaller and in more rows when an old
+            // save's stars catch up at once.
+            var spots = StickerArt.Grid(stickers.Count, P(0, -230), width: 760, height: 150);
+            var step = Math.Min(0.3, 2.4 / stickers.Count);
+            for (var i = 0; i < stickers.Count; i++)
+            {
+                var sticker = StickerArt.Make(stickers[i], (ulong)(590 + i));
+                sticker.Name = "NewSticker";
+                sticker.Position = spots.Centres[i];
+                sticker.Scale = Vector2.One * 0.01f;
+                card.AddChild(sticker);
+                var grow = sticker.CreateTween();
+                grow.TweenInterval(wait + 0.2 + step * i);
+                if (i < 8) grow.TweenCallback(Callable.From(() => Sfx.Play(BipSounds.Effect.Chime)));
+                grow.TweenProperty(sticker, "scale", Vector2.One * (spots.Scale * 1.15f), 0.15);
+                grow.TweenProperty(sticker, "scale", Vector2.One * spots.Scale, 0.1);
+            }
+            wait += 0.4 + step * stickers.Count;
+        }
         if (summary.LevelledUp)
         {
             var label = Sketch.Label($"Level {summary.LevelNow + 1}!", 58, Palette.Ink);
-            label.Position += P(0, -125);
+            // Above the stars when the stickers take the space below them.
+            label.Position += stickers.Count > 0 ? P(0, 115) : P(0, -125);
             label.Modulate = new Color(1, 1, 1, 0);
             card.AddChild(label);
             var fade = label.CreateTween();

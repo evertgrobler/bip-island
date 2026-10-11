@@ -52,8 +52,76 @@ public static class WalkTest
             Check(step, Screen() is T, $"showing {Screen()?.GetType().Name ?? "nothing"}");
         }
 
+        // The first-time setup guide: a fresh save shows it over the game, a grown-up practises the way
+        // into the grown-up area, adds a child, changes play time and hands over to the map.
+        async Task WalkSetupGuide()
+        {
+            var layer = game.Parent;
+            void Esc(bool down) => Input.ParseInputEvent(new InputEventKey { Keycode = Key.Escape, PhysicalKeycode = Key.Escape, Pressed = down });
+            await Wait(0.3);
+            Check("a first run opens the setup guide, with the game paused behind it", layer.Guide is { Current: BipCore.SetupGuide.Step.Welcome } && tree.Paused);
+            layer.GuideNext();
+            Check("on a first run the practice step can't be skipped (the parent controls come after it)",
+                  layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanGoOn: false, CanSkipStep: false });
+            Esc(true);
+            await Wait(1.5);
+            Check("the hold ring shows above the guide while Esc is held", layer.RingShowsOverCard);
+            await Wait(1.9);
+            Check("holding Esc in the guide opens the real question", layer.Flow.Phase == GatePhase.Question);
+            Esc(false);
+            await Wait(0.2);
+            layer.Submit(layer.Flow.Challenge.Answer.ToString());
+            await Wait(0.2);
+            Check("the right answer comes back to the guide, not the parent area",
+                  layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, PractisedGate: true, CanGoOn: true } && layer.Area == null && !layer.IsOpen && tree.Paused);
+            // A hold started on the practice step and still going when Next is clicked doesn't open the gate.
+            Esc(true);
+            await Wait(0.5);
+            layer.GuideNext(); // Passcode
+            await Wait(3.2);
+            Check("a hold carried past the practice step doesn't open the gate", !layer.IsOpen && layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode);
+            Esc(false);
+            await Wait(0.2);
+            Check("the passcode step is the parent area's passcode form", layer.Guide?.Current == BipCore.SetupGuide.Step.Passcode && layer.Area != null);
+            layer.GuideSkipStep(); // Children
+            Check("the first child added takes over \"Player 1\"", layer.Area != null && layer.Area.AddChild("Thabo", null)
+                  && game.Children is [{ Name: "Thabo", Age: null }], string.Join(", ", game.Children.Select(c => c.Name)));
+            layer.GuideNext(); // Play time
+            Check("the play-time step shows the settings", layer.Guide?.Current == BipCore.SetupGuide.Step.PlayTime && layer.Area != null);
+            layer.GuideNext(); // Tour
+            for (var i = 0; i < BipCore.SetupGuide.TourCards; i++) layer.GuideNext();
+            Check("after the tour comes All set", layer.Guide?.Current == BipCore.SetupGuide.Step.AllSet);
+            layer.GuideNext();
+            await Wait(0.8);
+            Check("handing over ends the guide and saves that it's done", layer.Guide == null && game.Store.SetupDone && !tree.Paused);
+            Check("with one child the game opens on the map", Screen() is MapScreen, $"showing {Screen()?.GetType().Name}");
+            game.Start();
+            await Wait(0.3);
+            Check("the guide doesn't open again by itself", layer.Guide == null);
+
+            // From Settings: the gate was passed, so practising can be skipped; leaving changes nothing.
+            var before = Screen();
+            layer.Flow.Open();
+            layer.Submit(layer.Flow.Challenge.Answer.ToString());
+            await Wait(0.2);
+            layer.ShowSetupGuide();
+            await Wait(0.2);
+            layer.GuideNext();
+            Check("from Settings the practice step can be skipped", layer.Guide is { Current: BipCore.SetupGuide.Step.GrownUpArea, CanSkipStep: true } && tree.Paused);
+            // "Skip setup" mid-hold: the hold ends with the guide, so no gate pops up over the game.
+            Esc(true);
+            await Wait(0.5);
+            layer.FinishGuide();
+            await Wait(3.2);
+            Check("a hold running when the guide ends doesn't open the gate", !layer.IsOpen);
+            Esc(false);
+            await Wait(0.3);
+            Check("skipping the guide from Settings goes back to the same screen", layer.Guide == null && !tree.Paused && Screen() == before && before != null);
+        }
+
         game.EndBreakEarly(); // A fresh test save starts outside any break.
         game.Start();
+        await WalkSetupGuide();
         await Expect<MapScreen>("one child: the game opens on the map");
 
         if (await Tap("island:letters")) await Expect<LettersIslandScreen>("letters island opens");
@@ -76,15 +144,26 @@ public static class WalkTest
         await PlayArt();
 
         if (await Tap("stickers")) await Expect<StickerScreen>("the sticker book opens");
+        Check("the sticker book opens on the child's picture stickers", Screen() is StickerScreen book
+              && book.FindChildren("*", "Node2D", true, false).Count > 0 && game.Progress.PictureStickers.Count > 0,
+              $"{game.Progress.PictureStickers.Count} picture stickers");
         if (await Tap("page")) Check("the sticker page turns", Screen() is StickerScreen);
         if (await Tap("home")) await Expect<MapScreen>("home from the sticker book");
 
         var starsBefore = game.Progress.Stars;
         var mysteryShown = Screen()?.FindTappable("mystery") != null;
         Check("the mystery box is there once a day", mysteryShown == game.MysteryAvailable);
+        var mysteryStickersBefore = game.Progress.PictureStickers.Count;
+        var mysteryMakesTen = (starsBefore + BipCore.ChildProgress.MysteryBonusStars) / BipCore.ChildProgress.StarsPerSticker
+                              > game.Progress.StarStickersGiven;
         if (mysteryShown && await Tap("mystery"))
         {
-            await Wait(1.5);
+            await Wait(1.0);
+            Check(mysteryMakesTen ? "the mystery box's stars make up 10, and the sticker pops out" : "the mystery box's stars don't make up 10: no sticker",
+                  mysteryMakesTen == (Screen()?.FindChild("NewSticker", true, false) != null)
+                  && game.Progress.PictureStickers.Count == mysteryStickersBefore + (mysteryMakesTen ? 1 : 0),
+                  $"stars {starsBefore} + {BipCore.ChildProgress.MysteryBonusStars}, stickers {mysteryStickersBefore} → {game.Progress.PictureStickers.Count}");
+            await Wait(2.5);
             Check("the mystery box gives 5 stars, once", game.Progress.Stars == starsBefore + BipCore.ChildProgress.MysteryBonusStars && !game.MysteryAvailable,
                 $"stars {starsBefore} → {game.Progress.Stars}");
             Check("the stars are saved", game.Store.Progress(game.ChildId).Stars == game.Progress.Stars);
@@ -306,17 +385,54 @@ public static class WalkTest
             if (await TapNumeral(right: true))
                 Check("right after a miss: no star, but the answer still counts", game.Progress.Stars == starsBefore
                       && game.Progress.Skill("subitise_5").TotalAttempts + game.Progress.Skill("subitise_10").TotalAttempts > 0);
+            var stickersBefore = game.Progress.PictureStickers.Count;
+            var starStickersBefore = game.Progress.StarStickersGiven;
             for (var round = 2; round <= 8; round++)
             {
                 if (!await WaitFor(() => Screen() is NumeralGameScreen { RightIndex: >= 0, InputLocked: false }, 6)) break;
                 await TapNumeral(right: true);
             }
+            Check("the end card shows the new picture sticker for finishing",
+                  await WaitFor(() => Screen()?.FindChild("NewSticker", true, false) != null, 10), $"showing {Screen()?.GetType().Name}");
             Check("eight questions make a visit: the stars are counted and Bip goes back to the island",
                   await WaitFor(() => Screen() is GameIslandScreen, 15), $"showing {Screen()?.GetType().Name}");
+            var starStickers = game.Progress.StarStickersGiven - starStickersBefore;
+            Check("finishing a game wins a picture sticker, and every 10 stars another",
+                  game.Progress.PictureStickers.Count == stickersBefore + 1 + starStickers
+                  && game.Progress.StarStickersGiven == game.Progress.Stars / BipCore.ChildProgress.StarsPerSticker,
+                  $"stickers {stickersBefore} → {game.Progress.PictureStickers.Count}, stars {game.Progress.Stars}");
+            Check("the stickers are saved", game.Store.Progress(game.ChildId).PictureStickers.Count == game.Progress.PictureStickers.Count);
             Check("seven first-try answers, seven stars", game.Progress.Stars == starsBefore + 7, $"stars {starsBefore} → {game.Progress.Stars}");
             Check("both games are in the recent games", game.Progress.RecentGames.TakeLast(2).SequenceEqual(
                 [BipCore.CountTapGame.GameId, BipCore.QuickLookGame.GameId]));
             await Wait(0.5);
+
+            // Block Towers: build the tower Bip asks for, one cube at a time, then the tick.
+            if (await Tap("blocks")) await Expect<BlockTowersScreen>("Block Towers opens from the island");
+            Check("Block Towers asks for a tower", await WaitFor(() => Screen() is BlockTowersScreen { Round: not null }, 3));
+            if (Screen() is BlockTowersScreen towers && towers.Round is { Mode: BipCore.BlockTowersGame.Mode.Build } build)
+            {
+                var stars = game.Progress.Stars;
+                for (var i = 0; i < build.Target + 1; i++) await Tap("pile");
+                await Tap("tick");
+                Check("one cube too many boops and gives no star", game.Progress.Stars == stars && towers is { InputLocked: false });
+                await Tap("tower");
+                await Tap("tick");
+                Check("taking the extra cube off, the tower is right: the answer is saved, no star after a miss",
+                      await WaitFor(() => game.Progress.Skill("count_10").TotalAttempts > 0, 6) && game.Progress.Stars == stars,
+                      $"stars {stars} → {game.Progress.Stars}");
+                Check("...and the next tower comes", await WaitFor(() => towers.Round != build && towers.Round != null, 8));
+                if (towers.Round is { Mode: BipCore.BlockTowersGame.Mode.Build } next)
+                {
+                    stars = game.Progress.Stars;
+                    for (var i = 0; i < next.Target; i++) await Tap("pile");
+                    await Tap("tick");
+                    Check("the right tower first time earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6),
+                          $"stars {stars} → {game.Progress.Stars}");
+                }
+            }
+            else Check("Block Towers starts with building at the first level", false, Screen() is BlockTowersScreen t ? $"{t.Round?.Mode}" : "no screen");
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Block Towers goes back to numbers island");
             if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
         }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.
@@ -463,6 +579,10 @@ public static class WalkTest
             if (Screen() is not WordRocketScreen rocket) return;
             var answer = rocket.Answer!;
             var stars = game.Progress.Stars;
+            // A miss on this sound in an earlier game would make the two misses below drop it back,
+            // ending the visit before the next question; start the sound with no misses.
+            if (rocket.SoundId is { } soundId)
+                game.Progress.Sounds.Skills[soundId] = new SkillMastery(game.Progress.Sounds.Mastery(soundId).Level);
             var wrong = PhonicsCourse.Alphabet.First(l => !rocket.NextKeys.Contains(l));
             await TypeLetter(wrong);
             Check("a wrong key boops and types nothing", rocket.Typed == "" && rocket.Misses == 1 && rocket.GlowingKey == null);
@@ -565,7 +685,9 @@ public static class WalkTest
                 foreach (var point in points) trace._UnhandledInput(new InputEventMouseMotion { GlobalPosition = point, ButtonMask = MouseButtonMask.Left });
                 trace._UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = points[^1] });
                 Check("tracing round the letter earns a star", game.Progress.Stars == starsBefore + 1, $"stars {starsBefore} → {game.Progress.Stars}");
-                Check("Letter Trace goes back to the island", await WaitFor(() => Screen() is LettersIslandScreen, 6));
+                Check("Letter Trace ends on the end card, with a picture sticker for finishing",
+                      await WaitFor(() => Screen() is LetterTraceScreen && Screen()?.FindChild("NewSticker", true, false) != null, 8));
+                Check("Letter Trace goes back to the island", await WaitFor(() => Screen() is LettersIslandScreen, 12));
             }
             await Wait(0.6);
 

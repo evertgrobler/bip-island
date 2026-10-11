@@ -9,8 +9,8 @@
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** 15 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
-  Trace, Feed the Monster), Numbers (Count & Tap, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
+- **Games:** 16 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
   game, 8-question visits, star celebration.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
@@ -19,11 +19,13 @@
 - **Systems:** profiles (up to 4, "Who's playing?"), Bip's recommendations and nudge, wall-clock play
   breaks with Bip charging, sticker book, daily mystery box, keyboard play, big cursor, Bip's sounds.
 - **Parent side:** hold Esc 3 s → maths or passcode → parent area (Progress, Children, Settings: play
-  time, passcode, updates, quit). "Update ready" button installs only after the gate.
+  time, passcode, updates, quit, setup guide). "Update ready" button installs only after the gate. A
+  setup guide for grown-ups opens at launch until finished or skipped: practise the Esc hold for real
+  (required when it opens by itself), passcode, children, play time, a 3-card tour.
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
-- **Voice:** all narrator clips recorded (ElevenLabs "Bip Island Narrator"), `vo_who_is_playing` included.
+- **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
 - **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
   123 Morning Order step scenes.
 - **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
@@ -288,7 +290,7 @@
   `word_pie` re-cut to keep their quiet endings (approved in round 2). `snd_h` is back to the original
   recording (it still has a small "uh"; two trims were rejected) until it can be re-recorded.
   **Waiting on the ElevenLabs upgrade:** `snd_h`, `word_yoyo` (then switch y's picture word from yak),
-  `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`.
+  `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`. (All recorded 10 Oct, see below.)
 - **4 Oct:** Per-child breaks (owner: "each child"). Each child's play clock, break and daily total
   live on their save row (`SavedChild.Break`); the old shared break is copied to every child on load,
   so updating can't end a running break. Settings stay shared. While one child rests, the charging
@@ -318,13 +320,66 @@
   `vo_word_rocket` ("Listen, then type what you hear on the keyboard.") plays silence until recorded:
   **waiting on the ElevenLabs upgrade.** Review fix: a letter question only asks sounds the child has
   met; with none met yet, the Word Rocket button opens Meet the Sound (as Sound Hunt does).
+- **4 Oct, midday:** First-time setup guide for grown-ups (owner request). Until a grown-up finishes
+  or skips it (`SaveStore.SetupDone`; older saves read false, so updating families see it once, and a
+  first run cut short gets it again) a guide opens over the paused game at launch: welcome; the child lock and practising the way in (hold Esc 3 s and answer, for real; it comes
+  back to the guide instead of opening the parent area); optional passcode; children; play time; a
+  3-card tour of what the child sees; all set, then "Hand over to your child". Steps are
+  `BipCore.SetupGuide` (tested); the cards are `ParentLayer.Setup.cs`, reusing the parent area's
+  children, passcode and play-time parts (`ParentArea.Part`). Settings has "Show the setup guide
+  again". Previews: `Scenes/Parent/setup_*.tscn`; the walk-through runs it first.
+  Review fixes: on a first run the practice step can't be skipped, so the passcode, children and
+  play-time steps come only after the gate is really opened (from Settings it can be skipped); the
+  hold ring draws above the card; the first child added replaces the untouched "Player 1"; finishing
+  from Settings returns to the same screen; a typed passcode is saved on Next. Second round: an Esc
+  hold left running from the practice step is released when the guide moves on. Third round (10 Oct):
+  the lock step says when the lock is off, Skip setup releases a hold, a typed passcode is kept on Back
+  and Skip setup too, and the Player 1 rule is `SaveStore.UntouchedFirstChild` (tested).
 - **4 Oct, evening:** Owner rule: South African time (SAST, UTC+2) everywhere. CLAUDE.md says so;
   `.claude/settings.json` sets `TZ=Africa/Johannesburg` for every session (cloud machines run on UTC);
   `check_all.sh`'s summary is stamped in SAST. The game itself already uses the computer's own clock.
+- **4 Oct:** Download page lists minimum requirements ("What you need" on each card): Mac — macOS 14+,
+  Apple chip or Intel (universal build), 4 GB memory, ~500 MB free; Windows — 10/11 64-bit, OpenGL 3.3
+  graphics (Compatibility renderer), 4 GB memory, ~500 MB free. Shared line: speakers or headphones,
+  a mouse, a keyboard for grown-ups; internet only to download and update.
+- **10 Oct:** Block Towers on Numbers Island (owner request: a Numberblocks-style game, in our own style with no
+  characters). Numbers are towers of cubes in the colour of the child's animal badge. Eight levels from games.json
+  "modes": build (to 5), build and which (to 10; tallest, shortest), join (to 10), join and take away (within 20),
+  make 10 and doubles, odd or even (pairs), tens and ones (to 99; ten ones snap into a ten), growing patterns.
+  Everything is a tap: the pile adds a cube (counted aloud), the tower takes one off, the tick checks. Game type
+  `BlockTowersGame`, tests `BlockTowersTests`, screen `BlockTowersScreen`, drawing `Scripts/Drawing/BlockDrawing.cs`
+  (cube fills are plain polygons under the hand-drawn outline: a wobbly outline that small crosses itself and the
+  sketch pen drops its fill). 14 new narrator lines (ElevenLabs works again; some requests still fail with
+  "unusual activity", retry one at a time). Review fixes: the two-miss hint wiggles the pile when more cubes are
+  needed and the tower (or tens or ones) when some must come off; make ten lets the child overshoot; an empty tick
+  is ignored in every building round; "which" rounds don't repeat in a visit; pattern steps and the tens-and-ones
+  start are level fields in games.json ("steps", "from").
+- **10 Oct:** Recorded the waiting clips with the ElevenLabs connector (narrator voice, `eleven_v3`):
+  `vo_bip_charging`, `vo_day_done`, `vo_word_rocket`, a new `snd_h` (a whispered "hhhh" cut before
+  "hat", levelled with `snd_f` and `snd_th` after review) and `word_yoyo`. The y sound's picture word is now **yo-yo**
+  (`pic_yoyo`, label "yo-yo"; `AudioCatalogue.WordClip` drops the hyphen for the file name), `yak` and
+  `word_yak` are gone, and the South African check enforces `yak` again (no more WAITING). Every clip the
+  game needs now has a recording. ElevenLabs still refuses some requests ("unusual activity", free tier)
+  and rate-limits: retrying one at a time worked. Owner ear-checked `snd_h` and `word_yoyo` and approved them (10 Oct), and the quieter `snd_h` (11 Oct).
+  Word clips drop hyphens everywhere (`word_clip()` in the validator matches `AudioCatalogue.WordClip`).
+- **10 Oct:** Rewards check (owner asked): stars, the visit card, the mystery box and the sticker book
+  all worked, but stickers only came from mastery (right answers on two days), so a new child saw an
+  empty book. Picture stickers added (`StickerBook.AwardStickers`): every 10 stars and every finished
+  game win one, a words.json picture matching the sound just practised ("a sun for s"), never repeated;
+  `ChildProgress.PictureStickers` / `StarStickersGiven` (old saves catch up on the next right answer).
+  The end card shows them; the sticker book opens on picture pages (own first, grey outlines after) and
+  says how many stars the next one needs. Still to build: creatures, decorations, new areas, golden
+  round, creature visits, special days, the "New!" flag; the mystery box still gives stars.
+  Review fixes (11 Oct): Letter Trace ends on the end card like the other games; a game cut short to
+  practise again wins no sticker for finishing; the mystery box's stars give their sticker on the map;
+  the end card shows every new sticker (smaller, in rows, when an old save catches up), and stickers
+  won before Home wait for the next card.
+- **11 Oct:** Download page's "Play-time breaks" card says each child has their own play time and break,
+  so a sibling can play while one rests (owner request; matches the 3 Oct per-child breaks decision).
 - **10 Oct:** Maths plan (docs only, no code): games for adding, taking away, times and sharing, Cambridge
   0096 Stages 1–3. Three new games (Bip's Balance, Picnic Plates, Number Machine) and new levels for Number
   Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers, planned around
   Block Towers' scope (asked its session). Levels, objective codes (11 new codes still to confirm against the
   framework PDF), skills, content file and 40 voice lines in `docs/GAMES.md` and `docs/CURRICULUM.md`
-  ("Maths plan"). Ten-Frame Garden's "parking lot" skin is now a taxi rank. The owner left the choice to
+  ("Maths plan"). Ten-Frame Garden's third skin is now a taxi rank (the word flagged in the brief is gone). The owner left the choice to
   Claude: **Bip's Balance first** (levels 1–5).

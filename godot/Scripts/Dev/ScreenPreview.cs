@@ -17,7 +17,7 @@ namespace BipIsland.Dev;
 public partial class ScreenPreview : Node
 {
     [Export] public string Screen { get; set; } = "map";
-    /// <summary>The grown-ups' layer on top: "gate", "switch" (letting another child play), "progress", "children", "settings" or "update" (the button).</summary>
+    /// <summary>The grown-ups' layer on top: "gate", "switch" (letting another child play), "progress", "children", "settings", "update" (the button), or "setup:N" / "setup:tourN" (the first-time guide).</summary>
     [Export] public string Parent { get; set; } = "";
     /// <summary>Word Rocket: the skin, the child's level in it (-1 keeps theirs), and letters typed before a hint.</summary>
     [Export] public string Skin { get; set; } = "";
@@ -61,6 +61,19 @@ public partial class ScreenPreview : Node
         return new ChargingScreen();
     }
 
+    /// <summary>The sticker book with a dozen picture stickers won (37 stars and nine finished games).</summary>
+    private static StickerScreen StickersPreview(GameCoordinator game)
+    {
+        if (game.Content is { } content)
+        {
+            for (var i = 0; i < 37; i++) game.Progress.RecordAnswer(true, "count_10", null, game.Today, content.MasteryRules);
+            for (var i = 0; i < 9; i++)
+                StickerBook.AwardStickers(game.Progress, content, i % 2 == 0 ? "s" : null, finishedGame: true, game.Rng);
+            game.Store.Save(game.Progress, game.ChildId);
+        }
+        return new StickerScreen();
+    }
+
     /// <summary>"Who's playing?" with the playing child (Player 1) resting, so their card shows "z z".</summary>
     private static ProfilesScreen ProfilesPreview(GameCoordinator game)
     {
@@ -100,7 +113,7 @@ public partial class ScreenPreview : Node
             "charging" => ChargingPreview(game, dayDone: false),
             "day_done" => ChargingPreview(game, dayDone: true),
             "art" => new ArtIslandScreen(greet: false),
-            "stickers" => new StickerScreen(),
+            "stickers" => StickersPreview(game),
             _ => new MapScreen(greet: false),
         };
         game.Present(screen);
@@ -121,6 +134,21 @@ public partial class ScreenPreview : Node
                 // "Who's playing?" while Player 1 rests: the grown-up's question before Lily plays.
                 layer.Flow.OpenToSwitchChild(game.Children.First(c => c.Id != game.ChildId).Id);
                 return;
+        }
+        // "setup:N" shows step N (1-based) of the first-time setup guide, "setup:tourN" a tour card.
+        if (Parent.StartsWith("setup:", StringComparison.Ordinal))
+        {
+            var what = Parent["setup:".Length..];
+            layer.ShowSetupGuide(firstRun: true);
+            var tour = what.StartsWith("tour", StringComparison.Ordinal);
+            var step = tour ? BipCore.SetupGuide.Step.Tour : (BipCore.SetupGuide.Step)(int.Parse(what) - 1);
+            var card = tour ? int.Parse(what["tour".Length..]) - 1 : 0;
+            while (layer.Guide is { } guide && (guide.Current != step || guide.TourCard != card))
+            {
+                if (guide.Current == BipCore.SetupGuide.Step.GrownUpArea) guide.GateOpened();
+                layer.GuideNext();
+            }
+            return;
         }
         layer.Flow.Open();
         if (Parent == "gate") return;
