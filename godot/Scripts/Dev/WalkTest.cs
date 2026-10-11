@@ -544,6 +544,10 @@ public static class WalkTest
             if (Screen() is not WordRocketScreen rocket) return;
             var answer = rocket.Answer!;
             var stars = game.Progress.Stars;
+            // A miss on this sound in an earlier game would make the two misses below drop it back,
+            // ending the visit before the next question; start the sound with no misses.
+            if (rocket.SoundId is { } soundId)
+                game.Progress.Sounds.Skills[soundId] = new SkillMastery(game.Progress.Sounds.Mastery(soundId).Level);
             var wrong = PhonicsCourse.Alphabet.First(l => !rocket.NextKeys.Contains(l));
             await TypeLetter(wrong);
             Check("a wrong key boops and types nothing", rocket.Typed == "" && rocket.Misses == 1 && rocket.GlowingKey == null);

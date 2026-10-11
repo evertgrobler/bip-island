@@ -55,6 +55,8 @@ public partial class WordRocketScreen : GameScreen
 
     // For the walk-through test.
     public string? Answer => _round?.Answer;
+    /// <summary>The letter's sound, on letter questions.</summary>
+    public string? SoundId => _round?.SoundId;
     public string Typed => string.Concat(_typed);
     public int Misses => _misses;
     public string? GlowingKey => _keyboard.Glowing;
