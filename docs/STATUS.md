@@ -411,3 +411,6 @@
   "Bip Island Narrator" **`P7kHKZAtnEEhLBZBK8pP`** (Voice Design `eleven_ttv_v3` from the saved brief, preview A
   of 3). New clips use it; older clips stay in the first voice until re-recorded. A clip costs about 1 credit a
   character (free plan: 10,000 a month); the account limits back-to-back generations.
+  Recording without connector pop-ups: `scripts/record_clips.py` calls the ElevenLabs API with
+  `ELEVENLABS_API_KEY` (an environment variable in the cloud environment's settings, never committed) —
+  e.g. `python3 scripts/record_clips.py --prefix vo_say_` records every missing whole sentence.
