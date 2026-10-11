@@ -362,3 +362,5 @@
   game needs now has a recording. ElevenLabs still refuses some requests ("unusual activity", free tier)
   and rate-limits: retrying one at a time worked. Owner ear-checked `snd_h` and `word_yoyo` and approved them (10 Oct), and the quieter `snd_h` (11 Oct).
   Word clips drop hyphens everywhere (`word_clip()` in the validator matches `AudioCatalogue.WordClip`).
+- **11 Oct:** Download page's "Play-time breaks" card says each child has their own play time and break,
+  so a sibling can play while one rests (owner request; matches the 3 Oct per-child breaks decision).
