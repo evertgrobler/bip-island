@@ -114,9 +114,9 @@ public sealed class GameSession
 /// <summary>Three numeral answers around the right one, e.g. 4 → [3, 4, 5]. Shared by Count &amp; Tap and Quick Look.</summary>
 internal static class NumeralChoices
 {
-    public static List<int> Three(int count, IRandomSource rng)
+    public static List<int> Three(int count, IRandomSource rng, int lowest = 0, int highest = int.MaxValue)
     {
-        var near = new[] { count - 2, count - 1, count + 1, count + 2 }.Where(n => n >= 0);
+        var near = new[] { count - 2, count - 1, count + 1, count + 2 }.Where(n => n >= lowest && n <= highest);
         var picks = rng.Shuffled(near).Take(2);
         return rng.Shuffled(picks.Prepend(count));
     }
