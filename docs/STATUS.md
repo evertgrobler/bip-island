@@ -362,3 +362,15 @@
   game needs now has a recording. ElevenLabs still refuses some requests ("unusual activity", free tier)
   and rate-limits: retrying one at a time worked. Owner ear-checked `snd_h` and `word_yoyo` and approved them (10 Oct), and the quieter `snd_h` (11 Oct).
   Word clips drop hyphens everywhere (`word_clip()` in the validator matches `AudioCatalogue.WordClip`).
+- **10 Oct:** Rewards check (owner asked): stars, the visit card, the mystery box and the sticker book
+  all worked, but stickers only came from mastery (right answers on two days), so a new child saw an
+  empty book. Picture stickers added (`StickerBook.AwardStickers`): every 10 stars and every finished
+  game win one, a words.json picture matching the sound just practised ("a sun for s"), never repeated;
+  `ChildProgress.PictureStickers` / `StarStickersGiven` (old saves catch up on the next right answer).
+  The end card shows them; the sticker book opens on picture pages (own first, grey outlines after) and
+  says how many stars the next one needs. Still to build: creatures, decorations, new areas, golden
+  round, creature visits, special days, the "New!" flag; the mystery box still gives stars.
+  Review fixes (11 Oct): Letter Trace ends on the end card like the other games; a game cut short to
+  practise again wins no sticker for finishing; the mystery box's stars give their sticker on the map;
+  the end card shows every new sticker (smaller, in rows, when an old save catches up), and stickers
+  won before Home wait for the next card.
