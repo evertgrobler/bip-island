@@ -1,5 +1,11 @@
 {
   "env": {
     "TZ": "Africa/Johannesburg"
+  },
+  "permissions": {
+    "allow": [
+      "mcp__ElevenLabs__creative_generate_speech",
+      "mcp__ElevenLabs__creative_get_flow_run_status"
+    ]
   }
 }

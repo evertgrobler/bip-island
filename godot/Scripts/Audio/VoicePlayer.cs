@@ -14,6 +14,8 @@ public partial class VoicePlayer : Node
 {
     public const string AudioFolder = "res://assets/audio/";
     private const double GapBetweenClips = 0.12;
+    /// <summary>After a clip that leads on ("seven…", "plus") the next follows almost at once.</summary>
+    private const double GapAfterLeadOn = 0.03;
     private const double SilentStubLength = 0.6;
 
     private readonly AudioStreamPlayer _player = new();
@@ -39,6 +41,14 @@ public partial class VoicePlayer : Node
     public static string PathFor(string clip) => AudioFolder + clip + ".ogg";
 
     public static bool HasClip(string clip) => ResourceLoader.Exists(PathFor(clip));
+
+    private static string? StandIn(string clip) =>
+        clip.EndsWith("_mid", StringComparison.Ordinal) ? clip[..^"_mid".Length]
+        : clip == BipCore.VoiceLine.And ? BipCore.AudioCatalogue.WordClip("and") : null;
+
+    /// <summary>The whole recorded sentence when this build has it, otherwise the clips that make it up.</summary>
+    public static List<string> Prefer(string sentence, IEnumerable<string> pieces) =>
+        HasClip(sentence) ? [sentence] : pieces.ToList();
 
     /// <summary>How many clips are in this build (for the parent area and the self-test report).</summary>
     public static int CountClips()
@@ -82,6 +92,8 @@ public partial class VoicePlayer : Node
         }
         var name = clips[index];
         onClipStart?.Invoke(index, name);
+        // A lead-on clip not recorded yet falls back to the plain one (num_7_mid → num_7, vo_and → word_and).
+        if (!HasClip(name) && StandIn(name) is { } standIn && HasClip(standIn)) name = standIn;
 
         var length = SilentStubLength;
         if (HasClip(name) && GD.Load<AudioStream>(PathFor(name)) is { } stream)
@@ -95,7 +107,8 @@ public partial class VoicePlayer : Node
             GD.Print($"Bip Island: no clip {name} in this build, playing silence instead");
         }
 
-        GetTree().CreateTimer(length + GapBetweenClips, processAlways: false).Timeout +=
+        var gap = BipCore.AudioCatalogue.LeadsOn(name) ? GapAfterLeadOn : GapBetweenClips;
+        GetTree().CreateTimer(length + gap, processAlways: false).Timeout +=
             () => PlayClip(index + 1, clips, id, onClipStart, completion);
     }
 }

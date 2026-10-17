@@ -393,6 +393,29 @@ public sealed record NumbersFile
     public required Currency Currency { get; init; }
     /// <summary>Bip's Balance: little spoken stories for adding and taking away.</summary>
     public List<StorySum>? StorySums { get; init; }
+    /// <summary>Whole sentences with numbers in them, each recorded as one clip (AudioCatalogue.SentenceClip).</summary>
+    public SpokenNumbers? SpokenNumbers { get; init; }
+}
+
+/// <summary>
+/// Numbers said inside sentences. Each sentence is recorded once per number (or pair) it covers:
+/// "one" (a from..to), "sum" (a, b ≥ 1, a + b ≤ to) or "takeaway" (a from..to, b below a).
+/// Numbers up to <see cref="JoinTo"/> also have a mid-sentence clip for sentences joined from pieces.
+/// </summary>
+public sealed record SpokenNumbers
+{
+    public string? Note { get; init; }
+    public int JoinTo { get; init; }
+    public required List<SpokenSentence> Sentences { get; init; }
+}
+
+public sealed record SpokenSentence
+{
+    public required string Id { get; init; }
+    public required string Text { get; init; }
+    public required string Numbers { get; init; }
+    public int? From { get; init; }
+    public required int To { get; init; }
 }
 
 /// <summary>
