@@ -22,6 +22,8 @@ public partial class GameCoordinator : Node
 
     public VoicePlayer Voice { get; } = new() { Name = "Voice" };
     public BipSounds Sounds { get; } = new() { Name = "Sounds" };
+    /// <summary>The calm loops on the map and the islands.</summary>
+    public MusicPlayer Music { get; } = new() { Name = "Music" };
     public IRandomSource Rng { get; set; } = SystemRandomSource.Shared;
 
     /// <summary>Null only if the bundled content couldn't be read (CI checks it, so this shouldn't happen).</summary>
@@ -61,6 +63,8 @@ public partial class GameCoordinator : Node
         ProcessMode = ProcessModeEnum.Always;
         AddChild(Voice);
         AddChild(Sounds);
+        AddChild(Music);
+        Music.NarratorSpeaking = () => Voice.Speaking;
         _fadeLayer = new CanvasLayer { Layer = 100 };
         _fade = new ColorRect { Color = Palette.Paper, MouseFilter = Control.MouseFilterEnum.Ignore, Modulate = new Color(1, 1, 1, 0) };
         _fade.SetAnchorsPreset(Control.LayoutPreset.FullRect);
@@ -142,6 +146,7 @@ public partial class GameCoordinator : Node
     public void OpenSaves(string folder)
     {
         Store = new SaveStore(folder);
+        Music.Level = Store.Music;
         if (Store.LoadError is { } loadError) GD.PrintErr($"Bip Island: {loadError}");
         Children = Store.Children();
         ChildId = Store.LastChildId();
@@ -656,6 +661,13 @@ public partial class GameCoordinator : Node
         return change;
     }
 
+    /// <summary>A grown-up changed the music setting: kept on this computer and heard straight away.</summary>
+    public void SetMusic(MusicLevel level)
+    {
+        Store.Music = level;
+        Music.Level = level;
+    }
+
     /// <summary>Swaps the screen with a short fade through paper colour.</summary>
     public void Present(BaseScreen screen)
     {
@@ -664,6 +676,7 @@ public partial class GameCoordinator : Node
         // While Bip charges (or the day is done) every game and island redirects here.
         if (screen is not (ChargingScreen or StickerScreen or ProfilesScreen) && !PlayAllowed())
             screen = new ChargingScreen();
+        Music.PlayTrack(screen.MusicTrack);
         var tree = GetTree();
         if (tree.CurrentScene == null || SelfTest.IsRequested(Boot.UserArgs))
         {

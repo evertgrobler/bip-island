@@ -20,6 +20,8 @@ public partial class VoicePlayer : Node
 
     private readonly AudioStreamPlayer _player = new();
     private int _sequence;
+    /// <summary>A sequence is under way, including the short gaps between its clips.</summary>
+    private bool _inSequence;
 
     public override void _Ready()
     {
@@ -29,6 +31,12 @@ public partial class VoicePlayer : Node
         ProcessMode = ProcessModeEnum.Pausable;
         AddChild(_player);
     }
+
+    /// <summary>
+    /// The narrator is talking right now (the background music dips while she is). True for the whole
+    /// sequence, gaps included, so the music doesn't swell just before a phonics sound.
+    /// </summary>
+    public bool Speaking => _inSequence || _player.Playing;
 
     public static string PathFor(string clip) => AudioFolder + clip + ".ogg";
 
@@ -62,12 +70,14 @@ public partial class VoicePlayer : Node
     public void Play(IReadOnlyList<string> clips, Action<int, string>? onClipStart = null, Action? completion = null)
     {
         Stop();
+        _inSequence = clips.Count > 0;
         PlayClip(0, clips, _sequence, onClipStart, completion);
     }
 
     public void Stop()
     {
         _sequence++;
+        _inSequence = false;
         _player.Stop();
     }
 
@@ -76,6 +86,7 @@ public partial class VoicePlayer : Node
         if (id != _sequence) return;
         if (index >= clips.Count)
         {
+            _inSequence = false;
             completion?.Invoke();
             return;
         }

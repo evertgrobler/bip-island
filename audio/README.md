@@ -14,6 +14,8 @@ Unit tests check that the two lists cover every clip the game can play.
 | `notes` | How to say it, and how to trim it (important for the pure sounds) |
 | `placeholder` | Optional: what the temporary computer voice says instead, if different from `text` |
 
+The narrator's details and how to move the voice to another ElevenLabs account are in `NARRATOR_VOICE.md`.
+
 ## Placeholders until the real voice is ready
 
 The real narrator is the ElevenLabs voice "Bip Island Narrator" (a female South African English teacher voice). A clip that hasn't been recorded yet plays as a short silence in the game (the parent area shows how many clips the build has), so record any missing line from `audio/script.csv` and drop it into `Resources/Audio/` under the same file name.

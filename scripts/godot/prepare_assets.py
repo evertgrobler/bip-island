@@ -4,6 +4,7 @@
 - Resources/Fonts/*.ttf      -> godot/assets/fonts/
 - Content/**/*.json          -> godot/assets/content/
 - Resources/Audio/*.m4a      -> godot/assets/audio/*.ogg  (Godot can't play .m4a; needs ffmpeg)
+- Resources/Music/*.m4a      -> godot/assets/music/*.ogg  (the background loops, kept in stereo)
 
 Run it before opening, testing or exporting the Godot project. Clips already converted and
 newer than their source are skipped, so a second run is quick.
@@ -28,13 +29,13 @@ def copy_tree(src: Path, dst: Path, pattern: str) -> int:
     return count
 
 
-def convert(clip: Path, audio_out: Path) -> str:
+def convert(clip: Path, audio_out: Path, channels: int = 1, quality: int = 5) -> str:
     target = audio_out / (clip.stem + ".ogg")
     if target.exists() and target.stat().st_mtime >= clip.stat().st_mtime:
         return "skipped"
     result = subprocess.run(
         ["ffmpeg", "-nostdin", "-loglevel", "error", "-y", "-i", str(clip),
-         "-ac", "1", "-c:a", "libvorbis", "-q:a", "5", str(target)],
+         "-ac", str(channels), "-c:a", "libvorbis", "-q:a", str(quality), str(target)],
         capture_output=True, text=True)
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg failed on {clip.name}: {result.stderr.strip()}")
@@ -62,7 +63,18 @@ def main() -> int:
     with ThreadPoolExecutor() as pool:
         results = list(pool.map(lambda c: convert(c, audio_out), clips))
 
-    print(f"Fonts: {fonts}. Content files: {content}. "
+    # The background loops: stereo, a little smaller (they play quietly under everything else).
+    music_out = OUT / "music"
+    music_out.mkdir(parents=True, exist_ok=True)
+    tracks = sorted((ROOT / "Resources" / "Music").glob("*.m4a"))
+    wanted_tracks = {track.stem + ".ogg" for track in tracks}
+    for stale in music_out.glob("*.ogg"):
+        if stale.name not in wanted_tracks:
+            stale.unlink()
+    with ThreadPoolExecutor() as pool:
+        list(pool.map(lambda t: convert(t, music_out, channels=2, quality=4), tracks))
+
+    print(f"Fonts: {fonts}. Content files: {content}. Music loops: {len(tracks)}. "
           f"Voice clips: {len(clips)} ({results.count('converted')} converted, {results.count('skipped')} up to date).")
     if fonts < 2 or content == 0 or not clips:
         print("Something is missing: expected the Atkinson fonts, Content JSON and voice clips.")

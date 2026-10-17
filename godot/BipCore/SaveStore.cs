@@ -36,6 +36,12 @@ public sealed class SaveFile
     /// false, so a family updating sees it once too.
     /// </summary>
     public bool SetupDone { get; set; }
+    /// <summary>
+    /// How loud the background music plays on the map and islands. Older saves read as Normal, and so does
+    /// a value the game doesn't know: one odd setting must never cost the children their progress.
+    /// </summary>
+    [JsonConverter(typeof(LenientMusicLevelConverter))]
+    public MusicLevel Music { get; set; } = MusicLevel.Normal;
 }
 
 public sealed class SavedChild
@@ -203,6 +209,17 @@ public sealed class SaveStore
         }
     }
 
+    /// <summary>How loud the background music plays (one setting for the whole computer).</summary>
+    public MusicLevel Music
+    {
+        get => _file.Music;
+        set
+        {
+            _file.Music = Enum.IsDefined(value) ? value : MusicLevel.Normal;
+            Save();
+        }
+    }
+
     /// <summary>Whether the first-time setup guide has been finished or skipped on this computer.</summary>
     public bool SetupDone => _file.SetupDone;
 
@@ -331,4 +348,22 @@ public sealed class SaveStore
         age is { } a ? Math.Clamp(a, ProfileRules.YoungestAge, ProfileRules.OldestAge) : null;
 
     private static ChildSummary Summary(SavedChild c) => new(c.Id, c.Name, c.Age, ProfileRules.ValidAvatar(c.Avatar));
+}
+
+/// <summary>Reads the music setting without ever failing: anything unknown (a new name, a number, junk) is Normal.</summary>
+internal sealed class LenientMusicLevelConverter : JsonConverter<MusicLevel>
+{
+    public override MusicLevel Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.String
+            && Enum.TryParse<MusicLevel>(reader.GetString(), ignoreCase: true, out var level)
+            && Enum.IsDefined(level)
+            && !int.TryParse(reader.GetString(), out _))
+            return level;
+        reader.Skip();
+        return MusicLevel.Normal;
+    }
+
+    public override void Write(Utf8JsonWriter writer, MusicLevel value, JsonSerializerOptions options) =>
+        writer.WriteStringValue(JsonNamingPolicy.CamelCase.ConvertName(value.ToString()));
 }
