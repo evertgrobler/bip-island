@@ -414,3 +414,7 @@
   Recording without connector pop-ups: `scripts/record_clips.py` calls the ElevenLabs API with
   `ELEVENLABS_API_KEY` (an environment variable in the cloud environment's settings, never committed) —
   e.g. `python3 scripts/record_clips.py --prefix vo_say_` records every missing whole sentence.
+  **17 Oct:** ElevenLabs then disabled the free tier on the new account ("unusual activity … upgrade to a paid
+  subscription"), with 17 of 254 sentences recorded (build a tower 1–10, double 1–4 and 6, join 3+2) plus all
+  lead-on numbers, numbers 0–20 and linking words. The rest wait for a paid plan; until then the game plays
+  the joined pieces for them.
