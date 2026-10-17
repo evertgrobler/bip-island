@@ -73,4 +73,31 @@ public sealed class MusicRulesTests : IDisposable
         File.WriteAllText(Path.Combine(_folder, SaveStore.FileName), """{"version":1,"children":[]}""");
         Assert.Equal(MusicLevel.Normal, new SaveStore(_folder).Music);
     }
+
+    [Theory]
+    [InlineData("\"loud\"")]
+    [InlineData("2")]
+    [InlineData("\"2\"")]
+    [InlineData("{\"level\":1}")]
+    [InlineData("null")]
+    public void AnOddMusicValueKeepsTheSave(string music)
+    {
+        var store = new SaveStore(_folder);
+        var id = store.LastChildId();
+        var progress = store.Progress(id);
+        progress.RecordAnswer(true, "snd_g1", "s", 5, TestContent.Rules);
+        store.Save(progress, id);
+        store.Music = MusicLevel.Quiet;
+
+        // Swap the saved setting for something the game doesn't know.
+        var path = Path.Combine(_folder, SaveStore.FileName);
+        var json = File.ReadAllText(path).Replace("\"music\":\"quiet\"", $"\"music\":{music}");
+        Assert.Contains($"\"music\":{music}", json);
+        File.WriteAllText(path, json);
+
+        var reopened = new SaveStore(_folder);
+        Assert.Null(reopened.LoadError);
+        Assert.Equal(MusicLevel.Normal, reopened.Music);
+        Assert.Equal(progress.Stars, reopened.Progress(id).Stars);
+    }
 }

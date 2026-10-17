@@ -509,7 +509,9 @@ if site.exists(): sa_check("site/index.html", sa_english.html_text(site.read_tex
 # Background music: Resources/Music/<track>.m4a, one loop for the map and one per island (BipCore.MusicRules).
 MUSIC_TRACKS = {"music_map"} | {f"music_{island}" for island in ISLANDS}
 music_dir = REPO / "Resources" / "Music"
-music_files = sorted(music_dir.glob("*")) if music_dir.exists() else []
+music_files = sorted(p for p in music_dir.glob("*") if p.name != "README.md") if music_dir.exists() else []
+if music_files and not (music_dir / "README.md").exists():
+    err("Resources/Music/README.md is missing (where each loop came from and on what terms; the repo is public)")
 for path in music_files:
     if path.suffix != ".m4a" or path.stem not in MUSIC_TRACKS:
         err(f"Resources/Music/{path.name}: music files are .m4a named one of {sorted(MUSIC_TRACKS)}")

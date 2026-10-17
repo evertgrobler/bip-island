@@ -410,3 +410,12 @@
   of credits; prompts in the "Bip Island music" and "Bip Island island music" flows). An island without
   its own loop would play the map's. The validator checks the file names, the self-test
   needs `music_map`, and the walk-through checks the map plays it and games are quiet.
+- **11 Oct, later:** Review fixes for the music (#49 was merged before its review came in). The music drops
+  at once when the narrator starts and stays low for the whole sequence, gaps included
+  (`VoicePlayer.Speaking`), so it never swells before a phonics sound. It fades out and holds its place
+  while the game is paused (parent gate, Settings, setup guide). It stops decoding when silent, and going
+  back to a loop that's still fading picks it up instead of restarting. An unknown `music` value in the
+  save reads as On instead of discarding the whole save (`LenientMusicLevelConverter`, with tests).
+  `Resources/Music/README.md` records each loop's source and prompt (the owner still has to confirm the
+  ElevenLabs plans allow public use; the validator requires the README). Voice samples are removed from
+  the repo (public); they stay in #49's history. NARRATOR_VOICE.md leaves the voice ID to CLAUDE.md.
