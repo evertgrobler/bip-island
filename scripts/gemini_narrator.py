@@ -25,7 +25,7 @@ to the line rather than identical.
   python3 scripts/gemini_narrator.py                # record what's left, up to MAX_REQUESTS requests
   python3 scripts/gemini_narrator.py --status       # how many clips are done, failed and left
 """
-import argparse, base64, csv, difflib, itertools, json, os, re, subprocess, sys, tempfile, urllib.error, urllib.request
+import argparse, base64, csv, difflib, fnmatch, itertools, json, os, re, subprocess, sys, tempfile, urllib.error, urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -40,13 +40,29 @@ TRIM = ("silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.05,
         "silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.08,areverse")
 GIVE_UP = 4  # failed takes before a clip is listed for a person to look at
 
-# Instructions, praise and sentences sparkle; single words and numbers are clear and friendly.
-SPARKLE = ("Read these lines as a bubbly, sparkling, warm South African English primary school teacher who is "
-           "delighted to see the child: a big smile in the voice, lively and playful, full of wonder and "
-           "encouragement, but still clear and unhurried for a five-year-old. Natural South African English accent.")
-WORDS = ("Read these words as a warm, friendly South African English primary school teacher showing a "
-         "five-year-old each word: clear, bright and cheerful, saying each word once, exactly as written. "
-         "Natural South African English accent.")
+# The styles (docs/VOICE_PLAN.md, section 6): Bip's own lines sparkle for young children (sparkle) and are
+# upbeat but relaxed for older ones (big, the <clip>_big lines); instructions and sentences are clear and
+# friendly for every age (clear); words and numbers are even and clear (words).
+SPARKLE = ("Read these lines as a bubbly, sparkling, warm South African English teacher of four- to six-year-olds "
+           "who is delighted to see the child: a big smile in the voice, playful and full of wonder, a little "
+           "sing-song on the happy words, unhurried and very clear, with tiny pauses so a young child can follow. "
+           "Friendly, never shrill, squeaky or baby-talk. Natural South African English accent, not British and not American.")
+BIG = ("Read these lines as the same warm South African English teacher, now talking to a seven- to ten-year-old "
+       "she respects: friendly, upbeat and genuinely pleased, with a real smile in the voice, but relaxed and "
+       "natural, like a favourite teacher or an older cousin chatting, not performing for a toddler. Normal "
+       "talking speed, a little quicker than for little ones; no sing-song, no exaggerated excitement, no baby "
+       "talk, never sarcastic or bored. Confident and encouraging. Natural South African English accent, not "
+       "British and not American.")
+CLEAR = ("Read these lines as a warm, friendly South African English primary school teacher giving clear "
+         "instructions to children aged four to ten: a smile in the voice and a bright, positive tone, but natural "
+         "and not sing-song, so it suits a five-year-old and doesn't sound babyish to a ten-year-old. Unhurried and "
+         "very clear; say each line once, exactly as written. A line that ends without a full stop, or with a "
+         "comma or colon, leads straight into another recording: keep the voice up and unfinished, as if the "
+         "sentence carries on. Natural South African English accent, not British and not American.")
+WORDS = ("Read these words as a warm, friendly South African English teacher showing a child each word: clear, "
+         "bright and natural, each word once, exactly as written, all at the same even pitch and speed, so the "
+         "first and last words sound alike and none sounds like the end of a list. Natural South African English "
+         "accent, not British and not American.")
 PHONICS = ("You are a calm, clear South African English phonics teacher. Each line below is one letter sound. "
            "Say only the pure sound, never the letter name, once, then stop: stretchy sounds (s, m, n, f, l, r, v, z, "
            "sh, th) are held for about a second; stop sounds (t, p, k, c, b, d, g) are short and crisp with no 'uh' "
@@ -56,11 +72,16 @@ PAUSE = "After every line, stay silent for two full seconds before the next one.
 
 AFRIKAANS = ("Everything is in Afrikaans: say it with natural, fluent South African Afrikaans pronunciation, "
              "as a first-language Afrikaans speaker would, never with an English or Dutch accent.")
-SPARKLE_AF = ("Read these Afrikaans lines as a bubbly, sparkling, warm Afrikaans primary school teacher who is "
-              "delighted to see the child: a big smile in the voice, lively and playful, full of wonder and "
-              "encouragement, but still clear and unhurried for a five-year-old. " + AFRIKAANS)
-WORDS_AF = ("Read these Afrikaans words as a warm, friendly Afrikaans primary school teacher showing a "
-            "five-year-old each word: clear, bright and cheerful, saying each word once, exactly as written. " + AFRIKAANS)
+
+
+def in_afrikaans(notes):
+    """A style's notes for the Afrikaans lines: an Afrikaans teacher, with the Afrikaans accent sentence."""
+    notes = notes.replace("South African English teacher", "Afrikaans teacher").replace(
+        "South African English primary school teacher", "Afrikaans primary school teacher")
+    return notes.split(" Natural South African English accent")[0] + " " + AFRIKAANS
+
+
+SPARKLE_AF, BIG_AF, CLEAR_AF, WORDS_AF = (in_afrikaans(n) for n in (SPARKLE, BIG, CLEAR, WORDS))
 PHONICS_AF = ("You are a calm, clear Afrikaans phonics teacher (klanke). Each line below is one Afrikaans letter sound. "
               "Say only the pure Afrikaans sound, never the letter name, once, then stop: stretchy sounds (s, m, n, f, "
               "l, r, v, w) are held for about a second; stop sounds (t, p, k, d, b) are short and crisp with no 'uh' "
@@ -69,9 +90,9 @@ PHONICS_AF = ("You are a calm, clear Afrikaans phonics teacher (klanke). Each li
 # Each language: where its words come from and where its clips go.
 LANGS = {
     "en": {"content": ROOT / "Content", "script": ROOT / "audio" / "script.csv", "audio": AUDIO,
-           "phonics": PHONICS_DIR, "styles": {"sparkle": SPARKLE, "words": WORDS, "phonics": PHONICS}},
+           "phonics": PHONICS_DIR, "styles": {"sparkle": SPARKLE, "big": BIG, "clear": CLEAR, "words": WORDS, "phonics": PHONICS}},
     "af": {"content": ROOT / "Content" / "af", "script": ROOT / "audio" / "af" / "script.csv", "audio": AUDIO / "af",
-           "phonics": PHONICS_DIR / "af", "styles": {"sparkle": SPARKLE_AF, "words": WORDS_AF, "phonics": PHONICS_AF}},
+           "phonics": PHONICS_DIR / "af", "styles": {"sparkle": SPARKLE_AF, "big": BIG_AF, "clear": CLEAR_AF, "words": WORDS_AF, "phonics": PHONICS_AF}},
 }
 AF_NUMBERS = ("nul een twee drie vier vyf ses sewe agt nege tien elf twaalf dertien veertien vyftien sestien "
               "sewentien agtien negentien twintig").split()
@@ -113,14 +134,62 @@ def line_words(lang, text):
     return af_words(text) if lang == "af" else words(text)
 
 
+# Bip's own lines (BipCore.VoiceBands.BigVersions): sparkling for young children, <clip>_big for older ones.
+OWN_LINES = {"vo_level_up", "vo_lets_practise_again", "vo_round_done", "vo_welcome", "vo_letters_island",
+             "vo_numbers_island", "vo_words_island", "vo_coding_island", "vo_art_island", "vo_language_island",
+             "vo_island_sleeping", "vo_who_is_playing", "vo_bip_charging", "vo_day_done"}
+HOLD = ROOT / "voice-lab" / "aoede-hold.txt"
+
+
 def group(key):
     """Which style a clip is spoken in, or None if it isn't recorded here."""
     clip = split(key)[1]
     if clip.startswith("snd_"):
         return "phonics"
+    if clip.endswith("_big"):
+        return "big"
     if clip.startswith(("word_", "num_", "money_", "name_", "learn_")) and not clip.endswith("_mid"):
         return "words"
-    return "sparkle"
+    if clip.startswith(("praise_", "hint_")) or clip in OWN_LINES:
+        return "sparkle"
+    return "clear"
+
+
+def priority(key):
+    """Most-heard first (docs/VOICE_PLAN.md, section 7): Bip's own lines, instructions, the older lines,
+    small numbers, letter sounds, words, stories and reading sentences, Language Island words, and the
+    number sentences last (the game joins those from pieces meanwhile)."""
+    clip = split(key)[1]
+    style = group(key)
+    if style == "sparkle":
+        return 1
+    if clip.startswith("vo_say_"):
+        return 9
+    if clip.startswith("learn_"):
+        return 8
+    if re.fullmatch(r"vo_[a-z]+_\d+", clip) or clip.startswith(("vo_sent_", "vo_hom_")):
+        return 7
+    if style == "clear":
+        return 2
+    if style == "big":
+        return 3
+    if clip.startswith("money_") or re.fullmatch(r"num_(\d|1\d|20)(_mid)?", clip) or clip.endswith("_mid"):
+        return 4
+    if style == "phonics":
+        return 5
+    return 6
+
+
+def held():
+    """Clips not to record yet (voice-lab/aoede-hold.txt: one pattern per line, like af/learn_*): lines
+    still waiting for the owner's check."""
+    if not HOLD.exists():
+        return []
+    return [line.strip() for line in HOLD.read_text().splitlines() if line.strip() and not line.startswith("#")]
+
+
+def is_held(key, patterns):
+    return any(fnmatch.fnmatchcase(key, p) for p in patterns)
 
 
 def batch_size(style, retry):
@@ -269,7 +338,9 @@ def status(state, all_texts):
     wanted = {c: t for c, t in all_texts.items() if group(c)}
     done = sum(1 for c, t in wanted.items() if state["done"].get(c) == t)
     stuck = [c for c, n in state["failed"].items() if n >= GIVE_UP]
-    return len(wanted), done, stuck
+    hold = held()
+    waiting = sum(1 for c, t in wanted.items() if state["done"].get(c) != t and is_held(c, hold))
+    return len(wanted), done, stuck, waiting
 
 
 def main():
@@ -277,24 +348,28 @@ def main():
     ap.add_argument("--status", action="store_true")
     a = ap.parse_args()
     state, all_texts = load_state(), texts()
-    total, done, stuck = status(state, all_texts)
-    print(f"Aoede: {done} of {total} clips done; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
+    total, done, stuck, waiting = status(state, all_texts)
+    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
     if a.status:
         return
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         sys.exit("No GEMINI_API_KEY secret.")
 
-    todo = [c for c in sorted(all_texts) if group(c) and state["done"].get(c) != all_texts[c]
-            and state["failed"].get(c, 0) < GIVE_UP]
-    # Fresh clips first in big batches, then retries in small ones; English and Afrikaans take turns.
+    hold = held()
+    todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if group(c) and state["done"].get(c) != all_texts[c]
+            and state["failed"].get(c, 0) < GIVE_UP and not is_held(c, hold)]
+    # Fresh clips first in big batches, most-heard first, then retries in small ones; English and
+    # Afrikaans take turns. Each batch is one style.
     queues = {lang: [] for lang in LANGS}
     for retry in (False, True):
-        for style in ("sparkle", "words", "phonics"):
-            for lang in LANGS:
-                these = [c for c in todo if split(c)[0] == lang and group(c) == style and bool(state["failed"].get(c)) == retry]
-                size = batch_size(style, retry)
-                queues[lang] += [(lang, style, these[i:i + size]) for i in range(0, len(these), size)]
+        for step in range(1, 10):
+            for style in ("sparkle", "clear", "big", "words", "phonics"):
+                for lang in LANGS:
+                    these = [c for c in todo if split(c)[0] == lang and group(c) == style and priority(c) == step
+                             and bool(state["failed"].get(c)) == retry]
+                    size = batch_size(style, retry)
+                    queues[lang] += [(lang, style, these[i:i + size]) for i in range(0, len(these), size)]
     batches = [b for turn in itertools.zip_longest(*queues.values()) for b in turn if b]
     listener = Listener()
     requests = 0
@@ -355,8 +430,8 @@ def main():
                     print(f"  {clip}: heard {listener.heard(out, lang)!r}, wanted {all_texts[clip]!r}", flush=True)
             save_state(state)
             print(f"Request {requests}: {good} of {len(clips)} {lang} {style} clips kept.", flush=True)
-    total, done, stuck = status(state, all_texts)
-    print(f"Aoede: {done} of {total} clips done; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
+    total, done, stuck, waiting = status(state, all_texts)
+    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
 
 
 if __name__ == "__main__":
