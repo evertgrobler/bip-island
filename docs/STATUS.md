@@ -452,4 +452,3 @@
   the Morning Order number pictures (white on light blue → ink), the mystery box "?" (→ ink), the grown-ups'
   hint on the charging screen and "more stars for the next sticker" (ink at 85%, 8.2:1), the parent area's
   grey text (ink at 75%, 6:1) and the setup guide's orange "Try it now" (5.9:1).
-
