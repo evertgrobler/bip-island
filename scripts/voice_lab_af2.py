@@ -47,10 +47,12 @@ def seedvc(clips, ref, tmp):
     for name, wav in clips.items():
         out = tmp / f"seedvc_{name}"
         out.mkdir(exist_ok=True)
-        subprocess.run([sys.executable, "inference.py", "--source", str(wav), "--target", str(ref), "--output", str(out),
+        run = subprocess.run([sys.executable, "inference.py", "--source", str(wav), "--target", str(ref), "--output", str(out),
                         "--diffusion-steps", "30", "--length-adjust", "1.0", "--inference-cfg-rate", "0.7",
                         "--f0-condition", "False", "--auto-f0-adjust", "False", "--semi-tone-shift", "0", "--fp16", "False"],
-                       cwd=repo, check=True)
+                       cwd=repo, capture_output=True, text=True)
+        if not list(out.glob("*.wav")):
+            raise RuntimeError("Seed-VC made nothing:\n" + run.stderr[-3000:])
         result = sorted(out.glob("*.wav"))[-1]
         mp3(result, OUT / "seedvc" / f"{name}.mp3")
         print(f"seedvc: {name}", flush=True)
