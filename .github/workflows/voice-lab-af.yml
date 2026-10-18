@@ -1,0 +1,37 @@
+# Afrikaans listening test (scripts/voice_lab_af.py). Results are committed to this branch as MP3s.
+name: Voice lab (Afrikaans)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/voice-lab]
+    paths:
+      - "voice-lab/lines_af.tsv"
+      - "scripts/voice_lab_af.py"
+      - ".github/workflows/voice-lab-af.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  speak:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ffmpeg and Chatterbox (CPU)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts
+      - name: Speak the Afrikaans lines
+        run: python3 scripts/voice_lab_af.py
+      - name: Commit the results
+        run: |
+          git config user.name "voice-lab"
+          git config user.email "voice-lab@users.noreply.github.com"
+          git add voice-lab/out_af
+          git commit -m "Voice lab Afrikaans results [skip ci]" || exit 0
+          git pull --rebase origin claude/voice-lab && git push
