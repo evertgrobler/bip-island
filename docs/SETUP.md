@@ -45,9 +45,11 @@ Open the download page and pick your computer.
 
 **Mac** (macOS 14 Sonoma or newer)
 1. Click **Download for Mac** and open the `.dmg`. Drag **Bip Island** into **Applications**.
-2. The first time only: **right-click** Bip Island in Applications → **Open** → **Open**. On macOS 15
-   or newer, if it only shows a warning: **System Settings → Privacy & Security** → scroll down →
-   **Open Anyway**.
+2. The first time only: open Bip Island and click **Done** on the warning, then **System Settings →
+   Privacy & Security** → scroll down → **Open Anyway** → the Mac's password. (Since macOS 15
+   right-click → Open no longer gets past the warning; on macOS 14 Sonoma it still works.)
+3. On a trackpad Mac (a MacBook Neo, say), a mouse is easiest for small hands; otherwise turn on
+   **Tap to click** in System Settings → Trackpad.
 
 **Windows** (Windows 10 or 11)
 1. Click **Download for Windows** and run `Setup.exe`.
@@ -79,7 +81,7 @@ and open it again any time from the parent area (**Settings → Show the setup g
 - When one is ready, an **Update ready** button appears at the bottom of the screen. Tap it, answer
   the maths question (or passcode), and the game restarts on the new version.
 - Parent area → **Settings** shows the version, and has **Check for updates now** / **Install the update**.
-- Updates never need the right-click or "Run anyway" step again.
+- Updates never need the "Open Anyway" or "Run anyway" step again.
 
 ## If something goes wrong
 
@@ -92,6 +94,6 @@ and open it again any time from the parent area (**Settings → Show the setup g
 
 ## Later: proper signing
 
-Without paid certificates, the first install needs the right-click (Mac) or "Run anyway" (Windows)
+Without paid certificates, the first install needs "Open Anyway" (Mac) or "Run anyway" (Windows)
 step. An Apple Developer account (about US$99 a year) and a Windows code-signing service can be added
 later through GitHub secrets, with no game changes. Updates are already checked by Velopack either way.
