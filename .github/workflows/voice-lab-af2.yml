@@ -25,11 +25,12 @@ jobs:
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
           pip install --extra-index-url https://download.pytorch.org/whl/cpu torch torchaudio
-          pip install edge-tts huggingface_hub
+          pip install edge-tts huggingface_hub torchcodec
           git clone --depth 1 https://github.com/Plachtaa/seed-vc.git ../seed-vc
           grep -viE '^(torch|torchaudio|torchvision)([=<>].*)?$' ../seed-vc/requirements.txt > ../seed-vc/req-cpu.txt
           pip install --extra-index-url https://download.pytorch.org/whl/cpu -r ../seed-vc/req-cpu.txt || true
-          pip install git+https://github.com/myshell-ai/OpenVoice.git || true
+          pip install --no-deps git+https://github.com/myshell-ai/OpenVoice.git
+          pip install librosa pydub faster-whisper whisper-timestamped wavmark unidecode inflect eng_to_ipa langid
       - name: Convert Adri's Afrikaans into the narrator's voice
         run: python3 scripts/voice_lab_af2.py ../seed-vc
       - name: Commit the results

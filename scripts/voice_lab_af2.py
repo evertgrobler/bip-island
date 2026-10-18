@@ -48,7 +48,7 @@ def seedvc(clips, ref, tmp):
         out = tmp / f"seedvc_{name}"
         out.mkdir(exist_ok=True)
         subprocess.run([sys.executable, "inference.py", "--source", str(wav), "--target", str(ref), "--output", str(out),
-                        "--diffusion-steps", "50", "--length-adjust", "1.0", "--inference-cfg-rate", "0.7",
+                        "--diffusion-steps", "30", "--length-adjust", "1.0", "--inference-cfg-rate", "0.7",
                         "--f0-condition", "False", "--auto-f0-adjust", "False", "--semi-tone-shift", "0", "--fp16", "False"],
                        cwd=repo, check=True)
         result = sorted(out.glob("*.wav"))[-1]
