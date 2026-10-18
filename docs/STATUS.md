@@ -462,4 +462,3 @@
   children see are in `BipCore.Texts` (English and Afrikaans). The Children tab and the setup guide show a
   language choice only when a second language is ready (`Content/af/language.json`), so this ships
   invisibly: English plays exactly as before. The walk-through switches a child to Afrikaans and back.
-
