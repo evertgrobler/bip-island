@@ -169,12 +169,12 @@ def priority(key):
         return 8
     if re.fullmatch(r"vo_[a-z]+_\d+", clip) or clip.startswith(("vo_sent_", "vo_hom_")):
         return 7
+    if clip.startswith("money_") or re.fullmatch(r"num_(\d|1\d|20)(_mid)?", clip) or clip.endswith("_mid"):
+        return 4
     if style == "clear":
         return 2
     if style == "big":
         return 3
-    if clip.startswith("money_") or re.fullmatch(r"num_(\d|1\d|20)(_mid)?", clip) or clip.endswith("_mid"):
-        return 4
     if style == "phonics":
         return 5
     return 6

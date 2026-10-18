@@ -1,0 +1,13 @@
+# Clips the daily Aoede run doesn't record yet: lines still waiting for the owner's check.
+# One pattern per line (* matches anything); Afrikaans clips start with af/. Remove a line once it's approved.
+# The Language Island words, both languages (Afrikaans Word Check page, section 9).
+learn_*
+af/learn_*
+# Bip's new Afrikaans lines for the Language Island (section 9).
+af/vo_language_island
+af/vo_show_me
+af/vo_what_is_it
+af/vo_bips_day
+af/vo_in_our_language
+# The Afrikaans older-children lines (section 10).
+af/*_big
