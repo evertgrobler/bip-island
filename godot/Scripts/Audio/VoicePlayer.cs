@@ -45,9 +45,22 @@ public partial class VoicePlayer : Node
 
     public static string PathFor(string clip)
     {
-        var folder = BipCore.Languages.Folder(Language);
+        var language = Language;
+        if (clip.StartsWith('@') && clip.IndexOf('/') is var slash and > 1)
+        {
+            language = clip[1..slash] == "af" ? BipCore.HomeLanguage.Afrikaans : BipCore.HomeLanguage.English;
+            clip = clip[(slash + 1)..];
+        }
+        var folder = BipCore.Languages.Folder(language);
         return AudioFolder + (folder.Length > 0 ? folder + "/" : "") + clip + ".ogg";
     }
+
+    /// <summary>
+    /// A clip from one language's folder whatever the child's language ("@af/learn_cat"): the Language
+    /// Island says words in the language being learnt and, as a hint, in the child's own.
+    /// </summary>
+    public static string InLanguage(string clip, BipCore.HomeLanguage language) =>
+        $"@{(language == BipCore.HomeLanguage.Afrikaans ? "af" : "en")}/{clip}";
 
     public static bool HasClip(string clip) => ResourceLoader.Exists(PathFor(clip));
 

@@ -48,6 +48,21 @@ public partial class GameCoordinator : Node
     public bool WordsOpen { get; private set; }
     public bool CodingOpen { get; private set; }
     public bool ArtOpen { get; private set; }
+    /// <summary>
+    /// The Language Island: open when the language the child would learn is in the game too (its
+    /// content and clips), so an English child learns Afrikaans only once Afrikaans is switched on.
+    /// </summary>
+    public bool LanguageOpen { get; private set; }
+    /// <summary>The content of the language the child learns on the Language Island (null when it's closed).</summary>
+    public ContentLibrary? LearningContent { get; private set; }
+    private bool _previewLanguage;
+
+    /// <summary>Opens (or closes again) the Language Island before Afrikaans is switched on: screen previews and the walk-through.</summary>
+    public void PreviewLanguageIsland(bool open = true)
+    {
+        _previewLanguage = open;
+        LoadContent(Language);
+    }
     public PhonicsCourse? Course { get; private set; }
     public SoundHuntGame? Hunt { get; private set; }
 
@@ -142,7 +157,8 @@ public partial class GameCoordinator : Node
         Course = null;
         Hunt = null;
         _monster = null;
-        LettersOpen = NumbersOpen = WordsOpen = CodingOpen = ArtOpen = false;
+        LettersOpen = NumbersOpen = WordsOpen = CodingOpen = ArtOpen = LanguageOpen = false;
+        LearningContent = null;
         if (Content == null) return;
         LettersOpen = Try("Letters", () =>
         {
@@ -163,6 +179,12 @@ public partial class GameCoordinator : Node
         });
         CodingOpen = Try("Coding", () => { _ = new MorningOrderGame(Content); _ = new BipsPathGame(Content); });
         ArtOpen = Try("Art", () => { _ = new ShapeBuilderGame(Content); _ = new PaintPotsGame(Content); _ = new MirrorMagicGame(Content); });
+        var learning = Languages.Learning(language);
+        if ((AvailableLanguages.Contains(learning) || _previewLanguage) && ContentFor(learning) is { } other)
+        {
+            LanguageOpen = Try("Language", () => { _ = new ShowMeGame(Content); _ = new WhatIsItGame(Content); _ = new BipsDayGame(Content, other); });
+            if (LanguageOpen) LearningContent = other;
+        }
     }
 
     private static bool Try(string island, Action build)
@@ -479,6 +501,7 @@ public partial class GameCoordinator : Node
             Island.Words => WordsOpen,
             Island.Coding => CodingOpen,
             Island.Art => ArtOpen,
+            Island.Language => LanguageOpen,
             _ => false,
         };
         if (!open)
@@ -534,6 +557,9 @@ public partial class GameCoordinator : Node
             ShapeBuilderGame.GameId when ArtOpen => new ShapeBuilderScreen(new ShapeBuilderGame(Content)),
             PaintPotsGame.GameId when ArtOpen => new PaintPotsScreen(new PaintPotsGame(Content)),
             MirrorMagicGame.GameId when ArtOpen => new MirrorMagicScreen(new MirrorMagicGame(Content)),
+            ShowMeGame.GameId when LanguageOpen => new ShowMeScreen(new ShowMeGame(Content)),
+            WhatIsItGame.GameId when LanguageOpen => new WhatIsItScreen(new WhatIsItGame(Content)),
+            BipsDayGame.GameId when LanguageOpen && LearningContent != null => new BipsDayScreen(new BipsDayGame(Content, LearningContent)),
             _ => null,
         };
         if (screen == null) return false;

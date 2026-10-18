@@ -144,6 +144,7 @@ public static class WalkTest
         await PlayWords();
         await PlayCoding();
         await PlayArt();
+        await PlayLanguage();
 
         if (await Tap("stickers")) await Expect<StickerScreen>("the sticker book opens");
         Check("the sticker book opens on the child's picture stickers", Screen() is StickerScreen book
@@ -798,6 +799,54 @@ public static class WalkTest
             }
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Path goes back to coding island");
             if (await Tap("home")) await Expect<MapScreen>("home from coding island after the games");
+        }
+
+        async Task PlayLanguage()
+        {
+            Check("the Language Island sleeps out of sight until the other language is in the game",
+                  (Screen()?.FindTappable("island:language") != null) == game.LanguageOpen);
+            game.PreviewLanguageIsland();
+            game.ShowMap();
+            await Expect<MapScreen>("the map with the Language Island");
+            if (await Tap("island:language")) await Expect<GameIslandScreen>("the Language Island opens");
+            Check("an English child hears Afrikaans words from the Afrikaans folder, hints from their own",
+                  Audio.VoicePlayer.PathFor(Audio.VoicePlayer.InLanguage("learn_cat", BipCore.HomeLanguage.Afrikaans)).EndsWith("/af/learn_cat.ogg")
+                  && !Audio.VoicePlayer.PathFor("learn_cat").Contains("/af/"));
+
+            if (await Tap("showme")) await Expect<ShowMeScreen>("Show Me opens from the island");
+            Check("Show Me shows its pictures", await WaitFor(() => Screen() is ShowMeScreen { RightIndex: >= 0 }, 3));
+            if (Screen() is ShowMeScreen show)
+            {
+                var stars = game.Progress.Stars;
+                await Tap($"card:{show.RightIndex}");
+                Check("the picture Bip named earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6), $"stars {stars} → {game.Progress.Stars}");
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Show Me goes back to the Language Island");
+
+            if (await Tap("whatisit")) await Expect<WhatIsItScreen>("What Is It? opens from the island");
+            Check("What Is It? shows its word bubbles", await WaitFor(() => Screen() is WhatIsItScreen { RightIndex: >= 0 }, 3));
+            if (Screen() is WhatIsItScreen what)
+            {
+                var stars = game.Progress.Stars;
+                await Tap($"bubble:{(what.RightIndex + 1) % 2}");
+                Check("a wrong word boops and gives no star", game.Progress.Stars == stars && what is { InputLocked: false });
+                await Tap($"bubble:{what.RightIndex}");
+                Check("the right word after a miss: no star, but the answer is saved",
+                      await WaitFor(() => game.Progress.Skill("lang_words").TotalAttempts == 1, 6) && game.Progress.Stars == stars);
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from What Is It? goes back to the Language Island");
+
+            if (await Tap("bipsday")) await Expect<BipsDayScreen>("Bip's Day opens from the island");
+            Check("Bip's Day shows its pictures", await WaitFor(() => Screen() is BipsDayScreen { RightIndex: >= 0 }, 3));
+            if (Screen() is BipsDayScreen day)
+            {
+                var stars = game.Progress.Stars;
+                await Tap($"card:{day.RightIndex}");
+                Check("the moment Bip described earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6), $"stars {stars} → {game.Progress.Stars}");
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Day goes back to the Language Island");
+            if (await Tap("home")) await Expect<MapScreen>("home from the Language Island");
+            game.PreviewLanguageIsland(false);
         }
 
         async Task PlayArt()

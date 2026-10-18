@@ -21,7 +21,8 @@ public partial class MapScreen : BaseScreen
     public MapScreen(bool greet) => _greet = greet;
 
     protected override IReadOnlyList<Node2D> KeyOptions =>
-        new[] { Island.Letters, Island.Numbers, Island.Art, Island.Words, Island.Coding }.Select(i => _islands[i]).ToList();
+        new[] { Island.Language, Island.Letters, Island.Numbers, Island.Art, Island.Words, Island.Coding }
+            .Where(_islands.ContainsKey).Select(i => _islands[i]).ToList();
 
     protected override void Build()
     {
@@ -69,15 +70,26 @@ public partial class MapScreen : BaseScreen
             n.AddChild(Pen(Polygon(P(20, 10), P(70, 10), P(45, -30)), 699, fill: Palette.Orange, lineWidth: 3.5));
             n.AddChild(Pen(Ellipse(P(-30, 5), 18, 14), 689, fill: Palette.Sand, lineWidth: 3));
         });
-        // Shrink what's drawn, not the island itself: tapping and pulsing scale the island back to 1.
-        var art = _islands[Island.Art];
-        var inner = new Node2D { Scale = Vector2.One * 0.7f };
-        foreach (var part in art.GetChildren())
+        Shrink(_islands[Island.Art], 0.7f);
+
+        // The Language Island, small at the top, once both languages are in the game (docs/LANGUAGES.md):
+        // two speech bubbles, "Hi!" and "Hallo!".
+        if (Coordinator.LanguageOpen)
         {
-            art.RemoveChild(part);
-            inner.AddChild(part);
+            _islands[Island.Language] = AddIsland("language", P(0, 372), Palette.Sea.Blend(0.35, Palette.Grass), true, 700, n =>
+            {
+                foreach (var (i, (x, y, text, colour)) in Indexed((-82.0, 40.0, "Hi!", Palette.Card), (88.0, 22.0, "Hallo!", Palette.Sun.Blend(0.6, Palette.Card))))
+                {
+                    var side = i == 0 ? -1 : 1;
+                    n.AddChild(Pen(Polygon(P(x + side * 10, y - 40), P(x + side * 46, y - 74), P(x + side * 40, y - 30)), (ulong)(705 + i), fill: colour, lineWidth: 4));
+                    n.AddChild(Pen(Ellipse(P(x, y), i == 0 ? 92 : 112, 58), (ulong)(707 + i), fill: colour, lineWidth: 5));
+                    var words = Sketch.Letter(text, 54, withShadow: false);
+                    words.Position = P(x, y);
+                    n.AddChild(words);
+                }
+            });
+            Shrink(_islands[Island.Language], 0.6f);
         }
-        art.AddChild(inner);
 
         AddBip(P(0, -360), 0.7f);
 
@@ -157,6 +169,18 @@ public partial class MapScreen : BaseScreen
         return island;
     }
 
+    /// <summary>Shrinks what's drawn, not the island itself: tapping and pulsing scale the island back to 1.</summary>
+    private static void Shrink(Node2D island, float scale)
+    {
+        var inner = new Node2D { Scale = Vector2.One * scale };
+        foreach (var part in island.GetChildren())
+        {
+            island.RemoveChild(part);
+            inner.AddChild(part);
+        }
+        island.AddChild(inner);
+    }
+
     private void SayWelcome()
     {
         Bip.Hop();
@@ -183,6 +207,9 @@ public partial class MapScreen : BaseScreen
                 break;
             case "island:art" when Coordinator.ArtOpen:
                 OpenIsland(node, Island.Art);
+                break;
+            case "island:language" when Coordinator.LanguageOpen:
+                OpenIsland(node, Island.Language);
                 break;
             case "stickers":
                 Sfx.Play(BipSounds.Effect.Tick);
