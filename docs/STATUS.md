@@ -449,3 +449,6 @@
   Chatterbox Multilingual reading it as Dutch, Microsoft's Adri (af-ZA neural) and UBC's Simba-TTS-afr,
   each also converted into the narrator with Chatterbox voice conversion; Meta's MMS Afrikaans is gone from
   Hugging Face. Only a paid native Afrikaans voice (ElevenLabs) or better open models later are worth trying.
+  Result: all 233 Block Towers sentences recorded by Chatterbox and passed the Whisper check (none removed,
+  `last-failed.txt` empty); `scripts/check_all.sh` green. Still open: Afrikaans round 3 (Seed-VC, OpenVoice) and
+  a Gemini TTS Afrikaans test on `claude/voice-lab` (needs a `GEMINI_API_KEY` secret; not part of this PR).
