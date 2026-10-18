@@ -18,7 +18,7 @@ public sealed class MusicRulesTests : IDisposable
     {
         Assert.Equal("music_letters", MusicRules.IslandTrack(Island.Letters));
         Assert.Equal("music_art", MusicRules.IslandTrack(Island.Art));
-        Assert.Equal(6, MusicRules.AllTracks.Count);
+        Assert.Equal(7, MusicRules.AllTracks.Count); // the map and six islands
         Assert.Equal(MusicRules.AllTracks.Count, MusicRules.AllTracks.Distinct().Count());
         Assert.Contains(MusicRules.MapTrack, MusicRules.AllTracks);
     }

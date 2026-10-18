@@ -140,9 +140,9 @@ public static partial class AudioCatalogue
     /// <summary>Clips written in audio/script.csv rather than generated from the content.</summary>
     public static IReadOnlyList<string> ScriptedClips => [.. VoiceLine.All, .. PraiseClips, .. HintClips];
 
-    /// <summary>The naming contract: snd_, word_, num_, vo_, name_, money_ with lower-case keys; praise_NN and hint_NN.</summary>
+    /// <summary>The naming contract: snd_, word_, num_, vo_, name_, money_, learn_ with lower-case keys; praise_NN and hint_NN.</summary>
     public static bool FollowsNamingContract(string name) => NamingContract().IsMatch(name);
 
-    [GeneratedRegex(@"^((snd|word|num|vo|name|money)_[a-z0-9_]+|(praise|hint)_[0-9]{2})$")]
+    [GeneratedRegex(@"^((snd|word|num|vo|name|money|learn)_[a-z0-9_]+|(praise|hint)_[0-9]{2})$")]
     private static partial Regex NamingContract();
 }
