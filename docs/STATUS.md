@@ -442,3 +442,9 @@
   (`Pic`), and fills skip repeated points (`Clean`), which otherwise leave a shape white. Body parts
   (chin, lip, wing) get the orange pointer from `WordPictures.Pointer`. Every page of the picture gallery
   was looked at; `EmojiPictures.Icons` is now empty.
+- **18 Oct, Afrikaans round 3:** Seed-VC and OpenVoice converting Microsoft's Adri towards the narrator
+  ran on `claude/voice-lab` (Seed-VC needs torchvision 0.23.0 with torch 2.8; OpenVoice needs `vad=True`
+  on a CPU runner). The owner listened: "still very bad". Every free route has now been tried and
+  rejected; Afrikaans is parked. Left to try: Gemini TTS (needs a `GEMINI_API_KEY` secret; the test
+  is ready on `claude/voice-lab`), a paid native Afrikaans ElevenLabs voice, or a person recording.
+
