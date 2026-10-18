@@ -1,0 +1,46 @@
+# Records the narrator clips with Gemini's Aoede voice (scripts/gemini_narrator.py), a batch at a time
+# within Gemini's free daily limit, and commits them to the same branch. Needs the GEMINI_API_KEY secret.
+# Started by a push of voice-lab/aoede-run.txt (a daily nudge; its first line is how many requests
+# the run may make) or by hand.
+name: Aoede narrator
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/**"]
+    paths:
+      - "voice-lab/aoede-run.txt"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aoede-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  speak:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ffmpeg and Whisper (CPU)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+          pip install faster-whisper
+      - name: Record a day's batches
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python3 scripts/validate_content.py > /dev/null
+          MAX_REQUESTS=$(head -1 voice-lab/aoede-run.txt | tr -dc 0-9) python3 scripts/gemini_narrator.py
+      - name: Commit the clips
+        run: |
+          git config user.name "aoede-narrator"
+          git config user.email "aoede-narrator@users.noreply.github.com"
+          git add Resources/Audio voice-lab/aoede.json
+          git commit -m "Narrator clips from Gemini Aoede, checked by Whisper [skip ci]" || exit 0
+          git pull --rebase origin "${GITHUB_REF_NAME}" && git push
