@@ -1,0 +1,41 @@
+# Afrikaans round 3: free voice converters (Seed-VC, OpenVoice) on Adri's Afrikaans. scripts/voice_lab_af2.py
+name: Voice lab (Afrikaans 3)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/voice-lab]
+    paths:
+      - "scripts/voice_lab_af2.py"
+      - ".github/workflows/voice-lab-af2.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install ffmpeg, Seed-VC and OpenVoice (CPU)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu torch torchaudio
+          pip install edge-tts huggingface_hub
+          git clone --depth 1 https://github.com/Plachtaa/seed-vc.git ../seed-vc
+          grep -viE '^(torch|torchaudio|torchvision)([=<>].*)?$' ../seed-vc/requirements.txt > ../seed-vc/req-cpu.txt
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu -r ../seed-vc/req-cpu.txt || true
+          pip install git+https://github.com/myshell-ai/OpenVoice.git || true
+      - name: Convert Adri's Afrikaans into the narrator's voice
+        run: python3 scripts/voice_lab_af2.py ../seed-vc
+      - name: Commit the results
+        run: |
+          git config user.name "voice-lab"
+          git config user.email "voice-lab@users.noreply.github.com"
+          git add voice-lab/out_af2
+          git commit -m "Voice lab Afrikaans 3 results [skip ci]" || exit 0
+          git pull --rebase origin claude/voice-lab && git push
