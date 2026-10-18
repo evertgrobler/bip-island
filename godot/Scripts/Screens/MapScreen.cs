@@ -237,7 +237,7 @@ public partial class MapScreen : BaseScreen
     {
         var card = new Node2D { Name = "MysteryStickers", ZIndex = 80, Scale = Vector2.One * 0.01f };
         card.AddChild(Pen(RoundRect(R(-400, -150, 800, 330), 40), 640, fill: Palette.Card, lineWidth: 6));
-        var heading = Sketch.Label(stickers.Count == 1 ? "New sticker!" : "New stickers!", 40, Palette.Ink);
+        var heading = Sketch.Label(Texts.NewStickers(Coordinator.Language, stickers.Count), 40, Palette.Ink);
         heading.Position += P(0, 115);
         card.AddChild(heading);
         var spots = StickerArt.Grid(stickers.Count, P(0, -40), width: 720, height: 170);

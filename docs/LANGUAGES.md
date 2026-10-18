@@ -85,7 +85,13 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 6. **Language Island:** the three games, both directions, word and phrase lists, voice.
 7. **Letter sounds with Aoede** (both languages): recorded on the daily runs with everything else;
    the owner approves them by ear before they go into the game.
-8. Family test on both computers.
+8. **Switch Afrikaans on:** add `Content/af/language.json`, and in the same pull request update the
+   download page (`site/index.html`): one game in English and Afrikaans, each child's language set
+   by a grown-up, plus the Language Island. The page is bilingual from then on.
+9. Family test on both computers.
+
+English and Afrikaans are **one game, one download**: the same app on the same computer, with the
+language chosen per child, so siblings can play in different languages.
 
 ## What the owner decides or checks
 

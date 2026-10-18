@@ -19,7 +19,7 @@ public partial class ProfilesScreen : BaseScreen
     protected override void Build()
     {
         AddBip(P(-620, -380), 0.7f);
-        var title = Sketch.Label("Who's playing?", 72, Palette.Ink);
+        var title = Sketch.Label(Texts.WhoIsPlaying(Coordinator.Language), 72, Palette.Ink);
         var titleHolder = new Node2D { Position = P(0, 360) };
         titleHolder.AddChild(title);
         Stage.AddChild(titleHolder);
@@ -161,7 +161,7 @@ public partial class ChargingScreen : BaseScreen
     {
         _dayDone = (_peek is Guid peek ? Coordinator.RestingPhaseOf(peek) : Coordinator.CurrentBreakPhase()) == BreakPhase.DayDone;
         var title = new Node2D { Position = P(0, 390) };
-        title.AddChild(Sketch.Label(_dayDone ? "That's all for today" : "Bip is charging", 60, Palette.Ink));
+        title.AddChild(Sketch.Label(_dayDone ? Texts.AllForToday(Coordinator.Language) : Texts.BipIsCharging(Coordinator.Language), 60, Palette.Ink));
         Stage.AddChild(title);
 
         if (_dayDone) BuildNight();
@@ -174,8 +174,8 @@ public partial class ChargingScreen : BaseScreen
         hint.AddChild(Sketch.Label(
             _peek != null
                 // A brother's or sister's break: the grown-ups' buttons are for the child at the computer.
-                ? $"{shownChild?.Name ?? "This child"} {(_dayDone ? "has finished playing for today" : "is having a break")}."
-                : $"Grown-ups: hold Esc for {ParentGateFlow.HoldSeconds:0} seconds to {(_dayDone ? "change the daily limit" : "end the break early")}.",
+                ? Texts.SiblingResting(Coordinator.Language, shownChild?.Name ?? "?", _dayDone)
+                : Texts.GrownUpsHoldEsc(Coordinator.Language, (int)Math.Round(ParentGateFlow.HoldSeconds), _dayDone),
             24, Palette.Ink.WithAlpha(0.6)));
         Stage.AddChild(hint);
         _when = new Node2D { Position = P(0, -340) };
@@ -285,14 +285,14 @@ public partial class ChargingScreen : BaseScreen
     {
         if (_dayDone)
         {
-            SetGrownUpLine("Games open again tomorrow.");
+            SetGrownUpLine(Texts.OpenAgainTomorrow(Coordinator.Language));
             return;
         }
         var lit = (int)Math.Floor(Coordinator.BreakProgressOf(Shown) * Bars + 0.0001);
         for (var i = 0; i < _bars.Count; i++) _bars[i].Modulate = new Color(1, 1, 1, i < lit ? 1f : 0.18f);
         if (Coordinator.BreakEndsAtOf(Shown) is not { } ends) return;
         var minutes = Coordinator.BreakMinutesLeftOf(Shown);
-        SetGrownUpLine($"Games open again at {ends.ToLocalTime():HH:mm} (in {Sketch.Plural(minutes, "minute")}).");
+        SetGrownUpLine(Texts.OpenAgainAt(Coordinator.Language, ends.ToLocalTime().ToString("HH:mm"), minutes));
     }
 
     private void Check()
@@ -393,7 +393,7 @@ public partial class StickerScreen : BaseScreen
         var progress = Coordinator.Progress;
         if (Coordinator.Content is { } content) _allPictures = StickerBook.AllPictureStickers(content);
         var jar = new Node2D { Position = P(0, 410) };
-        jar.AddChild(Sketch.Label($"{Sketch.Plural(progress.Stars, "star")} in the jar", 56, Palette.Ink));
+        jar.AddChild(Sketch.Label(Texts.StarsInJar(Coordinator.Language, progress.Stars), 56, Palette.Ink));
         Stage.AddChild(jar);
         // How close the next picture sticker is, for grown-ups reading along (nothing once the set is
         // complete; stickers already owed are handed out with the next right answer).
@@ -402,7 +402,7 @@ public partial class StickerScreen : BaseScreen
         if (!allCollected && toGo > 0)
         {
             var next = new Node2D { Position = P(0, 355) };
-            next.AddChild(Sketch.Label($"{Sketch.Plural(toGo, "more star")} for the next sticker", 28, Palette.Ink.WithAlpha(0.6)));
+            next.AddChild(Sketch.Label(Texts.StarsToNextSticker(Coordinator.Language, toGo), 28, Palette.Ink.WithAlpha(0.6)));
             Stage.AddChild(next);
         }
 

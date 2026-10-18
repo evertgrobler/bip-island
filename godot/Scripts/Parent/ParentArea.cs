@@ -308,30 +308,34 @@ public partial class ParentArea : VBoxContainer
         var section = ParentUi.Section(_body, "Add a child");
         var name = new LineEdit { PlaceholderText = "Name", CustomMinimumSize = new Vector2(240, 0), MaxLength = 40 };
         var age = AgePicker(null);
+        var language = LanguagePicker(HomeLanguage.English);
         var problem = ParentUi.Text("That child couldn't be added.", 16, colour: ParentUi.Problem);
         problem.Visible = false;
         void Add()
         {
-            if (AddChild(name.Text, AgeFrom(age))) return;
+            if (AddChild(name.Text, AgeFrom(age), language == null ? HomeLanguage.English : PickedLanguage(language))) return;
             problem.Visible = true;
         }
         name.TextSubmitted += _ => Add();
-        section.AddChild(ParentUi.Row(12, name, age, ParentUi.Button("Add", Add)));
+        var addRow = ParentUi.Row(12, name, age);
+        if (language != null) addRow.AddChild(language);
+        addRow.AddChild(ParentUi.Button("Add", Add));
+        section.AddChild(addRow);
         section.AddChild(problem);
     }
 
     /// <summary>Adds a child from the Children tab (also used by the walk-through test).</summary>
-    public bool AddChild(string name, int? age)
+    public bool AddChild(string name, int? age, HomeLanguage language = HomeLanguage.English)
     {
         if (ProfileRules.CleanName(name) == null) return false;
         // In the setup guide, the first child added takes over the untouched "Player 1" the game made
         // on its first run, so the family doesn't end up with a spare profile.
         if (_only == Part.Children && Coordinator.Store.UntouchedFirstChild() is { } placeholder)
         {
-            Change(placeholder with { Name = name, Age = age });
+            Change(placeholder with { Name = name, Age = age, Language = language });
             return true;
         }
-        if (!Coordinator.AddChildProfile(name, age, null)) return false;
+        if (!Coordinator.AddChildProfile(name, age, null, language)) return false;
         _layer.MarkChanged();
         Refresh();
         return true;
@@ -363,6 +367,12 @@ public partial class ParentArea : VBoxContainer
         age.ItemSelected += _ => Change(child with { Age = AgeFrom(age) });
 
         var row = ParentUi.Row(12, avatar, name, save, age);
+        // The language they play in, once the game has more than one (or this child already plays in another).
+        if (LanguagePicker(child.Language) is { } language)
+        {
+            language.ItemSelected += index => Change(child with { Language = PickedLanguage(language) });
+            row.AddChild(language);
+        }
         if (child.Id == Coordinator.ChildId && _only == null) row.AddChild(ParentUi.Text("playing now", 15, colour: ParentUi.Secondary));
         row.AddChild(ParentUi.Spacer());
         var remove = ParentUi.Button("Remove", () => ConfirmRemove(child), danger: true);
@@ -406,6 +416,25 @@ public partial class ParentArea : VBoxContainer
         _layer.MarkChanged();
         Refresh();
     }
+
+    /// <summary>
+    /// The languages a child can play in, or null while the game has only English (so the Children tab
+    /// looks as it always has until a second language is ready).
+    /// </summary>
+    private static OptionButton? LanguagePicker(HomeLanguage current)
+    {
+        var languages = GameCoordinator.AvailableLanguages.Union([current]).ToList();
+        if (languages.Count < 2) return null;
+        var picker = new OptionButton { CustomMinimumSize = new Vector2(140, 0), TooltipText = "The language this child plays in" };
+        foreach (var language in languages)
+        {
+            picker.AddItem(Languages.Name(language), (int)language);
+            if (language == current) picker.Selected = picker.ItemCount - 1;
+        }
+        return picker;
+    }
+
+    private static HomeLanguage PickedLanguage(OptionButton picker) => (HomeLanguage)picker.GetSelectedId();
 
     private static OptionButton AgePicker(int? age)
     {

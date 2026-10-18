@@ -7,7 +7,8 @@ namespace BipIsland.Audio;
 
 /// <summary>
 /// Plays narrator clips one after another ("Find the picture that starts with…" + "sss").
-/// Clips are res://assets/audio/&lt;name&gt;.ogg (the file-name contract in CLAUDE.md, as .ogg).
+/// Clips are res://assets/audio/&lt;name&gt;.ogg (the file-name contract in CLAUDE.md, as .ogg), and an
+/// Afrikaans child's are res://assets/audio/af/&lt;name&gt;.ogg (same names, see <see cref="Language"/>).
 /// A clip that isn't in the build is replaced by a short silence, so the game never gets stuck.
 /// </summary>
 public partial class VoicePlayer : Node
@@ -38,7 +39,15 @@ public partial class VoicePlayer : Node
     /// </summary>
     public bool Speaking => _inSequence || _player.Playing;
 
-    public static string PathFor(string clip) => AudioFolder + clip + ".ogg";
+    /// <summary>The playing child's language: which folder clips come from. An Afrikaans clip that isn't
+    /// recorded yet plays as a short silence like any missing clip, never the English one.</summary>
+    public static BipCore.HomeLanguage Language { get; set; } = BipCore.HomeLanguage.English;
+
+    public static string PathFor(string clip)
+    {
+        var folder = BipCore.Languages.Folder(Language);
+        return AudioFolder + (folder.Length > 0 ? folder + "/" : "") + clip + ".ogg";
+    }
 
     public static bool HasClip(string clip) => ResourceLoader.Exists(PathFor(clip));
 

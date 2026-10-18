@@ -1,0 +1,228 @@
+{
+  "sentences": [
+    {
+      "id": "sent_01",
+      "text": "'n Kat sit op 'n mat.",
+      "decodableFromGroup": 2,
+      "audio": "vo_sent_01",
+      "pictureRight": "pic_sent_01_a",
+      "pictureRightBrief": "'n Kat wat op 'n mat sit",
+      "pictureWrong": "pic_sent_01_b",
+      "pictureWrongBrief": "'n Kat wat op 'n hoed sit",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_02",
+      "text": "'n Vark met 'n pruik.",
+      "decodableFromGroup": 5,
+      "audio": "vo_sent_02",
+      "pictureRight": "pic_sent_02_a",
+      "pictureRightBrief": "'n Vark met 'n pruik op",
+      "pictureWrong": "pic_sent_02_b",
+      "pictureWrongBrief": "'n Vark in 'n boks",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_03",
+      "text": "Die eend het 'n rooi hoed.",
+      "decodableFromGroup": 7,
+      "audio": "vo_sent_03",
+      "pictureRight": "pic_sent_03_a",
+      "pictureRightBrief": "'n Eend met 'n rooi hoed",
+      "pictureWrong": "pic_sent_03_b",
+      "pictureWrongBrief": "'n Eend in 'n rooi kous",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_04",
+      "text": "'n Vos sit in 'n boks.",
+      "decodableFromGroup": 4,
+      "audio": "vo_sent_04",
+      "pictureRight": "pic_sent_04_a",
+      "pictureRightBrief": "'n Vos wat in 'n boks sit",
+      "pictureWrong": "pic_sent_04_b",
+      "pictureWrongBrief": "'n Boks wat op 'n vos sit",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_05",
+      "text": "Die padda is op 'n stomp.",
+      "decodableFromGroup": 2,
+      "audio": "vo_sent_05",
+      "pictureRight": "pic_sent_05_a",
+      "pictureRightBrief": "'n Padda op 'n stomp",
+      "pictureWrong": "pic_sent_05_b",
+      "pictureWrongBrief": "'n Padda op 'n hond",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_06",
+      "text": "Ses visse in 'n bak.",
+      "decodableFromGroup": 4,
+      "audio": "vo_sent_06",
+      "pictureRight": "pic_sent_06_a",
+      "pictureRightBrief": "Ses visse in 'n bak",
+      "pictureWrong": "pic_sent_06_b",
+      "pictureWrongBrief": "Ses visse in 'n koppie",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_07",
+      "text": "'n Bok in 'n boot.",
+      "decodableFromGroup": 7,
+      "audio": "vo_sent_07",
+      "pictureRight": "pic_sent_07_a",
+      "pictureRightBrief": "'n Bok in 'n boot",
+      "pictureWrong": "pic_sent_07_b",
+      "pictureWrongBrief": "'n Bok op 'n bus",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_08",
+      "text": "Die hen het tien kuikens.",
+      "decodableFromGroup": 5,
+      "audio": "vo_sent_08",
+      "pictureRight": "pic_sent_08_a",
+      "pictureRightBrief": "'n Hen met tien kuikens",
+      "pictureWrong": "pic_sent_08_b",
+      "pictureWrongBrief": "'n Hen met tien eendjies",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_09",
+      "text": "'n Kewer op 'n brood.",
+      "decodableFromGroup": 7,
+      "audio": "vo_sent_09",
+      "pictureRight": "pic_sent_09_a",
+      "pictureRightBrief": "'n Kewer op 'n brood",
+      "pictureWrong": "pic_sent_09_b",
+      "pictureWrongBrief": "'n Brood op 'n kewer",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_10",
+      "text": "Die skaap is in die boom.",
+      "decodableFromGroup": 7,
+      "audio": "vo_sent_10",
+      "pictureRight": "pic_sent_10_a",
+      "pictureRightBrief": "'n Skaap in 'n boom",
+      "pictureWrong": "pic_sent_10_b",
+      "pictureWrongBrief": "'n Skaap onder 'n boom",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_11",
+      "text": "'n Slak op 'n trein.",
+      "decodableFromGroup": 6,
+      "audio": "vo_sent_11",
+      "pictureRight": "pic_sent_11_a",
+      "pictureRightBrief": "'n Slak op 'n trein",
+      "pictureWrong": "pic_sent_11_b",
+      "pictureWrongBrief": "'n Slak in die reën",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_12",
+      "text": "Die maan is in die see.",
+      "decodableFromGroup": 6,
+      "audio": "vo_sent_12",
+      "pictureRight": "pic_sent_12_a",
+      "pictureRightBrief": "Die maan in die see",
+      "pictureWrong": "pic_sent_12_b",
+      "pictureWrongBrief": "Die maan in 'n koppie",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_13",
+      "text": "'n Koei in 'n motor.",
+      "decodableFromGroup": 5,
+      "audio": "vo_sent_13",
+      "pictureRight": "pic_sent_13_a",
+      "pictureRightBrief": "'n Koei wat 'n motor bestuur",
+      "pictureWrong": "pic_sent_13_b",
+      "pictureWrongBrief": "'n Koei op 'n plaas",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_14",
+      "text": "Die koning het 'n vurk.",
+      "decodableFromGroup": 4,
+      "audio": "vo_sent_14",
+      "pictureRight": "pic_sent_14_a",
+      "pictureRightBrief": "'n Koning met 'n vurk",
+      "pictureWrong": "pic_sent_14_b",
+      "pictureWrongBrief": "'n Koning met 'n ring",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_15",
+      "text": "'n Slang op 'n koek.",
+      "decodableFromGroup": 5,
+      "audio": "vo_sent_15",
+      "pictureRight": "pic_sent_15_a",
+      "pictureRightBrief": "'n Slang op 'n koek",
+      "pictureWrong": "pic_sent_15_b",
+      "pictureWrongBrief": "'n Slang op 'n fiets",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    },
+    {
+      "id": "sent_16",
+      "text": "Die vink is in my hemp.",
+      "decodableFromGroup": 4,
+      "audio": "vo_sent_16",
+      "pictureRight": "pic_sent_16_a",
+      "pictureRightBrief": "'n Voëltjie wat by 'n hemp uitloer",
+      "pictureWrong": "pic_sent_16_b",
+      "pictureWrongBrief": "'n Voëltjie in 'n nes",
+      "objectives": [
+        "1Rw.05",
+        "1Rw.07"
+      ]
+    }
+  ]
+}
