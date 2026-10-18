@@ -46,12 +46,6 @@ def save_mp3(wav, sr, path):
 def models():
     from chatterbox.tts import ChatterboxTTS
     yield "chatterbox", ChatterboxTTS.from_pretrained(device="cpu"), {"exaggeration": 0.5, "cfg_weight": 0.5}
-    try:
-        from chatterbox.tts_turbo import ChatterboxTurboTTS
-    except ImportError as e:
-        print(f"No Turbo model in this version ({e}); skipping it.")
-        return
-    yield "chatterbox_turbo", ChatterboxTurboTTS.from_pretrained(device="cpu"), {}
 
 
 def main():
