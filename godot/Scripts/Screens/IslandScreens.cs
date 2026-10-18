@@ -214,7 +214,7 @@ public partial class GameIslandScreen : BaseScreen
         var spacing = games.Length switch { > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
         for (var i = 0; i < games.Length; i++)
         {
-            games[i].Position = P((i - (games.Length - 1) / 2.0) * spacing, 80);
+            games[i].Position = P((i - (games.Length - 1) / 2.0) * spacing, 105);
             games[i].ZIndex = 5;
             Stage.AddChild(games[i]);
             _keyNodes.Add(games[i]);

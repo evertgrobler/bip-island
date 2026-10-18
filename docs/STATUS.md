@@ -39,8 +39,7 @@
   **Keys are the one exception to "any key replays":** letter keys type here, so Space, the replay
   button or a click on the craft say it again, Enter does nothing, and Esc is never typed (the parent
   layer takes it first, so the Esc hold still opens the gate). Skins: rocket, hot-air balloon, submarine.
-- **Known open items:** cover second screens in the kid lock; Windows exe
-  icon; more games (waves 2b/3/4), real art, music; paid signing only if shared beyond the family.
+- **Known open items:** cover second screens in the kid lock; more games (waves 2b/3/4), real art, music; paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
 
@@ -429,3 +428,7 @@
   and a real zip picture (now a zipped-mouth face).
   Word Builder (owner flagged it, 18 Oct): the picture and the answer boxes sat on the left with the right
   half empty. They are now one row centred over the letters (`WordBuilderScreen`), and the sparkle follows the boxes.
+  Windows icon (was a known open item): `godot/icons/app-icon.ico` (16 to 256 px, from the Mac icon) is set
+  in the Windows export (`application/icon`, `modify_resources=true`, Godot writes it without rcedit) and
+  passed to `vpk --icon` for Setup.exe in `check_all.sh` and `godot.yml`. The Words island plates sat on
+  Bip's antenna, so every island's games moved up 25 points; the zip picture was made narrower.

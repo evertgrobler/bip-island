@@ -287,28 +287,28 @@ public static class PictureNode
     /// tapes parting below it (the emoji stand-in was a face with a zipped mouth).</summary>
     private static Node2D Zip()
     {
-        var n = new Node2D();
+        var n = new Node2D { Scale = Vector2.One * 0.85f };
         foreach (var (i, side) in new[] { -1.0, 1.0 }.Select((side, i) => (i, side)))
         {
-            n.AddChild(Pen(Polygon(P(side * 4, 105), P(side * 62, 105), P(side * 62, 20), P(side * 100, -100), P(side * 44, -100), P(side * 4, 20)),
+            n.AddChild(Pen(Polygon(P(side * 4, 100), P(side * 42, 100), P(side * 42, 10), P(side * 72, -96), P(side * 34, -96), P(side * 4, 10)),
                            fill: Palette.Teal, lineWidth: 4.5, seed: (ulong)(430 + i)));
             // Teeth along the open edge, below the slider.
             for (var t = 1; t <= 3; t++)
             {
-                var x = side * (4 + 40 * t / 4.0);
-                var y = 20 - 120 * t / 4.0;
-                n.AddChild(Pen(RoundRect(R(x - 9, y - 6, 18, 12), 3), fill: Palette.Stone, lineWidth: 3, seed: (ulong)(432 + i * 4 + t)));
+                var x = side * (6 + 30 * t / 4.0);
+                var y = 10 - 106 * t / 4.0;
+                n.AddChild(Pen(RoundRect(R(x - 10, y - 6, 20, 12), 3), fill: Palette.Stone, lineWidth: 3, seed: (ulong)(432 + i * 4 + t)));
             }
         }
         // Teeth meshed up the closed part, left and right in turn.
         for (var row = 0; row < 5; row++)
         {
             var left = row % 2 == 0;
-            n.AddChild(Pen(RoundRect(R(left ? -16 : -2, 88 - row * 16, 18, 12), 3), fill: Palette.Stone, lineWidth: 3, seed: (ulong)(440 + row)));
+            n.AddChild(Pen(RoundRect(R(left ? -18 : -2, 84 - row * 15, 20, 12), 3), fill: Palette.Stone, lineWidth: 3, seed: (ulong)(440 + row)));
         }
-        n.AddChild(Pen(RoundRect(R(-26, 2, 52, 34), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 446));
-        n.AddChild(Pen(RoundRect(R(-14, -50, 28, 56), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 447));
-        n.AddChild(Pen(Ellipse(P(0, -34), 6, 9), fill: Palette.Card, lineWidth: 3, seed: 448));
+        n.AddChild(Pen(RoundRect(R(-24, -6, 48, 30), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 446));
+        n.AddChild(Pen(RoundRect(R(-13, -58, 26, 54), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 447));
+        n.AddChild(Pen(Ellipse(P(0, -42), 5, 8), fill: Palette.Card, lineWidth: 3, seed: 448));
         return n;
     }
 
