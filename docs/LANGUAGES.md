@@ -61,6 +61,11 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 
 ### C. Voice
 
+- **Two voice bands by age** (owner approved `docs/VOICE_PLAN.md`, 18 Oct): Little (up to 6) hears the
+  sparkling lines, Big (7 and up) an upbeat, relaxed version of Bip's own 30 lines per language
+  (`<clip>_big`, `BipCore.VoiceBands`). Sounds, words, numbers, sentences and instructions are one
+  recording for every age. One narrator for boys and girls; no gender setting.
+
 - **English:** being re-voiced with Aoede now (`scripts/gemini_narrator.py`, daily free runs).
 - **Afrikaans:** the same recorder with an Afrikaans style line and an Afrikaans speech check
   (Whisper's multilingual model, which knows Afrikaans), on the same free daily runs.

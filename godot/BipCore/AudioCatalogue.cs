@@ -146,11 +146,11 @@ public static partial class AudioCatalogue
     public static readonly IReadOnlyList<string> HintClips = Enumerable.Range(1, HintCount).Select(n => $"hint_{n:00}").ToList();
 
     /// <summary>Clips written in audio/script.csv rather than generated from the content.</summary>
-    public static IReadOnlyList<string> ScriptedClips => [.. VoiceLine.All, .. PraiseClips, .. HintClips];
+    public static IReadOnlyList<string> ScriptedClips => [.. VoiceLine.All, .. PraiseClips, .. HintClips, .. VoiceBands.BigClips];
 
-    /// <summary>The naming contract: snd_, word_, num_, vo_, name_, money_, learn_ with lower-case keys; praise_NN and hint_NN.</summary>
+    /// <summary>The naming contract: snd_, word_, num_, vo_, name_, money_, learn_ with lower-case keys; praise_NN and hint_NN, with _big for the older children's version.</summary>
     public static bool FollowsNamingContract(string name) => NamingContract().IsMatch(name);
 
-    [GeneratedRegex(@"^((snd|word|num|vo|name|money|learn)_[a-z0-9_]+|(praise|hint)_[0-9]{2})$")]
+    [GeneratedRegex(@"^((snd|word|num|vo|name|money|learn)_[a-z0-9_]+|(praise|hint)_[0-9]{2}(_big)?)$")]
     private static partial Regex NamingContract();
 }

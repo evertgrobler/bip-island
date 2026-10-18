@@ -476,4 +476,10 @@
   Additional Language, listening and speaking (`FAL.LS.01`–`03`). The validator checks every word has both
   languages and its own picture, spells the Afrikaans, and that each Afrikaans Morning Order story matches
   the English one card by card. The new words still need the owner's check before they're recorded.
+- **18 Oct, voice bands (`docs/VOICE_PLAN.md`, approved):** Bip's own lines come in two versions by the
+  child's age (`BipCore.VoiceBands`): Little (up to 6, or no age) and Big (7 and up). 30 Big lines per
+  language in the voice scripts (`praise_01_big`…`praise_12_big`, `hint_NN_big`, level and round lines,
+  greetings, charging and day done). `VoicePlayer.Band` is set from the playing child's age; a Big child
+  hears `<clip>_big` when it's in the build, else the young clip; Big praise is used once 4 of its clips are
+  recorded. The validator checks every `_big` row has its young row. One narrator for boys and girls.
 

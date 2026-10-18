@@ -490,6 +490,11 @@ public static class WalkTest
                 game.UpdateChild(playing with { Language = BipCore.HomeLanguage.English });
                 Check("and back in English", game.Language == BipCore.HomeLanguage.English && game.LettersOpen
                       && !Audio.VoicePlayer.PathFor("vo_welcome").Contains("/af/"));
+                // Bip's own lines follow the child's age: the older version from 7.
+                game.UpdateChild(playing with { Age = 8 });
+                Check("an eight-year-old hears Bip's older voice lines", Audio.VoicePlayer.Band == BipCore.VoiceBand.Big);
+                game.UpdateChild(playing with { Age = playing.Age });
+                Check("...and back for the child's own age", Audio.VoicePlayer.Band == BipCore.VoiceBands.For(playing.Age));
             }
             if (game.Children.FirstOrDefault(c => c.Name == "Mia") is { } mia)
             {

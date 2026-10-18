@@ -144,6 +144,7 @@ public partial class GameCoordinator : Node
     /// <summary>Loads the playing child's language when it isn't the one loaded: content, games and voice.</summary>
     private void FollowChildLanguage()
     {
+        VoicePlayer.Band = VoiceBands.For(CurrentChild?.Age);
         var language = CurrentChild?.Language ?? HomeLanguage.English;
         if (Content != null && language == Language) return;
         LoadContent(language);
@@ -465,7 +466,7 @@ public partial class GameCoordinator : Node
         return true;
     }
 
-    public string RandomPraise() => Rng.Pick(AudioCatalogue.PraiseClips) ?? "praise_01";
+    public string RandomPraise() => Rng.Pick(VoiceBands.PraisePool(VoicePlayer.Band, VoicePlayer.HasClip)) ?? "praise_01";
     /// <summary>
     /// A spoken hint. Most hints lead into a sound ("It sounds like this:"); with nothing to follow,
     /// it's the one that stands alone ("Look for the one that's wiggling!").

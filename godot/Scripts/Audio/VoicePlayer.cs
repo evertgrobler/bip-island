@@ -43,6 +43,9 @@ public partial class VoicePlayer : Node
     /// recorded yet plays as a short silence like any missing clip, never the English one.</summary>
     public static BipCore.HomeLanguage Language { get; set; } = BipCore.HomeLanguage.English;
 
+    /// <summary>The playing child's voice band: a Big child (7 and up) hears Bip's own lines in their older version when it's recorded.</summary>
+    public static BipCore.VoiceBand Band { get; set; } = BipCore.VoiceBand.Little;
+
     public static string PathFor(string clip)
     {
         var language = Language;
@@ -116,6 +119,7 @@ public partial class VoicePlayer : Node
         onClipStart?.Invoke(index, name);
         // A lead-on clip not recorded yet falls back to the plain one (num_7_mid → num_7, vo_and → word_and).
         if (!HasClip(name) && StandIn(name) is { } standIn && HasClip(standIn)) name = standIn;
+        name = BipCore.VoiceBands.Pick(name, Band, HasClip);
 
         var length = SilentStubLength;
         if (HasClip(name) && GD.Load<AudioStream>(PathFor(name)) is { } stream)

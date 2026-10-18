@@ -557,6 +557,14 @@ SKIP_KEYS = {"id", "audio", "objectives", "graphemes", "ipa", "rime", "code", "k
              "prerequisites", "content", "island", "skin", "skins", "label", "colour", "shape", "letterName",
              "grapheme", "sequenceRules", "af"}
 
+# --- Voice bands (BipCore.VoiceBands): an older children's line (<clip>_big) has the young one it replaces
+# (praise excepted: the Big praise is its own pool).
+with open(SCRIPT, encoding="utf-8") as f:
+    script_clips = {row["file"].removesuffix(".m4a") for row in csv.DictReader(f)}
+for clip in sorted(script_clips):
+    if clip.endswith("_big") and not clip.startswith("praise_") and clip.removesuffix("_big") not in script_clips:
+        err(f"{SCRIPT.relative_to(REPO)} {clip}: no {clip.removesuffix('_big')} row for it to stand in for")
+
 sa_waiting = set()
 OTHER_LANGUAGES = {"af"}  # folders in Content/ that hold another language's own files
 
