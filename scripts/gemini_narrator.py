@@ -12,7 +12,9 @@ where the last one stopped, and a clip whose text changes is recorded again. A r
 Gemini says the daily limit is used up. The "Aoede narrator" workflow runs this; it needs the
 GEMINI_API_KEY repository secret (never committed).
 
-Letter sounds (snd_*) are not recorded here: they stay the tested ElevenLabs clips.
+Letter sounds (snd_*) are recorded too, calm and clean, in batches cut at the pauses. Whisper can't
+check a pure sound, so they don't go into the game: they wait in voice-lab/aoede_phonics/ for the owner
+to listen to, and only the approved ones are copied over the old sounds.
 
   python3 scripts/gemini_narrator.py                # record what's left, up to MAX_REQUESTS requests
   python3 scripts/gemini_narrator.py --status       # how many clips are done, failed and left
@@ -39,19 +41,26 @@ SPARKLE = ("Read these lines as a bubbly, sparkling, warm South African English 
 WORDS = ("Read these words as a warm, friendly South African English primary school teacher showing a "
          "five-year-old each word: clear, bright and cheerful, saying each word once, exactly as written. "
          "Natural South African English accent.")
+PHONICS = ("You are a calm, clear South African English phonics teacher. Each line below is one letter sound. "
+           "Say only the pure sound, never the letter name, once, then stop: stretchy sounds (s, m, n, f, l, r, v, z, "
+           "sh, th) are held for about a second; stop sounds (t, p, k, c, b, d, g) are short and crisp with no 'uh' "
+           "after them; vowels are short unless the line says long. The sounds in order:")
+PHONICS_DIR = ROOT / "voice-lab" / "aoede_phonics"
 PAUSE = "After every line, stay silent for two full seconds before the next one. Never read anything twice."
 
 
 def group(clip):
     """Which style a clip is spoken in, or None if it isn't recorded here."""
     if clip.startswith("snd_"):
-        return None
+        return "phonics"
     if clip.startswith(("word_", "num_", "money_", "name_")) and not clip.endswith("_mid"):
         return "words"
     return "sparkle"
 
 
 def batch_size(style, retry):
+    if style == "phonics":
+        return 3 if retry else 8
     if retry:
         return 4
     return 36 if style == "words" else 18
@@ -71,8 +80,23 @@ class DailyLimit(Exception):
     pass
 
 
-def speak(key, style, lines):
-    prompt = f"{SPARKLE if style == 'sparkle' else WORDS} {PAUSE}\n\n" + "\n\n".join(lines)
+def sounds():
+    """Each letter sound's clip -> (what to write, how to say it), from Content/phonics/graphemes.json."""
+    found = {}
+    for g in json.loads((ROOT / "Content" / "phonics" / "graphemes.json").read_text())["graphemes"]:
+        spelt = g["grapheme"] * 3 if g.get("kind") == "stretchy" and len(g["grapheme"]) == 1 else g["grapheme"]
+        # Keep the notes on how it sounds; drop the ones on how the old clips were cut ("generate 'tap' and trim").
+        hint = " ".join(x for x in re.split(r"(?<=\.)\s+", g.get("narratorHint", "")) if not re.search(r"[Gg]enerate|trim|[Rr]ecord", x))
+        found[g["audio"]] = (spelt, hint)
+    return found
+
+
+def speak(key, style, lines, hints=()):
+    if style == "phonics":
+        guide = " ".join(f"Line {i}, '{line}': {hint}" for i, (line, hint) in enumerate(zip(lines, hints), 1))
+        prompt = f"{PHONICS} {guide} {PAUSE}\n\n" + "\n\n".join(lines)
+    else:
+        prompt = f"{SPARKLE if style == 'sparkle' else WORDS} {PAUSE}\n\n" + "\n\n".join(lines)
     body = {"contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"responseModalities": ["AUDIO"],
                                  "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": VOICE}}}}}
@@ -87,6 +111,19 @@ def speak(key, style, lines):
             raise DailyLimit(e.read()[:300])
         raise SystemExit(f"Gemini said {e.code}: {e.read()[:500]!r}")
     return base64.b64decode(data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
+
+
+def silence_cut(wav, count):
+    """Split a batch of letter sounds at its count-1 longest pauses: [(start, end)], or None if the pauses don't fit."""
+    out = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(wav), "-af", "silencedetect=noise=-35dB:d=0.6", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    total = duration(wav)
+    gaps = [(float(s), float(e)) for s, e in zip(re.findall(r"silence_start: (-?[\d.]+)", out), re.findall(r"silence_end: ([\d.]+)", out))]
+    inner = [(s, e) for s, e in gaps if s > 0.1 and e < total - 0.1]
+    if len(inner) != count - 1:
+        return None
+    marks = [0.0] + [(s + e) / 2 for s, e in inner] + [total]
+    return list(zip(marks, marks[1:]))
 
 
 def duration(wav):
@@ -169,7 +206,7 @@ def main():
     # Fresh clips first in big batches, then retries in small ones.
     batches = []
     for retry in (False, True):
-        for style in ("sparkle", "words"):
+        for style in ("sparkle", "words", "phonics"):
             these = [c for c in todo if group(c) == style and bool(state["failed"].get(c)) == retry]
             size = batch_size(style, retry)
             batches += [(style, these[i:i + size]) for i in range(0, len(these), size)]
@@ -181,8 +218,13 @@ def main():
             if requests >= MAX_REQUESTS:
                 print(f"Stopping after {requests} requests (MAX_REQUESTS).", flush=True)
                 break
+            if style == "phonics":
+                lines = [sounds().get(c, (all_texts[c], ""))[0] for c in clips]
+                hints = [sounds().get(c, ("", ""))[1] for c in clips]
+            else:
+                lines, hints = [all_texts[c] for c in clips], ()
             try:
-                pcm = speak(key, style, [all_texts[c] for c in clips])
+                pcm = speak(key, style, lines, hints)
             except DailyLimit as e:
                 print(f"Gemini's daily limit is used up ({e}); the next run carries on.", flush=True)
                 break
@@ -190,7 +232,10 @@ def main():
             raw = tmp / "batch.wav"
             (tmp / "batch.pcm").write_bytes(pcm)
             ffmpeg("-f", "s16le", "-ar", "24000", "-ac", "1", "-i", str(tmp / "batch.pcm"), str(raw))
-            pieces = listener.cut(raw, [all_texts[c] for c in clips])
+            if style == "phonics":
+                pieces = silence_cut(raw, len(clips)) or [None] * len(clips)
+            else:
+                pieces = listener.cut(raw, lines)
             good = 0
             for clip, span in zip(clips, pieces):
                 if span is None:
@@ -204,7 +249,14 @@ def main():
                 gain = TARGET_LUFS - loudness(trimmed)
                 ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,alimiter=limit=0.9", "-ar", "44100", "-ac", "1",
                        "-c:a", "aac", "-b:a", "96k", str(out))
-                if listener.ok(clip, out, all_texts[clip]):
+                if style == "phonics":
+                    # No machine check for a pure sound: it waits for the owner's ear.
+                    PHONICS_DIR.mkdir(parents=True, exist_ok=True)
+                    out.replace(PHONICS_DIR / f"{clip}.m4a")
+                    state["done"][clip] = all_texts[clip]
+                    state["failed"].pop(clip, None)
+                    good += 1
+                elif listener.ok(clip, out, all_texts[clip]):
                     out.replace(AUDIO / f"{clip}.m4a")
                     state["done"][clip] = all_texts[clip]
                     state["failed"].pop(clip, None)

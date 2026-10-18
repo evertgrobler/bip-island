@@ -41,6 +41,7 @@ jobs:
         run: |
           git config user.name "aoede-narrator"
           git config user.email "aoede-narrator@users.noreply.github.com"
-          git add Resources/Audio voice-lab/aoede.json
+          mkdir -p voice-lab/aoede_phonics
+          git add Resources/Audio voice-lab/aoede.json voice-lab/aoede_phonics
           git commit -m "Narrator clips from Gemini Aoede, checked by Whisper [skip ci]" || exit 0
           git pull --rebase origin "${GITHUB_REF_NAME}" && git push

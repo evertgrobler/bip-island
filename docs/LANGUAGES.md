@@ -64,14 +64,16 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 - **English:** being re-voiced with Aoede now (`scripts/gemini_narrator.py`, daily free runs).
 - **Afrikaans:** the same recorder with an Afrikaans style line and an Afrikaans speech check
   (Whisper's multilingual model, which knows Afrikaans), on the same free daily runs.
-- **Letter sounds in both languages:** a separate calm "pure sound" take, checked by ear by the owner
-  before it replaces the ElevenLabs sounds (stop sounds must stay clipped).
+- **Everything is re-recorded with Aoede, letter sounds included, in both languages** (owner, 18 Oct:
+  "a re-recording of everything"). Letter sounds are a calm "pure sound" take, cut at the pauses;
+  Whisper can't check a pure sound, so they wait in `voice-lab/aoede_phonics/` until the owner has
+  listened, and only the approved ones replace the ElevenLabs sounds (stop sounds must stay clipped).
 - Cost: free on Gemini's free tier (a few weeks of daily runs for both languages); about R20 in
   total if the owner ever chooses to pay to finish faster.
 
 ## Build order (each step is its own pull request, reviewed and green before the next)
 
-1. **English with Aoede** (running now): all English clips except letter sounds.
+1. **English with Aoede** (running now): every English clip, letter sounds included.
 2. **Language plumbing:** home language per child (save file, setup guide, Children tab), content
    and audio folders per language, the game loading by language, on-screen text in both languages
    (about a dozen strings plus the parent area), tests. English plays exactly as before.
@@ -81,7 +83,8 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 5. **Afrikaans voice:** record everything with Aoede on the daily runs; owner listens to the letter
    sounds and a sample of each island.
 6. **Language Island:** the three games, both directions, word and phrase lists, voice.
-7. **Letter sounds with Aoede** (both languages), if the owner's listening test passes.
+7. **Letter sounds with Aoede** (both languages): recorded on the daily runs with everything else;
+   the owner approves them by ear before they go into the game.
 8. Family test on both computers.
 
 ## What the owner decides or checks
