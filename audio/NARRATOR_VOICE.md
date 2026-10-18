@@ -21,12 +21,23 @@ No voice samples are kept in the repository: it's public, and a sample is all an
 clone the children's narrator. (A cloning sample and the old preview were committed briefly on
 11 October and removed again; they remain in the git history of that day's merge.)
 
-## In the owner's second ElevenLabs account (from 11 October 2026)
+## How new clips are made (from 18 October 2026)
+
+With **Chatterbox** (Resemble AI, open source, MIT licence), which copies her voice from two of her own
+game clips, `vo_welcome` and `vo_bip_charging` (about 16 seconds). `scripts/speak_clips.py` speaks each
+clip's text from the manifest or `audio/script.csv` with a fixed seed and the default settings
+(exaggeration 0.5, cfg 0.5), trims it and levels it to -14.5 LUFS like the rest. The **Narrator** GitHub
+Actions workflow runs it: list the clips (names or patterns) in `voice-lab/request.txt` on a `claude/`
+branch and push; it records the missing ones and commits them to that branch. No ElevenLabs account,
+credits or voice ID is involved. The owner chose this by ear on 18 October (listening test on the
+`claude/voice-lab` branch). Pure phonics sounds (`snd_`) stay ElevenLabs recordings.
+
+## In the owner's second ElevenLabs account (11–17 October 2026, no longer used)
 
 The voice was designed again there from the description above (`eleven_ttv_v3`, three previews; the
 owner picked one) and saved as **Bip Island Narrator**, voice ID `P7kHKZAtnEEhLBZBK8pP`. It's close to
-the original but not identical. CLAUDE.md names the voice ID to use for new clips; the switch to this
-one is made there (and in PLAN.md and STATUS.md) by the change that records the new clips.
+the original but not identical. No clips in the game use it: the ones recorded with it were replaced by Chatterbox
+clips of the original voice.
 
 ## Using it from another ElevenLabs account
 

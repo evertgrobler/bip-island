@@ -1,0 +1,5 @@
+# Clips for the "Narrator" workflow to record (names or patterns, one a line). Clips that already
+# have a file are skipped, so this list can stay as it is. Changing it on a claude/* branch starts a run.
+vo_say_*
+num_*_mid
+vo_and
