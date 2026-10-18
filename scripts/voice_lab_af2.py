@@ -66,9 +66,9 @@ def openvoice(clips, ref, tmp):
     ckpt = Path(snapshot_download("myshell-ai/OpenVoiceV2")) / "converter"
     conv = ToneColorConverter(str(ckpt / "config.json"), device="cpu")
     conv.load_ckpt(str(ckpt / "checkpoint.pth"))
-    target_se, _ = se_extractor.get_se(str(ref), conv, vad=False)
+    target_se, _ = se_extractor.get_se(str(ref), conv, vad=True)
     for name, wav in clips.items():
-        source_se, _ = se_extractor.get_se(str(wav), conv, vad=False)
+        source_se, _ = se_extractor.get_se(str(wav), conv, vad=True)
         out = tmp / f"openvoice_{name}.wav"
         conv.convert(audio_src_path=str(wav), src_se=source_se, tgt_se=target_se, output_path=str(out))
         mp3(out, OUT / "openvoice" / f"{name}.mp3")
