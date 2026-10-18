@@ -4,7 +4,8 @@ using System.Text.Json.Serialization;
 namespace BipCore;
 
 /// <summary>One child on this computer, as the picker and the parent area show them.</summary>
-public sealed record ChildSummary(Guid Id, string Name, int? Age, string Avatar);
+/// <summary>A child as the screens see them; <paramref name="Language"/> is the language they play in.</summary>
+public sealed record ChildSummary(Guid Id, string Name, int? Age, string Avatar, HomeLanguage Language = HomeLanguage.English);
 
 /// <summary>Play length, break length and the optional daily maximum, set by parents.</summary>
 public sealed record PlayTimeSettings
@@ -50,6 +51,13 @@ public sealed class SavedChild
     public string Name { get; set; } = "";
     public int? Age { get; set; }
     public string Avatar { get; set; } = ProfileRules.Avatars[0];
+    /// <summary>
+    /// The language this child plays in. Saves from before 18 October 2026, and a language this game
+    /// doesn't know, read as English (the converter sits on the property: the save's own enum converter
+    /// would win over one on the type).
+    /// </summary>
+    [JsonConverter(typeof(LenientHomeLanguageConverter))]
+    public HomeLanguage Language { get; set; } = HomeLanguage.English;
     /// <summary>This child's play clock and break (each child has their own; the settings are shared).</summary>
     public BreakState? Break { get; set; }
     public int SortOrder { get; set; }
@@ -130,24 +138,26 @@ public sealed class SaveStore
     }
 
     /// <summary>Adds a child (at most <see cref="ProfileRules.MaxChildren"/>). Returns the new id, or null if it couldn't.</summary>
-    public Guid? AddChild(string name, int? age, string? avatar)
+    public Guid? AddChild(string name, int? age, string? avatar, HomeLanguage language = HomeLanguage.English)
     {
         if (ProfileRules.CleanName(name) is not { } clean || !ProfileRules.CanAdd(_file.Children.Count)) return null;
         var picture = avatar is null
             ? ProfileRules.FreeAvatar(_file.Children.Select(c => c.Avatar))
             : ProfileRules.ValidAvatar(avatar);
         var id = AddChildRecord(clean, ClampAge(age), picture, new ChildProgress());
+        Find(id)!.Language = language;
         Save();
         return id;
     }
 
-    /// <summary>Changes a child's name, age or picture. An empty name is ignored.</summary>
+    /// <summary>Changes a child's name, age, picture or language. An empty name is ignored.</summary>
     public void Update(ChildSummary child)
     {
         if (Find(child.Id) is not { } row) return;
         if (ProfileRules.CleanName(child.Name) is { } clean) row.Name = clean;
         row.Age = ClampAge(child.Age);
         row.Avatar = ProfileRules.ValidAvatar(child.Avatar);
+        row.Language = Enum.IsDefined(child.Language) ? child.Language : HomeLanguage.English;
         Save();
     }
 
@@ -347,7 +357,7 @@ public sealed class SaveStore
     private static int? ClampAge(int? age) =>
         age is { } a ? Math.Clamp(a, ProfileRules.YoungestAge, ProfileRules.OldestAge) : null;
 
-    private static ChildSummary Summary(SavedChild c) => new(c.Id, c.Name, c.Age, ProfileRules.ValidAvatar(c.Avatar));
+    private static ChildSummary Summary(SavedChild c) => new(c.Id, c.Name, c.Age, ProfileRules.ValidAvatar(c.Avatar), c.Language);
 }
 
 /// <summary>Reads the music setting without ever failing: anything unknown (a new name, a number, junk) is Normal.</summary>
