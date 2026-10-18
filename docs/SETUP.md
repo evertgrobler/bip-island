@@ -49,9 +49,10 @@ Open the download page and pick your computer.
    hour **System Settings → Privacy & Security** → scroll down → **Open Anyway** → the Mac's password,
    and **Open Anyway** once more on the last warning (if the button has gone, open the app again first). (Since macOS 15
    right-click → Open no longer gets past the warning; on macOS 14 Sonoma it still works.)
-3. On a trackpad Mac (a MacBook Neo, say), a mouse is best for small hands, because several games drag
-   things around. Otherwise turn on **Tap to click** (System Settings → Trackpad) and tap-to-drag
-   (Accessibility → Pointer Control → Trackpad Options → Dragging style).
+
+Tip for a trackpad-only Mac (a MacBook Neo, say): a mouse is best for small hands, because several games
+drag things around. Without one, turn on **Tap to click** (System Settings → Trackpad) and tap-to-drag
+(Accessibility → Pointer Control → Trackpad Options → Dragging style).
 
 **Windows** (Windows 10 or 11)
 1. Click **Download for Windows** and run `Setup.exe`.
