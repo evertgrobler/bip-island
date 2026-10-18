@@ -43,7 +43,7 @@ jobs:
           mkdir -p out
           # New or re-recorded clips (a removed clip shows as modified too, so copy only files that exist).
           { git ls-files --others --exclude-standard Resources/Audio; git ls-files --modified Resources/Audio; } | sort -u |
-            while read -r f; do [ -f "$f" ] && cp "$f" out/; done; true
+            while read -r f; do if [ -f "$f" ]; then cp "$f" out/; fi; done
       - uses: actions/upload-artifact@v4
         with:
           name: clips-${{ matrix.shard }}
