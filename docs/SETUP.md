@@ -45,11 +45,13 @@ Open the download page and pick your computer.
 
 **Mac** (macOS 14 Sonoma or newer)
 1. Click **Download for Mac** and open the `.dmg`. Drag **Bip Island** into **Applications**.
-2. The first time only: open Bip Island and click **Done** on the warning, then **System Settings →
-   Privacy & Security** → scroll down → **Open Anyway** → the Mac's password. (Since macOS 15
+2. The first time only: open Bip Island and click **Done** (or **OK**) on the warning, then within the
+   hour **System Settings → Privacy & Security** → scroll down → **Open Anyway** → the Mac's password,
+   and **Open Anyway** once more on the last warning (if the button has gone, open the app again first). (Since macOS 15
    right-click → Open no longer gets past the warning; on macOS 14 Sonoma it still works.)
-3. On a trackpad Mac (a MacBook Neo, say), a mouse is easiest for small hands; otherwise turn on
-   **Tap to click** in System Settings → Trackpad.
+3. On a trackpad Mac (a MacBook Neo, say), a mouse is best for small hands, because several games drag
+   things around. Otherwise turn on **Tap to click** (System Settings → Trackpad) and tap-to-drag
+   (Accessibility → Pointer Control → Trackpad Options → Dragging style).
 
 **Windows** (Windows 10 or 11)
 1. Click **Download for Windows** and run `Setup.exe`.
