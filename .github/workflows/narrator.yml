@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240
     strategy:
+      fail-fast: false
       matrix:
         shard: [1, 2, 3, 4]
     steps:
@@ -39,7 +40,10 @@ jobs:
         run: |
           python3 scripts/validate_content.py > /dev/null
           python3 scripts/speak_clips.py --from voice-lab/request.txt --shard ${{ matrix.shard }}/4 --verify --report out/failed-${{ matrix.shard }}.txt
-          mkdir -p out && { git ls-files --others --exclude-standard Resources/Audio; git ls-files --modified Resources/Audio; } | xargs -r cp -t out
+          mkdir -p out
+          # New or re-recorded clips (a removed clip shows as modified too, so copy only files that exist).
+          { git ls-files --others --exclude-standard Resources/Audio; git ls-files --modified Resources/Audio; } | sort -u |
+            while read -r f; do [ -f "$f" ] && cp "$f" out/; done; true
       - uses: actions/upload-artifact@v4
         with:
           name: clips-${{ matrix.shard }}

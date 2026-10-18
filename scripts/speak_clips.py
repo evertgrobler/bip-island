@@ -84,7 +84,8 @@ class Listener:
         return " ".join(seg.text for seg in segments).strip()
 
     def ok(self, path, text):
-        return words(self.heard(path)) == words(text)
+        # Compare without spaces: Whisper writes "take away" as "takeaway" and "altogether" as "all together".
+        return "".join(words(self.heard(path))) == "".join(words(text))
 
 
 def wanted(patterns, all_texts):
