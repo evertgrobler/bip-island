@@ -26,6 +26,8 @@
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
 - **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
+- **Text contrast (18 Oct):** every text colour meets WCAG (4.5:1, 3:1 for big glyphs). Use `Palette.Ink`,
+  `SoftInk`, `QuietInk`, `AlertOrange` or `WrongRed` for text; the game's self-test fails if one drops below.
 - **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
   the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
   remain only as a fallback for new words and in the parent area's child menus.
@@ -451,4 +453,6 @@
   large). Fixed: Word Builder's teal tiles and its island button (white letters, 2.3:1 → dark ink, 6.3:1),
   the Morning Order number pictures (white on light blue → ink), the mystery box "?" (→ ink), the grown-ups'
   hint on the charging screen and "more stars for the next sticker" (ink at 85%, 8.2:1), the parent area's
-  grey text (ink at 75%, 6:1) and the setup guide's orange "Try it now" (5.9:1).
+  grey text (ink at 75%, 6:1) and the setup guide's orange "Try it now" (5.9:1). After review: Bip's Balance's
+  "?" and wrong number, the parent fields' placeholders and the gap "?" marks too; named text colours in
+  `Palette` with a contrast check in the self-test (`Palette.ContrastProblems`).

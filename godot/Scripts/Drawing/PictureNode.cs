@@ -324,7 +324,7 @@ public static class PictureNode
         n.AddChild(Pen(RoundRect(R(-100, -80, 200, 160), 24), 424, fill: Palette.Stone.WithAlpha(0.5),
                                ink: Palette.Ink.WithAlpha(0.5), lineWidth: 3, wobble: 3.5f));
         n.AddChild(Sketch.Letter(word, word.Length > 6 ? 48 : 64, shadow: new Color(0, 0, 0, 0)));
-        var note = Sketch.Label("picture coming", 22, Palette.Ink.WithAlpha(0.75));
+        var note = Sketch.Label("picture coming", 22, Palette.QuietInk);
         note.Position += P(0, -60);
         n.AddChild(note);
         return n;

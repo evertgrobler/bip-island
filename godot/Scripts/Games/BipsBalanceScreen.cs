@@ -168,7 +168,7 @@ public partial class BipsBalanceScreen : GameScreen
         var box = Add(new Node2D { Name = "Box" }, P(x, CardMiddle), 2, card);
         box.AddChild(Pen(RoundRect(R(-62, -62, 124, 124), 18), Seed(6), fill: Palette.Sun.WithAlpha(0.35f), ink: Palette.Orange, lineWidth: 5, wobble: 2.5));
         _box = box;
-        ShowInBox("?", Palette.Orange);
+        ShowInBox("?", Palette.AlertOrange);
     }
 
     private void Symbol(Node2D parent, double x, string text)
@@ -349,13 +349,13 @@ public partial class BipsBalanceScreen : GameScreen
         Sfx.Play(BipSounds.Effect.Boop);
         Buttons.Shake(card);
         Bip.Tilt();
-        ShowInBox(choice.ToString(), Palette.Red);
+        ShowInBox(choice.ToString(), Palette.WrongRed);
         TipTo(TiltFor(round.Sentence.With(round.Hidden, choice)));
         var shown = ++_wrongShown;
         After(1.0, () =>
         {
             if (_round != round || InputLocked || shown != _wrongShown) return;
-            ShowInBox("?", Palette.Orange);
+            ShowInBox("?", Palette.AlertOrange);
             TipTo(TiltFor(round.Sentence.With(round.Hidden, 0)));
         });
         if (outcome.Kind != AnswerOutcomeKind.Hint) return;

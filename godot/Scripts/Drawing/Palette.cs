@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 namespace BipIsland.Drawing;
@@ -33,8 +34,55 @@ public static class Palette
     public static readonly Color Card = new(1.00f, 0.99f, 0.96f);
     public static readonly Color White = new(1, 1, 1);
 
+    // Text colours. Every word, number or mark a child or grown-up reads uses one of these (or Ink), so
+    // each meets WCAG contrast: 4.5:1 for normal text, 3:1 for big glyphs. ContrastProblems() checks
+    // them in the game's self-test, so a lighter shade can't creep back in.
+    /// <summary>Softer text on paper (the charging screen's hint for grown-ups, "more stars"): 8:1.</summary>
+    public static readonly Color SoftInk = new(Ink, 0.85f);
+    /// <summary>Quiet text and marks (grey parent text, placeholders, the "?" in a gap): 6:1.</summary>
+    public static readonly Color QuietInk = new(Ink, 0.75f);
+    /// <summary>Orange text and marks ("Try it now", the "?" in Bip's Balance box): 5.4:1 or more.</summary>
+    public static readonly Color AlertOrange = Orange.Darkened(0.45f);
+    /// <summary>A wrong answer shown in red (Bip's Balance): 5.6:1 on its box.</summary>
+    public static readonly Color WrongRed = Red.Darkened(0.35f);
+
     public static Color Hex(uint value) =>
         new(((value >> 16) & 0xFF) / 255f, ((value >> 8) & 0xFF) / 255f, (value & 0xFF) / 255f);
+
+    /// <summary>The WCAG contrast ratio of a colour (blended onto its background) against that background.</summary>
+    public static double Contrast(Color text, Color background)
+    {
+        var over = background.Lerp(new Color(text, 1), text.A);
+        double Luminance(Color c)
+        {
+            double Lin(float v) => v <= 0.03928 ? v / 12.92 : Mathf.Pow((v + 0.055) / 1.055, 2.4);
+            return 0.2126 * Lin(c.R) + 0.7152 * Lin(c.G) + 0.0722 * Lin(c.B);
+        }
+        var (a, b) = (Luminance(over), Luminance(new Color(background, 1)));
+        return (Math.Max(a, b) + 0.05) / (Math.Min(a, b) + 0.05);
+    }
+
+    /// <summary>Text colours that fall below their contrast minimum on the backgrounds they're used on (empty when all pass).</summary>
+    public static System.Collections.Generic.List<string> ContrastProblems()
+    {
+        var balanceBox = Card.Lerp(Sun, 0.35f);
+        var checks = new (string Name, Color Text, Color Background, double Minimum)[]
+        {
+            ("Ink on Paper", Ink, Paper, 4.5), ("SoftInk on Paper", SoftInk, Paper, 4.5),
+            ("QuietInk on Paper", QuietInk, Paper, 4.5), ("QuietInk on White", QuietInk, White, 4.5),
+            ("QuietInk on Card at 60%", QuietInk, Paper.Lerp(Card, 0.6f), 3),
+            ("AlertOrange on Paper", AlertOrange, Paper, 4.5), ("AlertOrange on Bip's Balance box", AlertOrange, balanceBox, 3),
+            ("WrongRed on Bip's Balance box", WrongRed, balanceBox, 3),
+            ("Ink on Teal", Ink, Teal, 4.5), ("Ink on Sea", Ink, Sea, 4.5), ("Ink on Purple", Ink, Purple, 4.5), ("Ink on Sun", Ink, Sun, 4.5),
+        };
+        var problems = new System.Collections.Generic.List<string>();
+        foreach (var (name, text, background, minimum) in checks)
+        {
+            var ratio = Contrast(text, background);
+            if (ratio < minimum) problems.Add($"{name}: {ratio:0.0}:1, needs {minimum}:1");
+        }
+        return problems;
+    }
 }
 
 /// <summary>
