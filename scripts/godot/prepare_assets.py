@@ -18,6 +18,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "godot" / "assets"
+# The language folders the game knows (BipCore Languages.Folder); English is the base folder itself.
+LANGUAGES = ("af",)
 
 
 def copy_tree(src: Path, dst: Path, pattern: str) -> int:
@@ -55,9 +57,14 @@ def main() -> int:
     content = copy_tree(ROOT / "Content", content_out, "*.json")
 
     # The narrator clips: English in Resources/Audio/, each other language in its own folder
-    # (Resources/Audio/af/ -> assets/audio/af/, the same clip names).
+    # (Resources/Audio/af/ -> assets/audio/af/, the same clip names). Only known language folders
+    # count, and a language folder in the build with no source folder any more is removed.
     audio_in = ROOT / "Resources" / "Audio"
-    folders = [(audio_in, OUT / "audio")] + [(d, OUT / "audio" / d.name) for d in sorted(audio_in.iterdir()) if d.is_dir()]
+    languages = [code for code in LANGUAGES if (audio_in / code).is_dir()]
+    if (OUT / "audio").is_dir():
+        for old in sorted(d for d in (OUT / "audio").iterdir() if d.is_dir() and d.name not in languages):
+            shutil.rmtree(old)
+    folders = [(audio_in, OUT / "audio")] + [(audio_in / code, OUT / "audio" / code) for code in languages]
     jobs, clips = [], []
     for source, audio_out in folders:
         audio_out.mkdir(parents=True, exist_ok=True)

@@ -77,18 +77,18 @@ public sealed class ContentLibrary
     public ContentLibrary(Func<string, string> readFile, HomeLanguage language, Func<string, bool> exists)
     {
         Language = language;
-        var read = readFile;
-        readFile = file => read(Languages.ContentPath(language, file, exists));
         T Load<T>(string file)
         {
+            // The file really read: the language's own copy (af/…) or the shared one.
+            var path = Languages.ContentPath(language, file, exists);
             try
             {
-                return BipJson.Decode<T>(readFile(file));
+                return BipJson.Decode<T>(readFile(path));
             }
             catch (Exception error) when (error is not ContentLoadException)
             {
                 // Whatever the reader or the decoder threw, say which file it was.
-                throw new ContentLoadException(file, error);
+                throw new ContentLoadException(path, error);
             }
         }
 

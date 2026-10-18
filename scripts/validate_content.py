@@ -537,6 +537,22 @@ for path in sorted((REPO / "godot" / "Scripts").rglob("*.cs")):
     if "Dev" in path.parts: continue
     for text in sa_english.cs_strings(path.read_text(encoding="utf-8")):
         sa_check(str(path.relative_to(REPO)), text)
+# BipCore's Texts.cs holds the on-screen words in both languages: the English half of each
+# Pick(language, english, afrikaans) is checked here, the Afrikaans half by af_spelling (when the
+# Afrikaans spelling check is in this checkout), and any other literal in it as English.
+texts_cs = REPO / "godot" / "BipCore" / "Texts.cs"
+pick_pairs, other_texts = sa_english.cs_pick_pairs(texts_cs.read_text(encoding="utf-8"))
+if not pick_pairs: err(f"{texts_cs.relative_to(REPO)}: no Pick(language, english, afrikaans) calls found to check")
+try:
+    import af_spelling
+except ImportError:
+    af_spelling = None
+for text in [t for english, _ in pick_pairs for t in english] + other_texts:
+    sa_check(f"{texts_cs.relative_to(REPO)} (English)", text)
+for english, afrikaans in pick_pairs:
+    for text in afrikaans if af_spelling else []:
+        for problem in af_spelling.problems(text):
+            err(f"{texts_cs.relative_to(REPO)} (Afrikaans): {problem}")
 site = REPO / "site" / "index.html"
 if site.exists(): sa_check("site/index.html", sa_english.html_text(site.read_text(encoding="utf-8")))
 

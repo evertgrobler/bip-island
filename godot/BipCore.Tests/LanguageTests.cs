@@ -77,6 +77,104 @@ public sealed class LanguageTests : IDisposable
     }
 
     [Fact]
+    public void ASavedLanguageThisBuildDoesntHavePlaysInEnglish()
+    {
+        HomeLanguage[] englishOnly = [HomeLanguage.English];
+        Assert.Equal(HomeLanguage.English, Languages.Playable(HomeLanguage.Afrikaans, englishOnly));
+        Assert.Equal(HomeLanguage.Afrikaans, Languages.Playable(HomeLanguage.Afrikaans, [HomeLanguage.English, HomeLanguage.Afrikaans]));
+        Assert.Equal(HomeLanguage.English, Languages.Playable(HomeLanguage.English, []));
+    }
+
+    [Fact]
+    public void ABrokenLanguageFileIsNamedByItsRealPath()
+    {
+        var root = Path.Combine(_folder, "Content");
+        CopyDirectory(TestContent.Directory, root);
+        Directory.CreateDirectory(Path.Combine(root, "af", "phonics"));
+        File.WriteAllText(Path.Combine(root, "af", "phonics", "graphemes.json"), "{ not json");
+
+        var error = Assert.Throws<ContentLoadException>(() => new ContentLibrary(
+            file => File.ReadAllText(Path.Combine(root, file)), HomeLanguage.Afrikaans, file => File.Exists(Path.Combine(root, file))));
+        Assert.Equal("af/phonics/graphemes.json", error.File);
+        Assert.StartsWith("Couldn't read Content/af/phonics/graphemes.json", error.Message);
+    }
+
+    [Fact]
+    public void EachLanguageKeepsItsOwnLearningAndSharesTheStars()
+    {
+        var rules = TestContent.Library().MasteryRules;
+        var store = new SaveStore(_folder);
+        var id = store.Children()[0].Id;
+
+        // English: a sound, a skill and a game level, and the stars they earn.
+        var english = store.Progress(id);
+        english.RecordAnswer(true, "snd_g1", "s", 1, rules);
+        english.RecordGameAnswer(true, "word_rocket", 0, 4, rules);
+        english.NotePlayed("sound_hunt");
+        store.Save(english, id);
+
+        // Switched to Afrikaans: the same stars and recent games, but nothing learnt yet.
+        var afrikaans = store.Progress(id, HomeLanguage.Afrikaans);
+        Assert.Equal(english.Stars, afrikaans.Stars);
+        Assert.Equal(["sound_hunt"], afrikaans.RecentGames);
+        Assert.Empty(afrikaans.Skills);
+        Assert.Empty(afrikaans.Sounds.Skills);
+        Assert.Empty(afrikaans.GameLevels);
+
+        afrikaans.RecordAnswer(true, "snd_g2", "m", 2, rules);
+        afrikaans.RecordAnswer(true, "snd_g2", "m", 2, rules);
+        store.Save(afrikaans, id, HomeLanguage.Afrikaans);
+
+        // Back in English: English's learning as it was, the stars from both.
+        var reopened = new SaveStore(_folder);
+        var back = reopened.Progress(id);
+        Assert.Equal(english.Stars + 2, back.Stars);
+        Assert.Equal(new[] { "snd_g1" }, back.Skills.Keys);
+        Assert.Equal(new[] { "s" }, back.Sounds.Skills.Keys);
+        Assert.Equal(new[] { "word_rocket" }, back.GameLevels.Keys);
+        Assert.Null(back.OtherLanguages);
+        Assert.Equal(new[] { "snd_g2" }, reopened.Progress(id, HomeLanguage.Afrikaans).Skills.Keys);
+        Assert.Equal(2, reopened.Progress(id, HomeLanguage.Afrikaans).Skill("snd_g2").TotalAttempts);
+
+        // English play after that keeps the Afrikaans learning.
+        back.RecordAnswer(true, "snd_g1", "s", 3, rules);
+        reopened.Save(back, id);
+        Assert.Equal(2, new SaveStore(_folder).Progress(id, HomeLanguage.Afrikaans).Skill("snd_g2").TotalAttempts);
+    }
+
+    [Fact]
+    public void AnOlderSavesProgressIsEnglish()
+    {
+        var rules = TestContent.Library().MasteryRules;
+        var store = new SaveStore(_folder);
+        var id = store.Children()[0].Id;
+        var progress = store.Progress(id);
+        progress.RecordAnswer(true, "snd_g1", "s", 1, rules);
+        store.Save(progress, id);
+        // Progress written before languages (the shape older builds save) reads as English.
+        var older = ChildProgress.Decode("""
+            {"version":2,"sounds":{"skills":{"s":{"level":2,"correctStreak":1,"missStreak":0}}},
+             "skills":{"snd_g1":{"recent":[{"correct":true,"day":9403}],"totalAttempts":1,"reviewsDone":0}},
+             "recentGames":["sound_hunt"],"stars":7,"gameLevels":{"count_and_tap":{"level":2,"correctStreak":0,"missStreak":0}}}
+            """);
+        Assert.Equal(SoundStage.Recognises, older.InLanguage(HomeLanguage.English).Sounds.Stage("s"));
+        Assert.Equal(2, older.InLanguage(HomeLanguage.English).GameLevel("count_and_tap", 0));
+        Assert.Equal(SoundStage.New, older.InLanguage(HomeLanguage.Afrikaans).Sounds.Stage("s"));
+        Assert.Equal(0, older.InLanguage(HomeLanguage.Afrikaans).GameLevel("count_and_tap", 0));
+        Assert.Equal(7, older.InLanguage(HomeLanguage.Afrikaans).Stars);
+
+        // An English-only save has the same shape as one from before languages: no "otherLanguages" at all.
+        Assert.DoesNotContain("otherLanguages", File.ReadAllText(store.FilePath));
+
+        var reopened = new SaveStore(_folder);
+        Assert.Null(reopened.LoadError);
+        Assert.Equal(new[] { "snd_g1" }, reopened.Progress(id).Skills.Keys);
+        Assert.Equal(1, reopened.Progress(id).Stars);
+        Assert.Empty(reopened.Progress(id, HomeLanguage.Afrikaans).Skills);
+        Assert.Equal(1, reopened.Progress(id, HomeLanguage.Afrikaans).Stars);
+    }
+
+    [Fact]
     public void EveryOnScreenTextHasBothLanguages()
     {
         foreach (var language in Enum.GetValues<HomeLanguage>())
@@ -86,7 +184,7 @@ public sealed class LanguageTests : IDisposable
                 Texts.WhoIsPlaying(language), Texts.ComingSoon(language), Texts.WellPlayed(language),
                 Texts.NewStickers(language, 1), Texts.NewStickers(language, 2), Texts.Level(language, 2),
                 Texts.BipIsCharging(language), Texts.AllForToday(language), Texts.StarsEarned(language, 3),
-                Texts.StarsInJar(language, 1), Texts.StarsToNextSticker(language, 2),
+                Texts.StarsInJar(language, 1), Texts.StarsToNextSticker(language, 2), Texts.ThisChild(language),
             }, text => Assert.False(string.IsNullOrWhiteSpace(text)));
         }
         Assert.Equal("Wie speel?", Texts.WhoIsPlaying(HomeLanguage.Afrikaans));

@@ -462,3 +462,13 @@
   children see are in `BipCore.Texts` (English and Afrikaans). The Children tab and the setup guide show a
   language choice only when a second language is ready (`Content/af/language.json`), so this ships
   invisibly: English plays exactly as before. The walk-through switches a child to Afrikaans and back.
+- **18 Oct 22:15 SAST (PR #53 review fixes):** Each language keeps its own learning: sounds, skills
+  (so the phonics groups) and game levels live per language in `ChildProgress.OtherLanguages` (English
+  stays where older saves have it, and an English-only save keeps its old shape); stars, stickers, the
+  play clock and recent games are shared. `SaveStore.Progress/Save` take the language and
+  `GameCoordinator.SaveProgress()` saves in the playing language. A saved language this build doesn't
+  have plays in English (`Languages.Playable`), voice included. `validate_content.py` checks
+  `BipCore/Texts.cs` (English half with sa_english, Afrikaans half with af_spelling once that check is in
+  the checkout). Self-test checks the English clips; clip counts are per language. Content load errors
+  name the real file (`Content/af/…`). `prepare_assets.py` only takes known language folders and removes
+  stale ones. CLAUDE.md now says Aoede is the narrator (recorder on `claude/aoede-narrator` until merged).

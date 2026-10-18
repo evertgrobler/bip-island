@@ -174,7 +174,7 @@ public partial class ChargingScreen : BaseScreen
         hint.AddChild(Sketch.Label(
             _peek != null
                 // A brother's or sister's break: the grown-ups' buttons are for the child at the computer.
-                ? Texts.SiblingResting(Coordinator.Language, shownChild?.Name ?? "?", _dayDone)
+                ? Texts.SiblingResting(Coordinator.Language, shownChild?.Name ?? Texts.ThisChild(Coordinator.Language), _dayDone)
                 : Texts.GrownUpsHoldEsc(Coordinator.Language, (int)Math.Round(ParentGateFlow.HoldSeconds), _dayDone),
             24, Palette.Ink.WithAlpha(0.6)));
         Stage.AddChild(hint);

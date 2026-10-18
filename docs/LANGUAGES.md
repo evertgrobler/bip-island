@@ -33,6 +33,12 @@ The game's structure stays the same; the content gets an Afrikaans version.
 Curriculum: Cambridge has no Afrikaans; the Afrikaans side follows **CAPS Afrikaans Huistaal**
 (Grade R and Foundation Phase), mapped in `docs/CURRICULUM.md` like the Cambridge codes.
 
+**Progress per language (decided 18 October 2026):** each language keeps its own sound and word
+mastery, phonics groups and game levels (`ChildProgress.OtherLanguages`, by language folder; English's
+stays where older saves have it, so nothing is migrated). Stars, stickers, the play clock and recent
+games are shared. A saved language this build doesn't have (no `Content/af/language.json`) plays in
+English (`Languages.Playable`).
+
 Content lives beside the English: `Content/af/…` with the same file shapes, so every game, test and
 the validator work unchanged. Spelling follows the AWS (Afrikaanse Woordelys en Spelreëls), checked
 by a new `scripts/af_spelling.py` the way `sa_english.py` checks English. No slang, everyday South
@@ -61,7 +67,10 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 
 ### C. Voice
 
-- **English:** being re-voiced with Aoede now (`scripts/gemini_narrator.py`, daily free runs).
+- **English:** being re-voiced with Aoede (owner decision, 18 October 2026). The recorder,
+  `scripts/gemini_narrator.py` (daily free runs), is on branch `claude/aoede-narrator` and reaches `main`
+  through its own pull request. Until a clip is re-recorded, the current clip plays (Chatterbox, and
+  ElevenLabs for the letter sounds); CLAUDE.md says the same.
 - **Afrikaans:** the same recorder with an Afrikaans style line and an Afrikaans speech check
   (Whisper's multilingual model, which knows Afrikaans), on the same free daily runs.
 - **Everything is re-recorded with Aoede, letter sounds included, in both languages** (owner, 18 Oct:
@@ -73,7 +82,8 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 
 ## Build order (each step is its own pull request, reviewed and green before the next)
 
-1. **English with Aoede** (running now): every English clip, letter sounds included.
+1. **English with Aoede** (running now on branch `claude/aoede-narrator`, its own pull request): every
+   English clip, letter sounds included.
 2. **Language plumbing:** home language per child (save file, setup guide, Children tab), content
    and audio folders per language, the game loading by language, on-screen text in both languages
    (about a dozen strings plus the parent area), tests. English plays exactly as before.
