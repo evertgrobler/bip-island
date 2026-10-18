@@ -194,7 +194,6 @@ public static class EmojiPictures
         ["pic_wing"] = "🪽",
         ["pic_wood"] = "🪓🪵",
         ["pic_yoyo"] = "🪀",
-        ["pic_zip"] = "🤐",
         ["pic_zoo"] = "🦁🐵",
     };
 

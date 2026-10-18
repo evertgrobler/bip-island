@@ -277,7 +277,7 @@ public partial class GameIslandScreen : BaseScreen
 
     private static Node2D SoundButtonsButton()
     {
-        var buttons = Buttons.Tappable(new Node2D(), "buttons");
+        var buttons = new Node2D();
         foreach (var (i, letter) in Indexed("c", "a", "t"))
         {
             var x = (i - 1) * 130.0;
@@ -286,12 +286,12 @@ public partial class GameIslandScreen : BaseScreen
             text.Position = P(x, 0);
             buttons.AddChild(text);
         }
-        return buttons;
+        return Plate("buttons", 813, buttons, 0.8f);
     }
 
     private static Node2D BuilderButton()
     {
-        var builder = Buttons.Tappable(new Node2D(), "builder");
+        var builder = new Node2D();
         foreach (var (i, letter) in Indexed("c", "a", "t"))
         {
             var x = (i - 1) * 120.0;
@@ -300,14 +300,13 @@ public partial class GameIslandScreen : BaseScreen
             text.Position = P(x, 0);
             builder.AddChild(text);
         }
-        return builder;
+        return Plate("builder", 818, builder, 0.85f);
     }
 
     /// <summary>Word Rocket: a little rocket standing ready, with a letter in its window.</summary>
     private static Node2D RocketButton()
     {
-        var rocket = Buttons.Tappable(new Node2D(), "rocket");
-        rocket.AddChild(Pen(Ellipse(Vector2.Zero, 130, 130), 830, fill: Palette.Card, lineWidth: 6));
+        var rocket = new Node2D();
         foreach (var (i, side) in Indexed(-1.0, 1.0))
             rocket.AddChild(Pen(Polygon(P(side * 30, -40), P(side * 78, -92), P(side * 78, -40), P(side * 30, 10)), (ulong)(831 + i), fill: Palette.Red, lineWidth: 4));
         rocket.AddChild(Pen(Polygon(P(-22, -70), P(0, -112), P(22, -70)), 833, fill: Palette.Orange, lineWidth: 4));
@@ -317,12 +316,12 @@ public partial class GameIslandScreen : BaseScreen
         var letter = Sketch.Letter("a", 46, shadow: Palette.Sun);
         letter.Position = P(0, 6);
         rocket.AddChild(letter);
-        return rocket;
+        return Plate("rocket", 830, rocket, 1.15f);
     }
 
     private static Node2D OrderButton()
     {
-        var order = Buttons.Tappable(new Node2D(), "order");
+        var order = new Node2D();
         foreach (var (i, number) in Indexed("1", "2", "3"))
         {
             var x = (i - 1) * 130.0;
@@ -331,12 +330,12 @@ public partial class GameIslandScreen : BaseScreen
             text.Position = P(x, 0);
             order.AddChild(text);
         }
-        return order;
+        return Plate("order", 821, order, 0.85f);
     }
 
     private static Node2D PathButton()
     {
-        var path = Buttons.Tappable(new Node2D(), "path");
+        var path = new Node2D();
         foreach (var (i, angle) in Indexed(0.0, Math.PI / 2, 0.0))
         {
             var arrow = Pen(Polygon(P(-30, -11), P(5, -11), P(5, -28), P(35, 0), P(5, 28), P(5, 11), P(-30, 11)),
@@ -345,7 +344,19 @@ public partial class GameIslandScreen : BaseScreen
             arrow.Position = P((i - 1) * 110, 0);
             path.AddChild(arrow);
         }
-        return path;
+        return Plate("path", 828, path, 1.1f);
+    }
+
+    /// <summary>
+    /// A game's button on the Words and Coding islands: its little picture on a big white plate, like the
+    /// Numbers and Art islands, so the whole plate is one obvious thing to tap (not just the letters).
+    /// </summary>
+    private static Node2D Plate(string name, ulong seed, Node2D picture, float scale)
+    {
+        var plate = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 190, 170), seed, fill: Palette.Card, lineWidth: 6)), name);
+        picture.Scale = Vector2.One * scale;
+        plate.AddChild(picture);
+        return plate;
     }
 
     private static string GameFor(string tapName) => tapName switch

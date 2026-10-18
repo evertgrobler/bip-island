@@ -31,6 +31,7 @@ public static class PictureNode
         "pic_pig" => Pig(),
         "pic_igloo" => Igloo(),
         "pic_nest" => Nest(),
+        "pic_zip" => Zip(),
         _ => WordPictures.Make(id) ?? StepPictures.Make(id) ?? EmojiPictures.Make(id) ?? Placeholder(word),
     };
 
@@ -50,7 +51,7 @@ public static class PictureNode
     public static readonly string[] HandDrawnIds =
     {
         "pic_sun", "pic_ant", "pic_ants", "pic_tap", "pic_pan", "pic_ink", "pic_net", "pic_pin", "pic_pins",
-        "pic_tin", "pic_apple", "pic_tent", "pic_pig", "pic_igloo", "pic_nest",
+        "pic_tin", "pic_apple", "pic_tent", "pic_pig", "pic_igloo", "pic_nest", "pic_zip",
     };
 
     private static Node2D Sun()
@@ -279,6 +280,35 @@ public static class PictureNode
         n.AddChild(Pen(RoundRect(R(-64, -50, 128, 76), 4), fill: Palette.Red, lineWidth: 4.5, seed: 421));
         n.AddChild(Pen(Ellipse(P(0, -12), 26, 22), fill: Palette.Sun, lineWidth: 3.5, seed: 422));
         n.AddChild(Pen(Ellipse(P(0, 64), 64, 16), fill: Palette.Ice, lineWidth: 4.5, seed: 423));
+        return n;
+    }
+
+    /// <summary>A zip, half open: the two tapes joined at the top, the slider with its pull, and the
+    /// tapes parting below it (the emoji stand-in was a face with a zipped mouth).</summary>
+    private static Node2D Zip()
+    {
+        var n = new Node2D();
+        foreach (var (i, side) in new[] { -1.0, 1.0 }.Select((side, i) => (i, side)))
+        {
+            n.AddChild(Pen(Polygon(P(side * 4, 105), P(side * 62, 105), P(side * 62, 20), P(side * 100, -100), P(side * 44, -100), P(side * 4, 20)),
+                           fill: Palette.Teal, lineWidth: 4.5, seed: (ulong)(430 + i)));
+            // Teeth along the open edge, below the slider.
+            for (var t = 1; t <= 3; t++)
+            {
+                var x = side * (4 + 40 * t / 4.0);
+                var y = 20 - 120 * t / 4.0;
+                n.AddChild(Pen(RoundRect(R(x - 9, y - 6, 18, 12), 3), fill: Palette.Stone, lineWidth: 3, seed: (ulong)(432 + i * 4 + t)));
+            }
+        }
+        // Teeth meshed up the closed part, left and right in turn.
+        for (var row = 0; row < 5; row++)
+        {
+            var left = row % 2 == 0;
+            n.AddChild(Pen(RoundRect(R(left ? -16 : -2, 88 - row * 16, 18, 12), 3), fill: Palette.Stone, lineWidth: 3, seed: (ulong)(440 + row)));
+        }
+        n.AddChild(Pen(RoundRect(R(-26, 2, 52, 34), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 446));
+        n.AddChild(Pen(RoundRect(R(-14, -50, 28, 56), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 447));
+        n.AddChild(Pen(Ellipse(P(0, -34), 6, 9), fill: Palette.Card, lineWidth: 3, seed: 448));
         return n;
     }
 
