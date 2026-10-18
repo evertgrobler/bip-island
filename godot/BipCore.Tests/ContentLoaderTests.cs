@@ -69,7 +69,14 @@ public sealed class ContentLoaderTests : IDisposable
         var found = Directory.EnumerateFiles(TestContent.Directory, "*.json", SearchOption.AllDirectories)
             .Select(path => Path.GetRelativePath(TestContent.Directory, path).Replace('\\', '/'))
             .ToHashSet();
-        Assert.Equal(ContentLibrary.Files.ToHashSet(), found);
+        // Each other language's folder (Content/af/) holds its own copies of loader files, and the marker.
+        var folders = Enum.GetValues<HomeLanguage>().Select(Languages.Folder).Where(f => f.Length > 0).Select(f => f + "/").ToList();
+        Assert.Equal(ContentLibrary.Files.ToHashSet(), found.Where(f => !folders.Any(f.StartsWith)).ToHashSet());
+        foreach (var file in found.Where(f => folders.Any(f.StartsWith)))
+        {
+            var own = file[(file.IndexOf('/') + 1)..];
+            Assert.True(ContentLibrary.Files.Contains(own) || own == Languages.MarkerFile, $"{file} isn't a file the loader reads");
+        }
     }
 
     [Fact]

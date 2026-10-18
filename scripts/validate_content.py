@@ -5,19 +5,31 @@ Run from the repo root:  python3 scripts/validate_content.py
 Exits non-zero on any problem, so CI can block a bad update.
 Writes Content/asset_manifest.json: every voice clip (with the text to speak)
 and every picture the content needs.
+
+Each other home language (docs/LANGUAGES.md) has its own folder, Content/<lang>/, read over the
+shared files. When Content/af/ exists the same checks run again for it (--lang af), writing
+Content/af/asset_manifest.json, with Afrikaans number words, audio/af/script.csv and the
+Afrikaans spelling check (af_spelling.py) in place of the South African English one.
 """
-import csv, json, re, sys
+import csv, json, re, subprocess, sys
 from collections import deque
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import sa_english
+import sa_english, af_spelling
 
-ROOT = Path(__file__).resolve().parent.parent / "Content"
+LANG = sys.argv[sys.argv.index("--lang") + 1] if "--lang" in sys.argv else ""
+CONTENT = Path(__file__).resolve().parent.parent / "Content"
+# The language's own folder (where its manifest is written); English is the base, Content/ itself.
+ROOT = CONTENT / LANG if LANG else CONTENT
+REPO = CONTENT.parent
+SCRIPT = REPO / "audio" / (f"{LANG}/script.csv" if LANG else "script.csv")
 errors = []
 
 def load(rel):
-    with open(ROOT / rel, encoding="utf-8") as f:
+    """A content file: the language's own copy when it has one, else the shared English file."""
+    path = ROOT / rel if (ROOT / rel).exists() else CONTENT / rel
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 def err(msg):
@@ -92,7 +104,9 @@ for grp in range(1, max(g["group"] for g in ph["graphemes"]) + 1):
         err(f"group {grp}: fewer than 3 different first sounds among picturable words")
 
 # --- sentences decodable at their group
-known_tricky = {t.lower() for t in tricky["stage1"]["words"] + tricky["stage2"]["words"]} | {"in", "on", "it", "a", "is", "has", "at", "an"}
+# Little words every sentence may use (Afrikaans: the article, "is" and the small joining words).
+LITTLE_WORDS = {"af": {"'n", "die", "is", "in", "op", "en", "het", "my", "sy", "hy", "se"}}.get(LANG, {"in", "on", "it", "a", "is", "has", "at", "an"})
+known_tricky = {t.lower() for t in tricky["stage1"]["words"] + tricky["stage2"]["words"]} | LITTLE_WORDS
 for s in sentences:
     for tok in s["text"].split():
         t = tok.strip(".,!?").lower()
@@ -179,7 +193,7 @@ for gm in games:
 
 # --- Bip's Balance story sums: known animals, recorded clips, both numbers and the animals said
 script_clips = set()
-with open(ROOT.parent / "audio" / "script.csv", encoding="utf-8") as f:
+with open(SCRIPT, encoding="utf-8") as f:
     for row in csv.DictReader(f): script_clips.add(row["file"].rsplit(".", 1)[0])
 numbers_json = load("numbers/numbers.json")
 known_things = {o["id"] for o in numbers_json["countingObjects"]}
@@ -440,8 +454,12 @@ for n in range(0, 101):
 
 # Numbers said inside a sentence: whole recorded sentences (vo_say_...) and, for bigger numbers,
 # num_<n>_mid clips the game joins to the linking words (numbers.json "spokenNumbers").
-NUMBER_WORDS = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
-                "fifteen sixteen seventeen eighteen nineteen twenty").split()
+NUMBER_WORDS = {
+    "af": ("nul een twee drie vier vyf ses sewe agt nege tien elf twaalf dertien veertien vyftien sestien "
+           "sewentien agtien negentien twintig"),
+}.get(LANG, "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+            "fifteen sixteen seventeen eighteen nineteen twenty").split()
+EVEN_ODD = {"af": ("ewe", "onewe")}.get(LANG, ("even", "odd"))
 def number_word(n): return NUMBER_WORDS[n]
 spoken = numbers.get("spokenNumbers") or {}
 join_to = spoken.get("joinTo", 0)
@@ -465,7 +483,7 @@ for sen in spoken.get("sentences", []):
         values = {"a": x, "b": y, "sum": x + (y or 0), "left": x - (y or 0), "double": 2 * x, "rest": 10 - x}
         def fill(m):
             key = m.group(1)
-            if key == "parity": return "even" if x % 2 == 0 else "odd"
+            if key == "parity": return EVEN_ODD[0] if x % 2 == 0 else EVEN_ODD[1]
             if values.get(key) is None or not 0 <= values[key] <= 20: err(f"spoken sentence {sid}: no number for {{{key}}}"); return "?"
             return number_word(values[key])
         text = re.sub(r"\{([a-z]+)\}", fill, sen.get("text", ""))
@@ -480,7 +498,8 @@ cur = numbers["currency"]
 for c in cur["coins"] + cur["notes"]:
     p(f"pic_money_{c['id']}", f"South African {c['label']} {'coin' if c in cur['coins'] else 'note'}, in the game's own hand-drawn style")
     lab = c["label"]
-    a(f"money_{c['id']}", f"{lab[1:]} rand" if lab.startswith("R") else f"{lab[:-1]} cents")
+    cents = "sent" if LANG == "af" else "cents"
+    a(f"money_{c['id']}", f"{lab[1:]} rand" if lab.startswith("R") else f"{lab[:-1]} {cents}")
 for it in cur["shopItems"]:
     p(it["picture"], it["id"])
 for st in seqs:
@@ -504,9 +523,11 @@ with open(ROOT / "asset_manifest.json", "w", encoding="utf-8") as f:
 # the game's on-screen text and the download page. Ids, file names and notes for people are skipped.
 SKIP_KEYS = {"id", "audio", "objectives", "graphemes", "ipa", "rime", "code", "kind", "band", "firstSound",
              "handwritingFamily", "note", "notes", "narratorHint", "mnemonicPicture", "picture", "skills",
-             "prerequisites", "content", "island", "skin", "skins", "label", "colour", "shape", "letterName"}
+             "prerequisites", "content", "island", "skin", "skins", "label", "colour", "shape", "letterName",
+             "grapheme", "sequenceRules"}
 
 sa_waiting = set()
+OTHER_LANGUAGES = {"af"}  # folders in Content/ that hold another language's own files
 
 def sa_check(where, text):
     for problem in sa_english.problems(text):
@@ -526,30 +547,50 @@ def sa_walk(where, node):
             if key in SKIP_KEYS and is_ids: continue
             sa_walk(f"{where} {key}", value)
 
-REPO = ROOT.parent
-for path in sorted(ROOT.rglob("*.json")):
-    if path.name == "asset_manifest.json": continue
-    sa_walk(str(path.relative_to(REPO)), load(path.relative_to(ROOT)))
-with open(REPO / "audio" / "script.csv", encoding="utf-8") as f:
-    for row in csv.DictReader(f):
-        sa_check(f"audio/script.csv {row['file']}", row["text"])
-for path in sorted((REPO / "godot" / "Scripts").rglob("*.cs")):
-    if "Dev" in path.parts: continue
-    for text in sa_english.cs_strings(path.read_text(encoding="utf-8")):
-        sa_check(str(path.relative_to(REPO)), text)
-site = REPO / "site" / "index.html"
-if site.exists(): sa_check("site/index.html", sa_english.html_text(site.read_text(encoding="utf-8")))
+if LANG:
+    # An other language's own files and voice script get its spelling check (the shared files are English
+    # and were checked on the English run).
+    def lang_check(where, text):
+        for problem in af_spelling.problems(text): err(f"{where}: {problem}")
+    def lang_walk(where, node):
+        if isinstance(node, str): lang_check(where, node)
+        elif isinstance(node, list):
+            for item in node: lang_walk(where, item)
+        elif isinstance(node, dict):
+            for key, value in node.items():
+                is_ids = isinstance(value, str) or (isinstance(value, list) and all(isinstance(v, str) for v in value))
+                if key in SKIP_KEYS and is_ids: continue
+                lang_walk(f"{where} {key}", value)
+    for path in sorted(ROOT.rglob("*.json")):
+        if path.name == "asset_manifest.json": continue
+        lang_walk(str(path.relative_to(REPO)), load(path.relative_to(ROOT)))
+    with open(SCRIPT, encoding="utf-8") as f:
+        for row in csv.DictReader(f): lang_check(f"{SCRIPT.relative_to(REPO)} {row['file']}", row["text"])
+else:
+    for path in sorted(p for p in ROOT.rglob("*.json") if p.relative_to(ROOT).parts[0] not in OTHER_LANGUAGES):
+        if path.name == "asset_manifest.json": continue
+        sa_walk(str(path.relative_to(REPO)), load(path.relative_to(ROOT)))
+    with open(REPO / "audio" / "script.csv", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            sa_check(f"audio/script.csv {row['file']}", row["text"])
+    for path in sorted((REPO / "godot" / "Scripts").rglob("*.cs")):
+        if "Dev" in path.parts: continue
+        for text in sa_english.cs_strings(path.read_text(encoding="utf-8")):
+            sa_check(str(path.relative_to(REPO)), text)
+    site = REPO / "site" / "index.html"
+    if site.exists(): sa_check("site/index.html", sa_english.html_text(site.read_text(encoding="utf-8")))
 
-# Background music: Resources/Music/<track>.m4a, one loop for the map and one per island (BipCore.MusicRules).
+music_files = []
+# Background music (checked once, on the English run): Resources/Music/<track>.m4a, one loop for the map and one per island (BipCore.MusicRules).
 MUSIC_TRACKS = {"music_map"} | {f"music_{island}" for island in ISLANDS}
 music_dir = REPO / "Resources" / "Music"
-music_files = sorted(p for p in music_dir.glob("*") if p.name != "README.md") if music_dir.exists() else []
+music_files = [] if LANG else sorted(p for p in music_dir.glob("*") if p.name != "README.md") if music_dir.exists() else []
 if music_files and not (music_dir / "README.md").exists():
     err("Resources/Music/README.md is missing (where each loop came from and on what terms; the repo is public)")
 for path in music_files:
     if path.suffix != ".m4a" or path.stem not in MUSIC_TRACKS:
         err(f"Resources/Music/{path.name}: music files are .m4a named one of {sorted(MUSIC_TRACKS)}")
-if not (music_dir / "music_map.m4a").exists():
+if not LANG and not (music_dir / "music_map.m4a").exists():
     err("Resources/Music/music_map.m4a is missing (the map loop; islands without their own play it)")
 
 for note in sorted(sa_waiting): print(f"WAITING (South African English): {note}")
@@ -558,6 +599,12 @@ if errors:
     print(f"{len(errors)} problem(s):")
     for e in errors: print("  -", e)
     sys.exit(1)
-print(f"Content OK: {len(objectives)} objectives, {len(G)} graphemes, {len(WORDS)} words, "
+print(f"Content OK{f' ({LANG})' if LANG else ''}: {len(objectives)} objectives, {len(G)} graphemes, {len(WORDS)} words, "
       f"{len(levels_doc['levels'])} grid levels, {len(SK)} skills, {len(games)} games. "
       f"Manifest: {len(audio)} voice clips, {len(pictures)} pictures. Music loops: {len(music_files)}.")
+
+# Then each other language with a folder of its own, with the same checks.
+if not LANG:
+    for lang in sorted(OTHER_LANGUAGES):
+        if (CONTENT / lang).is_dir():
+            sys.exit(subprocess.run([sys.executable, __file__, "--lang", lang]).returncode)

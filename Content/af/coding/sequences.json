@@ -1,0 +1,923 @@
+{
+  "note": "Morning Order card sets (sequencing, 1CT.01, 1CT.05, 1CT.06). Cards are listed in the correct order; the game shuffles them. Each card needs pic_<set>_<n> artwork and vo_<set>_<n> narration.",
+  "sets": [
+    {
+      "id": "morning",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Word wakker",
+          "picture": "pic_morning_1",
+          "audio": "vo_morning_1"
+        },
+        {
+          "n": 2,
+          "text": "Borsel jou tande",
+          "picture": "pic_morning_2",
+          "audio": "vo_morning_2"
+        },
+        {
+          "n": 3,
+          "text": "Eet ontbyt",
+          "picture": "pic_morning_3",
+          "audio": "vo_morning_3"
+        }
+      ]
+    },
+    {
+      "id": "hands",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Maak jou hande nat",
+          "picture": "pic_hands_1",
+          "audio": "vo_hands_1"
+        },
+        {
+          "n": 2,
+          "text": "Gebruik seep",
+          "picture": "pic_hands_2",
+          "audio": "vo_hands_2"
+        },
+        {
+          "n": 3,
+          "text": "Spoel af",
+          "picture": "pic_hands_3",
+          "audio": "vo_hands_3"
+        },
+        {
+          "n": 4,
+          "text": "Droog jou hande af",
+          "picture": "pic_hands_4",
+          "audio": "vo_hands_4"
+        }
+      ]
+    },
+    {
+      "id": "sandwich",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Vat twee snye brood",
+          "picture": "pic_sandwich_1",
+          "audio": "vo_sandwich_1"
+        },
+        {
+          "n": 2,
+          "text": "Smeer die botter",
+          "picture": "pic_sandwich_2",
+          "audio": "vo_sandwich_2"
+        },
+        {
+          "n": 3,
+          "text": "Sit die kaas op",
+          "picture": "pic_sandwich_3",
+          "audio": "vo_sandwich_3"
+        },
+        {
+          "n": 4,
+          "text": "Druk die snye saam",
+          "picture": "pic_sandwich_4",
+          "audio": "vo_sandwich_4"
+        }
+      ]
+    },
+    {
+      "id": "seed",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Plant 'n saadjie",
+          "picture": "pic_seed_1",
+          "audio": "vo_seed_1"
+        },
+        {
+          "n": 2,
+          "text": "Gee dit water",
+          "picture": "pic_seed_2",
+          "audio": "vo_seed_2"
+        },
+        {
+          "n": 3,
+          "text": "'n Plantjie groei",
+          "picture": "pic_seed_3",
+          "audio": "vo_seed_3"
+        },
+        {
+          "n": 4,
+          "text": "'n Blom gaan oop",
+          "picture": "pic_seed_4",
+          "audio": "vo_seed_4"
+        }
+      ]
+    },
+    {
+      "id": "sandcastle",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Maak die emmer vol sand",
+          "picture": "pic_sandcastle_1",
+          "audio": "vo_sandcastle_1"
+        },
+        {
+          "n": 2,
+          "text": "Klop dit plat",
+          "picture": "pic_sandcastle_2",
+          "audio": "vo_sandcastle_2"
+        },
+        {
+          "n": 3,
+          "text": "Draai dit om",
+          "picture": "pic_sandcastle_3",
+          "audio": "vo_sandcastle_3"
+        },
+        {
+          "n": 4,
+          "text": "Lig die emmer op",
+          "picture": "pic_sandcastle_4",
+          "audio": "vo_sandcastle_4"
+        },
+        {
+          "n": 5,
+          "text": "Sit 'n skulp bo-op",
+          "picture": "pic_sandcastle_5",
+          "audio": "vo_sandcastle_5"
+        }
+      ]
+    },
+    {
+      "id": "frog",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Paddaeiers",
+          "picture": "pic_frog_1",
+          "audio": "vo_frog_1"
+        },
+        {
+          "n": 2,
+          "text": "'n Paddavis",
+          "picture": "pic_frog_2",
+          "audio": "vo_frog_2"
+        },
+        {
+          "n": 3,
+          "text": "'n Paddavis met pote",
+          "picture": "pic_frog_3",
+          "audio": "vo_frog_3"
+        },
+        {
+          "n": 4,
+          "text": "'n Klein paddatjie",
+          "picture": "pic_frog_4",
+          "audio": "vo_frog_4"
+        },
+        {
+          "n": 5,
+          "text": "'n Padda",
+          "picture": "pic_frog_5",
+          "audio": "vo_frog_5"
+        }
+      ]
+    },
+    {
+      "id": "school",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Trek aan",
+          "picture": "pic_school_1",
+          "audio": "vo_school_1"
+        },
+        {
+          "n": 2,
+          "text": "Eet ontbyt",
+          "picture": "pic_school_2",
+          "audio": "vo_school_2"
+        },
+        {
+          "n": 3,
+          "text": "Pak jou skooltas",
+          "picture": "pic_school_3",
+          "audio": "vo_school_3"
+        },
+        {
+          "n": 4,
+          "text": "Trek jou skoene aan",
+          "picture": "pic_school_4",
+          "audio": "vo_school_4"
+        },
+        {
+          "n": 5,
+          "text": "Stap skool toe",
+          "picture": "pic_school_5",
+          "audio": "vo_school_5"
+        }
+      ]
+    },
+    {
+      "id": "biscuits",
+      "band": "stage2",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Was jou hande",
+          "picture": "pic_biscuits_1",
+          "audio": "vo_biscuits_1"
+        },
+        {
+          "n": 2,
+          "text": "Meng die deeg",
+          "picture": "pic_biscuits_2",
+          "audio": "vo_biscuits_2"
+        },
+        {
+          "n": 3,
+          "text": "Druk die vormpies uit",
+          "picture": "pic_biscuits_3",
+          "audio": "vo_biscuits_3"
+        },
+        {
+          "n": 4,
+          "text": "Bak dit in die oond",
+          "picture": "pic_biscuits_4",
+          "audio": "vo_biscuits_4"
+        },
+        {
+          "n": 5,
+          "text": "Laat dit afkoel",
+          "picture": "pic_biscuits_5",
+          "audio": "vo_biscuits_5"
+        },
+        {
+          "n": 6,
+          "text": "Eet 'n koekie",
+          "picture": "pic_biscuits_6",
+          "audio": "vo_biscuits_6"
+        }
+      ]
+    },
+    {
+      "id": "bedtime",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Borsel jou tande",
+          "picture": "pic_bedtime_1",
+          "audio": "vo_bedtime_1"
+        },
+        {
+          "n": 2,
+          "text": "Lees 'n storie",
+          "picture": "pic_bedtime_2",
+          "audio": "vo_bedtime_2"
+        },
+        {
+          "n": 3,
+          "text": "Skakel die lig af",
+          "picture": "pic_bedtime_3",
+          "audio": "vo_bedtime_3"
+        },
+        {
+          "n": 4,
+          "text": "Gaan slaap",
+          "picture": "pic_bedtime_4",
+          "audio": "vo_bedtime_4"
+        }
+      ]
+    },
+    {
+      "id": "bath",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Maak die bad vol",
+          "picture": "pic_bath_1",
+          "audio": "vo_bath_1"
+        },
+        {
+          "n": 2,
+          "text": "Klim in",
+          "picture": "pic_bath_2",
+          "audio": "vo_bath_2"
+        },
+        {
+          "n": 3,
+          "text": "Was met seep",
+          "picture": "pic_bath_3",
+          "audio": "vo_bath_3"
+        },
+        {
+          "n": 4,
+          "text": "Trek die prop uit",
+          "picture": "pic_bath_4",
+          "audio": "vo_bath_4"
+        }
+      ]
+    },
+    {
+      "id": "chick",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "'n Eier in 'n nes",
+          "picture": "pic_chick_1",
+          "audio": "vo_chick_1"
+        },
+        {
+          "n": 2,
+          "text": "Die eier kraak",
+          "picture": "pic_chick_2",
+          "audio": "vo_chick_2"
+        },
+        {
+          "n": 3,
+          "text": "'n Kuiken broei uit",
+          "picture": "pic_chick_3",
+          "audio": "vo_chick_3"
+        },
+        {
+          "n": 4,
+          "text": "Die kuiken word 'n hen",
+          "picture": "pic_chick_4",
+          "audio": "vo_chick_4"
+        }
+      ]
+    },
+    {
+      "id": "butterfly",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "'n Klein eiertjie op 'n blaar",
+          "picture": "pic_butterfly_1",
+          "audio": "vo_butterfly_1"
+        },
+        {
+          "n": 2,
+          "text": "'n Ruspe eet",
+          "picture": "pic_butterfly_2",
+          "audio": "vo_butterfly_2"
+        },
+        {
+          "n": 3,
+          "text": "'n Papie",
+          "picture": "pic_butterfly_3",
+          "audio": "vo_butterfly_3"
+        },
+        {
+          "n": 4,
+          "text": "'n Skoenlapper",
+          "picture": "pic_butterfly_4",
+          "audio": "vo_butterfly_4"
+        }
+      ]
+    },
+    {
+      "id": "rainbow",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Wolke kom",
+          "picture": "pic_rainbow_1",
+          "audio": "vo_rainbow_1"
+        },
+        {
+          "n": 2,
+          "text": "Dit reën",
+          "picture": "pic_rainbow_2",
+          "audio": "vo_rainbow_2"
+        },
+        {
+          "n": 3,
+          "text": "Die son kom uit",
+          "picture": "pic_rainbow_3",
+          "audio": "vo_rainbow_3"
+        },
+        {
+          "n": 4,
+          "text": "'n Reënboog",
+          "picture": "pic_rainbow_4",
+          "audio": "vo_rainbow_4"
+        }
+      ]
+    },
+    {
+      "id": "birthday",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Bak 'n koek",
+          "picture": "pic_birthday_1",
+          "audio": "vo_birthday_1"
+        },
+        {
+          "n": 2,
+          "text": "Steek die kerse aan",
+          "picture": "pic_birthday_2",
+          "audio": "vo_birthday_2"
+        },
+        {
+          "n": 3,
+          "text": "Sing 'Veels geluk'",
+          "picture": "pic_birthday_3",
+          "audio": "vo_birthday_3"
+        },
+        {
+          "n": 4,
+          "text": "Blaas die kerse dood",
+          "picture": "pic_birthday_4",
+          "audio": "vo_birthday_4"
+        }
+      ]
+    },
+    {
+      "id": "dogwalk",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Sit die leiband aan",
+          "picture": "pic_dogwalk_1",
+          "audio": "vo_dogwalk_1"
+        },
+        {
+          "n": 2,
+          "text": "Stap na die park",
+          "picture": "pic_dogwalk_2",
+          "audio": "vo_dogwalk_2"
+        },
+        {
+          "n": 3,
+          "text": "Gooi die bal",
+          "picture": "pic_dogwalk_3",
+          "audio": "vo_dogwalk_3"
+        },
+        {
+          "n": 4,
+          "text": "Gee die hond water",
+          "picture": "pic_dogwalk_4",
+          "audio": "vo_dogwalk_4"
+        }
+      ]
+    },
+    {
+      "id": "icecream",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "'n Koue roomys",
+          "picture": "pic_icecream_1",
+          "audio": "vo_icecream_1"
+        },
+        {
+          "n": 2,
+          "text": "Die son is warm",
+          "picture": "pic_icecream_2",
+          "audio": "vo_icecream_2"
+        },
+        {
+          "n": 3,
+          "text": "Dit smelt",
+          "picture": "pic_icecream_3",
+          "audio": "vo_icecream_3"
+        }
+      ]
+    },
+    {
+      "id": "pizza",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Rol die deeg uit",
+          "picture": "pic_pizza_1",
+          "audio": "vo_pizza_1"
+        },
+        {
+          "n": 2,
+          "text": "Smeer die tamatiesous",
+          "picture": "pic_pizza_2",
+          "audio": "vo_pizza_2"
+        },
+        {
+          "n": 3,
+          "text": "Sit die kaas op",
+          "picture": "pic_pizza_3",
+          "audio": "vo_pizza_3"
+        },
+        {
+          "n": 4,
+          "text": "Bak en eet",
+          "picture": "pic_pizza_4",
+          "audio": "vo_pizza_4"
+        }
+      ]
+    },
+    {
+      "id": "tower",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Een blok",
+          "picture": "pic_tower_1",
+          "audio": "vo_tower_1"
+        },
+        {
+          "n": 2,
+          "text": "Twee blokke",
+          "picture": "pic_tower_2",
+          "audio": "vo_tower_2"
+        },
+        {
+          "n": 3,
+          "text": "Drie blokke",
+          "picture": "pic_tower_3",
+          "audio": "vo_tower_3"
+        },
+        {
+          "n": 4,
+          "text": "Die toring val om",
+          "picture": "pic_tower_4",
+          "audio": "vo_tower_4"
+        }
+      ]
+    },
+    {
+      "id": "appletree",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "'n Blom aan die boom",
+          "picture": "pic_appletree_1",
+          "audio": "vo_appletree_1"
+        },
+        {
+          "n": 2,
+          "text": "'n Klein groen appeltjie",
+          "picture": "pic_appletree_2",
+          "audio": "vo_appletree_2"
+        },
+        {
+          "n": 3,
+          "text": "'n Groot rooi appel",
+          "picture": "pic_appletree_3",
+          "audio": "vo_appletree_3"
+        },
+        {
+          "n": 4,
+          "text": "Pluk die appel",
+          "picture": "pic_appletree_4",
+          "audio": "vo_appletree_4"
+        }
+      ]
+    },
+    {
+      "id": "cereal",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Kry 'n bak",
+          "picture": "pic_cereal_1",
+          "audio": "vo_cereal_1"
+        },
+        {
+          "n": 2,
+          "text": "Gooi die graankos in",
+          "picture": "pic_cereal_2",
+          "audio": "vo_cereal_2"
+        },
+        {
+          "n": 3,
+          "text": "Gooi die melk by",
+          "picture": "pic_cereal_3",
+          "audio": "vo_cereal_3"
+        },
+        {
+          "n": 4,
+          "text": "Eet dit met 'n lepel",
+          "picture": "pic_cereal_4",
+          "audio": "vo_cereal_4"
+        }
+      ]
+    },
+    {
+      "id": "goingout",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Trek jou kouse aan",
+          "picture": "pic_goingout_1",
+          "audio": "vo_goingout_1"
+        },
+        {
+          "n": 2,
+          "text": "Trek jou skoene aan",
+          "picture": "pic_goingout_2",
+          "audio": "vo_goingout_2"
+        },
+        {
+          "n": 3,
+          "text": "Sit jou hoed op",
+          "picture": "pic_goingout_3",
+          "audio": "vo_goingout_3"
+        },
+        {
+          "n": 4,
+          "text": "Gaan speel buite",
+          "picture": "pic_goingout_4",
+          "audio": "vo_goingout_4"
+        }
+      ]
+    },
+    {
+      "id": "carwash",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "'n Modderige motor",
+          "picture": "pic_carwash_1",
+          "audio": "vo_carwash_1"
+        },
+        {
+          "n": 2,
+          "text": "Spuit dit met water",
+          "picture": "pic_carwash_2",
+          "audio": "vo_carwash_2"
+        },
+        {
+          "n": 3,
+          "text": "Skrop dit met seep",
+          "picture": "pic_carwash_3",
+          "audio": "vo_carwash_3"
+        },
+        {
+          "n": 4,
+          "text": "'n Blink skoon motor",
+          "picture": "pic_carwash_4",
+          "audio": "vo_carwash_4"
+        }
+      ]
+    },
+    {
+      "id": "day",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Die son kom op",
+          "picture": "pic_day_1",
+          "audio": "vo_day_1"
+        },
+        {
+          "n": 2,
+          "text": "Die son staan hoog",
+          "picture": "pic_day_2",
+          "audio": "vo_day_2"
+        },
+        {
+          "n": 3,
+          "text": "Die son gaan onder",
+          "picture": "pic_day_3",
+          "audio": "vo_day_3"
+        },
+        {
+          "n": 4,
+          "text": "Dis nag",
+          "picture": "pic_day_4",
+          "audio": "vo_day_4"
+        }
+      ]
+    },
+    {
+      "id": "slide",
+      "band": "foundation",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Klim die leer op",
+          "picture": "pic_slide_1",
+          "audio": "vo_slide_1"
+        },
+        {
+          "n": 2,
+          "text": "Sit bo-op",
+          "picture": "pic_slide_2",
+          "audio": "vo_slide_2"
+        },
+        {
+          "n": 3,
+          "text": "Gly af",
+          "picture": "pic_slide_3",
+          "audio": "vo_slide_3"
+        },
+        {
+          "n": 4,
+          "text": "Land onder",
+          "picture": "pic_slide_4",
+          "audio": "vo_slide_4"
+        }
+      ]
+    },
+    {
+      "id": "laundry",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Vuil klere",
+          "picture": "pic_laundry_1",
+          "audio": "vo_laundry_1"
+        },
+        {
+          "n": 2,
+          "text": "Was dit in die masjien",
+          "picture": "pic_laundry_2",
+          "audio": "vo_laundry_2"
+        },
+        {
+          "n": 3,
+          "text": "Hang dit op om droog te word",
+          "picture": "pic_laundry_3",
+          "audio": "vo_laundry_3"
+        },
+        {
+          "n": 4,
+          "text": "Vou dit op",
+          "picture": "pic_laundry_4",
+          "audio": "vo_laundry_4"
+        }
+      ]
+    },
+    {
+      "id": "picnic",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Pak die mandjie",
+          "picture": "pic_picnic_1",
+          "audio": "vo_picnic_1"
+        },
+        {
+          "n": 2,
+          "text": "Sprei die kombers oop",
+          "picture": "pic_picnic_2",
+          "audio": "vo_picnic_2"
+        },
+        {
+          "n": 3,
+          "text": "Eet die piekniekkos",
+          "picture": "pic_picnic_3",
+          "audio": "vo_picnic_3"
+        },
+        {
+          "n": 4,
+          "text": "Tel die rommel op",
+          "picture": "pic_picnic_4",
+          "audio": "vo_picnic_4"
+        }
+      ]
+    },
+    {
+      "id": "letter",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Teken 'n prent",
+          "picture": "pic_letter_1",
+          "audio": "vo_letter_1"
+        },
+        {
+          "n": 2,
+          "text": "Sit dit in 'n koevert",
+          "picture": "pic_letter_2",
+          "audio": "vo_letter_2"
+        },
+        {
+          "n": 3,
+          "text": "Pos dit",
+          "picture": "pic_letter_3",
+          "audio": "vo_letter_3"
+        },
+        {
+          "n": 4,
+          "text": "Ouma maak dit oop",
+          "picture": "pic_letter_4",
+          "audio": "vo_letter_4"
+        }
+      ]
+    },
+    {
+      "id": "growing",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "'n Baba",
+          "picture": "pic_growing_1",
+          "audio": "vo_growing_1"
+        },
+        {
+          "n": 2,
+          "text": "'n Kind",
+          "picture": "pic_growing_2",
+          "audio": "vo_growing_2"
+        },
+        {
+          "n": 3,
+          "text": "'n Grootmens",
+          "picture": "pic_growing_3",
+          "audio": "vo_growing_3"
+        },
+        {
+          "n": 4,
+          "text": "'n Ouma",
+          "picture": "pic_growing_4",
+          "audio": "vo_growing_4"
+        }
+      ]
+    },
+    {
+      "id": "house",
+      "band": "stage1",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Grawe die grond",
+          "picture": "pic_house_1",
+          "audio": "vo_house_1"
+        },
+        {
+          "n": 2,
+          "text": "Bou die mure",
+          "picture": "pic_house_2",
+          "audio": "vo_house_2"
+        },
+        {
+          "n": 3,
+          "text": "Sit die dak op",
+          "picture": "pic_house_3",
+          "audio": "vo_house_3"
+        },
+        {
+          "n": 4,
+          "text": "Trek in",
+          "picture": "pic_house_4",
+          "audio": "vo_house_4"
+        }
+      ]
+    },
+    {
+      "id": "rocket",
+      "band": "stage2",
+      "cards": [
+        {
+          "n": 1,
+          "text": "Klim in die vuurpyl",
+          "picture": "pic_rocket_1",
+          "audio": "vo_rocket_1"
+        },
+        {
+          "n": 2,
+          "text": "Tel af: drie, twee, een",
+          "picture": "pic_rocket_2",
+          "audio": "vo_rocket_2"
+        },
+        {
+          "n": 3,
+          "text": "Lanseer!",
+          "picture": "pic_rocket_3",
+          "audio": "vo_rocket_3"
+        },
+        {
+          "n": 4,
+          "text": "Land op die maan",
+          "picture": "pic_rocket_4",
+          "audio": "vo_rocket_4"
+        }
+      ]
+    }
+  ]
+}
