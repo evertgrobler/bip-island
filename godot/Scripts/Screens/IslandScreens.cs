@@ -354,16 +354,17 @@ public partial class GameIslandScreen : BaseScreen
     private static Node2D ShowMeButton()
     {
         var show = Buttons.Tappable(new Node2D(), "showme");
+        show.AddChild(Pen(Ellipse(Vector2.Zero, 175, 150), 850, fill: Palette.Card, lineWidth: 6));
         foreach (var (i, picture) in Indexed("pic_cat", "pic_apple", "pic_sun"))
         {
-            var x = (i - 1) * 125.0;
-            show.AddChild(Pen(RoundRect(R(x - 56, -56, 112, 112), 18), (ulong)(851 + i), fill: Palette.Card, lineWidth: 5));
+            var x = (i - 1) * 100.0;
+            show.AddChild(Pen(RoundRect(R(x - 44, -44, 88, 88), 16), (ulong)(851 + i), fill: Palette.Card, lineWidth: 4));
             var drawn = PictureNode.Make(picture, picture);
-            drawn.Scale = Vector2.One * 0.42f;
+            drawn.Scale = Vector2.One * 0.34f;
             drawn.Position = P(x, 0);
             show.AddChild(drawn);
         }
-        show.AddChild(Pen(RoundRect(R(-70, -70, 140, 140), 24), 854, ink: Palette.Orange, lineWidth: 6));
+        show.AddChild(Pen(RoundRect(R(-56, -56, 112, 112), 20), 854, ink: Palette.Orange, lineWidth: 5));
         return show;
     }
 
