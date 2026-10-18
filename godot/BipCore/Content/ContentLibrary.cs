@@ -50,6 +50,12 @@ public sealed class ContentLibrary
     private readonly Dictionary<string, Skill> _skillsById;
     private readonly Dictionary<string, GameEntry> _gamesById;
     public IReadOnlySet<string> AudioIds { get; }
+
+    /// <summary>The highest number with a mid-sentence clip (numbers.json spokenNumbers.joinTo; -1 when there are none).</summary>
+    public int MidNumbersTo => Numbers.SpokenNumbers?.JoinTo ?? -1;
+
+    /// <summary>A number in the middle of a sentence, as far as the content has those clips (<see cref="AudioCatalogue.MidNumberClip"/>).</summary>
+    public string MidNumberClip(int n) => AudioCatalogue.MidNumberClip(n, MidNumbersTo);
     public IReadOnlySet<string> PictureIds { get; }
 
     /// <summary>Reads every file from a Content folder.</summary>

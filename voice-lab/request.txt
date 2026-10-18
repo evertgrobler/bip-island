@@ -1,5 +1,16 @@
 # Clips for the "Narrator" workflow to record (names or patterns, one a line). Clips that already
 # have a file are skipped (and checked again by Whisper). Changing this on a claude/* branch starts a run.
-# Only whole sentences: Chatterbox garbles one-word clips ("Five,", "and"), so lead-on numbers and
-# "and" use the original narrator's num_<n> and word_and recordings (VoicePlayer falls back to them).
-vo_say_*
+# Only whole sentences, one line per numbers.json spokenNumbers sentence id (never a bare vo_say_*:
+# that would also catch voice-script clips such as vo_say_it_with_me). Chatterbox garbles one-word
+# clips, so speak_clips.py skips num_<n>_mid and vo_and; the Aoede narrator records those.
+vo_say_build_tower_*
+vo_say_find_tower_*
+vo_say_join_*
+vo_say_join_make_*
+vo_say_take_away_*
+vo_say_make_ten_*
+vo_say_make_ten_right_*
+vo_say_double_*
+vo_say_double_right_*
+vo_say_odd_even_*
+vo_say_odd_even_right_*
