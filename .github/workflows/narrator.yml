@@ -38,7 +38,7 @@ jobs:
       - name: Speak this shard's clips
         run: |
           python3 scripts/validate_content.py > /dev/null
-          python3 scripts/speak_clips.py --from voice-lab/request.txt --shard ${{ matrix.shard }}/4 --verify
+          python3 scripts/speak_clips.py --from voice-lab/request.txt --shard ${{ matrix.shard }}/4 --verify --report out/failed-${{ matrix.shard }}.txt
           mkdir -p out && { git ls-files --others --exclude-standard Resources/Audio; git ls-files --modified Resources/Audio; } | xargs -r cp -t out
       - uses: actions/upload-artifact@v4
         with:
@@ -59,6 +59,10 @@ jobs:
       - name: Commit the clips
         run: |
           mkdir -p new && cp new/*.m4a Resources/Audio/ 2>/dev/null || true
+          # Clips that never came out right are removed; the game joins those lines from pieces.
+          cat new/failed-*.txt 2>/dev/null | sort > voice-lab/last-failed.txt || true
+          while read -r clip; do git rm -q -f --ignore-unmatch "Resources/Audio/$clip.m4a"; done < voice-lab/last-failed.txt
+          git add voice-lab/last-failed.txt
           git config user.name "narrator"
           git config user.email "narrator@users.noreply.github.com"
           git add Resources/Audio

@@ -102,6 +102,7 @@ def main():
     ap.add_argument("--from", dest="from_file", help="a file of clip names or patterns, one a line (# for notes)")
     ap.add_argument("--redo", action="store_true", help="record again even if the file exists")
     ap.add_argument("--verify", action="store_true", help="also check clips that already exist; re-record any that are wrong")
+    ap.add_argument("--report", help="write the clips that never came out right here, one a line")
     ap.add_argument("--shard", default="1/1", help="k/n: do every n-th clip starting at k (for parallel jobs)")
     a = ap.parse_args()
     patterns = list(a.clips)
@@ -121,6 +122,8 @@ def main():
             print(f"Wrong words in {c}: heard {listener.heard(path)!r}, expected {all_texts[c]!r}", flush=True)
             todo.append(c)
     print(f"Speaking {len(todo)} clips (shard {a.shard}).", flush=True)
+    failed = []
+    if a.report: Path(a.report).parent.mkdir(parents=True, exist_ok=True); Path(a.report).write_text("")
     if not todo: return
 
     import torch, torchaudio as ta
@@ -143,8 +146,14 @@ def main():
                 if listener.ok(out, text): break
                 print(f"  seed {seed}: heard {listener.heard(out)!r}; trying again", flush=True)
             else:
-                print(f"  WARNING {clip}: no take matched after {TRIES} tries; kept the last one", flush=True)
+                # No good take: remove it, so the game joins the line from its pieces instead.
+                out.unlink(missing_ok=True)
+                failed.append(clip)
+                print(f"  FAILED {clip}: no take matched after {TRIES} tries; removed", flush=True)
             print(f"[{i}/{len(todo)}] {clip}: {text}", flush=True)
+    if a.report:
+        Path(a.report).write_text("".join(f"{c}\n" for c in failed))
+    print(f"Done: {len(todo) - len(failed)} recorded, {len(failed)} removed ({', '.join(failed) or 'none'}).", flush=True)
 
 
 if __name__ == "__main__":

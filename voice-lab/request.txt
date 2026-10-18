@@ -1,5 +1,5 @@
 # Clips for the "Narrator" workflow to record (names or patterns, one a line). Clips that already
-# have a file are skipped, so this list can stay as it is. Changing it on a claude/* branch starts a run.
+# have a file are skipped (and checked again by Whisper). Changing this on a claude/* branch starts a run.
+# Only whole sentences: Chatterbox garbles one-word clips ("Five,", "and"), so lead-on numbers and
+# "and" use the original narrator's num_<n> and word_and recordings (VoicePlayer falls back to them).
 vo_say_*
-num_*_mid
-vo_and
