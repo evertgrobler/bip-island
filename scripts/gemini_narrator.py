@@ -158,11 +158,15 @@ def sounds(lang):
 
 def speak(key, lang, style, lines, hints=()):
     how = LANGS[lang]["styles"][style]
+    # The directions sit under their own heading and only the transcript is read: with the directions
+    # run into the lines, Gemini sometimes read them out at the start of the first line.
     if style == "phonics":
         guide = " ".join(f"Line {i}, '{line}': {hint}" for i, (line, hint) in enumerate(zip(lines, hints), 1))
-        prompt = f"{how} {guide} {PAUSE}\n\n" + "\n\n".join(lines)
+        notes = f"{how} {guide} {PAUSE}"
     else:
-        prompt = f"{how} {PAUSE}\n\n" + "\n\n".join(lines)
+        notes = f"{how} {PAUSE}"
+    prompt = (f"### DIRECTOR'S NOTES (never read these out)\n{notes}\n\n"
+              "#### TRANSCRIPT (read only this)\n" + "\n\n".join(lines))
     body = {"contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"responseModalities": ["AUDIO"],
                                  "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": VOICE}}}}}
