@@ -80,8 +80,9 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 3. **Afrikaans content, part 1:** Letters & Sounds (klanke, picture words), Numbers, the instruction
    lines; Afrikaans spelling check; CAPS mapping.
 4. **Afrikaans content, part 2:** Words & Spelling, sentences, Coding and Art lines.
-5. **Afrikaans voice:** record everything with Aoede on the daily runs; owner listens to the letter
-   sounds and a sample of each island.
+5. **Afrikaans voice:** record everything with Aoede on the daily runs, a batch of English and a
+   batch of Afrikaans in turn (from 19 October 2026); owner listens to the letter sounds and a sample
+   of each island.
 6. **Language Island:** the three games, both directions, word and phrase lists, voice.
 7. **Letter sounds with Aoede** (both languages): recorded on the daily runs with everything else;
    the owner approves them by ear before they go into the game.
@@ -97,6 +98,7 @@ language chosen per child, so siblings can play in different languages.
 
 - **A fluent Afrikaans reader checks the Afrikaans lists** (words, sentences, instructions) before
   they are recorded: the owner or a family member. Claude writes them; a person signs them off.
+  **Done:** the owner checked the first draft and signed it off on 18 October 2026.
 - Island name and where it sits on the map (a sixth island near the middle, unlocked from the start).
 - Whether a child can switch home language, or only a grown-up (suggested: only behind the parent gate).
 - The listening tests: Afrikaans letter sounds, a sample per island, the Language Island words.

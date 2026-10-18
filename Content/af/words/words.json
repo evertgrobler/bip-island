@@ -1,5 +1,5 @@
 {
-  "note": "Afrikaans decodable words for each sound group (Content/af/phonics/graphemes.json). Pictures reuse the game's hand-drawn art. FIRST DRAFT: to be checked by a fluent Afrikaans reader.",
+  "note": "Afrikaans decodable words for each sound group (Content/af/phonics/graphemes.json). Pictures reuse the game's hand-drawn art. Checked and signed off by the owner, 18 October 2026.",
   "words": [
     {
       "word": "mat",
