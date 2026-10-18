@@ -10,7 +10,7 @@ namespace BipIsland.Parent;
 /// </summary>
 public static class ParentUi
 {
-    public static readonly Color Secondary = new(Palette.Ink, 0.65f);
+    public static readonly Color Secondary = new(Palette.Ink, 0.75f);
     public static readonly Color Problem = Palette.Hex(0xC0392B);
 
     private static Theme? _theme;

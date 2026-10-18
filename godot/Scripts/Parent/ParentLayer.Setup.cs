@@ -159,7 +159,7 @@ public partial class ParentLayer
         if (guide.PractisedGate)
             column.AddChild(ParentUi.Text("Well done: that's how you open the grown-up area any time.", 18, bold: true, colour: Palette.Leaf.Darkened(0.35f), wrap: true));
         else
-            column.AddChild(ParentUi.Text("Try it now: press and hold Esc for 3 seconds.", 20, bold: true, colour: Palette.Orange.Darkened(0.25f), wrap: true));
+            column.AddChild(ParentUi.Text("Try it now: press and hold Esc for 3 seconds.", 20, bold: true, colour: Palette.Orange.Darkened(0.45f), wrap: true));
         column.AddChild(ParentUi.Text(
             "Tip: hold Option (Mac) or Alt (Windows) while the game opens to play in a normal window without the lock.",
             15, colour: ParentUi.Secondary, wrap: true));

@@ -582,7 +582,7 @@ public static partial class ArtPictures
     {
         var p = new Pic(4910);
         p.Fill(RoundRect(R(-80, -80, 160, 160), 30), Palette.Sea, 5);
-        p.Text(digit, 130, 0, 0, Palette.White);
+        p.Text(digit, 130, 0, 0, Palette.Ink);
         return p.Node;
     }
 }

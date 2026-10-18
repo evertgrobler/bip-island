@@ -104,7 +104,7 @@ public partial class MapScreen : BaseScreen
             box.ZIndex = 10;
             box.AddChild(Pen(RoundRect(R(-70, -70, 140, 140), 24), 682, fill: Palette.Purple, lineWidth: 6));
             box.AddChild(Pen(Ellipse(P(0, 70), 26, 18), 683, fill: Palette.Pink, lineWidth: 4));
-            box.AddChild(Sketch.Label("?", 84, Palette.White));
+            box.AddChild(Sketch.Label("?", 84, Palette.Ink));
             Stage.AddChild(box);
             Buttons.Pulse(box);
         }

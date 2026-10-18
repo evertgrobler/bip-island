@@ -176,7 +176,7 @@ public partial class ChargingScreen : BaseScreen
                 // A brother's or sister's break: the grown-ups' buttons are for the child at the computer.
                 ? $"{shownChild?.Name ?? "This child"} {(_dayDone ? "has finished playing for today" : "is having a break")}."
                 : $"Grown-ups: hold Esc for {ParentGateFlow.HoldSeconds:0} seconds to {(_dayDone ? "change the daily limit" : "end the break early")}.",
-            24, Palette.Ink.WithAlpha(0.6)));
+            24, Palette.Ink.WithAlpha(0.85)));
         Stage.AddChild(hint);
         _when = new Node2D { Position = P(0, -340) };
         Stage.AddChild(_when);
@@ -402,7 +402,7 @@ public partial class StickerScreen : BaseScreen
         if (!allCollected && toGo > 0)
         {
             var next = new Node2D { Position = P(0, 355) };
-            next.AddChild(Sketch.Label($"{Sketch.Plural(toGo, "more star")} for the next sticker", 28, Palette.Ink.WithAlpha(0.6)));
+            next.AddChild(Sketch.Label($"{Sketch.Plural(toGo, "more star")} for the next sticker", 28, Palette.Ink.WithAlpha(0.85)));
             Stage.AddChild(next);
         }
 
