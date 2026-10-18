@@ -118,7 +118,7 @@ def group(key):
     clip = split(key)[1]
     if clip.startswith("snd_"):
         return "phonics"
-    if clip.startswith(("word_", "num_", "money_", "name_")) and not clip.endswith("_mid"):
+    if clip.startswith(("word_", "num_", "money_", "name_", "learn_")) and not clip.endswith("_mid"):
         return "words"
     return "sparkle"
 
