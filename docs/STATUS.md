@@ -26,8 +26,9 @@
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
 - **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
-- **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
-  123 Morning Order step scenes.
+- **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
+  the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
+  remain only as a fallback for new words and in the parent area's child menus.
 - **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
   installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
   parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
@@ -432,3 +433,12 @@
   in the Windows export (`application/icon`, `modify_resources=true`, Godot writes it without rcedit) and
   passed to `vpk --icon` for Setup.exe in `check_all.sh` and `godot.yml`. The Words island plates sat on
   Bip's antenna, so every island's games moved up 25 points; the zip picture was made narrower.
+- **18 Oct, art:** the owner asked for the art too, "so that we do everything once". `ArtPictures` (split
+  over `ArtPictures.cs`, `.More` letter sounds, `.Rest` other words, `.Sentences`, `.Steps`, `.Animals`)
+  draws every picture that was an emoji: 178 picture ids (rand coins and notes in their real colours,
+  the letter-sound pictures, all words, the 32 sentence pictures built as scenes from the word pictures),
+  drawn versions of the 98 emoji the step scenes used (`ArtPictures.ForEmoji`, picked up by
+  `StepPictures.Glyph`), and the profile animals in `Avatars.Badge`. Each picture has its own seed block
+  (`Pic`), and fills skip repeated points (`Clean`), which otherwise leave a shape white. Body parts
+  (chin, lip, wing) get the orange pointer from `WordPictures.Pointer`. Every page of the picture gallery
+  was looked at; `EmojiPictures.Icons` is now empty.

@@ -217,9 +217,14 @@ public static class StepPictures
     /// An emoji at a size and spot, optionally turned (radians).
     private static Node2D Glyph(string text, double size, double x, double y, double turn = 0)
     {
-        var label = EmojiPictures.Glyph(text, (int)Math.Round(size));
+        // The drawn picture for this emoji when there is one (sized like the emoji: about `size` across).
         var holder = new Node2D();
-        holder.AddChild(label);
+        if (ArtPictures.ForEmoji(text) is { } drawn)
+        {
+            drawn.Scale *= (float)(size / 200);
+            holder.AddChild(drawn);
+        }
+        else holder.AddChild(EmojiPictures.Glyph(text, (int)Math.Round(size)));
         holder.Position = P(x, y);
         holder.Rotation = Turn(turn);
         return holder;
