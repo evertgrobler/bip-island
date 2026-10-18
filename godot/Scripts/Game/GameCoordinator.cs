@@ -27,7 +27,21 @@ public partial class GameCoordinator : Node
     public IRandomSource Rng { get; set; } = SystemRandomSource.Shared;
 
     /// <summary>Null only if the bundled content couldn't be read (CI checks it, so this shouldn't happen).</summary>
+    /// <summary>The game content in the playing child's language (null when it didn't load).</summary>
     public ContentLibrary? Content { get; private set; }
+
+    /// <summary>The language the loaded content and the voice are in: the playing child's.</summary>
+    public HomeLanguage Language { get; private set; } = HomeLanguage.English;
+
+    private readonly Dictionary<HomeLanguage, ContentLibrary?> _contentByLanguage = [];
+
+    /// <summary>
+    /// The languages a grown-up can choose for a child: English, and any whose content is in the game
+    /// (Content/af/language.json), so a language still being written never reaches a child.
+    /// </summary>
+    public static IReadOnlyList<HomeLanguage> AvailableLanguages =>
+        [.. Enum.GetValues<HomeLanguage>().Where(l => l == HomeLanguage.English
+            || FileAccess.FileExists($"res://assets/content/{Languages.Folder(l)}/{Languages.MarkerFile}"))];
     /// <summary>Each island opens on its own, so one bad game file can't close the whole map.</summary>
     public bool LettersOpen { get; private set; }
     public bool NumbersOpen { get; private set; }
@@ -71,7 +85,6 @@ public partial class GameCoordinator : Node
         _fadeLayer.AddChild(_fade);
         AddChild(_fadeLayer);
 
-        LoadContent();
         OpenSaves(SaveFolder());
         Parent = new ParentLayer { Name = "Parent" };
         AddChild(Parent);
@@ -91,22 +104,46 @@ public partial class GameCoordinator : Node
         return i >= 0 && i + 1 < args.Length ? args[i + 1] : ProjectSettings.GlobalizePath("user://");
     }
 
-    private void LoadContent()
+    /// <summary>A language's content, read once and kept (null when it didn't load).</summary>
+    private ContentLibrary? ContentFor(HomeLanguage language)
     {
+        if (_contentByLanguage.TryGetValue(language, out var cached)) return cached;
+        ContentLibrary? library = null;
         try
         {
-            Content = new ContentLibrary(file =>
+            library = new ContentLibrary(file =>
             {
                 var path = "res://assets/content/" + file;
                 if (!FileAccess.FileExists(path)) throw new System.IO.FileNotFoundException("not in the game package", path);
                 return FileAccess.GetFileAsString(path);
-            });
+            }, language, file => FileAccess.FileExists("res://assets/content/" + file));
         }
         catch (ContentLoadException error)
         {
-            GD.PrintErr($"Bip Island: game content didn't load, so the islands stay asleep: {error.Message}");
-            return;
+            GD.PrintErr($"Bip Island: the {Languages.Name(language)} content didn't load, so the islands stay asleep: {error.Message}");
         }
+        _contentByLanguage[language] = library;
+        return library;
+    }
+
+    /// <summary>Loads the playing child's language when it isn't the one loaded: content, games and voice.</summary>
+    private void FollowChildLanguage()
+    {
+        var language = CurrentChild?.Language ?? HomeLanguage.English;
+        if (Content != null && language == Language) return;
+        LoadContent(language);
+    }
+
+    private void LoadContent(HomeLanguage language)
+    {
+        Language = language;
+        VoicePlayer.Language = language;
+        Content = ContentFor(language);
+        Course = null;
+        Hunt = null;
+        _monster = null;
+        LettersOpen = NumbersOpen = WordsOpen = CodingOpen = ArtOpen = false;
+        if (Content == null) return;
         LettersOpen = Try("Letters", () =>
         {
             Course = new PhonicsCourse(Content);
@@ -153,6 +190,7 @@ public partial class GameCoordinator : Node
         Progress = Store.Progress(ChildId);
         LoadBreak();
         _nobodyYet = true;
+        FollowChildLanguage();
     }
 
     /// <summary>Each child has their own play clock and break: load the current child's.</summary>
@@ -224,23 +262,25 @@ public partial class GameCoordinator : Node
         Progress = Store.Progress(id);
         LoadBreak();
         Store.SetLastChild(id);
+        FollowChildLanguage();
         _hasWelcomed = false;
         ShowMap();
     }
 
     /// <summary>A parent adds a child (at most four). Returns false when they couldn't be added.</summary>
-    public bool AddChildProfile(string name, int? age, string? avatar)
+    public bool AddChildProfile(string name, int? age, string? avatar, HomeLanguage language = HomeLanguage.English)
     {
-        var added = Store.AddChild(name, age, avatar) != null;
+        var added = Store.AddChild(name, age, avatar, language) != null;
         Children = Store.Children();
         return added;
     }
 
-    /// <summary>A parent changes a child's name, age or picture.</summary>
+    /// <summary>A parent changes a child's name, age, picture or language (the playing child's takes effect at once).</summary>
     public void UpdateChild(ChildSummary child)
     {
         Store.Update(child);
         Children = Store.Children();
+        FollowChildLanguage();
     }
 
     /// <summary>Removes a child and their progress. If they were playing, the first child takes over.</summary>
@@ -254,17 +294,19 @@ public partial class GameCoordinator : Node
         Progress = Store.Progress(ChildId);
         LoadBreak();
         Store.SetLastChild(ChildId);
+        FollowChildLanguage();
     }
 
     /// <summary>What a parent sees for one child, or null when the content didn't load.</summary>
     public ProgressReport? Report(Guid id)
     {
-        if (Content == null) return null;
+        // Each child's report is in their own language's content (a brother may play in Afrikaans).
+        if (ContentFor(Children.FirstOrDefault(c => c.Id == id)?.Language ?? HomeLanguage.English) is not { } content) return null;
         var childProgress = id == ChildId ? Progress : Store.Progress(id);
-        var band = Children.FirstOrDefault(c => c.Id == id)?.Age is { } age ? Content.StartingBand(age) : Band.Foundation;
+        var band = Children.FirstOrDefault(c => c.Id == id)?.Age is { } age ? content.StartingBand(age) : Band.Foundation;
         try
         {
-            return new ProgressReport(Content, childProgress, band, Today);
+            return new ProgressReport(content, childProgress, band, Today);
         }
         catch (Exception error)
         {

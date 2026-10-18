@@ -16,6 +16,23 @@ public static class Texts
     public static string BipIsCharging(HomeLanguage l) => Pick(l, "Bip is charging", "Bip laai");
     public static string AllForToday(HomeLanguage l) => Pick(l, "That's all for today", "Dis al vir vandag");
 
+    // The charging screen's lines for the grown-up beside the child.
+    public static string OpenAgainTomorrow(HomeLanguage l) => Pick(l, "Games open again tomorrow.", "Die speletjies maak môre weer oop.");
+
+    public static string OpenAgainAt(HomeLanguage l, string time, int minutes) => Pick(l,
+        $"Games open again at {time} (in {minutes} {(minutes == 1 ? "minute" : "minutes")}).",
+        $"Die speletjies maak om {time} weer oop (oor {minutes} {(minutes == 1 ? "minuut" : "minute")}).");
+
+    public static string SiblingResting(HomeLanguage l, string name, bool dayDone) => dayDone
+        ? Pick(l, $"{name} has finished playing for today.", $"{name} het klaar gespeel vir vandag.")
+        : Pick(l, $"{name} is having a break.", $"{name} rus 'n bietjie.");
+
+    public static string GrownUpsHoldEsc(HomeLanguage l, int seconds, bool dayDone) => dayDone
+        ? Pick(l, $"Grown-ups: hold Esc for {seconds} seconds to change the daily limit.",
+                  $"Grootmense: hou Esc {seconds} sekondes lank in om die daaglikse limiet te verander.")
+        : Pick(l, $"Grown-ups: hold Esc for {seconds} seconds to end the break early.",
+                  $"Grootmense: hou Esc {seconds} sekondes lank in om die pouse vroeër te beëindig.");
+
     /// <summary>"+3 stars" / "+3 sterre".</summary>
     public static string StarsEarned(HomeLanguage l, int stars) => "+" + Stars(l, stars);
 

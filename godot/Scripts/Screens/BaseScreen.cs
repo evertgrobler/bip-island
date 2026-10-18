@@ -100,7 +100,7 @@ public abstract partial class BaseScreen : Node2D
         if (Coordinator.StartGame(gameId, focus)) return;
         var card = new Node2D { ZIndex = 80, Scale = Vector2.One * 0.01f };
         card.AddChild(Sketch.Node(new SketchShape.RoundedRect(new Rect2(-360, -110, 720, 220), 36), 575, fill: Palette.Card, lineWidth: 6));
-        card.AddChild(Sketch.Label("Coming soon!", 64, Palette.Ink));
+        card.AddChild(Sketch.Label(BipCore.Texts.ComingSoon(Coordinator.Language), 64, Palette.Ink));
         Stage.AddChild(card);
         var pop = card.CreateTween();
         pop.TweenProperty(card, "scale", Vector2.One * 1.05f, 0.2);

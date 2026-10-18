@@ -14,7 +14,7 @@ The game follows the **Cambridge curriculum** (Early Years, then Primary English
 
 ## Who this is for right now
 
-The owner's own family first, to test how it plays. Not for sale yet, no App Store. English only.
+The owner's own family first, to test how it plays. Not for sale yet, no App Store. **Two home languages (owner decision, 18 October 2026): English and Afrikaans**, chosen per child by a grown-up, plus a Language Island to learn the other one; the plan and build order are in `docs/LANGUAGES.md`. A language's own content lives in `Content/<lang>/` (over the shared files) and its clips in `Resources/Audio/<lang>/` (same names); the parent area offers a language only once `Content/<lang>/language.json` exists. English stays the base and the reference.
 
 **South African English, always (owner rule, 3 October 2026; non-negotiable).** Everything in Bip Island is South African: the words, the spelling, the voice, the pictures and the everyday things in them. Not British, not American, not any other country.
 - **Spelling:** South African spelling, which follows British spelling: colour, favourite, realise, grey, centre, maths, practise (verb), mum. Never American spelling (color, favorite, realize, gray, center, math, mom). This applies to UI text, voice lines, content, code comments and docs.

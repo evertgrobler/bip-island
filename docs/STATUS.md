@@ -452,3 +452,14 @@
   Result: all 233 Block Towers sentences recorded by Chatterbox and passed the Whisper check (none removed,
   `last-failed.txt` empty); `scripts/check_all.sh` green. Still open: Afrikaans round 3 (Seed-VC, OpenVoice) and
   a Gemini TTS Afrikaans test on `claude/voice-lab` (needs a `GEMINI_API_KEY` secret; not part of this PR).
+- **18 Oct, home language (step 2 of `docs/LANGUAGES.md`):** each child has a home language (`HomeLanguage`,
+  `SavedChild.Language`, read leniently on the property so an unknown value reads as English).
+  `ContentLibrary(readFile, language, exists)` reads `Content/af/<file>` over the shared file;
+  `GameCoordinator` keeps one library per language, follows the playing child's language
+  (`FollowChildLanguage` on open, choose, update and delete) and each child's progress report uses their own
+  language's content. `VoicePlayer.Language` picks `assets/audio/af/` (a missing Afrikaans clip is silence,
+  never the English one); `prepare_assets.py` converts each `Resources/Audio/<lang>/` folder. The words
+  children see are in `BipCore.Texts` (English and Afrikaans). The Children tab and the setup guide show a
+  language choice only when a second language is ready (`Content/af/language.json`), so this ships
+  invisibly: English plays exactly as before. The walk-through switches a child to Afrikaans and back.
+

@@ -479,6 +479,17 @@ public static class WalkTest
             area.Show(ParentArea.Tab.Children);
             var before = game.Children.Count;
             Check("a parent can add a child", area.AddChild("Mia", 6) && game.Children.Count == before + 1);
+            if (game.CurrentChild is { } playing)
+            {
+                // The playing child's language switches the content and the voice at once, and back.
+                game.UpdateChild(playing with { Language = BipCore.HomeLanguage.Afrikaans });
+                Check("an Afrikaans child's game loads in Afrikaans", game.Language == BipCore.HomeLanguage.Afrikaans
+                      && game.Content?.Language == BipCore.HomeLanguage.Afrikaans && Audio.VoicePlayer.PathFor("vo_welcome").Contains("/af/"),
+                      $"{game.Language}, content {game.Content?.Language}, voice {Audio.VoicePlayer.PathFor("vo_welcome")}");
+                game.UpdateChild(playing with { Language = BipCore.HomeLanguage.English });
+                Check("and back in English", game.Language == BipCore.HomeLanguage.English && game.LettersOpen
+                      && !Audio.VoicePlayer.PathFor("vo_welcome").Contains("/af/"));
+            }
             if (game.Children.FirstOrDefault(c => c.Name == "Mia") is { } mia)
             {
                 area.RemoveChild(mia.Id);
