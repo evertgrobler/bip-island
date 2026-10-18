@@ -31,6 +31,13 @@ public static class Languages
     /// </summary>
     public const string MarkerFile = "language.json";
 
+    /// <summary>
+    /// The language a child learns on the Language Island: the one that isn't their home language
+    /// (an English child learns Afrikaans, an Afrikaans child learns English).
+    /// </summary>
+    public static HomeLanguage Learning(HomeLanguage home) =>
+        home == HomeLanguage.Afrikaans ? HomeLanguage.English : HomeLanguage.Afrikaans;
+
     /// <summary>The language's own name, as the parent area lists it.</summary>
     public static string Name(HomeLanguage language) => language switch
     {

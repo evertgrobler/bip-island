@@ -22,6 +22,7 @@ public sealed class ContentLibrary
         "numbers/numbers.json",
         "coding/sequences.json", "coding/patterns.json", "coding/levels.json",
         "art/shapes.json", "art/paints.json", "art/mirror.json",
+        "language/words.json",
         "asset_manifest.json",
     ];
 
@@ -45,6 +46,7 @@ public sealed class ContentLibrary
     public ShapesFile Shapes { get; }
     public PaintsFile Paints { get; }
     public MirrorFile Mirror { get; }
+    public LanguageWordsFile LanguageWords { get; }
     public AssetManifestFile Manifest { get; }
 
     // Lookups, built once.
@@ -109,6 +111,7 @@ public sealed class ContentLibrary
         Shapes = Load<ShapesFile>("art/shapes.json");
         Paints = Load<PaintsFile>("art/paints.json");
         Mirror = Load<MirrorFile>("art/mirror.json");
+        LanguageWords = Load<LanguageWordsFile>("language/words.json");
         Manifest = Load<AssetManifestFile>("asset_manifest.json");
 
         _graphemesById = FirstById(Phonics.Graphemes, g => g.Id);

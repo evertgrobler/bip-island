@@ -12,7 +12,8 @@ namespace BipCore;
 /// <summary>The four child bands, youngest first.</summary>
 public enum Band { Foundation, Stage1, Stage2, Stage3 }
 
-public enum Island { Letters, Numbers, Words, Coding, Art }
+/// <summary>The islands; Language is the second-language island (docs/LANGUAGES.md).</summary>
+public enum Island { Letters, Numbers, Words, Coding, Art, Language }
 
 public static class BandExtensions
 {
@@ -30,7 +31,13 @@ public static class BandExtensions
 
 public static class IslandExtensions
 {
-    public static readonly IReadOnlyList<Island> All = [Island.Letters, Island.Numbers, Island.Words, Island.Coding, Island.Art];
+    public static readonly IReadOnlyList<Island> All = [Island.Letters, Island.Numbers, Island.Words, Island.Coding, Island.Art, Island.Language];
+
+    /// <summary>
+    /// The islands of the home-language course, the ones Bip recommends. The Language Island is extra:
+    /// open whenever both languages are ready, and only played when the child picks it.
+    /// </summary>
+    public static readonly IReadOnlyList<Island> Course = [Island.Letters, Island.Numbers, Island.Words, Island.Coding, Island.Art];
 }
 
 /// <summary>An age range written as "4-6" in the content.</summary>
@@ -516,6 +523,40 @@ public sealed record SequenceCard
     public required string Text { get; init; }
     public required string Picture { get; init; }
     public required string Audio { get; init; }
+}
+
+// MARK: - language/words.json
+
+/// <summary>The Language Island's words: each one in both languages, with its picture, by theme.</summary>
+public sealed record LanguageWordsFile
+{
+    public string? Note { get; init; }
+    public required List<LanguageTheme> Themes { get; init; }
+    public required List<LanguageWord> Words { get; init; }
+}
+
+/// <summary>A group of words, opened at a game level (greetings and colours first).</summary>
+public sealed record LanguageTheme
+{
+    public required string Id { get; init; }
+    public required int FromLevel { get; init; }
+    public required string En { get; init; }
+    public required string Af { get; init; }
+}
+
+public sealed record LanguageWord
+{
+    public required string Id { get; init; }
+    public required string Theme { get; init; }
+    public required string En { get; init; }
+    public required string Af { get; init; }
+    public required string Picture { get; init; }
+
+    /// <summary>The word in a language.</summary>
+    public string In(HomeLanguage language) => language == HomeLanguage.Afrikaans ? Af : En;
+
+    /// <summary>Its clip, the same name in each language's folder.</summary>
+    public string Audio => $"learn_{Id}";
 }
 
 // MARK: - coding/patterns.json

@@ -1219,6 +1219,89 @@
           "note": "Where is the mirror line?"
         }
       ]
+    },
+    {
+      "id": "show_me",
+      "island": "language",
+      "name": "Show Me",
+      "ages": "4-8",
+      "skills": [
+        "lang_listen"
+      ],
+      "objectives": [
+        "FAL.LS.01",
+        "FAL.LS.02"
+      ],
+      "content": "language/words.json",
+      "buildPhase": 7,
+      "levels": [
+        {
+          "choices": 3,
+          "note": "Three pictures; family, colours and numbers"
+        },
+        {
+          "choices": 4,
+          "note": "Four pictures; animals, food and clothes too, from the same theme first"
+        },
+        {
+          "choices": 5,
+          "note": "Five pictures; every theme"
+        }
+      ]
+    },
+    {
+      "id": "what_is_it",
+      "island": "language",
+      "name": "What Is It?",
+      "ages": "4-8",
+      "skills": [
+        "lang_words"
+      ],
+      "objectives": [
+        "FAL.LS.01",
+        "FAL.LS.02"
+      ],
+      "content": "language/words.json",
+      "buildPhase": 7,
+      "levels": [
+        {
+          "choices": 2,
+          "note": "Two spoken words; family, colours and numbers"
+        },
+        {
+          "choices": 3,
+          "note": "Three spoken words; animals, food and clothes too"
+        },
+        {
+          "choices": 3,
+          "note": "Three spoken words; every theme"
+        }
+      ]
+    },
+    {
+      "id": "bips_day",
+      "island": "language",
+      "name": "Bip's Day",
+      "ages": "5-8",
+      "skills": [
+        "lang_day"
+      ],
+      "objectives": [
+        "FAL.LS.01",
+        "FAL.LS.03"
+      ],
+      "content": "coding/sequences.json (both languages)",
+      "buildPhase": 7,
+      "levels": [
+        {
+          "choices": 3,
+          "note": "Three pictures; the youngest stories"
+        },
+        {
+          "choices": 4,
+          "note": "Four pictures; every story"
+        }
+      ]
     }
   ]
 }

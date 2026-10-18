@@ -904,6 +904,30 @@
       "strand": "Making (code to be confirmed)",
       "summary": "Make colours lighter with white and darker with black",
       "source": "Cambridge Primary Art & Design curriculum framework (0067), 2019"
+    },
+    {
+      "code": "FAL.LS.01",
+      "framework": "caps",
+      "stage": 1,
+      "strand": "Listening and speaking (first additional language)",
+      "summary": "Listen to and understand everyday words in the additional language, shown by pointing to pictures",
+      "source": "CAPS Foundation Phase First Additional Language (English FAL; Afrikaans Eerste Addisionele Taal), Grade R-3, Listening and Speaking"
+    },
+    {
+      "code": "FAL.LS.02",
+      "framework": "caps",
+      "stage": 1,
+      "strand": "Listening and speaking (first additional language)",
+      "summary": "Build a vocabulary of everyday words: family, colours, numbers, animals, food, clothes, the body, home and weather",
+      "source": "CAPS Foundation Phase First Additional Language (English FAL; Afrikaans Eerste Addisionele Taal), Grade R-3, Listening and Speaking"
+    },
+    {
+      "code": "FAL.LS.03",
+      "framework": "caps",
+      "stage": 1,
+      "strand": "Listening and speaking (first additional language)",
+      "summary": "Understand short, simple sentences about daily routines",
+      "source": "CAPS Foundation Phase First Additional Language (English FAL; Afrikaans Eerste Addisionele Taal), Grade R-3, Listening and Speaking"
     }
   ]
 }

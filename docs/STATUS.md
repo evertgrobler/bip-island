@@ -462,3 +462,24 @@
   children see are in `BipCore.Texts` (English and Afrikaans). The Children tab and the setup guide show a
   language choice only when a second language is ready (`Content/af/language.json`), so this ships
   invisibly: English plays exactly as before. The walk-through switches a child to Afrikaans and back.
+- **18 Oct, Language Island (step 6 of `docs/LANGUAGES.md`):** the sixth island, built and hidden like Afrikaans:
+  it opens only when the other language is in the game (`GameCoordinator.LanguageOpen`; previews and the
+  walk-through open it with `PreviewLanguageIsland()`). An English child learns Afrikaans, an Afrikaans child
+  English (`Languages.Learning`). Words: `Content/language/words.json`, 124 everyday words in both languages
+  in 10 themes that open by game level, each with a picture (colours are paint splashes and numbers counting
+  dots, `Scripts/Drawing/LanguagePictures.cs`) and a clip `learn_<id>` in each language's folder. Games:
+  **Show Me** (hear the word, click its picture; 3, 4, then 5 pictures), **What Is It?** (a picture; Bip says
+  each bubble's word as it lights up; click the right one) and **Bip's Day** (Bip says a Morning Order moment in
+  the new language; find its picture). Two misses: "In English, it's… cat. Kat!" (`vo_in_our_language`, the
+  child's own clip, then the new one; `VoicePlayer.InLanguage` plays a clip from a given language's folder).
+  Bip doesn't recommend it (`IslandExtensions.Course`); it's the child's own pick. Curriculum: CAPS First
+  Additional Language, listening and speaking (`FAL.LS.01`–`03`). The validator checks every word has both
+  languages and its own picture, spells the Afrikaans, and that each Afrikaans Morning Order story matches
+  the English one card by card. The new words still need the owner's check before they're recorded.
+- **18 Oct, voice bands (`docs/VOICE_PLAN.md`, approved):** Bip's own lines come in two versions by the
+  child's age (`BipCore.VoiceBands`): Little (up to 6, or no age) and Big (7 and up). 30 Big lines per
+  language in the voice scripts (`praise_01_big`…`praise_12_big`, `hint_NN_big`, level and round lines,
+  greetings, charging and day done). `VoicePlayer.Band` is set from the playing child's age; a Big child
+  hears `<clip>_big` when it's in the build, else the young clip; Big praise is used once 4 of its clips are
+  recorded. The validator checks every `_big` row has its young row. One narrator for boys and girls.
+

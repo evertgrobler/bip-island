@@ -195,6 +195,7 @@ public partial class GameIslandScreen : BaseScreen
         {
             Island.Numbers => (800UL, Palette.Sun.WithAlpha(0.5), Palette.Orange),
             Island.Words => (810UL, Palette.Pink.WithAlpha(0.45), Palette.Purple),
+            Island.Language => (850UL, Palette.Sea.Blend(0.35, Palette.Grass).WithAlpha(0.5), Palette.Teal),
             _ => (820UL, Palette.LightTeal.WithAlpha(0.5), Palette.Teal),
         };
         var island = Pen(Ellipse(P(0, -20), 760, 430), seed, fill: Palette.Sand, ink: Palette.LightBrown, lineWidth: 7);
@@ -208,6 +209,7 @@ public partial class GameIslandScreen : BaseScreen
         {
             Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton()],
             Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton()],
+            Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
         _leftGame = GameFor(Buttons.TapName(games[0])!);
@@ -348,8 +350,63 @@ public partial class GameIslandScreen : BaseScreen
         return path;
     }
 
+    /// <summary>Show Me: three little picture cards, the middle one ringed.</summary>
+    private static Node2D ShowMeButton()
+    {
+        var show = Buttons.Tappable(new Node2D(), "showme");
+        foreach (var (i, picture) in Indexed("pic_cat", "pic_apple", "pic_sun"))
+        {
+            var x = (i - 1) * 125.0;
+            show.AddChild(Pen(RoundRect(R(x - 56, -56, 112, 112), 18), (ulong)(851 + i), fill: Palette.Card, lineWidth: 5));
+            var drawn = PictureNode.Make(picture, picture);
+            drawn.Scale = Vector2.One * 0.42f;
+            drawn.Position = P(x, 0);
+            show.AddChild(drawn);
+        }
+        show.AddChild(Pen(RoundRect(R(-70, -70, 140, 140), 24), 854, ink: Palette.Orange, lineWidth: 6));
+        return show;
+    }
+
+    /// <summary>What Is It?: a picture with two speech bubbles beside it.</summary>
+    private static Node2D WhatIsItButton()
+    {
+        var what = Buttons.Tappable(new Node2D(), "whatisit");
+        what.AddChild(Pen(Ellipse(Vector2.Zero, 150, 140), 856, fill: Palette.Card, lineWidth: 6));
+        var dog = PictureNode.Make("pic_dog", "dog");
+        dog.Scale = Vector2.One * 0.5f;
+        dog.Position = P(-55, -20);
+        what.AddChild(dog);
+        foreach (var (i, y) in Indexed(50.0, -40.0))
+        {
+            what.AddChild(Pen(Ellipse(P(75, y), 48, 32), (ulong)(857 + i), fill: i == 0 ? Palette.Sun : Palette.LightTeal, lineWidth: 4));
+            var mark = Sketch.Letter("?", 40, withShadow: false);
+            mark.Position = P(75, y);
+            what.AddChild(mark);
+        }
+        return what;
+    }
+
+    /// <summary>Bip's Day: a sun over a little card of a morning routine.</summary>
+    private static Node2D BipsDayButton()
+    {
+        var day = Buttons.Tappable(new Node2D(), "bipsday");
+        day.AddChild(Pen(Ellipse(Vector2.Zero, 150, 140), 860, fill: Palette.Card, lineWidth: 6));
+        var sun = PictureNode.Make("pic_sun", "sun");
+        sun.Scale = Vector2.One * 0.45f;
+        sun.Position = P(55, 50);
+        day.AddChild(sun);
+        var morning = PictureNode.Make("pic_morning_2", "Brush your teeth");
+        morning.Scale = Vector2.One * 0.5f;
+        morning.Position = P(-30, -25);
+        day.AddChild(morning);
+        return day;
+    }
+
     private static string GameFor(string tapName) => tapName switch
     {
+        "showme" => ShowMeGame.GameId,
+        "whatisit" => WhatIsItGame.GameId,
+        "bipsday" => BipsDayGame.GameId,
         "count" => CountTapGame.GameId,
         "quick" => QuickLookGame.GameId,
         "blocks" => BlockTowersGame.GameId,
@@ -382,6 +439,7 @@ public partial class GameIslandScreen : BaseScreen
         {
             Island.Numbers => VoiceLine.NumbersIsland,
             Island.Words => VoiceLine.WordsIsland,
+            Island.Language => VoiceLine.LanguageIsland,
             _ => VoiceLine.CodingIsland,
         }]);
         Bip.Hop();

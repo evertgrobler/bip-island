@@ -54,6 +54,7 @@ games = load("curriculum/games.json")["games"]
 shapes_doc = load("art/shapes.json")
 paints_doc = load("art/paints.json")
 mirror_doc = load("art/mirror.json")
+language_doc = load("language/words.json")
 
 # --- objectives referenced anywhere must exist
 def check_objs(where, codes):
@@ -226,7 +227,7 @@ for gm in games:
 
 # --- Art Island: shapes, paints and mirror pictures
 import math
-ISLANDS = {"letters", "numbers", "words", "coding", "art"}
+ISLANDS = {"letters", "numbers", "words", "coding", "art", "language"}
 for gm in games:
     if gm["island"] not in ISLANDS: err(f"game {gm['id']}: unknown island {gm['island']}")
 for s_ in skills_doc["skills"]:
@@ -506,6 +507,36 @@ for st in seqs:
     for c in st["cards"]:
         a(c["audio"], c["text"]); p(c["picture"], f"{st['id']} step {c['n']}: {c['text']}")
 
+# --- Language Island (docs/LANGUAGES.md): every word in both languages, with a picture; its clip
+# learn_<id> says it in this run's language (each language's folder has its own).
+THEMES = {t["id"]: t for t in language_doc["themes"]}
+if len(THEMES) != len(language_doc["themes"]): err("language/words.json: two themes share an id")
+if not any(t["fromLevel"] == 0 for t in THEMES.values()): err("language/words.json: no theme opens at level 0")
+seen_ids, seen_pictures = set(), set()
+for w in language_doc["words"]:
+    where = f"language word {w['id']}"
+    if w["id"] in seen_ids: err(f"{where}: duplicate id")
+    if w["picture"] in seen_pictures: err(f"{where}: picture {w['picture']} is used by another word")
+    seen_ids.add(w["id"]); seen_pictures.add(w["picture"])
+    if w["theme"] not in THEMES: err(f"{where}: unknown theme {w['theme']}")
+    if not w["en"].strip() or not w["af"].strip(): err(f"{where}: needs both an English and an Afrikaans word")
+    if not re.fullmatch(r"[a-z0-9_]+", w["id"]): err(f"{where}: ids are lower case letters, digits and _")
+    a(f"learn_{w['id']}", w["af" if LANG == "af" else "en"], "Language Island: the word on its own, clear and friendly.")
+    p(w["picture"], w["en"])
+if not LANG:
+    for t in THEMES.values():
+        for problem in af_spelling.problems(t["af"]): err(f"language theme {t['id']}: {problem}")
+    for w in language_doc["words"]:
+        for problem in af_spelling.problems(w["af"]): err(f"language word {w['id']}: {problem}")
+# Bip's Day pairs each Morning Order card with the same card in the other language: same stories, same pictures.
+if LANG:
+    english_sets = {st["id"]: st for st in json.loads((CONTENT / "coding" / "sequences.json").read_text(encoding="utf-8"))["sets"]}
+    for st in seqs:
+        other = english_sets.get(st["id"])
+        if other is None: err(f"sequence {st['id']}: no English story with this id (Bip's Day pairs them)"); continue
+        if [(c["n"], c["picture"]) for c in st["cards"]] != [(c["n"], c["picture"]) for c in other["cards"]]:
+            err(f"sequence {st['id']}: cards differ from the English story (Bip's Day pairs them card by card)")
+
 for sh in SHAPES.values():
     a(f"word_{sh['name'].replace(' ', '_')}", sh["name"])
 for col in COLOURS.values():
@@ -524,7 +555,15 @@ with open(ROOT / "asset_manifest.json", "w", encoding="utf-8") as f:
 SKIP_KEYS = {"id", "audio", "objectives", "graphemes", "ipa", "rime", "code", "kind", "band", "firstSound",
              "handwritingFamily", "note", "notes", "narratorHint", "mnemonicPicture", "picture", "skills",
              "prerequisites", "content", "island", "skin", "skins", "label", "colour", "shape", "letterName",
-             "grapheme", "sequenceRules"}
+             "grapheme", "sequenceRules", "af"}
+
+# --- Voice bands (BipCore.VoiceBands): an older children's line (<clip>_big) has the young one it replaces
+# (praise excepted: the Big praise is its own pool).
+with open(SCRIPT, encoding="utf-8") as f:
+    script_clips = {row["file"].removesuffix(".m4a") for row in csv.DictReader(f)}
+for clip in sorted(script_clips):
+    if clip.endswith("_big") and not clip.startswith("praise_") and clip.removesuffix("_big") not in script_clips:
+        err(f"{SCRIPT.relative_to(REPO)} {clip}: no {clip.removesuffix('_big')} row for it to stand in for")
 
 sa_waiting = set()
 OTHER_LANGUAGES = {"af"}  # folders in Content/ that hold another language's own files

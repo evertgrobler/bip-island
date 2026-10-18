@@ -61,6 +61,11 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 
 ### C. Voice
 
+- **Two voice bands by age** (owner approved `docs/VOICE_PLAN.md`, 18 Oct): Little (up to 6) hears the
+  sparkling lines, Big (7 and up) an upbeat, relaxed version of Bip's own 30 lines per language
+  (`<clip>_big`, `BipCore.VoiceBands`). Sounds, words, numbers, sentences and instructions are one
+  recording for every age. One narrator for boys and girls; no gender setting.
+
 - **English:** being re-voiced with Aoede now (`scripts/gemini_narrator.py`, daily free runs).
 - **Afrikaans:** the same recorder with an Afrikaans style line and an Afrikaans speech check
   (Whisper's multilingual model, which knows Afrikaans), on the same free daily runs.
@@ -83,7 +88,8 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 5. **Afrikaans voice:** record everything with Aoede on the daily runs, a batch of English and a
    batch of Afrikaans in turn (from 19 October 2026); owner listens to the letter sounds and a sample
    of each island.
-6. **Language Island:** the three games, both directions, word and phrase lists, voice.
+6. **Language Island:** the three games, both directions, word lists, voice. **Built 18 October 2026**
+   (hidden until Afrikaans is switched on); the 124 words wait for the owner's check before recording.
 7. **Letter sounds with Aoede** (both languages): recorded on the daily runs with everything else;
    the owner approves them by ear before they go into the game.
 8. **Switch Afrikaans on:** add `Content/af/language.json`, and in the same pull request update the
