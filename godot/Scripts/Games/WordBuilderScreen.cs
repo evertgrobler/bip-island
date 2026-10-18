@@ -22,6 +22,11 @@ public partial class WordBuilderScreen : GameScreen
     private const float DragDistance = 12;
     /// <summary>A dropped tile lands in the nearest space within this distance, else goes back.</summary>
     private const float DropDistance = 130;
+    private const float SlotSize = 116;
+    private const float SlotSpacing = 140;
+    private const float PictureGap = 70;
+    /// <summary>The middle of the letter row, a little left of centre to clear the next button.</summary>
+    private const float BankCentre = -40;
 
     private readonly WordBuilderGame _game;
     private readonly GameSession _session;
@@ -29,6 +34,7 @@ public partial class WordBuilderScreen : GameScreen
     private QuestionAttempt _attempt = new();
     private PictureCard? _picture;
     private readonly List<Node2D> _slots = [];
+    private double _slotsCentre = BankCentre;
     private readonly List<LetterTile?> _slotTiles = [];
     private readonly List<LetterTile> _bankTiles = [];
     private readonly List<Vector2> _bankHomes = [];
@@ -129,18 +135,24 @@ public partial class WordBuilderScreen : GameScreen
         ResetKeys();
         _round = next;
 
+        // The picture and the answer boxes are one row, centred over the letters (the same middle,
+        // -40, that leaves room for the next button), so a short word doesn't leave the right half empty.
+        var count = next.Answer.Count;
+        var slotsWidth = count * SlotSpacing - (SlotSpacing - SlotSize);
+        var rowLeft = BankCentre - (PictureCard.Size + PictureGap + slotsWidth) / 2;
+        _slotsCentre = rowLeft + PictureCard.Size + PictureGap + slotsWidth / 2;
+
         var card = Buttons.Tappable(new PictureCard(next.Word.Picture ?? $"pic_{next.Word.Text}", next.Word.Text,
                                                     (ulong)(970 + _session.RoundsPlayed)), "picture");
-        card.Position = P(-420, 120);
+        card.Position = P(rowLeft + PictureCard.Size / 2, 120);
         card.ZIndex = 10;
         Stage.AddChild(card);
         _picture = card;
 
-        var count = next.Answer.Count;
         for (var i = 0; i < count; i++)
         {
-            var slot = Pen(RoundRect(R(-58, -58, 116, 116), 20), (ulong)(971 + i), fill: Palette.Card, lineWidth: 5);
-            slot.Position = P((i - (count - 1) / 2.0) * 140 - 40, 180);
+            var slot = Pen(RoundRect(R(-SlotSize / 2, -SlotSize / 2, SlotSize, SlotSize), 20), (ulong)(971 + i), fill: Palette.Card, lineWidth: 5);
+            slot.Position = P(_slotsCentre + (i - (count - 1) / 2.0) * SlotSpacing, 180);
             slot.ZIndex = 5;
             Stage.AddChild(slot);
             _slots.Add(slot);
@@ -151,7 +163,7 @@ public partial class WordBuilderScreen : GameScreen
         for (var i = 0; i < next.Bank.Count; i++)
         {
             var tile = Buttons.Tappable(new LetterTile(next.Bank[i]), $"tile:{i}");
-            tile.Position = P((i - (next.Bank.Count - 1) / 2.0) * spacing - 40, -180);
+            tile.Position = P((i - (next.Bank.Count - 1) / 2.0) * spacing + BankCentre, -180);
             tile.ZIndex = 10;
             Stage.AddChild(tile);
             _bankTiles.Add(tile);
@@ -335,7 +347,7 @@ public partial class WordBuilderScreen : GameScreen
         {
             InputLocked = true;
             StopWiggles();
-            Buttons.Sparkle(P(-40, 180), Stage);
+            Buttons.Sparkle(P(_slotsCentre, 180), Stage);
             Sfx.Play(BipSounds.Effect.Chime);
             Bip.Celebrate();
             var change = Record(outcome.FirstTry, _game.SkillId(round));

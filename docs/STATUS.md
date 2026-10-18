@@ -427,3 +427,5 @@
   (`Resources/Fonts/README.md`). Other finds offered and not chosen yet: matching white buttons on the
   Words and Coding islands, a bigger centred Bip's Path grid, bigger blocks in Bip's Balance take-away,
   and a real zip picture (now a zipped-mouth face).
+  Word Builder (owner flagged it, 18 Oct): the picture and the answer boxes sat on the left with the right
+  half empty. They are now one row centred over the letters (`WordBuilderScreen`), and the sparkle follows the boxes.
