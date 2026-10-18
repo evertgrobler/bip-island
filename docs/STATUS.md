@@ -40,7 +40,7 @@
   **Keys are the one exception to "any key replays":** letter keys type here, so Space, the replay
   button or a click on the craft say it again, Enter does nothing, and Esc is never typed (the parent
   layer takes it first, so the Esc hold still opens the gate). Skins: rocket, hot-air balloon, submarine.
-- **Known open items:** cover second screens in the kid lock; more games (waves 2b/3/4), real art, music; paid signing only if shared beyond the family.
+- **Known open items:** cover second screens in the kid lock; more games (waves 2b/3/4); paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
 
@@ -424,9 +424,9 @@
   clock and the parent area). `scripts/fonts/plain_zero.py` swaps the zero's two half-holes for one
   oval hole with the same stroke widths, removes its old hinting, and copies the fonts to `site/fonts/`;
   `zero.tf` follows. OFL 1.1 with no Reserved Font Name, so the changed files keep their name
-  (`Resources/Fonts/README.md`). Other finds offered and not chosen yet: matching white buttons on the
-  Words and Coding islands, a bigger centred Bip's Path grid, bigger blocks in Bip's Balance take-away,
-  and a real zip picture (now a zipped-mouth face).
+  (`Resources/Fonts/README.md`). The other finds were done the same day (PR #52): matching plates for the
+  island games, a bigger centred Bip's Path grid and a real zip picture. Still offered and not chosen:
+  bigger blocks in Bip's Balance take-away.
   Word Builder (owner flagged it, 18 Oct): the picture and the answer boxes sat on the left with the right
   half empty. They are now one row centred over the letters (`WordBuilderScreen`), and the sparkle follows the boxes.
   Windows icon (was a known open item): `godot/icons/app-icon.ico` (16 to 256 px, from the Mac icon) is set
@@ -439,7 +439,7 @@
   the letter-sound pictures, all words, the 32 sentence pictures built as scenes from the word pictures),
   drawn versions of the 98 emoji the step scenes used (`ArtPictures.ForEmoji`, picked up by
   `StepPictures.Glyph`), and the profile animals in `Avatars.Badge`. Each picture has its own seed block
-  (`Pic`), and fills skip repeated points (`Clean`), which otherwise leave a shape white. Body parts
+  (`Pic`), and `SketchNode` drops repeated polygon points, which otherwise leave a shape white. Body parts
   (chin, lip, wing) get the orange pointer from `WordPictures.Pointer`. Every page of the picture gallery
   was looked at; `EmojiPictures.Icons` is now empty.
 - **18 Oct, Afrikaans round 3:** Seed-VC and OpenVoice converting Microsoft's Adri towards the narrator
