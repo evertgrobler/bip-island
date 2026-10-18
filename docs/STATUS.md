@@ -46,7 +46,7 @@
 
 - Engine move: Godot 4 .NET (C#), Velopack updates, direct `.dmg` / `Setup.exe` downloads, no stores,
   no paid signing for now. Details in `docs/GODOT_MIGRATION.md`.
-- Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts).
+- Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts), with a plain zero (owner, 18 Oct).
 - Voice: "Bip Island Narrator" `Mq5hYfc3xyDzuW3pPMck`, `eleven_v3`, SA English teacher.
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
 - No timers/lives/game-over. Wrong → boop → retry → hint after 2 misses. 120 pt targets.
@@ -419,3 +419,11 @@
   `Resources/Music/README.md` records each loop's source and prompt (the owner still has to confirm the
   ElevenLabs plans allow public use; the validator requires the README). Voice samples are removed from
   the repo (public); they stay in #49's history. NARRATOR_VOICE.md leaves the voice ID to CLAUDE.md.
+- **18 Oct, later:** Plain zero. The owner asked for a look round the game for improvements; the
+  biggest find was the font's slashed zero (10 read as "1Ø" in every game, the star counts, the charging
+  clock and the parent area). `scripts/fonts/plain_zero.py` swaps the zero's two half-holes for one
+  oval hole with the same stroke widths, removes its old hinting, and copies the fonts to `site/fonts/`;
+  `zero.tf` follows. OFL 1.1 with no Reserved Font Name, so the changed files keep their name
+  (`Resources/Fonts/README.md`). Other finds offered and not chosen yet: matching white buttons on the
+  Words and Coding islands, a bigger centred Bip's Path grid, bigger blocks in Bip's Balance take-away,
+  and a real zip picture (now a zipped-mouth face).
