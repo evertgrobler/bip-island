@@ -44,7 +44,7 @@ The owner's own family first, to test how it plays. Not for sale yet, no App Sto
 | Updates | Velopack: feeds `win/` and `osx/` in the public Vercel Blob store; downloaded quietly, installed only after the parent gate |
 | CI/CD | GitHub Actions (`.github/workflows/godot.yml`): Linux builds, tests, screenshots and exports both platforms; Mac and Windows runners install, update and check the kid lock; main publishes |
 | Download page | `site/`, deployed to Vercel by `godot.yml`'s publish job (`scripts/ci/deploy_site.sh`) |
-| Signing | No paid Apple or Windows certificate: the Mac app is ad-hoc signed (first launch: right-click → Open), Windows shows "More info → Run anyway" once. Updates are checked by Velopack either way. Keep it possible to add real signing later through secrets. |
+| Signing | No paid Apple or Windows certificate: the Mac app is ad-hoc signed (first launch: System Settings → Privacy & Security → Open Anyway; right-click → Open only works up to macOS 14), Windows shows "More info → Run anyway" once. Updates are checked by Velopack either way. Keep it possible to add real signing later through secrets. |
 
 Required GitHub Actions secrets (the owner adds these; see `docs/SETUP.md`):
 - `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` — the download page and the Blob store.
