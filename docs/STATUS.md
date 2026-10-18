@@ -440,3 +440,10 @@
   to -14.5 LUFS) records the 233 sentences, 21 lead-on numbers and `vo_and` through the **Narrator** workflow
   (GitHub runners reach huggingface.co; cloud sessions can't). The workflow runs 4 shards in parallel and
   commits the clips to the branch; a push by the workflow doesn't start the Godot CI, so push once after it.
+  Every clip is checked by Whisper (faster-whisper `base.en`): the words heard must match the text, or the
+  clip is recorded again with the next seed (up to 5). The first run, before this check, gave "Five is odd."
+  and "Five," a repeated word. Phonics sounds (`snd_`) stay ElevenLabs: Chatterbox can't say pure sounds
+  (owner listened, 18 Oct). **Afrikaans tried and shelved (owner: "completely wrong and unnatural"):**
+  Chatterbox Multilingual reading it as Dutch, Microsoft's Adri (af-ZA neural) and UBC's Simba-TTS-afr,
+  each also converted into the narrator with Chatterbox voice conversion; Meta's MMS Afrikaans is gone from
+  Hugging Face. Only a paid native Afrikaans voice (ElevenLabs) or better open models later are worth trying.

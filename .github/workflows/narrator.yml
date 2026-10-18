@@ -34,12 +34,12 @@ jobs:
       - name: Install ffmpeg and Chatterbox (CPU)
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
-          pip install --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts faster-whisper
       - name: Speak this shard's clips
         run: |
           python3 scripts/validate_content.py > /dev/null
-          python3 scripts/speak_clips.py --from voice-lab/request.txt --shard ${{ matrix.shard }}/4
-          mkdir -p out && git ls-files --others --exclude-standard Resources/Audio | xargs -r cp -t out
+          python3 scripts/speak_clips.py --from voice-lab/request.txt --shard ${{ matrix.shard }}/4 --verify
+          mkdir -p out && { git ls-files --others --exclude-standard Resources/Audio; git ls-files --modified Resources/Audio; } | xargs -r cp -t out
       - uses: actions/upload-artifact@v4
         with:
           name: clips-${{ matrix.shard }}
@@ -58,9 +58,9 @@ jobs:
           merge-multiple: true
       - name: Commit the clips
         run: |
-          mkdir -p new && cp -n new/*.m4a Resources/Audio/ 2>/dev/null || true
+          mkdir -p new && cp new/*.m4a Resources/Audio/ 2>/dev/null || true
           git config user.name "narrator"
           git config user.email "narrator@users.noreply.github.com"
           git add Resources/Audio
-          git commit -m "Record narrator clips with Chatterbox ($(ls new | wc -l) clips)" || echo "Nothing new"
+          git commit -m "Narrator clips from Chatterbox, checked by Whisper ($(ls new | wc -l) new or re-recorded)" || echo "Nothing new"
           git push
