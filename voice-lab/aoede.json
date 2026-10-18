@@ -1,4 +1,42 @@
 {
- "done": {},
- "failed": {}
+ "done": {
+  "hint_02": "Here's a clue. Look for the one that's wiggling!",
+  "hint_03": "Let's listen again, together:",
+  "hint_04": "Nearly! Have another listen:",
+  "num_0_mid": "Zero,",
+  "num_10_mid": "Ten,",
+  "num_11_mid": "Eleven,",
+  "num_12_mid": "Twelve,",
+  "num_13_mid": "Thirteen,",
+  "num_14_mid": "Fourteen,",
+  "num_15_mid": "Fifteen,",
+  "num_16_mid": "Sixteen,",
+  "num_17_mid": "Seventeen,",
+  "num_18_mid": "Eighteen,",
+  "num_19_mid": "Nineteen,",
+  "num_1_mid": "One,",
+  "num_20_mid": "Twenty,",
+  "num_2_mid": "Two,",
+  "num_7_mid": "Seven,",
+  "num_8_mid": "Eight,",
+  "num_9_mid": "Nine,",
+  "praise_01": "Well done!",
+  "praise_02": "Brilliant!",
+  "praise_03": "You got it!",
+  "praise_04": "Super listening!",
+  "praise_05": "Excellent!",
+  "praise_06": "Fantastic!",
+  "praise_07": "Yes! That's the one!",
+  "praise_08": "Bip is so proud of you!",
+  "praise_09": "Amazing work!",
+  "praise_10": "Great job!",
+  "vo_and": "and,"
+ },
+ "failed": {
+  "hint_01": 1,
+  "num_3_mid": 1,
+  "num_4_mid": 1,
+  "num_5_mid": 1,
+  "num_6_mid": 1
+ }
 }
