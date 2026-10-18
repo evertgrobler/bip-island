@@ -296,7 +296,7 @@ public partial class GameIslandScreen : BaseScreen
         {
             var x = (i - 1) * 120.0;
             builder.AddChild(Pen(RoundRect(R(x - 52, -52, 104, 104), 18), (ulong)(815 + i), fill: Palette.Teal, lineWidth: 5));
-            var text = Sketch.Letter(letter, 76, colour: Palette.White, withShadow: false);
+            var text = Sketch.Letter(letter, 76, colour: Palette.Ink, withShadow: false);
             text.Position = P(x, 0);
             builder.AddChild(text);
         }
