@@ -9,6 +9,7 @@ on:
       - "scripts/voice_lab_gemini.py"
       - ".github/workflows/voice-lab-gemini.yml"
       - "voice-lab/gemini-run.txt"
+      - "voice-lab/gemini_takes.tsv"
 
 permissions:
   contents: write
@@ -29,6 +30,6 @@ jobs:
         run: |
           git config user.name "voice-lab"
           git config user.email "voice-lab@users.noreply.github.com"
-          git add voice-lab/out_gemini 2>/dev/null || exit 0
+          git add voice-lab/out_gemini2 2>/dev/null || exit 0
           git commit -m "Voice lab Gemini results [skip ci]" || exit 0
           git pull --rebase origin claude/voice-lab && git push
