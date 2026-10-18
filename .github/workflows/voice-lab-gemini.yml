@@ -1,0 +1,34 @@
+# Gemini TTS in Afrikaans (scripts/voice_lab_gemini.py). Needs the GEMINI_API_KEY repository secret.
+name: Voice lab (Gemini)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/voice-lab]
+    paths:
+      - "scripts/voice_lab_gemini.py"
+      - ".github/workflows/voice-lab-gemini.yml"
+      - "voice-lab/gemini-run.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  speak:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ffmpeg
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+      - name: Speak the Afrikaans lines with Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python3 scripts/voice_lab_gemini.py
+      - name: Commit the results
+        run: |
+          git config user.name "voice-lab"
+          git config user.email "voice-lab@users.noreply.github.com"
+          git add voice-lab/out_gemini 2>/dev/null || exit 0
+          git commit -m "Voice lab Gemini results [skip ci]" || exit 0
+          git pull --rebase origin claude/voice-lab && git push
