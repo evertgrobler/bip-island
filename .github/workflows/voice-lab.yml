@@ -1,0 +1,38 @@
+# Listening test: open-source narrator (Chatterbox) copying the original voice. See voice-lab/README.md.
+# Never touches main or the game build; results are committed to this branch as MP3s.
+name: Voice lab
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/voice-lab]
+    paths:
+      - "voice-lab/lines.tsv"
+      - "scripts/voice_lab.py"
+      - ".github/workflows/voice-lab.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  speak:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ffmpeg and Chatterbox (CPU)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts
+      - name: Speak the test lines
+        run: python3 scripts/voice_lab.py
+      - name: Commit the results
+        run: |
+          git config user.name "voice-lab"
+          git config user.email "voice-lab@users.noreply.github.com"
+          git add voice-lab/out
+          git commit -m "Voice lab results [skip ci]" || echo "Nothing new"
+          git push
