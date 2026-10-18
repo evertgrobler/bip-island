@@ -1,2 +1,2 @@
-2
-Trial run: two requests, to check the cuts before the full recording (18 October 2026).
+40
+Daily run (started 18 October 2026 15:50 SAST): up to 40 requests, stopping early when Gemini's free daily limit is reached.
