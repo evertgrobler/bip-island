@@ -482,4 +482,9 @@
   greetings, charging and day done). `VoicePlayer.Band` is set from the playing child's age; a Big child
   hears `<clip>_big` when it's in the build, else the young clip; Big praise is used once 4 of its clips are
   recorded. The validator checks every `_big` row has its young row. One narrator for boys and girls.
-
+- **18 Oct, owner approved the plans:** ages 5 to 10 in English and Afrikaans with Cambridge and CAPS side
+  by side (`docs/CURRICULUM_5_10.md`: reading stories first, one map for every age, coding follows
+  Cambridge until CAPS Coding and Robotics is final), the voice plan (`docs/VOICE_PLAN.md`) and the
+  MacBook Neo findings (`docs/MACBOOK_NEO.md`: it runs; first install is Open Anyway; Letter Trace needs a
+  tap-to-start mode for trackpads; test the kid lock and the top-row keys on the real machine).
+  `CLAUDE.md` and `docs/PLAN.md` now say so, and the narrator is Gemini Aoede for both languages.
