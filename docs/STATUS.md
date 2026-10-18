@@ -447,4 +447,9 @@
   on a CPU runner). The owner listened: "still very bad". Every free route has now been tried and
   rejected; Afrikaans is parked. Left to try: Gemini TTS (needs a `GEMINI_API_KEY` secret; the test
   is ready on `claude/voice-lab`), a paid native Afrikaans ElevenLabs voice, or a person recording.
+- **18 Oct, colour contrast:** every piece of text checked against WCAG (4.5:1 for normal text, 3:1 for
+  large). Fixed: Word Builder's teal tiles and its island button (white letters, 2.3:1 → dark ink, 6.3:1),
+  the Morning Order number pictures (white on light blue → ink), the mystery box "?" (→ ink), the grown-ups'
+  hint on the charging screen and "more stars for the next sticker" (ink at 85%, 8.2:1), the parent area's
+  grey text (ink at 75%, 6:1) and the setup guide's orange "Try it now" (5.9:1).
 
