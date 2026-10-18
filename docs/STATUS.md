@@ -12,7 +12,7 @@
 - **Games:** 17 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
   Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
-  game, 8-question visits, star celebration.
+  game, 8-question visits, star celebration. Letter Trace works with a mouse or a trackpad (18 Oct).
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
   in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
   Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
@@ -419,3 +419,10 @@
   `Resources/Music/README.md` records each loop's source and prompt (the owner still has to confirm the
   ElevenLabs plans allow public use; the validator requires the README). Voice samples are removed from
   the repo (public); they stay in #49's history. NARRATOR_VOICE.md leaves the voice ID to CLAUDE.md.
+- **18 Oct, 17:50 SAST:** Letter Trace works on a trackpad (a family has a trackpad-only MacBook). Tap mode sits
+  alongside the drag: click the green start dot above the letter (120 pt) and the pen follows the pointer with the
+  button up until the letter is done or the child clicks again; dragging with the button held works as before.
+  Clicks away from the dot boop softly (a click on the letter says its sound), and after two the dot wiggles with
+  Bip's "look for the one that's wiggling" hint. Judging is unchanged (every checkpoint, no timer). Rules in
+  `BipCore.TracePen` (10 tests in `TracePenTests`); the walk-through drags half a letter, misses twice, starts,
+  stops and restarts tap mode, and finishes the letter with the button up. `BaseScreen.TappableAt` is shared.

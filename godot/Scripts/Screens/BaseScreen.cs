@@ -144,10 +144,7 @@ public abstract partial class BaseScreen : Node2D
     /// <summary>Handles a click at a canvas position: the topmost tappable node under it wins.</summary>
     public void Tap(Vector2 at)
     {
-        var target = Tappables(Stage)
-            .Where(n => Hit.IsShown(n) && Hit.GlobalArea(n) is { } area && area.HasPoint(at))
-            .OrderByDescending(Depth)
-            .FirstOrDefault();
+        var target = TappableAt(at);
         if (target == null || Buttons.TapName(target) is not { } name) return;
 
         // Bip and the home button always work, even mid-question.
@@ -168,6 +165,12 @@ public abstract partial class BaseScreen : Node2D
         if (InputLocked) return;
         HandleTap(name, target);
     }
+
+    /// <summary>The topmost tappable node shown under a canvas position, if any.</summary>
+    protected Node2D? TappableAt(Vector2 at) => Tappables(Stage)
+        .Where(n => Hit.IsShown(n) && Hit.GlobalArea(n) is { } area && area.HasPoint(at))
+        .OrderByDescending(Depth)
+        .FirstOrDefault();
 
     /// <summary>The tappable node with this tap name, if the screen shows one (for the walk-through test).</summary>
     public Node2D? FindTappable(string name) =>
