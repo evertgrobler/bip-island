@@ -447,4 +447,3 @@
   on a CPU runner). The owner listened: "still very bad". Every free route has now been tried and
   rejected; Afrikaans is parked. Left to try: Gemini TTS (needs a `GEMINI_API_KEY` secret; the test
   is ready on `claude/voice-lab`), a paid native Afrikaans ElevenLabs voice, or a person recording.
-
