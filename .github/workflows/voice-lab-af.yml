@@ -25,7 +25,7 @@ jobs:
       - name: Install ffmpeg and Chatterbox (CPU)
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
-          pip install --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts edge-tts
       - name: Speak the Afrikaans lines
         run: python3 scripts/voice_lab_af.py
       - name: Commit the results
