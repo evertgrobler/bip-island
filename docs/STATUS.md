@@ -476,4 +476,3 @@
   Additional Language, listening and speaking (`FAL.LS.01`–`03`). The validator checks every word has both
   languages and its own picture, spells the Afrikaans, and that each Afrikaans Morning Order story matches
   the English one card by card. The new words still need the owner's check before they're recorded.
-
