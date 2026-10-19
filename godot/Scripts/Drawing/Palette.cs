@@ -1,4 +1,4 @@
-using System;
+using BipCore;
 using Godot;
 
 namespace BipIsland.Drawing;
@@ -10,93 +10,53 @@ namespace BipIsland.Drawing;
 /// </summary>
 public static class Palette
 {
-    public static readonly Color Paper = Hex(0xFBF4E4);
-    public static readonly Color Ink = Hex(0x2B2A33);
-    public static readonly Color Sea = Hex(0x8FC9E8);
+    // Colours that text is written in or on come from BipCore.PaletteColours, where a unit test checks
+    // their contrast (BipCore.TextContrast).
+    public static readonly Color Paper = From(PaletteColours.Paper);
+    public static readonly Color Ink = From(PaletteColours.Ink);
+    public static readonly Color Sea = From(PaletteColours.Sea);
     public static readonly Color Sand = Hex(0xF3D9A4);
     public static readonly Color Grass = Hex(0x9BCB6B);
-    public static readonly Color Sun = Hex(0xF7C548);
-    public static readonly Color Orange = new(1.00f, 0.56f, 0.26f);
-    public static readonly Color Red = Hex(0xE8654F);
+    public static readonly Color Sun = From(PaletteColours.Sun);
+    public static readonly Color Orange = From(PaletteColours.Orange);
+    public static readonly Color Red = From(PaletteColours.Red);
     public static readonly Color Pink = new(0.97f, 0.66f, 0.73f);
     public static readonly Color DeepPink = new(0.92f, 0.45f, 0.58f);
-    public static readonly Color Teal = new(0.24f, 0.75f, 0.70f);
+    public static readonly Color Teal = From(PaletteColours.Teal);
     public static readonly Color LightTeal = new(0.55f, 0.87f, 0.82f);
-    public static readonly Color Purple = Hex(0xB9A2E8);
+    public static readonly Color Purple = From(PaletteColours.Purple);
     public static readonly Color Brown = new(0.60f, 0.40f, 0.24f);
     public static readonly Color LightBrown = new(0.78f, 0.58f, 0.38f);
-    public static readonly Color Stone = new(0.86f, 0.82f, 0.76f);
+    public static readonly Color Stone = From(PaletteColours.Stone);
     public static readonly Color Ice = new(0.88f, 0.95f, 1.00f);
     public static readonly Color EggBlue = new(0.72f, 0.88f, 0.95f);
-    public static readonly Color Leaf = new(0.36f, 0.68f, 0.30f);
+    public static readonly Color Leaf = From(PaletteColours.Leaf);
     public static readonly Color Bubble = new(0.80f, 0.93f, 0.98f);
     public static readonly Color Go = new(0.38f, 0.75f, 0.36f);
-    public static readonly Color Card = new(1.00f, 0.99f, 0.96f);
-    public static readonly Color White = new(1, 1, 1);
+    public static readonly Color Card = From(PaletteColours.Card);
+    public static readonly Color White = From(PaletteColours.White);
 
     // Text colours. Every word, number or mark a child or grown-up reads uses one of these (or Ink), so
-    // each meets WCAG contrast: 4.5:1 for normal text, 3:1 for big glyphs. ContrastProblems() checks
-    // them in the game's self-test, so a lighter shade can't creep back in.
-    /// <summary>Softer text on paper (the charging screen's hint for grown-ups, "more stars"): 8:1.</summary>
-    public static readonly Color SoftInk = new(Ink, 0.85f);
-    /// <summary>Quiet text and marks (grey parent text, placeholders, the "?" in a gap): 6:1.</summary>
-    public static readonly Color QuietInk = new(Ink, 0.75f);
-    /// <summary>Orange text and marks ("Try it now", the "?" in Bip's Balance box): 5.4:1 or more.</summary>
-    public static readonly Color AlertOrange = Orange.Darkened(0.45f);
-    /// <summary>A wrong answer shown in red (Bip's Balance): 5.6:1 on its box.</summary>
-    public static readonly Color WrongRed = Red.Darkened(0.35f);
-    /// <summary>The parent area's problems ("That child couldn't be added"), and the Remove buttons.</summary>
-    public static readonly Color ProblemRed = Hex(0xC0392B);
-    /// <summary>Good news for grown-ups ("Well done" in the setup guide).</summary>
-    public static readonly Color GoodGreen = Leaf.Darkened(0.35f);
-    /// <summary>
-    /// Bip's snoring "z z z": decoration, never words to read, so it's exempt from the text rule
-    /// (WCAG excludes decoration) and kept soft on purpose.
-    /// </summary>
-    public static readonly Color SleepyZ = new(Ink, 0.6f);
+    // each meets WCAG contrast: 4.5:1 for normal text, 3:1 for big glyphs (what each is for: PaletteColours).
+    public static readonly Color SoftInk = From(PaletteColours.SoftInk);
+    public static readonly Color QuietInk = From(PaletteColours.QuietInk);
+    public static readonly Color AlertOrange = From(PaletteColours.AlertOrange);
+    public static readonly Color WrongRed = From(PaletteColours.WrongRed);
+    public static readonly Color ProblemRed = From(PaletteColours.ProblemRed);
+    public static readonly Color GoodGreen = From(PaletteColours.GoodGreen);
+    /// <summary>Bip's snoring "z z z": decoration, exempt from the text rule.</summary>
+    public static readonly Color SleepyZ = From(PaletteColours.SleepyZ);
+
+    // Fills that text sits on, checked with the text on them.
+    public static readonly Color BalanceBoxFill = From(PaletteColours.BalanceBoxFill);
+    public static readonly Color GapFill = From(PaletteColours.GapFill);
+    public static readonly Color PlaceholderFill = From(PaletteColours.PlaceholderFill);
+    public static readonly Color ProgressTileFill = From(PaletteColours.ProgressTileFill);
 
     public static Color Hex(uint value) =>
         new(((value >> 16) & 0xFF) / 255f, ((value >> 8) & 0xFF) / 255f, (value & 0xFF) / 255f);
 
-    /// <summary>The WCAG contrast ratio of a colour (blended onto its background) against that background.</summary>
-    public static double Contrast(Color text, Color background)
-    {
-        var over = background.Lerp(new Color(text, 1), text.A);
-        double Luminance(Color c)
-        {
-            double Lin(float v) => v <= 0.03928 ? v / 12.92 : Mathf.Pow((v + 0.055) / 1.055, 2.4);
-            return 0.2126 * Lin(c.R) + 0.7152 * Lin(c.G) + 0.0722 * Lin(c.B);
-        }
-        var (a, b) = (Luminance(over), Luminance(new Color(background, 1)));
-        return (Math.Max(a, b) + 0.05) / (Math.Min(a, b) + 0.05);
-    }
-
-    /// <summary>Text colours that fall below their contrast minimum on the backgrounds they're used on (empty when all pass).</summary>
-    public static System.Collections.Generic.List<string> ContrastProblems()
-    {
-        var balanceBox = Card.Lerp(Sun, 0.35f);
-        var checks = new (string Name, Color Text, Color Background, double Minimum)[]
-        {
-            ("Ink on Paper", Ink, Paper, 4.5), ("SoftInk on Paper", SoftInk, Paper, 4.5),
-            ("QuietInk on Paper", QuietInk, Paper, 4.5), ("QuietInk on White", QuietInk, White, 4.5),
-            ("QuietInk on Card at 60%", QuietInk, Paper.Lerp(Card, 0.6f), 3),
-            ("QuietInk on Stone at 50% (\"picture coming\")", QuietInk, Paper.Lerp(Stone, 0.5f), 4.5),
-            ("QuietInk on the parent progress tiles", QuietInk, Card.Lerp(Sun, 0.35f), 4.5),
-            ("SoftInk on Card (coin and note labels)", SoftInk, Card, 4.5),
-            ("ProblemRed on Paper", ProblemRed, Paper, 4.5), ("ProblemRed on White", ProblemRed, White, 4.5),
-            ("GoodGreen on Paper", GoodGreen, Paper, 4.5),
-            ("AlertOrange on Paper", AlertOrange, Paper, 4.5), ("AlertOrange on Bip's Balance box", AlertOrange, balanceBox, 3),
-            ("WrongRed on Bip's Balance box", WrongRed, balanceBox, 3),
-            ("Ink on Teal", Ink, Teal, 4.5), ("Ink on Sea", Ink, Sea, 4.5), ("Ink on Purple", Ink, Purple, 4.5), ("Ink on Sun", Ink, Sun, 4.5),
-        };
-        var problems = new System.Collections.Generic.List<string>();
-        foreach (var (name, text, background, minimum) in checks)
-        {
-            var ratio = Contrast(text, background);
-            if (ratio < minimum) problems.Add($"{name}: {ratio:0.0}:1, needs {minimum}:1");
-        }
-        return problems;
-    }
+    private static Color From(Rgba c) => new((float)c.R, (float)c.G, (float)c.B, (float)c.A);
 }
 
 /// <summary>

@@ -449,7 +449,7 @@ public partial class BlockTowersScreen : GameScreen
             _extras.Add(Add(BlockDrawing.Tower(round.Towers[i], _colour, size, Seed(10 + i * 23)), P(-560 + i * 150, -150)));
         // The empty space where the next tower goes.
         var gap = new Node2D();
-        gap.AddChild(Pen(RoundRect(R(-55, 0, 110, 130), 20), Seed(5), fill: Palette.Card.WithAlpha(0.6f), ink: Palette.Ink.WithAlpha(0.35f), lineWidth: 4, wobble: 3));
+        gap.AddChild(Pen(RoundRect(R(-55, 0, 110, 130), 20), Seed(5), fill: Palette.GapFill, ink: Palette.Ink.WithAlpha(0.35f), lineWidth: 4, wobble: 3));
         var mark = Sketch.Label("?", 80, Palette.QuietInk);
         var holder = new Node2D { Position = P(0, 65) };
         holder.AddChild(mark);

@@ -520,7 +520,7 @@ if not (music_dir / "music_map.m4a").exists():
 
 for note in sorted(sa_waiting): print(f"WAITING (South African English): {note}")
 
-# --- Text colours (Palette.ContrastProblems checks the named ones in the self-test): a label, letter or
+# --- Text colours (BipCore.TextContrast checks the named ones in a unit test): a label, letter or
 # parent text never gets a hand-written colour (an alpha, a darker shade, white or a raw hex). Shadows and
 # emoji (whose colour fonts ignore the tint) are fine.
 TEXT_CALL = re.compile(r"(Sketch\.(Label|Letter)|ParentUi\.Text|\bp\.Text|\)\.Text)\(")

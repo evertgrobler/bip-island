@@ -117,9 +117,8 @@ public static class SelfTest
         var graphemes = ReadsAsJson("res://assets/content/phonics/graphemes.json");
         var game = BipIsland.Game.GameCoordinator.Instance;
         var islandsOpen = new[] { game.LettersOpen, game.NumbersOpen, game.WordsOpen, game.CodingOpen }.Count(open => open);
-        var contrast = Palette.ContrastProblems();
         var ok = error == null && game.Content != null && islandsOpen == 4 && Fonts.IsInstalled && Fonts.EmojiInstalled && contentFiles > 0 && clipCount > 0
-                 && sampleClip && graphemes && MusicPlayer.HasTrack(BipCore.MusicRules.MapTrack) && contrast.Count == 0;
+                 && sampleClip && graphemes && MusicPlayer.HasTrack(BipCore.MusicRules.MapTrack);
 
         var report = new Dictionary<string, object?>
         {
@@ -138,7 +137,6 @@ public static class SelfTest
             ["clipCount"] = clipCount,
             ["sampleClipPlays"] = sampleClip,
             ["musicTracks"] = musicTracks,
-            ["textContrastProblems"] = contrast,
             ["saveMarker"] = FileAccess.FileExists(MarkerPath) ? FileAccess.GetFileAsString(MarkerPath) : null,
             ["userDataDir"] = OS.GetUserDataDir(),
             ["kidLock"] = KidLock.Check(),

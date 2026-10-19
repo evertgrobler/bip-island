@@ -166,7 +166,7 @@ public partial class BipsBalanceScreen : GameScreen
             return;
         }
         var box = Add(new Node2D { Name = "Box" }, P(x, CardMiddle), 2, card);
-        box.AddChild(Pen(RoundRect(R(-62, -62, 124, 124), 18), Seed(6), fill: Palette.Sun.WithAlpha(0.35f), ink: Palette.Orange, lineWidth: 5, wobble: 2.5));
+        box.AddChild(Pen(RoundRect(R(-62, -62, 124, 124), 18), Seed(6), fill: Palette.BalanceBoxFill, ink: Palette.Orange, lineWidth: 5, wobble: 2.5));
         _box = box;
         ShowInBox("?", Palette.AlertOrange);
     }
