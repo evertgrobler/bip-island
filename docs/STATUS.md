@@ -447,3 +447,7 @@
   on a CPU runner). The owner listened: "still very bad". Every free route has now been tried and
   rejected; Afrikaans is parked. Left to try: Gemini TTS (needs a `GEMINI_API_KEY` secret; the test
   is ready on `claude/voice-lab`), a paid native Afrikaans ElevenLabs voice, or a person recording.
+- **18 Oct, review fixes (#52):** Bip's Path win sparkles now land on Bip (board point turned into Stage
+  space); the zip's 0.85 scale sits on an inner node so cards keep it narrow; `SketchNode` itself drops
+  repeated polygon points before the fill, for every drawing (`Clean` is gone); `FaceOnly` has its own
+  seed blocks (4940/4950/4960); `ArtPictures.Has` looks ids up directly; the Sound Buttons plate seed is 819.
