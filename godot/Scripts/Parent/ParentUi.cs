@@ -11,7 +11,7 @@ namespace BipIsland.Parent;
 public static class ParentUi
 {
     public static readonly Color Secondary = Palette.QuietInk;
-    public static readonly Color Problem = Palette.Hex(0xC0392B);
+    public static readonly Color Problem = Palette.ProblemRed;
 
     private static Theme? _theme;
 

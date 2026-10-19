@@ -70,7 +70,7 @@ public partial class ProfilesScreen : BaseScreen
             // Bip is charging for this child: a sleepy "z z" by their picture.
             foreach (var (x, y, size) in new[] { (95.0, 140.0, 34), (125.0, 175.0, 44) })
             {
-                var z = Sketch.Label("z", size, Palette.Ink.WithAlpha(0.45));
+                var z = Sketch.Label("z", size, Palette.SleepyZ);
                 var holder = new Node2D { Position = P(x, y) };
                 holder.AddChild(z);
                 card.AddChild(holder);
@@ -259,7 +259,7 @@ public partial class ChargingScreen : BaseScreen
         for (var i = 0; i < 3; i++)
         {
             var z = new Node2D { Position = head, ZIndex = 25 };
-            z.AddChild(Sketch.Label("z", 40 + i * 14, Palette.Ink.WithAlpha(0.7)));
+            z.AddChild(Sketch.Label("z", 40 + i * 14, Palette.SleepyZ));
             z.Modulate = new Color(1, 1, 1, 0);
             Stage.AddChild(z);
             var drift = z.CreateTween().SetLoops();

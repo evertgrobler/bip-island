@@ -145,7 +145,7 @@ public partial class MapScreen : BaseScreen
         if (!open)
         {
             decoration.Modulate = new Color(1, 1, 1, 0.45f);
-            var sleepy = Sketch.Label("z z z", 52, Palette.Ink.WithAlpha(0.6));
+            var sleepy = Sketch.Label("z z z", 52, Palette.SleepyZ);
             var holder = new Node2D { Position = P(150, 110) };
             holder.AddChild(sleepy);
             island.AddChild(holder);

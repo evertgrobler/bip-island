@@ -45,6 +45,15 @@ public static class Palette
     public static readonly Color AlertOrange = Orange.Darkened(0.45f);
     /// <summary>A wrong answer shown in red (Bip's Balance): 5.6:1 on its box.</summary>
     public static readonly Color WrongRed = Red.Darkened(0.35f);
+    /// <summary>The parent area's problems ("That child couldn't be added"), and the Remove buttons.</summary>
+    public static readonly Color ProblemRed = Hex(0xC0392B);
+    /// <summary>Good news for grown-ups ("Well done" in the setup guide).</summary>
+    public static readonly Color GoodGreen = Leaf.Darkened(0.35f);
+    /// <summary>
+    /// Bip's snoring "z z z": decoration, never words to read, so it's exempt from the text rule
+    /// (WCAG excludes decoration) and kept soft on purpose.
+    /// </summary>
+    public static readonly Color SleepyZ = new(Ink, 0.6f);
 
     public static Color Hex(uint value) =>
         new(((value >> 16) & 0xFF) / 255f, ((value >> 8) & 0xFF) / 255f, (value & 0xFF) / 255f);
@@ -71,6 +80,11 @@ public static class Palette
             ("Ink on Paper", Ink, Paper, 4.5), ("SoftInk on Paper", SoftInk, Paper, 4.5),
             ("QuietInk on Paper", QuietInk, Paper, 4.5), ("QuietInk on White", QuietInk, White, 4.5),
             ("QuietInk on Card at 60%", QuietInk, Paper.Lerp(Card, 0.6f), 3),
+            ("QuietInk on Stone at 50% (\"picture coming\")", QuietInk, Paper.Lerp(Stone, 0.5f), 4.5),
+            ("QuietInk on the parent progress tiles", QuietInk, Card.Lerp(Sun, 0.35f), 4.5),
+            ("SoftInk on Card (coin and note labels)", SoftInk, Card, 4.5),
+            ("ProblemRed on Paper", ProblemRed, Paper, 4.5), ("ProblemRed on White", ProblemRed, White, 4.5),
+            ("GoodGreen on Paper", GoodGreen, Paper, 4.5),
             ("AlertOrange on Paper", AlertOrange, Paper, 4.5), ("AlertOrange on Bip's Balance box", AlertOrange, balanceBox, 3),
             ("WrongRed on Bip's Balance box", WrongRed, balanceBox, 3),
             ("Ink on Teal", Ink, Teal, 4.5), ("Ink on Sea", Ink, Sea, 4.5), ("Ink on Purple", Ink, Purple, 4.5), ("Ink on Sun", Ink, Sun, 4.5),

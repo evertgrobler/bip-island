@@ -512,7 +512,7 @@ public static partial class ArtPictures
     private static Node2D Zzz()
     {
         var p = new Pic(4820);
-        p.Text("z", 60, -40, -40, Palette.Sea.Darkened(0.3f)).Text("z", 80, 10, 10, Palette.Sea.Darkened(0.3f)).Text("Z", 100, 56, 60, Palette.Sea.Darkened(0.3f));
+        p.Text("z", 60, -40, -40, Palette.SleepyZ).Text("z", 80, 10, 10, Palette.SleepyZ).Text("Z", 100, 56, 60, Palette.SleepyZ);
         return p.Node;
     }
 

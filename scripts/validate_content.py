@@ -520,6 +520,19 @@ if not (music_dir / "music_map.m4a").exists():
 
 for note in sorted(sa_waiting): print(f"WAITING (South African English): {note}")
 
+# --- Text colours (Palette.ContrastProblems checks the named ones in the self-test): a label, letter or
+# parent text never gets a hand-written colour (an alpha, a darker shade, white or a raw hex). Shadows and
+# emoji (whose colour fonts ignore the tint) are fine.
+TEXT_CALL = re.compile(r"(Sketch\.(Label|Letter)|ParentUi\.Text|\bp\.Text|\)\.Text)\(")
+RAW_COLOUR = re.compile(r"WithAlpha\(|Palette\.White|new Color\(|Darkened\(|Lightened\(|Hex\(")
+SCRIPTS = Path(__file__).resolve().parent.parent / "godot" / "Scripts"
+for path in sorted(SCRIPTS.rglob("*.cs")):
+    if "Dev" in path.parts: continue
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not TEXT_CALL.search(line) or "Fonts.Emoji" in line: continue
+        if RAW_COLOUR.search(re.sub(r"shadow:\s*[^,;]*", "", line)):
+            err(f"{path.relative_to(SCRIPTS.parent.parent)}:{number}: a text colour must be a named Palette colour (SoftInk, QuietInk, AlertOrange…), not written by hand")
+
 if errors:
     print(f"{len(errors)} problem(s):")
     for e in errors: print("  -", e)
