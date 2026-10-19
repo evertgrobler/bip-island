@@ -39,9 +39,16 @@ public partial class VoicePlayer : Node
     /// </summary>
     public bool Speaking => _inSequence || _player.Playing;
 
-    /// <summary>The playing child's language: which folder clips come from. An Afrikaans clip that isn't
+    /// <summary>
+    /// Where the language comes from: the coordinator points this at its
+    /// <see cref="Game.GameCoordinator.SpokenLanguage"/> once at start-up, so the voice never keeps a copy
+    /// of its own. English until then (previews and tests without the coordinator).
+    /// </summary>
+    public static Func<BipCore.HomeLanguage> LanguageSource { private get; set; } = () => BipCore.HomeLanguage.English;
+
+    /// <summary>The language being spoken: which folder clips come from. An Afrikaans clip that isn't
     /// recorded yet plays as a short silence like any missing clip, never the English one.</summary>
-    public static BipCore.HomeLanguage Language { get; set; } = BipCore.HomeLanguage.English;
+    public static BipCore.HomeLanguage Language => LanguageSource();
 
     public static string PathFor(string clip) => PathFor(clip, Language);
 

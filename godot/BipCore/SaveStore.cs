@@ -144,7 +144,7 @@ public sealed class SaveStore
             ? ProfileRules.FreeAvatar(_file.Children.Select(c => c.Avatar))
             : ProfileRules.ValidAvatar(avatar);
         var id = AddChildRecord(clean, ClampAge(age), picture, new ChildProgress());
-        Find(id)!.Language = language;
+        Find(id)!.Language = Enum.IsDefined(language) ? language : HomeLanguage.English;
         Save();
         return id;
     }

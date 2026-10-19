@@ -29,8 +29,24 @@ public partial class GameCoordinator : Node
     /// <summary>The game content in the playing child's language (null when it didn't load).</summary>
     public ContentLibrary? Content { get; private set; }
 
-    /// <summary>The language the loaded content and the voice are in: the playing child's.</summary>
+    /// <summary>
+    /// The language the playing child plays in, and the one place it is held: the loaded content was read
+    /// in it (<see cref="ContentLibrary.Language"/> only records which language a library was read in) and
+    /// the voice follows it through <see cref="SpokenLanguage"/>.
+    /// </summary>
     public HomeLanguage Language { get; private set; } = HomeLanguage.English;
+
+    /// <summary>
+    /// The language the voice speaks now: the screen's (<see cref="BaseScreen.ScreenLanguage"/>), which is
+    /// the playing child's except on "Who's playing?" and a brother's or sister's break.
+    /// </summary>
+    public HomeLanguage SpokenLanguage => IsInsideTree() && GetTree().CurrentScene is BaseScreen screen ? screen.ScreenLanguage : Language;
+
+    /// <summary>
+    /// "Who's playing?" in the language of the child at the computer; English while nobody is yet (the
+    /// game has just opened), since the last child's language may not be the next one's.
+    /// </summary>
+    public HomeLanguage PickerLanguage => _nobodyYet ? HomeLanguage.English : Language;
 
     private readonly Dictionary<HomeLanguage, ContentLibrary?> _contentByLanguage = [];
 
@@ -78,6 +94,7 @@ public partial class GameCoordinator : Node
         AddChild(Sounds);
         AddChild(Music);
         Music.NarratorSpeaking = () => Voice.Speaking;
+        VoicePlayer.LanguageSource = () => SpokenLanguage;
         _fadeLayer = new CanvasLayer { Layer = 100 };
         _fade = new ColorRect { Color = Palette.Paper, MouseFilter = Control.MouseFilterEnum.Ignore, Modulate = new Color(1, 1, 1, 0) };
         _fade.SetAnchorsPreset(Control.LayoutPreset.FullRect);
@@ -151,7 +168,6 @@ public partial class GameCoordinator : Node
     private void LoadContent(HomeLanguage language)
     {
         Language = language;
-        VoicePlayer.Language = language;
         Content = ContentFor(language);
         Course = null;
         Hunt = null;

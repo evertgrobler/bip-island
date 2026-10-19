@@ -23,6 +23,9 @@ public static class Texts
         $"Games open again at {time} (in {minutes} {(minutes == 1 ? "minute" : "minutes")}).",
         $"Die speletjies maak om {time} weer oop (oor {minutes} {(minutes == 1 ? "minuut" : "minute")}).");
 
+    /// <summary>The break is over and the map opens.</summary>
+    public static string Charged(HomeLanguage l) => Pick(l, "Charged! Off we go.", "Gelaai! Kom ons gaan.");
+
     /// <summary>Stands in for a name the game can't find (a brother or sister removed while their break shows).</summary>
     public static string ThisChild(HomeLanguage l) => Pick(l, "This child", "Hierdie kind");
 

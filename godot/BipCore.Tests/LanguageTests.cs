@@ -24,6 +24,18 @@ public sealed class LanguageTests : IDisposable
     }
 
     [Fact]
+    public void AnUnknownLanguageValueIsSavedAsEnglish()
+    {
+        var store = new SaveStore(_folder);
+        var added = store.AddChild("Lena", 6, null, (HomeLanguage)7)!.Value;
+        Assert.Equal(HomeLanguage.English, store.Children().Single(c => c.Id == added).Language);
+        Assert.Equal(HomeLanguage.English, new SaveStore(_folder).Children().Single(c => c.Id == added).Language);
+
+        store.Update(store.Children().Single(c => c.Id == added) with { Language = (HomeLanguage)7 });
+        Assert.Equal(HomeLanguage.English, new SaveStore(_folder).Children().Single(c => c.Id == added).Language);
+    }
+
+    [Fact]
     public void ALanguageChangeIsSaved()
     {
         var store = new SaveStore(_folder);
@@ -184,7 +196,7 @@ public sealed class LanguageTests : IDisposable
                 Texts.WhoIsPlaying(language), Texts.ComingSoon(language), Texts.WellPlayed(language),
                 Texts.NewStickers(language, 1), Texts.NewStickers(language, 2), Texts.Level(language, 2),
                 Texts.BipIsCharging(language), Texts.AllForToday(language), Texts.StarsEarned(language, 3),
-                Texts.StarsInJar(language, 1), Texts.StarsToNextSticker(language, 2), Texts.ThisChild(language),
+                Texts.StarsInJar(language, 1), Texts.StarsToNextSticker(language, 2), Texts.ThisChild(language), Texts.Charged(language),
             }, text => Assert.False(string.IsNullOrWhiteSpace(text)));
         }
         Assert.Equal("Wie speel?", Texts.WhoIsPlaying(HomeLanguage.Afrikaans));

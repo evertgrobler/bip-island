@@ -472,3 +472,9 @@
   the checkout). Self-test checks the English clips; clip counts are per language. Content load errors
   name the real file (`Content/af/…`). `prepare_assets.py` only takes known language folders and removes
   stale ones. CLAUDE.md now says Aoede is the narrator (recorder on `claude/aoede-narrator` until merged).
+- **19 Oct (PR #53, second review):** The language lives in one place, `GameCoordinator.Language`; each
+  screen says which language it shows (`BaseScreen.ScreenLanguage`) and the voice reads it through
+  `GameCoordinator.SpokenLanguage` (`VoicePlayer.LanguageSource`, no copy of its own). "Who's playing?" is
+  in English straight after the game opens, else in the language of the child at the computer; a brother's
+  or sister's break is in their language. "Charged! Off we go." is `Texts.Charged`. `AddChild` saves an
+  unknown language value as English, like `Update`.
