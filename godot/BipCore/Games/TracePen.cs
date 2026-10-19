@@ -13,6 +13,17 @@ public enum TracePenMode
     Following,
 }
 
+/// <summary>What a click landed on, as the screen's own hit test found it.</summary>
+public enum TraceSpot
+{
+    /// <summary>Nothing tappable: the paper, or the letter's empty space.</summary>
+    Paper,
+    /// <summary>The start dot.</summary>
+    StartDot,
+    /// <summary>Something that does its own thing (the letter says its sound, home, Bip): never a miss.</summary>
+    Button,
+}
+
 /// <summary>What a click (press and release without moving much) did.</summary>
 public enum TraceTapResult
 {
@@ -22,9 +33,9 @@ public enum TraceTapResult
     Started,
     /// <summary>The click stopped a pen that was following.</summary>
     Stopped,
-    /// <summary>A tap away from the start dot: soft sound, try again.</summary>
+    /// <summary>A tap on the paper away from the start dot: soft sound, try again.</summary>
     Missed,
-    /// <summary>A second (or later) tap away from the start dot: show the dot and say a hint.</summary>
+    /// <summary>A second (or later) tap on the paper: show the dot and say a hint.</summary>
     Hint,
 }
 
@@ -32,11 +43,13 @@ public enum TraceTapResult
 /// Letter Trace's pen, for a mouse and a trackpad alike. Dragging with the button held draws, as it
 /// always did. A click on the start dot (press and release without moving much) starts tap mode:
 /// the pen then follows the pointer with the button up, until the trace is finished or the child
-/// clicks again. Taps away from the dot are misses: soft retry, then a hint after two. No timers.
-/// Points are in the screen's own coordinates; how a finished trace is judged (every checkpoint
-/// touched) stays with the screen.
+/// clicks again. Clicks on the bare paper are misses: soft retry, then a hint after two. No timers.
+/// A press draws nothing until it has moved past <see cref="TapSlop"/>, so a click never both
+/// draws and counts as a miss. Where a click landed comes from the screen's hit test
+/// (<see cref="TraceSpot"/>); how a finished trace is judged (every checkpoint touched) stays with
+/// the screen.
 /// </summary>
-public sealed class TracePen(Vector2 startDot, float startRadius = TracePen.StartRadius)
+public sealed class TracePen
 {
     /// <summary>The start dot's radius: 120 points across, the smallest click target allowed.</summary>
     public const float StartRadius = 60;
@@ -47,14 +60,18 @@ public sealed class TracePen(Vector2 startDot, float startRadius = TracePen.Star
     private Vector2? _pressedAt;
     private QuestionAttempt _attempt = new();
 
-    public Vector2 StartDot { get; } = startDot;
     public TracePenMode Mode { get; private set; } = TracePenMode.Idle;
     /// <summary>True once the trace is finished: the pen does nothing more.</summary>
     public bool IsFinished { get; private set; }
-    /// <summary>Taps away from the start dot since the pen last started.</summary>
+    /// <summary>Clicks on the paper since the pen last started.</summary>
     public int Misses => _attempt.Misses;
 
-    public bool IsOnStartDot(Vector2 point) => Vector2.Distance(point, StartDot) <= startRadius;
+    /// <summary>
+    /// Whether the screen shows the start dot: always, except while the pen follows the pointer and
+    /// once the trace is finished. The screen checks it after every press, move and release, so any
+    /// way the pen leaves following (a click, a drag that takes over) brings the dot back.
+    /// </summary>
+    public bool ShowsStartDot => !IsFinished && Mode != TracePenMode.Following;
 
     /// <summary>The button went down. A pen that was following stops here.</summary>
     public TraceTapResult Press(Vector2 at)
@@ -76,35 +93,46 @@ public sealed class TracePen(Vector2 startDot, float startRadius = TracePen.Star
         if (IsFinished) return false;
         if (buttonHeld)
         {
-            // Moved too far for a click: this is a drag (even if the press went unseen).
-            if (_pressedAt is { } pressed && Vector2.Distance(at, pressed) > TapSlop) _pressedAt = null;
+            // Still within a click's wobble: wait, it may be a click.
+            if (_pressedAt is { } pressed)
+            {
+                if (Vector2.Distance(at, pressed) <= TapSlop) return false;
+                _pressedAt = null;
+            }
+            // A drag (even one whose press went unseen, which also ends following).
             Mode = TracePenMode.Dragging;
             return true;
         }
         // The button is up: a drag whose release we didn't see (outside the window, behind the
         // parent gate) stops here; a following pen keeps drawing.
+        _pressedAt = null;
         if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
         return Mode == TracePenMode.Following;
     }
 
     /// <summary>
-    /// The button came up. A click on the start dot starts the pen following; a click anywhere else
-    /// is a miss, unless <paramref name="onButton"/> (Bip, home: they do their own thing).
+    /// The button came up. A click on the start dot starts the pen following; a click on the paper
+    /// is a miss; a click on anything else (<see cref="TraceSpot.Button"/>) is left to that thing.
+    /// <paramref name="spot"/> is where the press landed.
     /// </summary>
-    public TraceTapResult Release(Vector2 at, bool onButton = false)
+    public TraceTapResult Release(Vector2 at, TraceSpot spot)
     {
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
         if (_pressedAt is not { } pressed) return TraceTapResult.None;
         _pressedAt = null;
-        if (Vector2.Distance(at, pressed) > TapSlop || onButton) return TraceTapResult.None;
-        if (IsOnStartDot(pressed))
+        if (Vector2.Distance(at, pressed) > TapSlop) return TraceTapResult.None;
+        switch (spot)
         {
-            Mode = TracePenMode.Following;
-            _attempt = new QuestionAttempt();
-            return TraceTapResult.Started;
+            case TraceSpot.StartDot:
+                Mode = TracePenMode.Following;
+                _attempt = new QuestionAttempt();
+                return TraceTapResult.Started;
+            case TraceSpot.Paper:
+                return _attempt.Answer(false).Kind == AnswerOutcomeKind.Hint ? TraceTapResult.Hint : TraceTapResult.Missed;
+            default:
+                return TraceTapResult.None;
         }
-        return _attempt.Answer(false).Kind == AnswerOutcomeKind.Hint ? TraceTapResult.Hint : TraceTapResult.Missed;
     }
 
     /// <summary>The trace is done: stop drawing for good.</summary>

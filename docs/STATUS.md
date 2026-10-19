@@ -422,7 +422,12 @@
 - **18 Oct, 17:50 SAST:** Letter Trace works on a trackpad (a family has a trackpad-only MacBook). Tap mode sits
   alongside the drag: click the green start dot above the letter (120 pt) and the pen follows the pointer with the
   button up until the letter is done or the child clicks again; dragging with the button held works as before.
-  Clicks away from the dot boop softly (a click on the letter says its sound), and after two the dot wiggles with
+  Clicks on the bare paper boop softly, and after two the dot wiggles with
   Bip's "look for the one that's wiggling" hint. Judging is unchanged (every checkpoint, no timer). Rules in
   `BipCore.TracePen` (10 tests in `TracePenTests`); the walk-through drags half a letter, misses twice, starts,
   stops and restarts tap mode, and finishes the letter with the button up. `BaseScreen.TappableAt` is shared.
+- **19 Oct, 06:20 SAST:** Review fixes for #59 (Letter Trace tap mode): home and Bip work with one click while the pen
+  follows; the start dot comes back however the pen stops following (`TracePen.ShowsStartDot`); a press draws
+  nothing until it moves past a click's wobble, so a click never both draws and misses; clicking the letter is never
+  a miss; the start dot uses the screen's own hit test (`TraceSpot`); one hit test per press (`BaseScreen.TapOn`,
+  `IsAlwaysOn`). A click-to-pick-up mode for the drag games is a follow-up PR.

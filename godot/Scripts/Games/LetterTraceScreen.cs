@@ -31,7 +31,7 @@ public partial class LetterTraceScreen : GameScreen
     private readonly HashSet<int> _touched = [];
     /// <summary>Just above the letter, where most letters start.</summary>
     private static readonly Vector2 StartDotAt = P(0, 290);
-    private readonly TracePen _pen = new(Numeric(StartDotAt));
+    private readonly TracePen _pen = new();
     private string? _pressedOn;
     private bool _started;
 
@@ -53,6 +53,7 @@ public partial class LetterTraceScreen : GameScreen
     /// <summary>True while the start dot wiggles for a hint.</summary>
     public bool StartDotHinted => HintedNode == _startDot;
     public int TouchedCount => _touched.Count;
+    public bool StartDotShown => _startDot.Visible;
 
     protected override void Build()
     {
@@ -86,34 +87,50 @@ public partial class LetterTraceScreen : GameScreen
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        // A press on home has already closed this screen by the time its release comes.
+        if (!IsInsideTree()) return;
         if (CanTrace)
         {
             switch (@event)
             {
-                // With the button held (a drag), or with it up after a click on the start dot. A drag
-                // whose release we didn't see (outside the window, behind the parent gate) stops on
-                // the first move without the button.
+                // With the button held (a drag, once it moves past a click's wobble), or with it up
+                // after a click on the start dot. A drag whose release we didn't see (outside the
+                // window, behind the parent gate) stops on the first move without the button.
                 case InputEventMouseMotion motion:
                     var at = Stage.ToLocal(motion.GlobalPosition);
-                    if (_pen.Move(Numeric(at), motion.ButtonMask.HasFlag(MouseButtonMask.Left)))
+                    var draws = _pen.Move(Numeric(at), motion.ButtonMask.HasFlag(MouseButtonMask.Left));
+                    SyncStartDot();
+                    if (draws)
                     {
                         GetViewport().SetInputAsHandled();
                         Trace(at);
                     }
                     return;
                 case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } press:
-                    if (_pen.Press(Numeric(Stage.ToLocal(press.GlobalPosition))) == TraceTapResult.Stopped)
-                    {
-                        GetViewport().SetInputAsHandled();
-                        StopFollowing();
-                        return;
-                    }
-                    _pressedOn = TappableAt(press.GlobalPosition) is { } node ? Buttons.TapName(node) : null;
-                    break; // Home, Bip and the letter's sound work as on every screen.
+                {
+                    GetViewport().SetInputAsHandled();
+                    // One hit test for the pen and the tap alike.
+                    var target = TappableAt(press.GlobalPosition);
+                    _pressedOn = target is null ? null : Buttons.TapName(target);
+                    var stopped = _pen.Press(Numeric(Stage.ToLocal(press.GlobalPosition))) == TraceTapResult.Stopped;
+                    if (stopped) Sfx.Play(BipSounds.Effect.Tick);
+                    SyncStartDot();
+                    // The click that lifts the pen does nothing else, except on Bip and home: they always work.
+                    if (!stopped || IsAlwaysOn(_pressedOn)) TapOn(target);
+                    return;
+                }
                 case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } release:
                     GetViewport().SetInputAsHandled();
-                    var onButton = _pressedOn is "home" or "bip";
-                    Tapped(_pen.Release(Numeric(Stage.ToLocal(release.GlobalPosition)), onButton));
+                    var spot = _pressedOn switch
+                    {
+                        null => TraceSpot.Paper,
+                        "start" => TraceSpot.StartDot,
+                        _ => TraceSpot.Button,
+                    };
+                    var result = _pen.Release(Numeric(Stage.ToLocal(release.GlobalPosition)), spot);
+                    _pressedOn = null;
+                    SyncStartDot();
+                    Tapped(result);
                     return;
             }
         }
@@ -126,36 +143,43 @@ public partial class LetterTraceScreen : GameScreen
         {
             case TraceTapResult.Started:
                 StopHint();
-                _pulse?.Kill();
-                _startDot.Scale = Vector2.One;
-                _startDot.Visible = false;
                 Sfx.Play(BipSounds.Effect.Pop);
                 Trace(StartDotAt);
                 break;
             case TraceTapResult.Missed or TraceTapResult.Hint:
-                // A tap on the letter has already said its sound; anywhere else gets the soft boop.
-                if (_pressedOn != "letter") Sfx.Play(BipSounds.Effect.Boop);
+                Sfx.Play(BipSounds.Effect.Boop);
                 Bip.Tilt();
                 if (result != TraceTapResult.Hint) break;
                 // Two misses: the start dot wiggles and Bip says "Look for the one that's wiggling!"
                 if (!StartDotHinted)
                 {
                     _pulse?.Kill();
+                    _pulse = null;
                     ShowHint(_startDot);
                 }
                 After(0.6, () => { if (!InputLocked && StartDotHinted) Voice.Play([Coordinator.RandomHint(followedBySound: false)]); });
                 break;
         }
-        _pressedOn = null;
     }
 
-    /// <summary>A click while following lifts the pen; what's traced so far stays traced.</summary>
-    private void StopFollowing()
+    /// <summary>
+    /// Shows the start dot (pulsing) whenever the pen isn't following, however it stopped: a click
+    /// lifts the pen, or a drag takes over. What's traced so far stays traced.
+    /// </summary>
+    private void SyncStartDot()
     {
-        Sfx.Play(BipSounds.Effect.Tick);
-        _startDot.Visible = true;
+        var show = _pen.ShowsStartDot;
+        if (show == _startDot.Visible) return;
+        _startDot.Visible = show;
+        if (show)
+        {
+            if (!StartDotHinted) _pulse ??= Buttons.Pulse(_startDot);
+            return;
+        }
+        StopHint();
         _pulse?.Kill();
-        _pulse = Buttons.Pulse(_startDot);
+        _pulse = null;
+        _startDot.Scale = Vector2.One;
     }
 
     private void Trace(Vector2 point)
@@ -181,9 +205,7 @@ public partial class LetterTraceScreen : GameScreen
     {
         InputLocked = true;
         _pen.Finish();
-        StopHint();
-        _pulse?.Kill();
-        _startDot.Visible = false;
+        SyncStartDot();
         var grow = _letter.CreateTween();
         grow.TweenProperty(_letter, "scale", Vector2.One * 1.12f, 0.15);
         grow.TweenProperty(_letter, "scale", Vector2.One, 0.15);

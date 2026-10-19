@@ -697,26 +697,45 @@ public static class WalkTest
             }
 
             starsBefore = game.Progress.Stars;
+            static void PenButton(LetterTraceScreen on, Vector2 at, bool down) =>
+                on._UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = down, GlobalPosition = at });
+            static void PenClickOn(LetterTraceScreen on, Vector2 at) { PenButton(on, at, true); PenButton(on, at, false); }
+
+            // Home always works, even while the pen follows the pointer: one click goes home.
+            if (await Tap("trace")) await Expect<LetterTraceScreen>("Letter Trace opens from the island");
+            if (await WaitFor(() => Screen() is LetterTraceScreen { Started: true }, 3) && Screen() is LetterTraceScreen first &&
+                first.FindTappable("home") is { } house && Hit.GlobalArea(house) is { } houseArea)
+            {
+                PenClickOn(first, first.StartDotOnScreen);
+                Check("tap mode starts from the start dot", first.PenMode == BipCore.TracePenMode.Following);
+                PenClickOn(first, houseArea.GetCenter());
+                await Expect<LettersIslandScreen>("one click on home goes home while the pen follows");
+            }
+
             if (await Tap("trace")) await Expect<LetterTraceScreen>("Letter Trace opens from the island");
             Check("Letter Trace is ready to trace", await WaitFor(() => Screen() is LetterTraceScreen { Started: true }, 3));
             if (Screen() is LetterTraceScreen { Started: true } trace)
             {
-                void PenButton(Vector2 at, bool down) =>
-                    trace._UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = down, GlobalPosition = at });
-                void PenClick(Vector2 at) { PenButton(at, true); PenButton(at, false); }
+                void PenClick(Vector2 at) => PenClickOn(trace, at);
                 void PenMove(Vector2 at, bool held) =>
                     trace._UnhandledInput(new InputEventMouseMotion { GlobalPosition = at, ButtonMask = held ? MouseButtonMask.Left : default });
 
                 // A mouse: the first half of the letter with the button held.
                 var points = trace.CheckpointsOnScreen.ToList();
-                PenButton(points[0], true);
+                // The pen starts drawing once the press has moved past a click's wobble.
+                PenButton(trace, points[0] + new Vector2(0, 40), true);
                 foreach (var point in points.Take(4)) PenMove(point, held: true);
-                PenButton(points[3], false);
+                PenButton(trace, points[3], false);
                 Check("dragging with the button held traces", trace.TouchedCount >= 4 && trace.PenMode == BipCore.TracePenMode.Idle,
                       $"touched {trace.TouchedCount}, pen {trace.PenMode}");
                 var dragged = trace.TouchedCount;
                 PenMove(points[5], held: false);
                 Check("after letting go, moving draws nothing", trace.TouchedCount == dragged && trace.PenMode == BipCore.TracePenMode.Idle);
+
+                // Clicking the letter says its sound: never a miss, however often.
+                PenClick(points[8]);
+                PenClick(points[8]);
+                Check("clicks on the letter are not misses", !trace.StartDotHinted);
 
                 // A trackpad: two clicks away from the start dot, then the dot wiggles for a hint.
                 var paper = trace.StartDotOnScreen + new Vector2(520, 0);
@@ -731,6 +750,18 @@ public static class WalkTest
                 var touched = trace.TouchedCount;
                 PenMove(points[6], held: false);
                 Check("a lifted pen draws nothing", trace.TouchedCount == touched);
+                // A wobbly click (3 points) near a checkpoint draws nothing.
+                PenButton(trace, points[6], true);
+                PenMove(points[6] + new Vector2(3, 0), held: true);
+                PenButton(trace, points[6] + new Vector2(3, 0), false);
+                Check("a wobbly click draws nothing", trace.TouchedCount == touched, $"touched {touched} → {trace.TouchedCount}");
+                // Following, then a drag takes over (its press went unseen): the start dot comes back.
+                PenClick(trace.StartDotOnScreen);
+                Check("tap mode hides the start dot", trace.PenMode == BipCore.TracePenMode.Following && !trace.StartDotShown);
+                PenMove(trace.StartDotOnScreen, held: true);
+                PenMove(trace.StartDotOnScreen, held: false);
+                Check("a drag that takes over from tap mode brings the start dot back",
+                      trace.PenMode == BipCore.TracePenMode.Idle && trace.StartDotShown);
                 Check("no star until the letter is finished", game.Progress.Stars == starsBefore);
                 // Click the dot again and finish the letter with the button up.
                 PenClick(trace.StartDotOnScreen);
