@@ -222,6 +222,7 @@ public partial class GameCoordinator : Node
             _ = new SoundButtonsGame(Content, course);
             _ = new WordBuilderGame(Content);
             _ = new WordRocketGame(Content, course);
+            _ = new StoriesGame(Content);
         });
         CodingOpen = Try("Coding", () => { _ = new MorningOrderGame(Content); _ = new BipsPathGame(Content); });
         ArtOpen = Try("Art", () => { _ = new ShapeBuilderGame(Content); _ = new PaintPotsGame(Content); _ = new MirrorMagicGame(Content); });
@@ -611,6 +612,7 @@ public partial class GameCoordinator : Node
                                                                               Course ?? new PhonicsCourse(Content)),
             WordBuilderGame.GameId when WordsOpen => new WordBuilderScreen(new WordBuilderGame(Content)),
             WordRocketGame.GameId when WordsOpen => new WordRocketScreen(new WordRocketGame(Content, Course ?? new PhonicsCourse(Content))),
+            StoriesGame.GameId when WordsOpen => new StoriesScreen(new StoriesGame(Content)),
             MorningOrderGame.GameId when CodingOpen => new MorningOrderScreen(new MorningOrderGame(Content)),
             BipsPathGame.GameId when CodingOpen => new BipsPathScreen(new BipsPathGame(Content)),
             ShapeBuilderGame.GameId when ArtOpen => new ShapeBuilderScreen(new ShapeBuilderGame(Content)),

@@ -611,6 +611,132 @@ for col in COLOURS.values():
 for pt in POTS.values():
     p(pt["label"], f"label for the {pt['colour']} paint pot")
 
+# --- Bip's Stories (docs/GAMES.md): 20 stories a language, four per level, on scenes both languages share.
+# Checked last, so an answer can reuse any word clip the rest of the content has (its clip is word_<text>),
+# and story pictures must be pictures the game already draws, or ones drawn for the stories.
+scenes_doc = load("stories/scenes.json")
+stories = load("stories/stories.json")["stories"]
+STORY_LEVELS = {  # scenes, sentences a scene, questions, choices a question, most words in a sentence
+    1: dict(scenes=(2, 2), sentences=(1, 1), questions=1, choices=(2, 2), words=9),
+    2: dict(scenes=(3, 3), sentences=(1, 2), questions=2, choices=(2, 3), words=8),
+    3: dict(scenes=(3, 3), sentences=(1, 3), questions=3, choices=(3, 3), words=12),
+    4: dict(scenes=(4, 4), sentences=(1, 3), questions=3, choices=(3, 3), words=14),
+    5: dict(scenes=(5, 6), sentences=(1, 3), questions=3, choices=(3, 3), words=16),
+}
+STORIES_PER_LEVEL = 4
+QUESTION_KINDS = {"who", "where", "what", "why", "feel"}
+# Level 1 is for early readers: most words decodable at an early phonics group (or tricky words).
+EARLY_GROUPS = {"af": {1: 4}}.get(LANG, {1: 5})
+EARLY_SHARE = {1: 0.75}
+# Hand-drawn or emoji objects with faces; the oldest level (ages 9-10) keeps faces to people and animals.
+FACED_OBJECTS = {"pic_sun", "pic_mouth", "pic_morning_2", "pic_bedtime_1", "pic_biscuits_6", "pic_kiss", "pic_chin"}
+FRAME_W, FRAME_H, PICTURE_HALF = 480, 220, 100  # half the scene frame; half a picture at scale 1
+backgrounds = set(scenes_doc["backgrounds"])
+new_pictures = {np_["id"]: np_["brief"] for np_ in scenes_doc["newPictures"]}
+people_cs = REPO / "godot" / "Scripts" / "Drawing" / "StoryPeople.cs"
+people_src = people_cs.read_text(encoding="utf-8") if people_cs.exists() else ""
+for pid in new_pictures:
+    if f'"{pid}"' not in people_src: err(f"stories: new picture {pid} is not drawn in godot/Scripts/Drawing/StoryPeople.cs")
+    if pid in pictures and not LANG: err(f"stories: new picture {pid} already exists; reuse it instead")
+# The game draws a picture by its id whatever the language, so the English pictures count too.
+english_pictures = set() if not LANG else {pc["id"] for pc in json.loads((CONTENT / "asset_manifest.json").read_text(encoding="utf-8"))["pictures"]}
+drawable = set(pictures) | english_pictures | set(new_pictures)
+SETS = {}
+for ss in scenes_doc["sets"]:
+    if ss["id"] in SETS: err(f"scene set {ss['id']}: duplicate id")
+    SETS[ss["id"]] = ss
+    for i, sc in enumerate(ss["scenes"], 1):
+        where = f"scene set {ss['id']} scene {i}"
+        if sc["background"] not in backgrounds: err(f"{where}: unknown background {sc['background']}")
+        if not sc["pictures"]: err(f"{where}: no pictures")
+        for pl in sc["pictures"]:
+            if pl["picture"] not in drawable: err(f"{where}: picture {pl['picture']} doesn't exist")
+            if not 0.2 <= pl["scale"] <= 1.8: err(f"{where}: {pl['picture']} scale must be 0.2-1.8")
+            half = PICTURE_HALF * pl["scale"]
+            if abs(pl["x"]) + half > FRAME_W or abs(pl["y"]) + half > FRAME_H:
+                err(f"{where}: {pl['picture']} at ({pl['x']}, {pl['y']}) spills out of the frame")
+used_sets, story_ids = {}, set()
+def early_words(story):
+    """(decodable words, all words) in a story's sentences, for the early levels."""
+    known = {t.lower() for t in tricky["stage1"]["words"] + tricky["stage2"]["words"]} | LITTLE_WORDS
+    most = EARLY_GROUPS.get(story["level"], 99)
+    good = total = 0
+    for scene_text in story["text"]:
+        for sentence in scene_text:
+            for tok in sentence.split():
+                t = tok.strip(".,!?\"'").lower() if tok != "'n" else tok
+                if not t: continue
+                total += 1
+                base = t[:-1] if t.endswith("s") and t[:-1] in WORDS else t
+                if (base in WORDS and WORDS[base]["decodableFromGroup"] <= most) or t in known: good += 1
+    return good, total
+for st in stories:
+    sid, lv = st["id"], st["level"]
+    where = f"story {sid}"
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", sid) or sid in story_ids: err(f"{where}: ids are lower case and unique")
+    story_ids.add(sid)
+    rule = STORY_LEVELS.get(lv)
+    if rule is None: err(f"{where}: level must be 1-5"); continue
+    sset = SETS.get(st["scenes"])
+    if sset is None: err(f"{where}: unknown scene set {st['scenes']}"); continue
+    if st["scenes"] in used_sets: err(f"{where}: scene set {st['scenes']} is already used by {used_sets[st['scenes']]}")
+    used_sets[st["scenes"]] = sid
+    count = len(sset["scenes"])
+    if not rule["scenes"][0] <= count <= rule["scenes"][1]: err(f"{where}: level {lv} needs {rule['scenes']} scenes, its set has {count}")
+    if len(st["text"]) != count: err(f"{where}: {len(st['text'])} scenes of text for {count} scenes")
+    n = 0
+    for i, scene_text in enumerate(st["text"], 1):
+        if not rule["sentences"][0] <= len(scene_text) <= rule["sentences"][1]:
+            err(f"{where} scene {i}: level {lv} has {rule['sentences']} sentences a scene")
+        for sentence in scene_text:
+            n += 1
+            if len(sentence.split()) > rule["words"]: err(f"{where}: \"{sentence}\" is too long for level {lv} ({rule['words']} words at most)")
+            a(f"vo_story_{sid}_{n}", sentence, f"Bip's Stories, {st['title']}: read naturally, like a story.")
+    if lv in EARLY_SHARE:
+        good, total = early_words(st)
+        if total and good / total < EARLY_SHARE[lv]:
+            err(f"{where}: only {good} of {total} words are decodable by group {EARLY_GROUPS[lv]} or tricky words (level {lv} needs {EARLY_SHARE[lv]:.0%})")
+    if lv == 5:
+        for sc in sset["scenes"]:
+            for pl in sc["pictures"]:
+                if pl["picture"] in FACED_OBJECTS: err(f"{where}: {pl['picture']} has a face; level 5 keeps faces to people and animals")
+    questions = st["questions"]
+    if len(questions) != rule["questions"]: err(f"{where}: level {lv} asks {rule['questions']} questions")
+    kinds = [qu["kind"] for qu in questions]
+    for k in kinds:
+        if k not in QUESTION_KINDS: err(f"{where}: unknown question kind {k}")
+    if lv <= 3 and any(k in ("why", "feel") for k in kinds): err(f"{where}: levels 1-3 ask literal questions only")
+    if lv == 4 and (kinds.count("why") != 1 or "feel" in kinds): err(f"{where}: level 4 asks exactly one \"why\" question")
+    if lv == 5 and kinds.count("feel") != 1: err(f"{where}: level 5 asks exactly one \"how did they feel\" question")
+    answer_n = 0
+    for j, qu in enumerate(questions, 1):
+        qwhere = f"{where} question {j}"
+        a(f"vo_story_{sid}_q{j}", qu["text"], "Bip's Stories question: ask it clearly, then pause.")
+        if not 1 <= qu["scene"] <= count: err(f"{qwhere}: scene {qu['scene']} isn't in the story")
+        choices = [qu["answer"]] + qu["others"]
+        if not rule["choices"][0] <= len(choices) <= rule["choices"][1]: err(f"{qwhere}: level {lv} has {rule['choices']} choices")
+        if len({c["text"].lower() for c in choices}) != len(choices): err(f"{qwhere}: two choices say the same")
+        if qu["answer"]["text"].lower() in {c["text"].lower() for c in qu["others"]}: err(f"{qwhere}: the answer is among the other choices")
+        pics = [c.get("picture") for c in choices]
+        if any(pics) and not all(pics): err(f"{qwhere}: give every choice a picture, or none")
+        if all(pics) and len(set(pics)) != len(pics): err(f"{qwhere}: two choices share a picture")
+        if lv <= 2 and not all(pics): err(f"{qwhere}: levels 1 and 2 answer with pictures")
+        for c in choices:
+            answer_n += 1
+            if c.get("picture") and c["picture"] not in drawable: err(f"{qwhere}: picture {c['picture']} doesn't exist")
+            clip = word_clip(c["text"])
+            if " " in c["text"] or clip not in audio:
+                a(f"vo_story_{sid}_a{answer_n}", c["text"], "Bip's Stories answer choice: short and clear.")
+for lv in STORY_LEVELS:
+    have = sum(1 for st in stories if st["level"] == lv)
+    if have != STORIES_PER_LEVEL: err(f"stories: level {lv} has {have} stories ({STORIES_PER_LEVEL} needed)")
+if len(stories) != STORIES_PER_LEVEL * len(STORY_LEVELS): err(f"stories: {len(stories)} stories, {STORIES_PER_LEVEL * len(STORY_LEVELS)} needed")
+if set(used_sets) != set(SETS): err(f"stories: scene sets without a story: {sorted(set(SETS) - set(used_sets))}")
+for sc_set in SETS.values():
+    for sc in sc_set["scenes"]:
+        for pl in sc["pictures"]:
+            p(pl["picture"], new_pictures.get(pl["picture"], pl["picture"]))
+
 # Clip and picture ids are file names: plain lower-case ASCII, so every computer spells them the same.
 for id_ in list(audio) + list(pictures):
     if not re.fullmatch(r"[a-z0-9_]+", id_): err(f"asset id {id_!r}: file names are lower-case ASCII letters, digits and _")

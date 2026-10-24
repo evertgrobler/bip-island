@@ -3392,6 +3392,1281 @@
       "notes": ""
     },
     {
+      "id": "vo_story_bal_in_die_boom_1",
+      "text": "Ruan en Thabo skop die bal.",
+      "notes": "Bip's Stories, Die Bal in die Boom: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_bal_in_die_boom_2",
+      "text": "Die bal sit vas in 'n boom.",
+      "notes": "Bip's Stories, Die Bal in die Boom: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_bal_in_die_boom_3",
+      "text": "Pa haal die bal met 'n leer af.",
+      "notes": "Bip's Stories, Die Bal in die Boom: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_bal_in_die_boom_a5",
+      "text": "Ouma",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_bal_in_die_boom_q1",
+      "text": "Waar sit die bal vas?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_bal_in_die_boom_q2",
+      "text": "Wie haal die bal af?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_1",
+      "text": "Dis Saterdag en die span speel sokker.",
+      "notes": "Bip's Stories, Die Groot Wedstryd: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_2",
+      "text": "Nandi, Thabo en Ruan is gereed.",
+      "notes": "Bip's Stories, Die Groot Wedstryd: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_3",
+      "text": "Thabo val en sy knie bloei.",
+      "notes": "Bip's Stories, Die Groot Wedstryd: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_4",
+      "text": "Die afrigter help hom na die bank.",
+      "notes": "Bip's Stories, Die Groot Wedstryd: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_5",
+      "text": "Nandi kry die bal.",
+      "notes": "Bip's Stories, Die Groot Wedstryd: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_6",
+      "text": "Sy hardloop so vinnig as wat sy kan.",
+      "notes": "Bip's Stories, Die Groot Wedstryd: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_7",
+      "text": "Sy skop en dis 'n doel!",
+      "notes": "Bip's Stories, Die Groot Wedstryd: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_8",
+      "text": "Almal juig, ook Thabo op die bank.",
+      "notes": "Bip's Stories, Die Groot Wedstryd: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a1",
+      "text": "Thabo",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a2",
+      "text": "Nandi",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a3",
+      "text": "Ruan",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a4",
+      "text": "Sy knie is seer.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a5",
+      "text": "Hy is honger.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a6",
+      "text": "Hy is moeg.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a7",
+      "text": "Hulle juig.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a8",
+      "text": "Hulle huil.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_a9",
+      "text": "Hulle gaan slaap.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_q1",
+      "text": "Wie val?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_q2",
+      "text": "Hoekom sit Thabo op die bank?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_groot_wedstryd_q3",
+      "text": "Wat doen almal aan die einde?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_neskassie_1",
+      "text": "Pieter se pa het 'n paar ou planke.",
+      "notes": "Bip's Stories, Die Neskassie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_neskassie_2",
+      "text": "Saam saag hulle die planke kort.",
+      "notes": "Bip's Stories, Die Neskassie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_neskassie_3",
+      "text": "Pieter slaan die spykers met die hamer in.",
+      "notes": "Bip's Stories, Die Neskassie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_neskassie_4",
+      "text": "Hy werk stadig en versigtig.",
+      "notes": "Bip's Stories, Die Neskassie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_neskassie_5",
+      "text": "Pa klim op die leer en hang die kassie in die boom.",
+      "notes": "Bip's Stories, Die Neskassie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_neskassie_6",
+      "text": "Na 'n week bou twee voëls 'n nes in die kassie.",
+      "notes": "Bip's Stories, Die Neskassie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_neskassie_7",
+      "text": "Pieter kyk elke dag na hulle.",
+      "notes": "Bip's Stories, Die Neskassie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_neskassie_a4",
+      "text": "Om die kassie in die boom te hang.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_neskassie_a5",
+      "text": "Om 'n bal af te haal.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_neskassie_a6",
+      "text": "Om die kat te help.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_neskassie_a7",
+      "text": "voëls",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_neskassie_a9",
+      "text": "slakke",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_neskassie_q1",
+      "text": "Waarmee slaan Pieter die spykers in?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_neskassie_q2",
+      "text": "Hoekom klim Pa op die leer?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_neskassie_q3",
+      "text": "Wie bou 'n nes in die kassie?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_1",
+      "text": "Meneer Smit kies Kabelo om in die skoolkonsert die trom te speel.",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_2",
+      "text": "Elke middag oefen hy agter in die tuin.",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_3",
+      "text": "Die kat skrik en hardloop weg.",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_4",
+      "text": "Op die aand van die konsert bewe Kabelo se hande.",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_5",
+      "text": "Ouma sê saggies: \"Luister net na die musiek.\"",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_6",
+      "text": "Die gordyn gaan oop en die koor begin sing.",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_7",
+      "text": "Kabelo laat 'n stokkie val, maar hy speel met sy hand verder.",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_8",
+      "text": "Aan die einde klap almal hande.",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_9",
+      "text": "Kabelo is baie trots.",
+      "notes": "Bip's Stories, Die Skoolkonsert: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a1",
+      "text": "Ouma",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a2",
+      "text": "Meneer Smit",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a3",
+      "text": "Zara",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a4",
+      "text": "trots",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a5",
+      "text": "bang",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a6",
+      "text": "hartseer",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a7",
+      "text": "Hy het 'n stokkie laat val.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a8",
+      "text": "Sy hand was seer.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_a9",
+      "text": "Die trom was stukkend.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_q1",
+      "text": "Wie sê Kabelo moet net na die musiek luister?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_q2",
+      "text": "Hoe voel Kabelo aan die einde?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_skoolkonsert_q3",
+      "text": "Hoekom speel Kabelo met sy hand?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_1",
+      "text": "Graad 4 gaan strand toe, maar oral lê blikkies en plastieksakke.",
+      "notes": "Bip's Stories, Die Strand Word Skoon: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_2",
+      "text": "Juffrou Mokoena deel handskoene en vullissakke uit.",
+      "notes": "Bip's Stories, Die Strand Word Skoon: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_3",
+      "text": "Agter 'n rots kry Pieter 'n krap wat in 'n ou visnet vasgedraai is.",
+      "notes": "Bip's Stories, Die Strand Word Skoon: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_4",
+      "text": "Saggies trek Zara en Pieter die net los.",
+      "notes": "Bip's Stories, Die Strand Word Skoon: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_5",
+      "text": "Die krap skarrel terug see toe.",
+      "notes": "Bip's Stories, Die Strand Word Skoon: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_6",
+      "text": "Teen middagete het die klas twaalf groot sakke vol.",
+      "notes": "Bip's Stories, Die Strand Word Skoon: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_7",
+      "text": "Terug by die skool maak hulle 'n plakkaat: \"Hou ons strand skoon!\"",
+      "notes": "Bip's Stories, Die Strand Word Skoon: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a1",
+      "text": "bly",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a2",
+      "text": "kwaad",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a3",
+      "text": "bang",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a4",
+      "text": "handskoene en sakke",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a5",
+      "text": "toebroodjies",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a6",
+      "text": "boeke",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a7",
+      "text": "Sodat almal die strand skoon hou.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a8",
+      "text": "Vir 'n verjaardag.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_a9",
+      "text": "Om iets te verkoop.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_q1",
+      "text": "Hoe voel Zara toe die krap terug see toe skarrel?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_q2",
+      "text": "Wat deel Juffrou Mokoena uit?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_die_strand_word_skoon_q3",
+      "text": "Hoekom maak die klas 'n plakkaat?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_krap_stap_see_toe_1",
+      "text": "Die krap sit op 'n rots.",
+      "notes": "Bip's Stories, Die Krap: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_krap_stap_see_toe_2",
+      "text": "Dit stap na die see.",
+      "notes": "Bip's Stories, Die Krap: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_krap_stap_see_toe_q1",
+      "text": "Waarheen stap die krap?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_1",
+      "text": "Vandag word Lina agt, maar Pa sê niks by die ontbyttafel nie.",
+      "notes": "Bip's Stories, Lina se Verrassing: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_2",
+      "text": "Sy eet stil haar pap.",
+      "notes": "Bip's Stories, Lina se Verrassing: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_3",
+      "text": "Met haar sak op die rug stap sy skool toe.",
+      "notes": "Bip's Stories, Lina se Verrassing: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_4",
+      "text": "Sy maak die klasdeur oop en almal skree: \"Verras!\"",
+      "notes": "Bip's Stories, Lina se Verrassing: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_5",
+      "text": "Juffrou het 'n groot sjokoladekoek gebak.",
+      "notes": "Bip's Stories, Lina se Verrassing: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_6",
+      "text": "Na skool wag Pa by die huis met 'n hondjie.",
+      "notes": "Bip's Stories, Lina se Verrassing: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_7",
+      "text": "Hy het die geheim die hele dag gehou!",
+      "notes": "Bip's Stories, Lina se Verrassing: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_a4",
+      "text": "Hy wou haar verras.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_a5",
+      "text": "Hy was kwaad.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_a6",
+      "text": "Hy was siek.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_a7",
+      "text": "'n hondjie",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_a8",
+      "text": "'n fiets",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_a9",
+      "text": "'n vlieër",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_q1",
+      "text": "Wat eet Lina vir ontbyt?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_q2",
+      "text": "Hoekom sê Pa niks by die ontbyttafel nie?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_lina_se_verrassing_q3",
+      "text": "Wat kry Lina van Pa?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_markdag_1",
+      "text": "Saterdagoggend stap Ma en Kabelo mark toe.",
+      "notes": "Bip's Stories, Markdag: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_markdag_2",
+      "text": "Daar is appels, piesangs en pruime.",
+      "notes": "Bip's Stories, Markdag: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_markdag_3",
+      "text": "Ma koop 'n sak appels.",
+      "notes": "Bip's Stories, Markdag: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_markdag_4",
+      "text": "Kabelo betaal met 'n muntstuk.",
+      "notes": "Bip's Stories, Markdag: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_markdag_5",
+      "text": "By die huis bak Ma 'n appeltert.",
+      "notes": "Bip's Stories, Markdag: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_markdag_6",
+      "text": "Die hele kombuis ruik heerlik.",
+      "notes": "Bip's Stories, Markdag: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_markdag_a1",
+      "text": "Kabelo",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_markdag_a3",
+      "text": "Ouma",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_markdag_a5",
+      "text": "piesangs",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_markdag_a6",
+      "text": "pruime",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_markdag_a7",
+      "text": "'n appeltert",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_markdag_q1",
+      "text": "Wie betaal by die mark?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_markdag_q2",
+      "text": "Wat koop Ma?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_markdag_q3",
+      "text": "Wat bak Ma by die huis?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_mia_se_koek_1",
+      "text": "Ouma en Mia klits eiers in 'n bak.",
+      "notes": "Bip's Stories, Mia se Koek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_mia_se_koek_2",
+      "text": "Hulle bak 'n groot koek.",
+      "notes": "Bip's Stories, Mia se Koek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_mia_se_koek_3",
+      "text": "Dit is Mia se verjaardag.",
+      "notes": "Bip's Stories, Mia se Koek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_mia_se_koek_4",
+      "text": "Haar maats kom koek eet.",
+      "notes": "Bip's Stories, Mia se Koek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_mia_se_koek_a1",
+      "text": "Ouma",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_mia_se_koek_q1",
+      "text": "Wie help vir Mia?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_mia_se_koek_q2",
+      "text": "Wat eet die maats?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_modderhond_1",
+      "text": "Die hond is in die modder.",
+      "notes": "Bip's Stories, Die Modderhond: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_modderhond_2",
+      "text": "Ma was die hond by die kraan.",
+      "notes": "Bip's Stories, Die Modderhond: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_modderhond_q1",
+      "text": "Wie is in die modder?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_nandi_se_sak_1",
+      "text": "Nandi het 'n sak.",
+      "notes": "Bip's Stories, Nandi se Sak: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_nandi_se_sak_2",
+      "text": "'n Pop en 'n koppie is in die sak.",
+      "notes": "Bip's Stories, Nandi se Sak: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_nandi_se_sak_q1",
+      "text": "Wat is in die sak saam met die koppie?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_1",
+      "text": "Zara en Ouma plant sade in die tuin.",
+      "notes": "Bip's Stories, Ouma se Tuin: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_2",
+      "text": "Hulle gee die sade water met 'n beker.",
+      "notes": "Bip's Stories, Ouma se Tuin: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_3",
+      "text": "Die aand reën dit sag op die tuin.",
+      "notes": "Bip's Stories, Ouma se Tuin: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_4",
+      "text": "'n Week later is daar klein groen plantjies!",
+      "notes": "Bip's Stories, Ouma se Tuin: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_5",
+      "text": "Ouma gee vir Zara 'n drukkie.",
+      "notes": "Bip's Stories, Ouma se Tuin: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_a1",
+      "text": "in die tuin",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_a2",
+      "text": "by die see",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_a3",
+      "text": "in die klas",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_a4",
+      "text": "in die aand",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_a5",
+      "text": "in die oggend",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_a6",
+      "text": "op skool",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_a7",
+      "text": "plantjies",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_a8",
+      "text": "slakke",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_q1",
+      "text": "Waar plant hulle die sade?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_q2",
+      "text": "Wanneer reën dit?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_ouma_se_tuin_q3",
+      "text": "Wat sien hulle 'n week later?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_1",
+      "text": "Oupa en Ruan stoot die bootjie in die water.",
+      "notes": "Bip's Stories, Oupa se Bootjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_2",
+      "text": "Ruan het sy net by hom.",
+      "notes": "Bip's Stories, Oupa se Bootjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_3",
+      "text": "Die see is kalm.",
+      "notes": "Bip's Stories, Oupa se Bootjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_4",
+      "text": "Ruan gooi sy net uit en vang twee visse.",
+      "notes": "Bip's Stories, Oupa se Bootjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_5",
+      "text": "Op die strand kry hulle 'n krap.",
+      "notes": "Bip's Stories, Oupa se Bootjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_6",
+      "text": "Hulle sit die krap terug in die water.",
+      "notes": "Bip's Stories, Oupa se Bootjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_a7",
+      "text": "in die water",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_a8",
+      "text": "in die boot",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_a9",
+      "text": "op 'n rots",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_q1",
+      "text": "Wat gooi Ruan uit?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_q2",
+      "text": "Hoeveel visse vang hy?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_oupa_se_bootjie_q3",
+      "text": "Waar sit hulle die krap?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_padda_op_die_stomp_1",
+      "text": "'n Padda sit op 'n stomp.",
+      "notes": "Bip's Stories, Op die Stomp: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_padda_op_die_stomp_2",
+      "text": "Die eend kom op die stomp.",
+      "notes": "Bip's Stories, Op die Stomp: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_padda_op_die_stomp_q1",
+      "text": "Wie sit eerste op die stomp?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_pannekoek_1",
+      "text": "Pa, Mia en Kabelo bak pannekoek.",
+      "notes": "Bip's Stories, Pannekoek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_pannekoek_2",
+      "text": "In die bak gaan eiers, melk en meel.",
+      "notes": "Bip's Stories, Pannekoek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_pannekoek_3",
+      "text": "Die pan word warm op die stoof.",
+      "notes": "Bip's Stories, Pannekoek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_pannekoek_4",
+      "text": "Mia gooi die eerste pannekoek in.",
+      "notes": "Bip's Stories, Pannekoek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_pannekoek_5",
+      "text": "Kabelo speel met die hond en vergeet van die pan.",
+      "notes": "Bip's Stories, Pannekoek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_pannekoek_6",
+      "text": "Die pannekoek brand en die kombuis is vol rook!",
+      "notes": "Bip's Stories, Pannekoek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_pannekoek_7",
+      "text": "Die volgende pannekoeke is perfek.",
+      "notes": "Bip's Stories, Pannekoek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_pannekoek_8",
+      "text": "Hulle eet dit met konfyt.",
+      "notes": "Bip's Stories, Pannekoek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_pannekoek_a1",
+      "text": "Mia en Kabelo",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_a2",
+      "text": "Ma en Ouma",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_a3",
+      "text": "Nandi en Zara",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_a4",
+      "text": "Kabelo het van die pan vergeet.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_a5",
+      "text": "Die stoof was koud.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_a6",
+      "text": "Die melk was op.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_a7",
+      "text": "rook",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_a8",
+      "text": "water",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_a9",
+      "text": "sand",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_pannekoek_q1",
+      "text": "Wie bak saam met Pa?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_pannekoek_q2",
+      "text": "Hoekom brand die eerste pannekoek?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_pannekoek_q3",
+      "text": "Waarmee is die kombuis vol?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_slakke_soek_1",
+      "text": "Juffrou Botha lees vir die klas 'n storie oor slakke.",
+      "notes": "Bip's Stories, Slakke Soek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slakke_soek_2",
+      "text": "Buite in die tuin soek die kinders slakke.",
+      "notes": "Bip's Stories, Slakke Soek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slakke_soek_3",
+      "text": "Lina kry een op 'n blaar.",
+      "notes": "Bip's Stories, Slakke Soek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slakke_soek_4",
+      "text": "In die klas teken hulle die slak met potlode.",
+      "notes": "Bip's Stories, Slakke Soek: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slakke_soek_a1",
+      "text": "Juffrou Botha",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slakke_soek_a2",
+      "text": "Pieter",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slakke_soek_a3",
+      "text": "Lina",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slakke_soek_a4",
+      "text": "slakke",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slakke_soek_a5",
+      "text": "voëls",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slakke_soek_a7",
+      "text": "Hulle teken.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slakke_soek_a8",
+      "text": "Hulle sing.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slakke_soek_a9",
+      "text": "Hulle slaap.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slakke_soek_q1",
+      "text": "Wie lees vir die klas?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_slakke_soek_q2",
+      "text": "Wat soek die kinders in die tuin?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_slakke_soek_q3",
+      "text": "Wat doen hulle in die klas?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_1",
+      "text": "Mia en haar boet Pieter pak hoede, water en toebroodjies vir 'n staptog.",
+      "notes": "Bip's Stories, Slang op die Paadjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_2",
+      "text": "Saam met Pa klim hulle die bergpaadjie uit.",
+      "notes": "Bip's Stories, Slang op die Paadjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_3",
+      "text": "Skielik staan Pa stil. 'n Slang lê oor die paadjie!",
+      "notes": "Bip's Stories, Slang op die Paadjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_4",
+      "text": "\"Staan doodstil,\" fluister hy.",
+      "notes": "Bip's Stories, Slang op die Paadjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_5",
+      "text": "Na 'n rukkie gly die slang weg in die gras in.",
+      "notes": "Bip's Stories, Slang op die Paadjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_6",
+      "text": "Bo-op die berg eet hulle hul toebroodjies en kyk na die see ver onder.",
+      "notes": "Bip's Stories, Slang op die Paadjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_7",
+      "text": "\"Daardie slang was seker banger as ons,\" lag Pieter.",
+      "notes": "Bip's Stories, Slang op die Paadjie: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a1",
+      "text": "'n slang",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a2",
+      "text": "'n stomp",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a3",
+      "text": "'n slak",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a4",
+      "text": "Daar lê 'n slang op die paadjie.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a5",
+      "text": "Hulle is moeg.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a6",
+      "text": "Dit begin reën.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a7",
+      "text": "vrolik",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a8",
+      "text": "kwaad",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_a9",
+      "text": "hartseer",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_q1",
+      "text": "Wat lê oor die paadjie?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_q2",
+      "text": "Hoekom staan almal doodstil?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_slang_op_die_paadjie_q3",
+      "text": "Hoe voel Pieter bo-op die berg?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_1",
+      "text": "Pa en Thabo sit op die bank.",
+      "notes": "Bip's Stories, Die Bus: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_2",
+      "text": "Die bus stop.",
+      "notes": "Bip's Stories, Die Bus: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_3",
+      "text": "Thabo klim op die bus.",
+      "notes": "Bip's Stories, Die Bus: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_4",
+      "text": "Thabo is in die klas.",
+      "notes": "Bip's Stories, Die Bus: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_5",
+      "text": "Sy boek is op die tafel.",
+      "notes": "Bip's Stories, Die Bus: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_a1",
+      "text": "Thabo",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_a2",
+      "text": "Nandi",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_a3",
+      "text": "Ruan",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_a4",
+      "text": "in die klas",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_a5",
+      "text": "by die see",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_q1",
+      "text": "Wie klim op die bus?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_thabo_se_bus_q2",
+      "text": "Waar is Thabo aan die einde?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_1",
+      "text": "Nandi en Zara speel met 'n vlieër.",
+      "notes": "Bip's Stories, Die Vlieër: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_2",
+      "text": "Swart wolke kom.",
+      "notes": "Bip's Stories, Die Vlieër: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_3",
+      "text": "Dit reën!",
+      "notes": "Bip's Stories, Die Vlieër: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_4",
+      "text": "Die meisies hardloop huis toe.",
+      "notes": "Bip's Stories, Die Vlieër: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_5",
+      "text": "Hulle lees 'n boek.",
+      "notes": "Bip's Stories, Die Vlieër: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_a1",
+      "text": "Dit reën.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_a2",
+      "text": "Die son skyn.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_a4",
+      "text": "winkel",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_q1",
+      "text": "Wat gebeur toe die wolke kom?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_vlieer_en_reen_q2",
+      "text": "Waarheen hardloop die meisies?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_1",
+      "text": "Elke Sondag stap Thabo en sy hond, Wagter, op die strand.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_2",
+      "text": "Skielik sien Wagter 'n seemeeu en hardloop agterna.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_3",
+      "text": "Thabo roep en roep, maar Wagter luister nie.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_4",
+      "text": "Thabo soek agter elke rots, maar hy kry hom nêrens nie.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_5",
+      "text": "Donker wolke trek oor die see en dit begin reën.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_6",
+      "text": "By die strandwag se hut hoor hy 'n bekende blaf.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_7",
+      "text": "Die strandwag hou vir Wagter vas.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_8",
+      "text": "Tuis slaap Wagter op die mat.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_9",
+      "text": "Van nou af bly hy aan sy leiband.",
+      "notes": "Bip's Stories, Wagter Hardloop Weg: read naturally, like a story."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a1",
+      "text": "bekommerd",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a2",
+      "text": "verveeld",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a3",
+      "text": "trots",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a4",
+      "text": "'n seemeeu",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a5",
+      "text": "'n krap",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a6",
+      "text": "'n vis",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a7",
+      "text": "Dit begin reën.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a8",
+      "text": "Hy val in die see.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_a9",
+      "text": "Wagter spat hom nat.",
+      "notes": "Bip's Stories answer choice: short and clear."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_q1",
+      "text": "Hoe voel Thabo toe hy Wagter nie kan kry nie?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_q2",
+      "text": "Wat sien Wagter op die strand?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
+      "id": "vo_story_wagter_hardloop_weg_q3",
+      "text": "Hoekom word Thabo nat?",
+      "notes": "Bip's Stories question: ask it clearly, then pause."
+    },
+    {
       "id": "vo_tower_1",
       "text": "Een blok",
       "notes": ""
@@ -4576,6 +5851,10 @@
       "brief": "fiets (picture for the sound f)"
     },
     {
+      "id": "pic_bin",
+      "brief": "pic_bin"
+    },
+    {
       "id": "pic_bird",
       "brief": "vink"
     },
@@ -4738,6 +6017,38 @@
     {
       "id": "pic_chick_4",
       "brief": "chick step 4: Die kuiken word 'n hen"
+    },
+    {
+      "id": "pic_child_1",
+      "brief": "Bip's Stories: a girl with dark brown skin, black hair in two puffs, a yellow dress"
+    },
+    {
+      "id": "pic_child_2",
+      "brief": "Bip's Stories: a boy with dark brown skin, short black hair, a red T-shirt and blue shorts"
+    },
+    {
+      "id": "pic_child_3",
+      "brief": "Bip's Stories: a girl with light brown skin, a long black plait, a teal top and purple skirt"
+    },
+    {
+      "id": "pic_child_4",
+      "brief": "Bip's Stories: a boy with light brown skin, curly dark hair, a green shirt and brown shorts"
+    },
+    {
+      "id": "pic_child_5",
+      "brief": "Bip's Stories: a girl with fair skin, a blonde ponytail, a pink top and blue jeans"
+    },
+    {
+      "id": "pic_child_6",
+      "brief": "Bip's Stories: a boy with fair skin and freckles, red hair, a blue shirt and grey shorts"
+    },
+    {
+      "id": "pic_child_7",
+      "brief": "Bip's Stories: a girl with brown skin, a purple headscarf and an orange dress"
+    },
+    {
+      "id": "pic_child_8",
+      "brief": "Bip's Stories: a boy with dark brown skin, a yellow cap, an orange shirt and blue shorts"
     },
     {
       "id": "pic_chin",
@@ -5008,6 +6319,18 @@
       "brief": "growing step 4: 'n Ouma"
     },
     {
+      "id": "pic_grownup_1",
+      "brief": "Bip's Stories: a woman with dark brown skin, a green headwrap and a green dress (mum, teacher)"
+    },
+    {
+      "id": "pic_grownup_2",
+      "brief": "Bip's Stories: a man with brown skin, a short beard, a blue shirt and brown trousers (dad, coach, grandpa)"
+    },
+    {
+      "id": "pic_grownup_3",
+      "brief": "Bip's Stories: a grandmother with brown skin, grey hair in a bun, glasses and a purple cardigan"
+    },
+    {
       "id": "pic_hammer",
       "brief": "hamer"
     },
@@ -5084,6 +6407,10 @@
       "brief": "konfyt"
     },
     {
+      "id": "pic_jug",
+      "brief": "pic_jug"
+    },
+    {
       "id": "pic_juice",
       "brief": "sap"
     },
@@ -5154,6 +6481,10 @@
     {
       "id": "pic_lip",
       "brief": "lip"
+    },
+    {
+      "id": "pic_log",
+      "brief": "pic_log"
     },
     {
       "id": "pic_lollipop",
@@ -5234,6 +6565,10 @@
     {
       "id": "pic_mud",
       "brief": "mud"
+    },
+    {
+      "id": "pic_mug",
+      "brief": "pic_mug"
     },
     {
       "id": "pic_mum",
@@ -5396,6 +6731,10 @@
       "brief": "tou (picture for the sound ou)"
     },
     {
+      "id": "pic_rug",
+      "brief": "pic_rug"
+    },
+    {
       "id": "pic_sandcastle_1",
       "brief": "sandcastle step 1: Maak die emmer vol sand"
     },
@@ -5434,6 +6773,10 @@
     {
       "id": "pic_sandwich_4",
       "brief": "sandwich step 4: Druk die snye saam"
+    },
+    {
+      "id": "pic_saw",
+      "brief": "pic_saw"
     },
     {
       "id": "pic_school_1",

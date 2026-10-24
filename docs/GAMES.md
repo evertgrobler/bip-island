@@ -65,6 +65,7 @@ Seven games that turn known sounds into words, then words into sentences.
 | Tricky Word Memory | Flip cards to pair words that don't sound out (the, said, was) | Sight words | 6–8 | Cards, shells, cupcakes |
 | Silly Sentences | Read a short sentence and pick the matching (silly) picture | Reading for meaning | 6–8 | New sentences every round |
 | Word Rocket | Hear a sound or word, type it on the keyboard to launch the rocket. Levels: find the letter (a sound, one key), three-letter words, longer words with digraphs and blends, tricky words | Typing and spelling | 4–8 | Rocket, hot-air balloon, submarine |
+| Bip's Stories | A short illustrated story read aloud one scene at a time (click a sentence to hear it again), then spoken questions with picture or word answers | Reading for meaning: who, where, what, then why and how a character feels | 5–10 | Story book |
 
 ## Coding
 
@@ -252,6 +253,24 @@ Choices for the owner:
 - **D. Build Bip's Balance and Picnic Plates together**, in one longer piece of work.
 
 **Decided (owner, 10 October 2026):** the owner left the choice to Claude, so it is **A: Bip's Balance first**, levels 1–5, then the order above.
+
+## Bip's Stories (built 24 October 2026)
+
+Reading for meaning on Words Island, ages 5 to 10 (owner: reading from 5, just easier). The narrator reads a short story one scene at a time: each scene is a picture with one to three sentences under it, each sentence lighting up as it is read; clicking a sentence reads it again, and the green arrow turns the page. Then the questions, one at a time: Bip asks, says each answer as its card lights up, and the child clicks one. No typing, no microphone, no timers. A wrong answer gets the soft sound and a retry; after two misses Bip says "Let's look at this part of the story again", the scene that holds the answer comes back above the cards and is read again, then the question.
+
+| Level | Band | Ages | Scenes | Sentences a scene | Questions | Choices |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | foundation | 5 | 2 | 1, very short (at most 9 words), mostly decodable (75% of words from phonics groups 1-5, or 1-4 in Afrikaans, or tricky words) | 1 literal | 2 pictures |
+| 2 | stage1 | 6 | 3 | 1-2 short | 2 literal | 2-3 pictures |
+| 3 | stage2 | 7 | 3 | 1-3 | 3 literal (who, where, what) | 3 |
+| 4 | stage3 | 8 | 4 | 1-3 | 3, exactly one "why" | 3 |
+| 5 | (stage3) | 9-10 | 5-6 | 1-3 | 3, exactly one "how did they feel" | 3 |
+
+- **Content:** `Content/stories/stories.json` (English) and `Content/af/stories/stories.json` (Afrikaans, hidden with the rest of Afrikaans until it is switched on): 20 stories each, four a level, written separately in each language on the same scenes, so each Afrikaans story is its own story on the same pictures. The Afrikaans ones wait for the owner's check before recording. Themes: a muddy dog, a crab, a bag, a frog, the bus to school, a birthday cake, a ball in a tree, kite and rain, market day, Grandpa's boat, a snail hunt at school, Gogo's garden, a soccer match, pancakes, a nest box, a surprise birthday, a lost dog on the beach, a school concert, a snake on a hike, a beach clean-up.
+- **Scenes are data:** `Content/stories/scenes.json` lists each scene's background (13 drawn ones: park, beach, sea, room, kitchen, classroom, rain, field, market, garden, road, hill, stage, in `Scripts/Drawing/StoryScenes.cs`) and its placed pictures (id, x, y, scale, flip). Pictures are the game's own; eight children and three grown-ups of different South African looks are drawn for the stories (`Scripts/Drawing/StoryPeople.cs`). Level 5 scenes keep faces to people and animals (no sun with a face).
+- **Game type:** `StoriesGame` deals a fresh story at the child's level (an easier one when the level has none left); a round is one question with its choices shuffled, exactly one right. A visit asks three questions (three level-1 stories, two level-2 stories, or one longer story). Skills: `story_literal` (who, where, what) and `story_inference` (why, feel).
+- **Clips:** `vo_story_<id>_<n>` for each sentence, `vo_story_<id>_q<n>` for each question, and for each answer its word clip when it is one word that has one (`word_dog`), else `vo_story_<id>_a<n>`. New lines: `vo_bips_stories`, `vo_story_questions`, `vo_story_look_again`.
+- **Checks:** the validator checks the scene, sentence, question and choice counts per level, sentence lengths and early decodability, question kinds, that each answer is in its choices and unlike the others, that every picture exists and fits its frame, both languages' 20 stories, and lists every clip in each language's manifest. `StoriesGameTests` plays 60 visits a level in both languages.
 
 ## Language Island (added 18 October 2026)
 

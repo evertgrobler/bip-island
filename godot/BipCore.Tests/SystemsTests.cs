@@ -265,10 +265,10 @@ public sealed class SystemsTests
     public void StickerBookTracksMastery()
     {
         var content = Library();
-        Assert.Equal(63 + 68, StickerBook.AllStickers(content).Count); // 63 sounds, 68 skills (10 on Art Island, 3 on the Language Island)
+        Assert.Equal(63 + 70, StickerBook.AllStickers(content).Count); // 63 sounds, 70 skills (10 on Art Island, 3 on the Language Island, 2 for Bip's Stories)
         var progress = new ChildProgress();
         Assert.Empty(StickerBook.Earned(progress, content));
-        Assert.Equal(63 + 68, StickerBook.Missing(progress, content).Count);
+        Assert.Equal(63 + 70, StickerBook.Missing(progress, content).Count);
         Master(progress, "count_10", [0, 1]);
         var earned = StickerBook.Earned(progress, content);
         Assert.Contains("skill_count_10", earned);

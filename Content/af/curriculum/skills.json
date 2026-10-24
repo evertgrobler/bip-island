@@ -875,6 +875,30 @@
       ],
       "prerequisites": [],
       "ageSkip": false
+    },
+    {
+      "id": "story_literal",
+      "island": "words",
+      "band": "foundation",
+      "name": "Stories: who, where and what",
+      "objectives": [
+        "ENG.RC.01",
+        "HL.RV.01"
+      ],
+      "prerequisites": []
+    },
+    {
+      "id": "story_inference",
+      "island": "words",
+      "band": "stage3",
+      "name": "Stories: why, and how they felt",
+      "objectives": [
+        "ENG.RC.02",
+        "HL.RV.01"
+      ],
+      "prerequisites": [
+        "story_literal"
+      ]
     }
   ]
 }

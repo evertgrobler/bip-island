@@ -208,7 +208,7 @@ public partial class GameIslandScreen : BaseScreen
         Node2D[] games = _island switch
         {
             Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton()],
-            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton()],
+            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton(), StoriesButton()],
             Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
@@ -288,7 +288,7 @@ public partial class GameIslandScreen : BaseScreen
             text.Position = P(x, 0);
             buttons.AddChild(text);
         }
-        return Plate("buttons", 819, buttons, 0.8f);
+        return Plate("buttons", 819, buttons, 0.8f, WordsPlate);
     }
 
     private static Node2D BuilderButton()
@@ -302,7 +302,7 @@ public partial class GameIslandScreen : BaseScreen
             text.Position = P(x, 0);
             builder.AddChild(text);
         }
-        return Plate("builder", 818, builder, 0.85f);
+        return Plate("builder", 818, builder, 0.85f, WordsPlate);
     }
 
     /// <summary>Word Rocket: a little rocket standing ready, with a letter in its window.</summary>
@@ -318,7 +318,24 @@ public partial class GameIslandScreen : BaseScreen
         var letter = Sketch.Letter("a", 46, shadow: Palette.Sun);
         letter.Position = P(0, 6);
         rocket.AddChild(letter);
-        return Plate("rocket", 830, rocket, 1.15f);
+        return Plate("rocket", 830, rocket, 1.15f, WordsPlate);
+    }
+
+    /// <summary>Words Island has four games, so its plates are a little smaller than the other islands'.</summary>
+    private const float WordsPlate = 0.85f;
+
+    /// <summary>Bip's Stories: an open story book, a little picture on one page and lines of words on the other.</summary>
+    private static Node2D StoriesButton()
+    {
+        var book = new Node2D();
+        book.AddChild(Pen(Polygon(P(-120, -60), P(0, -80), P(120, -60), P(120, 70), P(0, 50), P(-120, 70)), 871, fill: Palette.Teal, lineWidth: 5));
+        book.AddChild(Pen(Polygon(P(-108, -48), P(-4, -66), P(-4, 54), P(-108, 60)), 872, fill: Palette.White, lineWidth: 4));
+        book.AddChild(Pen(Polygon(P(4, -66), P(108, -48), P(108, 60), P(4, 54)), 873, fill: Palette.White, lineWidth: 4));
+        book.AddChild(Pen(Ellipse(P(-56, 14), 30, 24), 874, fill: Palette.Sun, lineWidth: 3.5, wobble: 1));
+        book.AddChild(Pen(Polygon(P(-96, -36), P(-60, 0), P(-30, -26), P(-16, -40)), 875, fill: Palette.Grass, lineWidth: 3.5, wobble: 1));
+        foreach (var (i, y) in Indexed(28.0, 6.0, -16.0, -38.0))
+            book.AddChild(Pen(Polyline(P(20, y), P(i == 3 ? 66 : 94, y + 2)), (ulong)(876 + i), lineWidth: 4, wobble: 1));
+        return Plate("stories", 870, book, 1.1f, WordsPlate);
     }
 
     private static Node2D OrderButton()
@@ -353,10 +370,10 @@ public partial class GameIslandScreen : BaseScreen
     /// A game's button on the Words and Coding islands: its little picture on a big white plate, like the
     /// Numbers and Art islands, so the whole plate is one obvious thing to tap (not just the letters).
     /// </summary>
-    private static Node2D Plate(string name, ulong seed, Node2D picture, float scale)
+    private static Node2D Plate(string name, ulong seed, Node2D picture, float scale, float size = 1)
     {
-        var plate = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 190, 170), seed, fill: Palette.Card, lineWidth: 6)), name);
-        picture.Scale = Vector2.One * scale;
+        var plate = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 190 * size, 170 * size), seed, fill: Palette.Card, lineWidth: 6)), name);
+        picture.Scale = Vector2.One * scale * size;
         plate.AddChild(picture);
         return plate;
     }
@@ -426,6 +443,7 @@ public partial class GameIslandScreen : BaseScreen
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
         "rocket" => WordRocketGame.GameId,
+        "stories" => StoriesGame.GameId,
         "order" => MorningOrderGame.GameId,
         _ => BipsPathGame.GameId,
     };

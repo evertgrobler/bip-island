@@ -797,6 +797,44 @@
       ]
     },
     {
+      "id": "bips_stories",
+      "island": "words",
+      "name": "Bip's Stories",
+      "ages": "5-10",
+      "skills": [
+        "story_literal",
+        "story_inference"
+      ],
+      "objectives": [
+        "ENG.RC.01",
+        "ENG.RC.02",
+        "HL.RV.01"
+      ],
+      "content": "stories/stories.json, stories/scenes.json",
+      "buildPhase": 4,
+      "levels": [
+        {
+          "band": "foundation",
+          "note": "Age 5: 2 scenes, one very short sentence each, mostly decodable words; one question, 2 pictures"
+        },
+        {
+          "band": "stage1",
+          "note": "Age 6: 3 scenes, 1-2 short sentences each; 2 literal questions, 2-3 pictures"
+        },
+        {
+          "band": "stage2",
+          "note": "Age 7: 3 scenes; 3 literal questions (who, where, what)"
+        },
+        {
+          "band": "stage3",
+          "note": "Age 8: 4 scenes; 3 questions, one of them \"why\""
+        },
+        {
+          "note": "Ages 9-10: 5-6 scenes; 3 questions, one of them \"how did they feel\""
+        }
+      ]
+    },
+    {
       "id": "pattern_party",
       "island": "coding",
       "name": "Pattern Party",

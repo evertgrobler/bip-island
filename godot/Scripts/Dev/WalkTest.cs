@@ -618,6 +618,7 @@ public static class WalkTest
             }
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Word Builder goes back to words island");
             await PlayWordRocket();
+            await PlayStories();
             if (await Tap("home")) await Expect<MapScreen>("home from words island after the games");
         }
 
@@ -691,6 +692,38 @@ public static class WalkTest
             Check("a word typed right first time launches and earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 3),
                   $"{word}: stars {stars} → {game.Progress.Stars}");
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Word Rocket goes back to words island");
+        }
+
+        // Bip's Stories: read a story page by page (a sentence clicked to hear it again), then answer its
+        // first question: two misses bring back the scene that holds the answer, then the right answer.
+        async Task PlayStories()
+        {
+            if (await Tap("stories")) await Expect<StoriesScreen>("Bip's Stories opens from the island");
+            Check("the story opens on its first page, with its sentences",
+                  await WaitFor(() => Screen() is StoriesScreen { CurrentPhase: StoriesScreen.Phase.Reading, LineCount: > 0, InputLocked: false }, 3));
+            if (Screen() is not StoriesScreen story) return;
+            var pages = story.PageCount;
+            if (await Tap("line:0")) Check("clicking a sentence reads it again and stays on the page", story is { CurrentPhase: StoriesScreen.Phase.Reading, Page: 0 });
+            for (var page = 1; page < pages; page++)
+            {
+                await Tap("next");
+                Check($"the arrow turns to page {page + 1}", story.Page == page && story.LineCount == story.Story!.Text[page].Count, $"page {story.Page}");
+            }
+            await Tap("next");
+            Check("after the last page come the questions", await WaitFor(() => story is { CurrentPhase: StoriesScreen.Phase.Asking, RightIndex: >= 0 }, 3),
+                  $"{story.CurrentPhase}, {pages} pages");
+            if (story.RightIndex < 0) return;
+            var stars = game.Progress.Stars;
+            var wrong = story.RightIndex == 0 ? 1 : 0;
+            await Tap($"answer:{wrong}");
+            Check("a wrong answer boops, no star, no hint yet", story is { InputLocked: false, ShowingHintScene: false } && game.Progress.Stars == stars);
+            await Tap($"answer:{wrong}");
+            Check("two misses bring back the scene that holds the answer", story.ShowingHintScene);
+            await Tap($"answer:{story.RightIndex}");
+            Check("the right answer after the hint: no star, but the answer is saved",
+                  await WaitFor(() => game.Progress.Skill("story_literal").TotalAttempts + game.Progress.Skill("story_inference").TotalAttempts == 1, 6)
+                  && game.Progress.Stars == stars);
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Stories goes back to words island");
         }
 
         async Task PlayLetters()
