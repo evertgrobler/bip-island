@@ -577,3 +577,13 @@
   visse, kuiken, kuikens (schwa e), koei, rooi (i glide); the lists are otherwise unchanged. Clip ids are plain
   ASCII (`word_vlieer`; the validator rejects any other). `af_spelling` flags "N kat" and accepts "’n" and the
   letter n; its tests run with the validator. The validator runs every other language and fails once at the end.
+- **24 Oct, 11:20 SAST (PR #56 review fixes, Language Island):** merged main. The wrong-answer replay and
+  hint wait 0.4 s and are skipped once the question is answered (`GameScreen.WhileUnanswered`; a quick
+  wrong-then-right click used to cut off the praise and leave the game stuck), and the Language screens use the
+  shared `AnswerChoice` (`onRetry`, `hint`). Bip's Day never deals a choice whose words or picture match the
+  answer (`BipsDayGame.CanShareRound`). Level rules are in games.json (`storiesUpTo`, `sameThemeFirst`).
+  Skills with `"ageSkip": false` (the Language Island's) are never known by age. The closed Language Island
+  stays out of the parent report and the sticker book (`GameCoordinator.ClosedIslandsFor`). Long words shrink to
+  fit What Is It?'s bubbles (`Sketch.FittedLabel`, under the text-colour rule). Colour splashes read
+  `art/paints.json`; white sits on a soft grey swatch. The validator also checks Bip's Day clip names, theme
+  levels and colour pictures; the af skills overlay carries the Language Island skills.
