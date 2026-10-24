@@ -99,7 +99,7 @@ export_both() {
 }
 step "Export for Mac and Windows" export_both
 step "Pack the Windows installer" vpk "[win]" pack -x --packId BipIslandCheck --packVersion 0.0.1 \
-  --packDir godot/build/windows --mainExe "Bip Island.exe" --packTitle "Bip Island" --skipVeloAppCheck \
+  --packDir godot/build/windows --mainExe "Bip Island.exe" --packTitle "Bip Island" --skipVeloAppCheck --icon godot/icons/app-icon.ico \
   --outputDir "$out/windows-package"
 
 diff_hygiene() {

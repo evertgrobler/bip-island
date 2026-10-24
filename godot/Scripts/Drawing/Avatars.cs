@@ -7,7 +7,7 @@ namespace BipIsland.Drawing;
 /// <summary>
 /// The animal pictures children pick their profile by (ProfileRules avatars): a big animal on a
 /// coloured circle, so a child who can't read yet can still find their own. A port of the Swift
-/// app's Avatars, with the animal drawn in the bundled Noto Color Emoji font.
+/// app's Avatars, with each animal hand-drawn (ArtPictures.Animal).
 /// </summary>
 public static class Avatars
 {
@@ -29,7 +29,11 @@ public static class Avatars
         var node = new Node2D();
         node.AddChild(Pen(Ellipse(Vector2.Zero, radius, radius), seed,
                           fill: Colours.TryGetValue(id, out var colour) ? colour : Palette.Sun));
-        node.AddChild(EmojiPictures.Glyph(Emoji.TryGetValue(id, out var animal) ? animal : "🦁", (int)(radius * 1.15f)));
+        if ((ArtPictures.Animal(id) ?? ArtPictures.Animal("lion")) is { } animal)
+        {
+            animal.Scale = Vector2.One * (radius * 0.92f / 100);
+            node.AddChild(animal);
+        }
         return node;
     }
 }
