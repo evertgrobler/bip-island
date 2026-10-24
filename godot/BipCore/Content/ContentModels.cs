@@ -113,6 +113,15 @@ public sealed record Skill
     public required string Name { get; init; }
     public required List<string> Objectives { get; init; }
     public required List<string> Prerequisites { get; init; }
+    /// <summary>
+    /// False for skills a child's age says nothing about (the Language Island's second language): they
+    /// never count as known just because they sit below the child's starting band.
+    /// </summary>
+    public bool? AgeSkip { get; init; }
+
+    /// <summary>Counts as known for a child whose starting band is above it (true unless <c>ageSkip: false</c>).</summary>
+    [JsonIgnore]
+    public bool SkippedByAge => AgeSkip != false;
 }
 
 // MARK: - curriculum/games.json
@@ -206,6 +215,10 @@ public sealed record GameLevel
     public int? From { get; init; }
     /// <summary>Block Towers: the steps a growing pattern of towers can take.</summary>
     public List<int>? Steps { get; init; }
+    /// <summary>Bip's Day: the oldest band of story it deals from (none = every story).</summary>
+    public Band? StoriesUpTo { get; init; }
+    /// <summary>Show Me and What Is It?: the other words come from the target's theme first (red among colours).</summary>
+    public bool? SameThemeFirst { get; init; }
     /// <summary>For people reading the file.</summary>
     public string? Note { get; init; }
 

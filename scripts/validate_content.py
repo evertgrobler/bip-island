@@ -128,6 +128,9 @@ for hs in homophones:
 SK = {s["id"]: s for s in skills_doc["skills"]}
 for s in SK.values():
     check_objs(f"skill {s['id']}", s["objectives"])
+    if not isinstance(s.get("ageSkip", True), bool): err(f"skill {s['id']}: ageSkip must be true or false")
+    # A second language isn't learnt by growing older: these skills are never known by age.
+    if s["island"] == "language" and s.get("ageSkip", True): err(f"skill {s['id']}: Language Island skills need \"ageSkip\": false")
     for p in s["prerequisites"]:
         if p not in SK: err(f"skill {s['id']}: unknown prerequisite {p}")
 state = {}
@@ -162,7 +165,7 @@ if not isinstance(games_doc.get("session", {}).get("roundsPerSession"), int) or 
 game_ids = [gm["id"] for gm in games]
 if len(game_ids) != len(set(game_ids)): err("games.json: duplicate game id")
 LEVEL_KEYS = {"band", "countTo", "choices", "flashTenths", "bubbles", "speedPercent", "soundCounts", "gridBand", "cards", "spares",
-              "modes", "shapes", "pots", "mirror", "from", "steps", "note"}
+              "modes", "shapes", "pots", "mirror", "from", "steps", "storiesUpTo", "sameThemeFirst", "note"}
 BANDS = ["foundation", "stage1", "stage2", "stage3"]
 for gm in games:
     levels = gm.get("levels", [])
@@ -170,7 +173,8 @@ for gm in games:
         where = f"game {gm['id']} level {i + 1}"
         for k in lv:
             if k not in LEVEL_KEYS: err(f"{where}: unknown key {k}")
-        for k in ("band", "gridBand"):
+        if "sameThemeFirst" in lv and not isinstance(lv["sameThemeFirst"], bool): err(f"{where}: sameThemeFirst must be true or false")
+        for k in ("band", "gridBand", "storiesUpTo"):
             if k in lv and lv[k] not in BANDS: err(f"{where}: unknown {k} {lv[k]}")
         for k in ("countTo", "choices", "flashTenths", "bubbles", "speedPercent", "cards"):
             if k in lv and (not isinstance(lv[k], int) or lv[k] < 1): err(f"{where}: {k} must be a positive whole number")
@@ -512,6 +516,16 @@ for st in seqs:
 THEMES = {t["id"]: t for t in language_doc["themes"]}
 if len(THEMES) != len(language_doc["themes"]): err("language/words.json: two themes share an id")
 if not any(t["fromLevel"] == 0 for t in THEMES.values()): err("language/words.json: no theme opens at level 0")
+# Every theme opens at some level of both word games, so none stays closed for good.
+for gid in ("show_me", "what_is_it"):
+    count = len(next((g.get("levels", []) for g in games if g["id"] == gid), []))
+    for t in THEMES.values():
+        if not isinstance(t["fromLevel"], int) or not 0 <= t["fromLevel"] < max(count, 1):
+            err(f"language theme {t['id']}: fromLevel {t['fromLevel']} is past {gid}'s {count} levels")
+# Picture words for colours are drawn in Paint Pots' paints (art/paints.json).
+for w in language_doc["words"]:
+    if w["picture"].startswith("pic_colour_") and w["picture"][len("pic_colour_"):] not in COLOURS:
+        err(f"language word {w['id']}: {w['picture']} names no colour in art/paints.json")
 seen_ids, seen_pictures = set(), set()
 for w in language_doc["words"]:
     where = f"language word {w['id']}"
@@ -534,8 +548,9 @@ if LANG:
     for st in seqs:
         other = english_sets.get(st["id"])
         if other is None: err(f"sequence {st['id']}: no English story with this id (Bip's Day pairs them)"); continue
-        if [(c["n"], c["picture"]) for c in st["cards"]] != [(c["n"], c["picture"]) for c in other["cards"]]:
-            err(f"sequence {st['id']}: cards differ from the English story (Bip's Day pairs them card by card)")
+        # The same picture and clip name card by card: Bip's Day plays the card's clip from the other language's folder.
+        if [(c["n"], c["picture"], c["audio"]) for c in st["cards"]] != [(c["n"], c["picture"], c["audio"]) for c in other["cards"]]:
+            err(f"sequence {st['id']}: cards differ from the English story (Bip's Day pairs them card by card, picture and clip)")
 
 for sh in SHAPES.values():
     a(f"word_{sh['name'].replace(' ', '_')}", sh["name"])

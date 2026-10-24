@@ -187,6 +187,16 @@ public partial class GameCoordinator : Node
         }
     }
 
+    /// <summary>
+    /// Islands a child of this language can't visit: the Language Island until the language they would
+    /// learn is in the game. The parent report and the sticker book leave them out.
+    /// </summary>
+    public IReadOnlyCollection<Island> ClosedIslandsFor(HomeLanguage language) =>
+        AvailableLanguages.Contains(Languages.Learning(language)) || _previewLanguage ? [] : [Island.Language];
+
+    /// <summary>The playing child's closed islands (see <see cref="ClosedIslandsFor"/>).</summary>
+    public IReadOnlyCollection<Island> ClosedIslands => LanguageOpen ? [] : [Island.Language];
+
     private static bool Try(string island, Action build)
     {
         try
@@ -326,9 +336,10 @@ public partial class GameCoordinator : Node
         if (ContentFor(Children.FirstOrDefault(c => c.Id == id)?.Language ?? HomeLanguage.English) is not { } content) return null;
         var childProgress = id == ChildId ? Progress : Store.Progress(id);
         var band = Children.FirstOrDefault(c => c.Id == id)?.Age is { } age ? content.StartingBand(age) : Band.Foundation;
+        var closed = ClosedIslandsFor(Children.FirstOrDefault(c => c.Id == id)?.Language ?? HomeLanguage.English);
         try
         {
-            return new ProgressReport(content, childProgress, band, Today);
+            return new ProgressReport(content, childProgress, band, Today, closed);
         }
         catch (Exception error)
         {

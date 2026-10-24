@@ -101,37 +101,11 @@ public abstract partial class LanguagePictureScreen : GameScreen
             return;
         }
         if (!name.StartsWith("card:", StringComparison.Ordinal) || !int.TryParse(name["card:".Length..], out var index) || index >= _cards.Count) return;
-        var card = _cards[index];
-        var outcome = _attempt.Answer(IsCorrect(index));
-        switch (outcome.Kind)
-        {
-            case AnswerOutcomeKind.Correct:
-                InputLocked = true;
-                StopHint();
-                var grow = card.CreateTween();
-                grow.TweenProperty(card, "scale", Vector2.One * 1.15f, 0.15);
-                grow.TweenProperty(card, "scale", Vector2.One * 1.05f, 0.1);
-                Buttons.Sparkle(card.Position, Stage);
-                Sfx.Play(BipSounds.Effect.Chime);
-                Bip.Celebrate();
-                var change = Record(outcome.FirstTry, SkillId);
-                Voice.Play([Coordinator.RandomPraise(), Said], completion: () => AfterAnswer(change, Session, AskQuestion));
-                break;
-            case AnswerOutcomeKind.TryAgain:
-                Sfx.Play(BipSounds.Effect.Boop);
-                Buttons.Shake(card);
-                Bip.Tilt();
-                After(0.4, () => Voice.Play([Said]));
-                break;
-            default:
-                Sfx.Play(BipSounds.Effect.Boop);
-                Buttons.Shake(card);
-                Bip.Tilt();
-                if (RightIndex is var right && right >= 0) ShowHint(_cards[right]);
-                // "In English, it's… cat. Kat!"
-                After(0.4, () => Voice.Play([VoiceLine.InOurLanguage, AnswerClip, Said]));
-                break;
-        }
+        var said = Said;
+        var right = RightIndex is var r && r >= 0 ? _cards[r] : null;
+        // Wrong: Bip says it again. Two misses: "In English, it's… cat. Kat!"
+        AnswerChoice(_attempt, IsCorrect(index), _cards[index], right, SkillId, [said], Session, AskQuestion,
+                     onRetry: () => Voice.Play([said]), hint: [VoiceLine.InOurLanguage, AnswerClip, said]);
     }
 
     public override void ReplayPrompt()
@@ -246,7 +220,8 @@ public partial class WhatIsItScreen : GameScreen
             var bubble = Buttons.Tappable(new Node2D(), $"bubble:{i}");
             bubble.AddChild(Pen(Polygon(P(-150, -20), P(-200, -50), P(-130, -50)), (ulong)(995 + i * 3), fill: Palette.Card, lineWidth: 5));
             bubble.AddChild(Pen(Ellipse(Vector2.Zero, 190, 85), (ulong)(996 + i * 3), fill: Palette.Card, lineWidth: 6));
-            var text = Sketch.Label(word, word.Length > 10 ? 44 : 56, Palette.Ink, Fonts.Bold);
+            // The bubble is 380 wide; long words ("liewenheersbesie") shrink to fit inside it.
+            var text = Sketch.FittedLabel(word, 56, 300, Palette.Ink, Fonts.Bold);
             bubble.AddChild(text);
             bubble.Position = P(330, 60 + ((count - 1) / 2.0 - i) * (count > 2 ? 205 : 240));
             bubble.ZIndex = 10;
@@ -286,37 +261,10 @@ public partial class WhatIsItScreen : GameScreen
         }
         if (_round is not { } round || !name.StartsWith("bubble:", StringComparison.Ordinal)
             || !int.TryParse(name["bubble:".Length..], out var index) || index >= _bubbles.Count) return;
-        var bubble = _bubbles[index];
         var said = VoicePlayer.InLanguage(round.Target.Audio, round.Learning);
-        var outcome = _attempt.Answer(_game.IsCorrect(round.Choices[index], round));
-        switch (outcome.Kind)
-        {
-            case AnswerOutcomeKind.Correct:
-                InputLocked = true;
-                StopHint();
-                var grow = bubble.CreateTween();
-                grow.TweenProperty(bubble, "scale", Vector2.One * 1.15f, 0.15);
-                grow.TweenProperty(bubble, "scale", Vector2.One * 1.05f, 0.1);
-                Buttons.Sparkle(bubble.Position, Stage);
-                Sfx.Play(BipSounds.Effect.Chime);
-                Bip.Celebrate();
-                var change = Record(outcome.FirstTry, _game.SkillId(round));
-                Voice.Play([Coordinator.RandomPraise(), said], completion: () => AfterAnswer(change, _session, AskQuestion));
-                break;
-            case AnswerOutcomeKind.TryAgain:
-                Sfx.Play(BipSounds.Effect.Boop);
-                Buttons.Shake(bubble);
-                Bip.Tilt();
-                After(0.4, SayPrompt);
-                break;
-            default:
-                Sfx.Play(BipSounds.Effect.Boop);
-                Buttons.Shake(bubble);
-                Bip.Tilt();
-                if (RightIndex is var right && right >= 0) ShowHint(_bubbles[right]);
-                After(0.4, () => Voice.Play([VoiceLine.InOurLanguage, round.Target.Audio, said]));
-                break;
-        }
+        var right = RightIndex is var r && r >= 0 ? _bubbles[r] : null;
+        AnswerChoice(_attempt, _game.IsCorrect(round.Choices[index], round), _bubbles[index], right, _game.SkillId(round),
+                     [said], _session, AskQuestion, onRetry: SayPrompt, hint: [VoiceLine.InOurLanguage, round.Target.Audio, said]);
     }
 
     public override void ReplayPrompt()
