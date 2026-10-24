@@ -28,7 +28,7 @@ public static partial class ArtPictures
         ["🪺"] = () => PictureNode.Make("pic_nest", ""), ["🐣"] = Hatching, ["🧢"] = Cap, ["⚽"] = Ball,
         ["🗑️"] = Bin, ["🍌"] = Banana, ["🧑"] = () => Man(), ["🏫"] = School,
         // New ones for the steps.
-        ["🧒"] = Child, ["😁"] = () => FaceOnly(3010, grin: true), ["😋"] = () => FaceOnly(3020, grin: false),
+        ["🧒"] = Child, ["😁"] = () => FaceOnly(4940, grin: true), ["😋"] = () => FaceOnly(4950, grin: false),
         ["🥳"] = PartyFace, ["👵"] = Gran, ["👶"] = Baby, ["👨‍👩‍👧"] = Family, ["🧑‍🚀"] = Astronaut, ["🚶"] = Walking,
         ["🪣"] = Bucket, ["👟"] = Takkie, ["🛁"] = Bath, ["🌸"] = () => Flower(Palette.Pink, 4300), ["🌼"] = () => Flower(Palette.Sun, 4310),
         ["🌻"] = Sunflower, ["🌱"] = Sprout, ["🌾"] = Wheat, ["🚀"] = Rocket, ["🪥"] = Toothbrush, ["👖"] = Trousers,
@@ -115,10 +115,10 @@ public static partial class ArtPictures
         return p.Node;
     }
 
-    /// <summary>A round face on its own: a big grin, or licking its lips (yummy).</summary>
+    /// <summary>A round face on its own: a big grin, or licking its lips (yummy). Each use passes its own seed block.</summary>
     private static Node2D FaceOnly(ulong seed, bool grin)
     {
-        var p = new Pic(seed + 1400);
+        var p = new Pic(seed);
         p.Fill(Circle(0, 0, 90), Palette.Sun, 5);
         p.Dot(-30, 24, 9).Dot(30, 24, 9);
         if (grin)
@@ -138,7 +138,7 @@ public static partial class ArtPictures
     private static Node2D PartyFace()
     {
         var p = new Pic(4460);
-        p.Add(FaceOnly(3030, grin: true));
+        p.Add(FaceOnly(4960, grin: true));
         p.Fill(Polygon(P(-40, 70), P(20, 120), P(30, 64)), Palette.Purple, 4);
         p.Dot(20, 120, 9, Palette.Sun);
         return p.Node;

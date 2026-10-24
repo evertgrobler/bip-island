@@ -39,7 +39,7 @@ public static class PictureNode
 
     /// <summary>True when an id has a real picture (hand-drawn, a step scene or an emoji), not the placeholder.</summary>
     public static bool HasArt(string id) =>
-        HandDrawnIds.Contains(id) || ArtPictures.Ids.Contains(id) || WordPictures.Ids.Contains(id) || StepPictures.Make(id) is { } step && Free(step) || EmojiPictures.Icons.ContainsKey(id);
+        HandDrawnIds.Contains(id) || ArtPictures.Has(id) || WordPictures.Ids.Contains(id) || StepPictures.Make(id) is { } step && Free(step) || EmojiPictures.Icons.ContainsKey(id);
 
     private static bool Free(Node node)
     {
@@ -287,6 +287,7 @@ public static class PictureNode
     /// tapes parting below it (the emoji stand-in was a face with a zipped mouth).</summary>
     private static Node2D Zip()
     {
+        // The 0.85 is on an inner node: callers set the returned node's own scale.
         var n = new Node2D { Scale = Vector2.One * 0.85f };
         foreach (var (i, side) in new[] { -1.0, 1.0 }.Select((side, i) => (i, side)))
         {
@@ -309,7 +310,7 @@ public static class PictureNode
         n.AddChild(Pen(RoundRect(R(-24, -6, 48, 30), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 446));
         n.AddChild(Pen(RoundRect(R(-13, -58, 26, 54), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 447));
         n.AddChild(Pen(Ellipse(P(0, -42), 5, 8), fill: Palette.Card, lineWidth: 3, seed: 448));
-        return n;
+        return Group(n);
     }
 
     /// Not drawn yet: a dashed frame with the word written in, so it's obvious this is a stand-in.

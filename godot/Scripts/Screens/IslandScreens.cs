@@ -286,7 +286,7 @@ public partial class GameIslandScreen : BaseScreen
             text.Position = P(x, 0);
             buttons.AddChild(text);
         }
-        return Plate("buttons", 813, buttons, 0.8f);
+        return Plate("buttons", 819, buttons, 0.8f);
     }
 
     private static Node2D BuilderButton()

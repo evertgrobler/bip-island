@@ -416,7 +416,8 @@ public partial class BipsPathScreen : GameScreen
         _trail.Clear();
     }
 
-    private Vector2 TokenSpot => _token is { } token ? token.Position - TokenOffset : Vector2.Zero;
+    /// <summary>Where Bip stands, in Stage space: the token sits on the board, which is moved and scaled.</summary>
+    private Vector2 TokenSpot => _token is { } token && _grid is { } grid ? grid.Transform * (token.Position - TokenOffset) : Vector2.Zero;
 
     private void Win(BipsPathGame.Round round)
     {

@@ -56,6 +56,10 @@ public static partial class ArtPictures
 
     public static IEnumerable<string> Ids => Pictures.Keys.Concat(MoreIds).Concat(SentenceIds);
 
+    /// <summary>True when <paramref name="id"/> is drawn here (a quick lookup, unlike scanning <see cref="Ids"/>).</summary>
+    public static bool Has(string id) =>
+        Pictures.ContainsKey(id) || More.ContainsKey(id) || Rest.ContainsKey(id) || Sentences.ContainsKey(id);
+
     private static readonly Color Bronze = new("d8a25e");
     private static readonly Color Silver = new("cfd3d8");
     private static readonly Color Grey = new("9a9aa3");
@@ -68,7 +72,7 @@ public static partial class ArtPictures
 
         public Pic Fill(SketchShape shape, Color fill, double line = 5, double wobble = 2.2)
         {
-            Node.AddChild(Pen(Clean(shape), _seed++, fill: fill, lineWidth: line, wobble: wobble));
+            Node.AddChild(Pen(shape, _seed++, fill: fill, lineWidth: line, wobble: wobble));
             return this;
         }
 
@@ -119,20 +123,6 @@ public static partial class ArtPictures
             Node.AddChild(node);
             return this;
         }
-    }
-
-    /// <summary>
-    /// A polygon without repeated points (where two curves meet, or the last point is the first again):
-    /// a repeated point stops the fill, leaving the shape white.
-    /// </summary>
-    private static SketchShape Clean(SketchShape shape)
-    {
-        if (shape is not SketchShape.Polygon polygon) return shape;
-        var kept = new List<Vector2>();
-        foreach (var point in polygon.Points)
-            if (kept.Count == 0 || kept[^1].DistanceTo(point) > 0.5f) kept.Add(point);
-        while (kept.Count > 3 && kept[^1].DistanceTo(kept[0]) <= 0.5f) kept.RemoveAt(kept.Count - 1);
-        return new SketchShape.Polygon([.. kept]);
     }
 
     /// <summary>Points around an ellipse (y-up), from one angle to another, for shapes with curved sides.</summary>
