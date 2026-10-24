@@ -192,7 +192,7 @@ jobs:
           out=build/godot/windows
           for v in "$VERSION-selftest:old" "$VERSION:win"; do
             vpk "[win]" pack -x --packId "$PACK_ID" --packVersion "${v%%:*}" --packDir "godot/build/windows" \
-              --mainExe "Bip Island.exe" --packTitle "Bip Island" --skipVeloAppCheck --outputDir "$out/${v##*:}"
+              --mainExe "Bip Island.exe" --packTitle "Bip Island" --skipVeloAppCheck --icon godot/icons/app-icon.ico --outputDir "$out/${v##*:}"
           done
           ls -la "$out"/*
 
