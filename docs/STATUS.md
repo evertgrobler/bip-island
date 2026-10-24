@@ -12,7 +12,7 @@
 - **Games:** 17 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
   Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
-  game, 8-question visits, star celebration.
+  game, 8-question visits, star celebration. Letter Trace works with a mouse or a trackpad (18 Oct).
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
   in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
   Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
@@ -462,3 +462,19 @@
   grey text (ink at 75%, 6:1) and the setup guide's orange "Try it now" (5.9:1). After review: Bip's Balance's
   "?" and wrong number, the parent fields' placeholders and the gap "?" marks too; named text colours in
   `Palette`, their values and the contrast check in BipCore (`PaletteColours`, `TextContrast`, unit-tested).
+- **18 Oct, 17:50 SAST:** Letter Trace works on a trackpad (a family has a trackpad-only MacBook). Tap mode sits
+  alongside the drag: click the green start dot above the letter (120 pt) and the pen follows the pointer with the
+  button up until the letter is done or the child clicks again; dragging with the button held works as before.
+  Clicks on the bare paper boop softly, and after two the dot wiggles with
+  Bip's "look for the one that's wiggling" hint. Judging is unchanged (every checkpoint, no timer). Rules in
+  `BipCore.TracePen` (10 tests in `TracePenTests`); the walk-through drags half a letter, misses twice, starts,
+  stops and restarts tap mode, and finishes the letter with the button up. `BaseScreen.TappableAt` is shared.
+- **19 Oct, 06:20 SAST:** Review fixes for #59 (Letter Trace tap mode): home and Bip work with one click while the pen
+  follows; the start dot comes back however the pen stops following (`TracePen.ShowsStartDot`); a press draws
+  nothing until it moves past a click's wobble, so a click never both draws and misses; clicking the letter is never
+  a miss; the start dot uses the screen's own hit test (`TraceSpot`); one hit test per press (`BaseScreen.TapOn`,
+  `IsAlwaysOn`). A click-to-pick-up mode for the drag games is a follow-up PR.
+- **24 Oct, 09:30 SAST:** Second review round for #59: the hint is said once, when the start dot first wiggles
+  (later misses just boop), and it waits for the narrator to finish, so it never cuts off "Trace the letter".
+  A drag that traces forgives earlier stray clicks (`TracePen` resets its misses), so a mouse user who traces in
+  strokes never gets the trackpad hint; a press that drew nothing still counts.
