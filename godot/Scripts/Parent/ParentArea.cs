@@ -215,7 +215,7 @@ public partial class ParentArea : VBoxContainer
     private static Control Tile(string value, string label)
     {
         var tile = new PanelContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill, CustomMinimumSize = new Vector2(0, 78) };
-        tile.AddThemeStyleboxOverride("panel", ParentUi.Box(new Color(Palette.Sun, 0.35f), new Color(0, 0, 0, 0), 0, 12, 8, 8));
+        tile.AddThemeStyleboxOverride("panel", ParentUi.Box(Palette.ProgressTileFill, new Color(0, 0, 0, 0), 0, 12, 8, 8));
         var column = ParentUi.Column(4);
         column.Alignment = AlignmentMode.Center;
         var big = ParentUi.Text(value, 22, bold: true);
@@ -523,7 +523,7 @@ public partial class ParentArea : VBoxContainer
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
         about.AddChild(ParentUi.Text($"Version {Updater.InstalledVersion ?? version}", 17));
         if (Updater.ReadyVersion is { } ready) about.AddChild(ParentUi.Text($"Version {ready} is ready to install.", 17, bold: true));
-        about.AddChild(ParentUi.Text($"Voice clips: {VoicePlayer.CountClips()} narrator recordings.", 15, colour: ParentUi.Secondary));
+        about.AddChild(ParentUi.Text($"Voice clips: {VoicePlayer.CountClips(GameCoordinator.Instance.Language)} narrator recordings in {Languages.Name(GameCoordinator.Instance.Language)}.", 15, colour: ParentUi.Secondary));
         about.AddChild(ParentUi.Text(KidLockText(), 15, colour: ParentUi.Secondary, wrap: true));
         _versionNote = ParentUi.Text("", 15, colour: ParentUi.Secondary, wrap: true);
         var updates = Updater.ReadyVersion == null

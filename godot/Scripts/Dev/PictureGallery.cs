@@ -110,7 +110,7 @@ public partial class PictureGallery : Node2D
         for (var i = 0; i < 4; i++)
             _stage.AddChild(Sketch.Node(new SketchShape.Polygon(Sketch.StarPoints(new Vector2(-100 + i * 70, 250), 28)), (ulong)(561 + i),
                                         fill: i < 2 ? Palette.Sun : new Color(Palette.Stone, 0.5f), lineWidth: 3, wobble: 1));
-        _stage.AddChild(EmojiPictures.Make("pic_cat")!.WithPosition(new Vector2(350, 250)));
+        _stage.AddChild(PictureNode.Make("pic_cat", "cat").WithPosition(new Vector2(350, 250)));
     }
 
     private Vector2 CellPosition(int column, int row) =>

@@ -53,6 +53,12 @@ public sealed class ContentLibrary
     private readonly Dictionary<string, Skill> _skillsById;
     private readonly Dictionary<string, GameEntry> _gamesById;
     public IReadOnlySet<string> AudioIds { get; }
+
+    /// <summary>The highest number with a mid-sentence clip (numbers.json spokenNumbers.joinTo; -1 when there are none).</summary>
+    public int MidNumbersTo => Numbers.SpokenNumbers?.JoinTo ?? -1;
+
+    /// <summary>A number in the middle of a sentence, as far as the content has those clips (<see cref="AudioCatalogue.MidNumberClip"/>).</summary>
+    public string MidNumberClip(int n) => AudioCatalogue.MidNumberClip(n, MidNumbersTo);
     public IReadOnlySet<string> PictureIds { get; }
 
     /// <summary>Reads every file from a Content folder.</summary>
@@ -77,18 +83,18 @@ public sealed class ContentLibrary
     public ContentLibrary(Func<string, string> readFile, HomeLanguage language, Func<string, bool> exists)
     {
         Language = language;
-        var read = readFile;
-        readFile = file => read(Languages.ContentPath(language, file, exists));
         T Load<T>(string file)
         {
+            // The file really read: the language's own copy (af/…) or the shared one.
+            var path = Languages.ContentPath(language, file, exists);
             try
             {
-                return BipJson.Decode<T>(readFile(file));
+                return BipJson.Decode<T>(readFile(path));
             }
             catch (Exception error) when (error is not ContentLoadException)
             {
                 // Whatever the reader or the decoder threw, say which file it was.
-                throw new ContentLoadException(file, error);
+                throw new ContentLoadException(path, error);
             }
         }
 

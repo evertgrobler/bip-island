@@ -201,7 +201,7 @@ public abstract partial class GameScreen : BaseScreen
             grow.TweenProperty(star, "scale", Vector2.One * 1.2f, 0.12);
             grow.TweenProperty(star, "scale", Vector2.One, 0.08);
         }
-        var total = Sketch.Label(summary.StarsEarned > 0 ? Texts.StarsEarned(Coordinator.Language, summary.StarsEarned) : Texts.WellPlayed(Coordinator.Language), 46, Palette.Ink);
+        var total = Sketch.Label(summary.StarsEarned > 0 ? Texts.StarsEarned(ScreenLanguage, summary.StarsEarned) : Texts.WellPlayed(ScreenLanguage), 46, Palette.Ink);
         total.Position += P(0, -60);
         card.AddChild(total);
 
@@ -209,7 +209,7 @@ public abstract partial class GameScreen : BaseScreen
         if (stickers.Count > 0)
         {
             // "New sticker!" and the stickers themselves, popping in one by one after the stars.
-            var heading = Sketch.Label(Texts.NewStickers(Coordinator.Language, stickers.Count), 36, Palette.Ink);
+            var heading = Sketch.Label(Texts.NewStickers(ScreenLanguage, stickers.Count), 36, Palette.Ink);
             heading.Position += P(0, -125);
             heading.Modulate = new Color(1, 1, 1, 0);
             card.AddChild(heading);
@@ -237,7 +237,7 @@ public abstract partial class GameScreen : BaseScreen
         }
         if (summary.LevelledUp)
         {
-            var label = Sketch.Label(Texts.Level(Coordinator.Language, summary.LevelNow + 1), 58, Palette.Ink);
+            var label = Sketch.Label(Texts.Level(ScreenLanguage, summary.LevelNow + 1), 58, Palette.Ink);
             // Above the stars when the stickers take the space below them.
             label.Position += stickers.Count > 0 ? P(0, 115) : P(0, -125);
             label.Modulate = new Color(1, 1, 1, 0);

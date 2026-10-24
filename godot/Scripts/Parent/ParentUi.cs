@@ -10,8 +10,8 @@ namespace BipIsland.Parent;
 /// </summary>
 public static class ParentUi
 {
-    public static readonly Color Secondary = new(Palette.Ink, 0.65f);
-    public static readonly Color Problem = Palette.Hex(0xC0392B);
+    public static readonly Color Secondary = Palette.QuietInk;
+    public static readonly Color Problem = Palette.ProblemRed;
 
     private static Theme? _theme;
 
@@ -31,7 +31,7 @@ public static class ParentUi
         theme.SetColor("font_disabled_color", "Button", new Color(Palette.Ink, 0.35f));
         theme.SetColor("font_unselected_color", "TabBar", Secondary);
         theme.SetColor("font_selected_color", "TabBar", Palette.Ink);
-        theme.SetColor("font_placeholder_color", "LineEdit", new Color(Palette.Ink, 0.4f));
+        theme.SetColor("font_placeholder_color", "LineEdit", Palette.QuietInk);
         theme.SetColor("caret_color", "LineEdit", Palette.Ink);
         theme.SetColor("selection_color", "LineEdit", new Color(Palette.Sea, 0.6f));
 
