@@ -118,7 +118,7 @@ public sealed class WordRocketTests
                     Assert.Contains(round.Answer, _content.TrickyWords.Stage2.Words);
                     Assert.Single(_game.CorrectChoices(round));
                     // Letter names only once they're taught (after group 5); before that the word again.
-                    var names = PhonicsCourse.LetterNamesUnlocked(learner.KnownSoundIds);
+                    var names = _course.LetterNamesUnlocked(learner.KnownSoundIds);
                     Assert.All(round.Slots, s => Assert.StartsWith(names && s.HintClip.StartsWith("name_") ? "name_" : "word_", s.HintClip));
                     break;
             }

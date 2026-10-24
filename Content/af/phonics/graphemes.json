@@ -1,0 +1,482 @@
+{
+  "note": "Afrikaans klanke in the order Grade R and Grade 1 children usually meet them (CAPS Afrikaans Huistaal): the single sounds first, then the two-letter sounds (klinkerverbindings). Sounds first; letter names only after the single letters are known. Cambridge objective codes are kept for the shared skills (the matching CAPS outcomes are in docs/LANGUAGES.md). Checked and signed off by the owner, 18 October 2026.",
+  "groups": [
+    {
+      "group": 1,
+      "band": "foundation",
+      "ages": "4-5",
+      "objectives": [
+        "1Rw.01",
+        "1Ww.01"
+      ],
+      "note": "Eerste ses klanke: genoeg om mat, pap en sap te lees."
+    },
+    {
+      "group": 2,
+      "band": "foundation",
+      "ages": "4-5",
+      "objectives": [
+        "1Rw.01",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 3,
+      "band": "foundation",
+      "ages": "4-5",
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 4,
+      "band": "stage1",
+      "ages": "5-6",
+      "objectives": [
+        "1Rw.01",
+        "1Rw.02",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 5,
+      "band": "stage1",
+      "ages": "5-6",
+      "objectives": [
+        "1Rw.02",
+        "1Ww.02"
+      ]
+    },
+    {
+      "group": 6,
+      "band": "stage1",
+      "ages": "5-6",
+      "objectives": [
+        "1Rw.02",
+        "1Ww.01"
+      ]
+    },
+    {
+      "group": 7,
+      "band": "stage2",
+      "ages": "6-7",
+      "objectives": [
+        "2Rw.01",
+        "2Rw.02",
+        "2Ww.01",
+        "2Ww.02"
+      ]
+    }
+  ],
+  "graphemes": [
+    {
+      "id": "a",
+      "grapheme": "a",
+      "group": 1,
+      "ipa": "a",
+      "kind": "vowel",
+      "audio": "snd_a",
+      "mnemonicWord": "appel",
+      "mnemonicPicture": "pic_apple",
+      "letterName": "a",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Die kort 'a' soos in 'kat', nie die letter se naam nie."
+    },
+    {
+      "id": "s",
+      "grapheme": "s",
+      "group": 1,
+      "ipa": "s",
+      "kind": "stretchy",
+      "audio": "snd_s",
+      "mnemonicWord": "son",
+      "mnemonicPicture": "pic_sun",
+      "letterName": "es",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Hou die klank omtrent 'n sekonde: 'ssss'. Nooit die letter se naam nie."
+    },
+    {
+      "id": "m",
+      "grapheme": "m",
+      "group": 1,
+      "ipa": "m",
+      "kind": "stretchy",
+      "audio": "snd_m",
+      "mnemonicWord": "maan",
+      "mnemonicPicture": "pic_moon",
+      "letterName": "em",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Hou die klank: 'mmmm', met toe lippe."
+    },
+    {
+      "id": "t",
+      "grapheme": "t",
+      "group": 1,
+      "ipa": "t",
+      "kind": "bouncy",
+      "audio": "snd_t",
+      "mnemonicWord": "tent",
+      "mnemonicPicture": "pic_tent",
+      "letterName": "tee",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Kort en skerp, sonder 'n 'uh' daarna."
+    },
+    {
+      "id": "p",
+      "grapheme": "p",
+      "group": 1,
+      "ipa": "p",
+      "kind": "bouncy",
+      "audio": "snd_p",
+      "mnemonicWord": "pot",
+      "mnemonicPicture": "pic_pot",
+      "letterName": "pee",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Kort en skerp, sonder 'n 'uh' daarna."
+    },
+    {
+      "id": "e",
+      "grapheme": "e",
+      "group": 1,
+      "ipa": "ɛ",
+      "kind": "vowel",
+      "audio": "snd_e",
+      "mnemonicWord": "ertjie",
+      "mnemonicPicture": "pic_pod",
+      "letterName": "ee",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Die kort 'e' soos in 'pet'."
+    },
+    {
+      "id": "i",
+      "grapheme": "i",
+      "group": 2,
+      "ipa": "ə",
+      "kind": "vowel",
+      "audio": "snd_i",
+      "mnemonicWord": "ink",
+      "mnemonicPicture": "pic_ink",
+      "letterName": "ie",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Die kort 'i' soos in 'pit' en 'ink'."
+    },
+    {
+      "id": "n",
+      "grapheme": "n",
+      "group": 2,
+      "ipa": "n",
+      "kind": "stretchy",
+      "audio": "snd_n",
+      "mnemonicWord": "nes",
+      "mnemonicPicture": "pic_nest",
+      "letterName": "en",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Hou die klank: 'nnnn'."
+    },
+    {
+      "id": "o",
+      "grapheme": "o",
+      "group": 2,
+      "ipa": "ɔ",
+      "kind": "vowel",
+      "audio": "snd_o",
+      "mnemonicWord": "oktopus",
+      "mnemonicPicture": "pic_octopus",
+      "letterName": "oo",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Die kort 'o' soos in 'pot'."
+    },
+    {
+      "id": "k",
+      "grapheme": "k",
+      "group": 2,
+      "ipa": "k",
+      "kind": "bouncy",
+      "audio": "snd_k",
+      "mnemonicWord": "kat",
+      "mnemonicPicture": "pic_cat",
+      "letterName": "kaa",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Kort en skerp, sonder 'n 'uh' daarna."
+    },
+    {
+      "id": "d",
+      "grapheme": "d",
+      "group": 2,
+      "ipa": "d",
+      "kind": "bouncy",
+      "audio": "snd_d",
+      "mnemonicWord": "dorp",
+      "mnemonicPicture": "pic_town",
+      "letterName": "dee",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Kort en skerp, sonder 'n 'uh' daarna."
+    },
+    {
+      "id": "r",
+      "grapheme": "r",
+      "group": 2,
+      "ipa": "r",
+      "kind": "stretchy",
+      "audio": "snd_r",
+      "mnemonicWord": "rot",
+      "mnemonicPicture": "pic_rat",
+      "letterName": "er",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Die gerolde Afrikaanse 'r': 'rrrr'."
+    },
+    {
+      "id": "l",
+      "grapheme": "l",
+      "group": 3,
+      "ipa": "l",
+      "kind": "stretchy",
+      "audio": "snd_l",
+      "mnemonicWord": "lamp",
+      "mnemonicPicture": "pic_lamp",
+      "letterName": "el",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Hou die klank: 'llll'."
+    },
+    {
+      "id": "b",
+      "grapheme": "b",
+      "group": 3,
+      "ipa": "b",
+      "kind": "bouncy",
+      "audio": "snd_b",
+      "mnemonicWord": "bal",
+      "mnemonicPicture": "pic_ball",
+      "letterName": "bee",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "Kort en skerp, sonder 'n 'uh' daarna."
+    },
+    {
+      "id": "g",
+      "grapheme": "g",
+      "group": 3,
+      "ipa": "χ",
+      "kind": "stretchy",
+      "audio": "snd_g",
+      "mnemonicWord": "geld",
+      "mnemonicPicture": "pic_coin",
+      "letterName": "gee",
+      "handwritingFamily": "curly-c",
+      "narratorHint": "Die growwe Afrikaanse 'g' agter in die keel: 'ggggg'."
+    },
+    {
+      "id": "h",
+      "grapheme": "h",
+      "group": 3,
+      "ipa": "ɦ",
+      "kind": "stretchy",
+      "audio": "snd_h",
+      "mnemonicWord": "hen",
+      "mnemonicPicture": "pic_hen",
+      "letterName": "haa",
+      "handwritingFamily": "one-armed-robot",
+      "narratorHint": "'n Sagte asem: 'hhh'."
+    },
+    {
+      "id": "u",
+      "grapheme": "u",
+      "group": 3,
+      "ipa": "œ",
+      "kind": "vowel",
+      "audio": "snd_u",
+      "mnemonicWord": "bus",
+      "mnemonicPicture": "pic_bus",
+      "letterName": "uu",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Die kort 'u' soos in 'bus'."
+    },
+    {
+      "id": "f",
+      "grapheme": "f",
+      "group": 3,
+      "ipa": "f",
+      "kind": "stretchy",
+      "audio": "snd_f",
+      "mnemonicWord": "fiets",
+      "mnemonicPicture": "pic_bike",
+      "letterName": "ef",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Hou die klank: 'ffff'."
+    },
+    {
+      "id": "v",
+      "grapheme": "v",
+      "group": 4,
+      "ipa": "f",
+      "kind": "stretchy",
+      "audio": "snd_v",
+      "mnemonicWord": "vis",
+      "mnemonicPicture": "pic_fish",
+      "letterName": "vee",
+      "handwritingFamily": "zigzag",
+      "narratorHint": "Die 'v' klink soos 'f': 'ffff'."
+    },
+    {
+      "id": "w",
+      "grapheme": "w",
+      "group": 4,
+      "ipa": "v",
+      "kind": "stretchy",
+      "audio": "snd_w",
+      "mnemonicWord": "wolk",
+      "mnemonicPicture": "pic_cloud",
+      "letterName": "wee",
+      "handwritingFamily": "zigzag",
+      "narratorHint": "Die Afrikaanse 'w' klink soos 'v': 'vvvv'."
+    },
+    {
+      "id": "j",
+      "grapheme": "j",
+      "group": 4,
+      "ipa": "j",
+      "kind": "stretchy",
+      "audio": "snd_j",
+      "mnemonicWord": "jas",
+      "mnemonicPicture": "pic_coat",
+      "letterName": "jee",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Die 'j' soos in 'jas'."
+    },
+    {
+      "id": "y",
+      "grapheme": "y",
+      "group": 4,
+      "ipa": "ɛi",
+      "kind": "vowel",
+      "audio": "snd_y",
+      "mnemonicWord": "by",
+      "mnemonicPicture": "pic_bee",
+      "letterName": "y",
+      "handwritingFamily": "long-ladder",
+      "narratorHint": "Die 'y' soos in 'by' en 'ys'."
+    },
+    {
+      "id": "ng",
+      "grapheme": "ng",
+      "group": 4,
+      "ipa": "ŋ",
+      "kind": "digraph",
+      "audio": "snd_ng",
+      "mnemonicWord": "ring",
+      "mnemonicPicture": "pic_ring",
+      "narratorHint": "Twee letters, een klank: 'nggg', soos aan die einde van 'ring'."
+    },
+    {
+      "id": "ie",
+      "grapheme": "ie",
+      "group": 5,
+      "ipa": "i",
+      "kind": "digraph",
+      "audio": "snd_ie",
+      "mnemonicWord": "brief",
+      "mnemonicPicture": "pic_letter",
+      "narratorHint": "Twee letters, een klank: die lang 'ie' soos in 'brief'."
+    },
+    {
+      "id": "oe",
+      "grapheme": "oe",
+      "group": 5,
+      "ipa": "u",
+      "kind": "digraph",
+      "audio": "snd_oe",
+      "mnemonicWord": "boek",
+      "mnemonicPicture": "pic_book",
+      "narratorHint": "Twee letters, een klank: 'oe' soos in 'boek'."
+    },
+    {
+      "id": "ou",
+      "grapheme": "ou",
+      "group": 5,
+      "ipa": "œu",
+      "kind": "digraph",
+      "audio": "snd_ou",
+      "mnemonicWord": "tou",
+      "mnemonicPicture": "pic_rope",
+      "narratorHint": "Twee letters, een klank: 'ou' soos in 'tou'."
+    },
+    {
+      "id": "ui",
+      "grapheme": "ui",
+      "group": 5,
+      "ipa": "œy",
+      "kind": "digraph",
+      "audio": "snd_ui",
+      "mnemonicWord": "uil",
+      "mnemonicPicture": "pic_owl",
+      "narratorHint": "Twee letters, een klank: 'ui' soos in 'uil'."
+    },
+    {
+      "id": "ei",
+      "grapheme": "ei",
+      "group": 6,
+      "ipa": "ɛi",
+      "kind": "digraph",
+      "audio": "snd_ei",
+      "mnemonicWord": "eier",
+      "mnemonicPicture": "pic_egg",
+      "narratorHint": "Twee letters, een klank: 'ei' soos in 'eier'."
+    },
+    {
+      "id": "aa",
+      "grapheme": "aa",
+      "group": 6,
+      "ipa": "ɑː",
+      "kind": "digraph",
+      "audio": "snd_aa",
+      "mnemonicWord": "maan",
+      "mnemonicPicture": "pic_moon",
+      "narratorHint": "Die lang 'aa' soos in 'maan'."
+    },
+    {
+      "id": "ee",
+      "grapheme": "ee",
+      "group": 6,
+      "ipa": "iə",
+      "kind": "digraph",
+      "audio": "snd_ee",
+      "mnemonicWord": "been",
+      "mnemonicPicture": "pic_leg",
+      "narratorHint": "Die lang 'ee' soos in 'been'."
+    },
+    {
+      "id": "oo",
+      "grapheme": "oo",
+      "group": 7,
+      "ipa": "uə",
+      "kind": "digraph",
+      "audio": "snd_oo",
+      "mnemonicWord": "boom",
+      "mnemonicPicture": "pic_tree",
+      "narratorHint": "Die lang 'oo' soos in 'boom'."
+    },
+    {
+      "id": "uu",
+      "grapheme": "uu",
+      "group": 7,
+      "ipa": "y",
+      "kind": "digraph",
+      "audio": "snd_uu",
+      "mnemonicWord": "vuur",
+      "mnemonicPicture": "pic_fire",
+      "narratorHint": "Die lang 'uu' soos in 'vuur'."
+    },
+    {
+      "id": "eu",
+      "grapheme": "eu",
+      "group": 7,
+      "ipa": "iø",
+      "kind": "digraph",
+      "audio": "snd_eu",
+      "mnemonicWord": "neus",
+      "mnemonicPicture": "pic_nose",
+      "narratorHint": "Twee letters, een klank: 'eu' soos in 'neus'."
+    }
+  ]
+}

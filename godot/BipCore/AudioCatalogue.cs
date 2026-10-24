@@ -106,8 +106,17 @@ public static partial class AudioCatalogue
     public const int PraiseCount = 10;
     public const int HintCount = 4;
 
-    /// <summary>A word's clip: yo-yo → word_yoyo (file names have no hyphens).</summary>
-    public static string WordClip(string word) => $"word_{word.Replace("-", "")}";
+    /// <summary>
+    /// A word's clip: yo-yo → word_yoyo (file names have no hyphens), vlieër → word_vlieer (file names
+    /// are plain ASCII, so a Mac writing é or ë decomposed can never miss the file).
+    /// </summary>
+    public static string WordClip(string word) => $"word_{PlainLetters(word.Replace("-", ""))}";
+
+    /// <summary>The text without accents or diereses: ë → e, ê → e, ô → o.</summary>
+    public static string PlainLetters(string text) =>
+        string.Concat(text.Normalize(System.Text.NormalizationForm.FormD)
+            .Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark))
+            .Normalize(System.Text.NormalizationForm.FormC);
     public static string NumberClip(int n) => $"num_{n}";
 
     /// <summary>

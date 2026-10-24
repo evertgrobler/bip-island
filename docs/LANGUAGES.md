@@ -44,6 +44,14 @@ the validator work unchanged. Spelling follows the AWS (Afrikaanse Woordelys en 
 by a new `scripts/af_spelling.py` the way `sa_english.py` checks English. No slang, everyday South
 African life, the same rule as English.
 
+Afrikaans has 7 sound groups, so it has its own `Content/af/curriculum/skills.json`: snd_g1 to snd_g7
+in the Afrikaans groups' bands (which groups an older child is treated as knowing), no snd_g8 or
+snd_g9, letter names after group 4, spelling with digraphs after group 5 and longer words after group
+7; every other skill matches the shared file (`validate_content.py --lang af` checks this). Letter names
+unlock once the sounds of every letter the language's sounds cover are known (22 letters in Afrikaans:
+no c, q, x or z). Words whose letters don't all make their taught sound (hamer, appel, koei) are marked
+`"blendable": false` and stay out of Sound Buttons and Word Rocket; the validator finds them.
+
 Rough size: about 90 instruction lines, about 250 picture words, 25 letter names, about 60 sounds,
 16 sentence pairs, numbers 0–100: about 1,100 clips, like English.
 
@@ -90,17 +98,25 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 3. **Afrikaans content, part 1:** Letters & Sounds (klanke, picture words), Numbers, the instruction
    lines; Afrikaans spelling check; CAPS mapping.
 4. **Afrikaans content, part 2:** Words & Spelling, sentences, Coding and Art lines.
-5. **Afrikaans voice:** record everything with Aoede on the daily runs; owner listens to the letter
-   sounds and a sample of each island.
+5. **Afrikaans voice:** record everything with Aoede on the daily runs, a batch of English and a
+   batch of Afrikaans in turn (from 19 October 2026); owner listens to the letter sounds and a sample
+   of each island.
 6. **Language Island:** the three games, both directions, word and phrase lists, voice.
 7. **Letter sounds with Aoede** (both languages): recorded on the daily runs with everything else;
    the owner approves them by ear before they go into the game.
-8. Family test on both computers.
+8. **Switch Afrikaans on:** add `Content/af/language.json`, and in the same pull request update the
+   download page (`site/index.html`): one game in English and Afrikaans, each child's language set
+   by a grown-up, plus the Language Island. The page is bilingual from then on.
+9. Family test on both computers.
+
+English and Afrikaans are **one game, one download**: the same app on the same computer, with the
+language chosen per child, so siblings can play in different languages.
 
 ## What the owner decides or checks
 
 - **A fluent Afrikaans reader checks the Afrikaans lists** (words, sentences, instructions) before
   they are recorded: the owner or a family member. Claude writes them; a person signs them off.
+  **Done:** the owner checked the first draft and signed it off on 18 October 2026.
 - Island name and where it sits on the map (a sixth island near the middle, unlocked from the start).
 - Whether a child can switch home language, or only a grown-up (suggested: only behind the parent gate).
 - The listening tests: Afrikaans letter sounds, a sample per island, the Language Island words.

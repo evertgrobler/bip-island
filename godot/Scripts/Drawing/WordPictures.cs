@@ -40,6 +40,9 @@ public static class WordPictures
         ["pic_mud"] = Mud,
         ["pic_plum"] = Plum,
         ["pic_belt"] = Belt,
+        // Afrikaans picture words with no English picture: vuur (fire) and neus (nose).
+        ["pic_fire"] = Fire,
+        ["pic_nose"] = Nose,
     };
 
     public static Node2D? Make(string id) => Pictures.TryGetValue(id, out var draw) ? draw() : null;
@@ -377,6 +380,32 @@ public static class WordPictures
         n.AddChild(Dot(46, 62, 5));
         n.AddChild(Dot(84, 50, 3));
         n.AddChild(Pointer(P(-104, 6), P(-30, -20), 1358));
+        return n;
+    }
+
+    // A camp fire: crossed logs under red, orange and yellow flames.
+    private static Node2D Fire()
+    {
+        var n = new Node2D();
+        n.AddChild(Pen(Box(-80, -96, 160, 22), 1900, fill: Palette.Brown));
+        n.AddChild(Pen(Box(-70, -84, 140, 20), 1901, fill: Palette.LightBrown));
+        n.AddChild(Pen(Polygon(P(-66, -70), P(-74, 0), P(-44, -20), P(-30, 50), P(0, 0), P(18, 96), P(40, -6), P(66, 26), P(64, -70)), 1902, fill: Palette.Red));
+        n.AddChild(Pen(Polygon(P(-44, -70), P(-36, -20), P(-6, -36), P(10, 40), P(30, -24), P(46, -70)), 1903, fill: Palette.Orange));
+        n.AddChild(Pen(Polygon(P(-20, -70), P(-12, -36), P(6, -48), P(14, -6), P(26, -70)), 1904, fill: Palette.Sun));
+        return n;
+    }
+
+    // A face with an orange arrow pointing at the nose.
+    private static Node2D Nose()
+    {
+        var n = new Node2D();
+        n.AddChild(Pen(Ellipse(P(-10, 0), 78, 92), 1910, fill: new Color("c68a5e")));
+        n.AddChild(Pen(Polygon(P(-82, 30), P(-60, 92), P(40, 96), P(62, 40), P(30, 60), P(-40, 64)), 1911, fill: Palette.Ink));
+        n.AddChild(Dot(-36, 20, 7));
+        n.AddChild(Dot(16, 20, 7));
+        n.AddChild(Pen(Polygon(P(-10, 10), P(-26, -24), P(6, -24)), 1912, fill: new Color("b0764c"), lineWidth: 4));
+        n.AddChild(Pen(Arc(P(-10, -50), 24, 12, Math.PI + 0.4, 2 * Math.PI - 0.4), 1913, lineWidth: 5));
+        n.AddChild(Pointer(P(100, -40), P(18, -14), 1914));
         return n;
     }
 

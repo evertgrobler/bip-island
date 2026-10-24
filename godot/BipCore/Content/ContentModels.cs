@@ -282,6 +282,17 @@ public sealed record Word
     public required List<string> Objectives { get; init; }
     public string? Picture { get; init; }
     public List<string>? Tags { get; init; }
+    /// <summary>
+    /// False when a letter in the word doesn't make its taught sound here (Afrikaans hamer: the open
+    /// syllable makes the a long and the e a schwa), so blending its sound buttons would give another
+    /// word. Sound Buttons and Word Rocket, which play each grapheme's sound, leave it out.
+    /// </summary>
+    [JsonIgnore]
+    public bool Blendable => BlendableInContent != false;
+
+    /// <summary>words.json's "blendable": only written (as false) on the words that don't blend.</summary>
+    [JsonPropertyName("blendable")]
+    public bool? BlendableInContent { get; init; }
 }
 
 // MARK: - words/tricky_words.json
