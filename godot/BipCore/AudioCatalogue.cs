@@ -141,6 +141,11 @@ public static partial class AudioCatalogue
     /// </summary>
     public static string SentenceClip(string id, int a, int? b = null) => b is { } second ? $"vo_say_{id}_{a}_{second}" : $"vo_say_{id}_{a}";
 
+    /// <summary>The plain clip that stands in for a lead-on clip not recorded yet (num_7_mid → num_7, vo_and → word_and), or null.</summary>
+    public static string? StandIn(string clip) =>
+        clip.EndsWith("_mid", StringComparison.Ordinal) ? clip[..^"_mid".Length]
+        : clip == VoiceLine.And ? WordClip("and") : null;
+
     /// <summary>Clips that lead straight into the next one, so the player leaves almost no gap after them.</summary>
     public static bool LeadsOn(string clip) =>
         clip.EndsWith("_mid", StringComparison.Ordinal)
@@ -153,11 +158,11 @@ public static partial class AudioCatalogue
     public static readonly IReadOnlyList<string> HintClips = Enumerable.Range(1, HintCount).Select(n => $"hint_{n:00}").ToList();
 
     /// <summary>Clips written in audio/script.csv rather than generated from the content.</summary>
-    public static IReadOnlyList<string> ScriptedClips => [.. VoiceLine.All, .. PraiseClips, .. HintClips];
+    public static IReadOnlyList<string> ScriptedClips => [.. VoiceLine.All, .. PraiseClips, .. HintClips, .. VoiceBands.BigClips];
 
-    /// <summary>The naming contract: snd_, word_, num_, vo_, name_, money_, learn_ with lower-case keys; praise_NN and hint_NN.</summary>
+    /// <summary>The naming contract: snd_, word_, num_, vo_, name_, money_, learn_ with lower-case keys; praise_NN and hint_NN, with _big for the older children's version.</summary>
     public static bool FollowsNamingContract(string name) => NamingContract().IsMatch(name);
 
-    [GeneratedRegex(@"^((snd|word|num|vo|name|money|learn)_[a-z0-9_]+|(praise|hint)_[0-9]{2})$")]
+    [GeneratedRegex(@"^((snd|word|num|vo|name|money|learn)_[a-z0-9_]+|(praise|hint)_[0-9]{2}(_big)?)$")]
     private static partial Regex NamingContract();
 }

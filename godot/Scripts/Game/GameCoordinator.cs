@@ -48,6 +48,21 @@ public partial class GameCoordinator : Node
     /// </summary>
     public HomeLanguage PickerLanguage => _nobodyYet ? HomeLanguage.English : Language;
 
+    /// <summary>
+    /// The playing child's voice band, worked out from their age each time (<see cref="VoiceBands.For"/>),
+    /// so it can't go stale when a child is chosen, changed or removed.
+    /// </summary>
+    public VoiceBand ChildBand => BandOf(ChildId);
+
+    /// <summary>A child's voice band from the age a grown-up set in the Children tab (Little when there's none).</summary>
+    public VoiceBand BandOf(Guid id) => VoiceBands.For(Children.FirstOrDefault(c => c.Id == id)?.Age);
+
+    /// <summary>
+    /// The band the voice speaks in now: the screen's (<see cref="BaseScreen.ScreenBand"/>), which is the
+    /// playing child's except on "Who's playing?" (Little) and a brother's or sister's break (theirs).
+    /// </summary>
+    public VoiceBand SpokenBand => IsInsideTree() && GetTree().CurrentScene is BaseScreen screen ? screen.ScreenBand : ChildBand;
+
     private readonly Dictionary<HomeLanguage, ContentLibrary?> _contentByLanguage = [];
 
     /// <summary>
@@ -110,6 +125,7 @@ public partial class GameCoordinator : Node
         AddChild(Music);
         Music.NarratorSpeaking = () => Voice.Speaking;
         VoicePlayer.LanguageSource = () => SpokenLanguage;
+        VoicePlayer.BandSource = () => SpokenBand;
         _fadeLayer = new CanvasLayer { Layer = 100 };
         _fade = new ColorRect { Color = Palette.Paper, MouseFilter = Control.MouseFilterEnum.Ignore, Modulate = new Color(1, 1, 1, 0) };
         _fade.SetAnchorsPreset(Control.LayoutPreset.FullRect);
@@ -351,6 +367,8 @@ public partial class GameCoordinator : Node
         CurrentBreakPhase(); // Bank play time to the child who was playing, as Choose does.
         Store.Delete(id);
         Children = Store.Children();
+        // The store always keeps one child, so the list is never empty here; the voice band follows
+        // whoever is playing by itself (ChildBand).
         if (Children.Any(c => c.Id == ChildId) || Children.Count == 0) return;
         ChildId = Children[0].Id;
         LoadChildProgress();
@@ -506,7 +524,7 @@ public partial class GameCoordinator : Node
         return true;
     }
 
-    public string RandomPraise() => Rng.Pick(AudioCatalogue.PraiseClips) ?? "praise_01";
+    public string RandomPraise() => Rng.Pick(VoicePlayer.PraisePool()) ?? "praise_01";
     /// <summary>
     /// A spoken hint. Most hints lead into a sound ("It sounds like this:"); with nothing to follow,
     /// it's the one that stands alone ("Look for the one that's wiggling!").

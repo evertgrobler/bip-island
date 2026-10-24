@@ -292,7 +292,7 @@ public partial class ParentArea : VBoxContainer
     {
         // The setup guide says this itself.
         if (_only == null)
-            _body.AddChild(ParentUi.Text("Each child picks their animal when the game opens. Their age sets where they start; the game then adjusts to how they do.",
+            _body.AddChild(ParentUi.Text("Each child picks their animal when the game opens. Their age sets where they start, and from 7 the narrator uses her lines for older children; the game then adjusts to how they do. Change the age on their birthday.",
                 16, colour: ParentUi.Secondary, wrap: true));
         // Redrawn with the list, so it goes once Player 1 has been replaced or changed.
         if (_only != null && Coordinator.Store.UntouchedFirstChild() != null)

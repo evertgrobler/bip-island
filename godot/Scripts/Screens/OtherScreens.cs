@@ -19,6 +19,9 @@ public partial class ProfilesScreen : BaseScreen
     /// <summary>Whoever comes to the computer may not play in the last child's language.</summary>
     public override HomeLanguage ScreenLanguage => Coordinator.PickerLanguage;
 
+    /// <summary>Whoever comes to the computer may be the youngest, so "Who's playing?" is always said in the Little band.</summary>
+    public override VoiceBand ScreenBand => VoiceBand.Little;
+
     protected override void Build()
     {
         AddBip(P(-620, -380), 0.7f);
@@ -148,6 +151,9 @@ public partial class ChargingScreen : BaseScreen
 
     /// <summary>A brother's or sister's break is shown and said in their own language.</summary>
     public override HomeLanguage ScreenLanguage => _peek is Guid peek ? Coordinator.LanguageOf(peek) : Coordinator.Language;
+
+    /// <summary>...and in their own voice band.</summary>
+    public override VoiceBand ScreenBand => _peek is Guid peek ? Coordinator.BandOf(peek) : Coordinator.ChildBand;
 
     private readonly List<Node2D> _bars = [];
     private Node2D? _battery;

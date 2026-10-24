@@ -495,6 +495,18 @@
   Additional Language, listening and speaking (`FAL.LS.01`–`03`). The validator checks every word has both
   languages and its own picture, spells the Afrikaans, and that each Afrikaans Morning Order story matches
   the English one card by card. The new words still need the owner's check before they're recorded.
+- **18 Oct, voice bands (`docs/VOICE_PLAN.md`, approved):** Bip's own lines come in two versions by the
+  child's age (`BipCore.VoiceBands`): Little (up to 6, or no age) and Big (7 and up). 30 Big lines per
+  language in the voice scripts (`praise_01_big`…`praise_12_big`, `hint_NN_big`, level and round lines,
+  greetings, charging and day done). The band comes from the playing child's age; a Big child
+  hears `<clip>_big` when it's in the build, else the young clip; Big praise is used once 4 of its clips are
+  recorded. The validator checks every `_big` row has its young row. One narrator for boys and girls.
+- **18 Oct, owner approved the plans:** ages 5 to 10 in English and Afrikaans with Cambridge and CAPS side
+  by side (`docs/CURRICULUM_5_10.md`: reading stories first, one map for every age, coding follows
+  Cambridge until CAPS Coding and Robotics is final), the voice plan (`docs/VOICE_PLAN.md`) and the
+  MacBook Neo findings (`docs/MACBOOK_NEO.md`: it runs; first install is Open Anyway; Letter Trace needs a
+  tap-to-start mode for trackpads; test the kid lock and the top-row keys on the real machine).
+  `CLAUDE.md` and `docs/PLAN.md` now say so, and the narrator is Gemini Aoede for both languages.
 - **18 Oct 22:15 SAST (PR #53 review fixes):** Each language keeps its own learning: sounds, skills
   (so the phonics groups) and game levels live per language in `ChildProgress.OtherLanguages` (English
   stays where older saves have it, and an English-only save keeps its old shape); stars, stickers, the
@@ -587,3 +599,15 @@
   fit What Is It?'s bubbles (`Sketch.FittedLabel`, under the text-colour rule). Colour splashes read
   `art/paints.json`; white sits on a soft grey swatch. The validator also checks Bip's Day clip names, theme
   levels and colour pictures; the af skills overlay carries the Language Island skills.
+- **24 Oct, 16:05 SAST (PR #57 review fixes, voice bands):** merged main (#51 to #56, #59) and retargeted
+  to `main`. The band works like the language: each screen says whose band it speaks in
+  (`BaseScreen.ScreenBand`), the voice reads `GameCoordinator.SpokenBand` (`VoicePlayer.BandSource`, no copy
+  of its own), the playing child's band is worked out from their age each time (`GameCoordinator.ChildBand`), so
+  it can't go stale when a child is changed or removed. "Who's playing?" is always said in the Little band; a
+  resting brother's or sister's charging screen in their own. What plays is `VoiceBands.Resolve` (stand-in,
+  then band; unit-tested, and the walk-through checks it for an 8- and a 4-year-old). `BigVersions` is looked
+  up through a HashSet; the recorded Big praise is worked out once per language. Only `vo_`/`hint_`/`praise_`
+  clips have `_big` rows: the validator (reusing `script_clips`) and `VoiceBandTests` check both scripts both
+  ways against `VoiceBands`. The age is the number a grown-up typed, so the Children tab now asks them to
+  change it on the birthday. No more "big-kid" wording; the recorder notes say `gemini_narrator.py` is on
+  `claude/aoede-narrator`, and the Afrikaans Big lines wait for the owner's check.

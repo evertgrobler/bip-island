@@ -628,6 +628,29 @@ SKIP_KEYS = {"id", "audio", "objectives", "graphemes", "ipa", "rime", "code", "k
              "prerequisites", "content", "island", "skin", "skins", "label", "colour", "shape", "letterName",
              "grapheme", "sequenceRules", "af"}
 
+# --- Voice bands (BipCore.VoiceBands): the script's older children's lines (<clip>_big) are exactly the
+# ones the game plays, read from VoiceBands.cs so the two can't drift: each Big version of one of Bip's
+# own vo_/hint_ lines has the young row it replaces, plus the Big praise pool (praise_01_big...), and no
+# other clip has a _big row (word_big is a real word, never a Big line).
+def big_clips():
+    core = REPO / "godot" / "BipCore"
+    catalogue = (core / "AudioCatalogue.cs").read_text(encoding="utf-8")
+    bands = (core / "VoiceBands.cs").read_text(encoding="utf-8")
+    lines = dict(re.findall(r'public const string (\w+) = "(\w+)";', catalogue))
+    block = re.search(r"BigVersions =\s*\[(.*?)\];", bands, re.S)
+    hints = int(re.search(r"HintCount = (\d+);", catalogue).group(1))
+    praise = int(re.search(r"BigPraiseCount = (\d+);", bands).group(1))
+    versions = [lines[n] for n in re.findall(r"VoiceLine\.(\w+)", block.group(1))] if block else []
+    if block and "AudioCatalogue.HintClips" in block.group(1): versions += [f"hint_{n:02}" for n in range(1, hints + 1)]
+    return set(versions), {f"{v}_big" for v in versions} | {f"praise_{n:02}_big" for n in range(1, praise + 1)}
+big_versions, expected_big = big_clips()
+if not big_versions: err("validate_content.py couldn't read BipCore.VoiceBands.BigVersions")
+script_name = SCRIPT.relative_to(REPO)
+for clip in sorted(c for c in script_clips if c.endswith("_big") and c not in expected_big):
+    err(f"{script_name} {clip}: the game never plays this _big clip (only VoiceBands' lines have an older version)")
+for clip in sorted(expected_big - script_clips): err(f"{script_name}: no {clip} row (an older children's line VoiceBands plays)")
+for base in sorted(big_versions - script_clips): err(f"{script_name}: no {base} row for {base}_big to stand in for")
+
 sa_waiting = set()
 OTHER_LANGUAGES = {"af"}  # folders in Content/ that hold another language's own files
 

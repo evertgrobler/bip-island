@@ -260,12 +260,20 @@ public static class WalkTest
         if (await Tap("profiles"))
         {
             await Expect<ProfilesScreen>("back to Who's playing?");
+            // For a moment the child at the computer is nine: "Who's playing?" and five-year-old Lily's
+            // break are still said in the young voice, not his.
+            var otherAge = game.Children.First(c => c.Id == other.Id).Age;
+            game.UpdateChild(game.Children.First(c => c.Id == other.Id) with { Age = 9 });
+            Check("Who's playing? is said in the young voice whoever played last",
+                  game.ChildBand == BipCore.VoiceBand.Big && game.SpokenBand == BipCore.VoiceBand.Little);
             var lilyPlayed = game.Store.LoadBreak(lily.Id)?.PlayedTodaySeconds ?? 0;
             await Tap("child:" + lily.Id);
             await WaitFor(() => Screen() is ChargingScreen, 5);
             Check("tapping resting Lily shows her charging, and the other child stays the one playing",
                   Screen() is ChargingScreen { Peeking: var shown } && shown == lily.Id && game.ChildId == other.Id && !game.Parent.IsOpen,
                   Screen()?.GetType().Name ?? "no screen");
+            Check("...in her own voice band", game.SpokenBand == game.BandOf(lily.Id) && game.SpokenBand == BipCore.VoiceBand.Little);
+            game.UpdateChild(game.Children.First(c => c.Id == other.Id) with { Age = otherAge });
             await Wait(1.5);
             Check("...and none of that time counts as Lily's play", (game.Store.LoadBreak(lily.Id)?.PlayedTodaySeconds ?? 0) == lilyPlayed);
         }
@@ -495,6 +503,19 @@ public static class WalkTest
                 game.UpdateChild(playing with { Language = BipCore.HomeLanguage.English });
                 Check("and back in English", game.Language == BipCore.HomeLanguage.English && game.LettersOpen
                       && !Audio.VoicePlayer.PathFor("vo_welcome").Contains("/af/"));
+                // Bip's own lines follow the child's age: the older version from 7, as the voice really plays
+                // it (VoicePlayer.ResolveClip, with every clip counted as recorded), on the map and in a game.
+                static bool all(string _) => true;
+                var welcome = BipCore.VoiceLine.Welcome;
+                game.UpdateChild(playing with { Age = 8 });
+                Check("an eight-year-old hears Bip's older voice lines",
+                      Audio.VoicePlayer.ResolveClip(welcome, all) == BipCore.VoiceBands.BigClip(welcome)
+                      && Audio.VoicePlayer.ResolveClip(BipCore.VoiceLine.FindTheSound, all) == BipCore.VoiceLine.FindTheSound,
+                      Audio.VoicePlayer.ResolveClip(welcome, all));
+                game.UpdateChild(playing with { Age = 4 });
+                Check("...a four-year-old the young ones", Audio.VoicePlayer.ResolveClip(welcome, all) == welcome);
+                game.UpdateChild(playing with { Age = playing.Age });
+                Check("...and back for the child's own age", game.ChildBand == BipCore.VoiceBands.For(playing.Age));
             }
             if (game.Children.FirstOrDefault(c => c.Name == "Mia") is { } mia)
             {

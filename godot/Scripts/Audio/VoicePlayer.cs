@@ -46,6 +46,15 @@ public partial class VoicePlayer : Node
     /// </summary>
     public static Func<BipCore.HomeLanguage> LanguageSource { private get; set; } = () => BipCore.HomeLanguage.English;
 
+    /// <summary>
+    /// Where the voice band comes from, like <see cref="LanguageSource"/>: the coordinator points it at its
+    /// <see cref="Game.GameCoordinator.SpokenBand"/> (the screen's band), so it never goes stale. Little until then.
+    /// </summary>
+    public static Func<BipCore.VoiceBand> BandSource { private get; set; } = () => BipCore.VoiceBand.Little;
+
+    /// <summary>The band being spoken in: a Big child (7 and up) hears Bip's own lines in their older version when it's recorded.</summary>
+    public static BipCore.VoiceBand Band => BandSource();
+
     /// <summary>The language being spoken: which folder clips come from. An Afrikaans clip that isn't
     /// recorded yet plays as a short silence like any missing clip, never the English one.</summary>
     public static BipCore.HomeLanguage Language => LanguageSource();
@@ -82,9 +91,25 @@ public partial class VoicePlayer : Node
             ? (clip[(slash + 1)..], clip[1..slash] == "af" ? BipCore.HomeLanguage.Afrikaans : BipCore.HomeLanguage.English)
             : (clip, language);
 
-    private static string? StandIn(string clip) =>
-        clip.EndsWith("_mid", StringComparison.Ordinal) ? clip[..^"_mid".Length]
-        : clip == BipCore.VoiceLine.And ? BipCore.AudioCatalogue.WordClip("and") : null;
+    /// <summary>
+    /// The clip that really plays for <paramref name="clip"/> in the band being spoken in
+    /// (<see cref="BipCore.VoiceBands.Resolve"/>); <paramref name="recorded"/> stands in for the build's clips in the walk-through.
+    /// </summary>
+    public static string ResolveClip(string clip, Func<string, bool>? recorded = null) =>
+        BipCore.VoiceBands.Resolve(clip, Band, recorded ?? HasClip);
+
+    /// <summary>The recorded Big praise per language, worked out once: which clips a build has never changes while it runs.</summary>
+    private static readonly Dictionary<BipCore.HomeLanguage, IReadOnlyList<string>> BigPraiseByLanguage = [];
+
+    /// <summary>The praise the band being spoken in picks from (<see cref="BipCore.VoiceBands.PraisePool"/>).</summary>
+    public static IReadOnlyList<string> PraisePool()
+    {
+        if (Band != BipCore.VoiceBand.Big) return BipCore.AudioCatalogue.PraiseClips;
+        var language = Language;
+        if (!BigPraiseByLanguage.TryGetValue(language, out var pool))
+            BigPraiseByLanguage[language] = pool = BipCore.VoiceBands.PraisePool(BipCore.VoiceBand.Big, clip => HasClip(clip, language));
+        return pool;
+    }
 
     /// <summary>The whole recorded sentence when this build has it, otherwise the clips that make it up.</summary>
     public static List<string> Prefer(string sentence, IEnumerable<string> pieces) =>
@@ -132,8 +157,7 @@ public partial class VoicePlayer : Node
         }
         var name = clips[index];
         onClipStart?.Invoke(index, name);
-        // A lead-on clip not recorded yet falls back to the plain one (num_7_mid → num_7, vo_and → word_and).
-        if (!HasClip(name) && StandIn(name) is { } standIn && HasClip(standIn)) name = standIn;
+        name = ResolveClip(name);
 
         var length = SilentStubLength;
         if (HasClip(name) && GD.Load<AudioStream>(PathFor(name)) is { } stream)
