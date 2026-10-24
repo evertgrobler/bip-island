@@ -25,6 +25,9 @@ public sealed class ContentLibrary
         "asset_manifest.json",
     ];
 
+    /// <summary>The language this content was read in.</summary>
+    public HomeLanguage Language { get; }
+
     public ObjectivesFile Objectives { get; }
     public SkillsFile Skills { get; }
     public GamesFile Games { get; }
@@ -69,18 +72,29 @@ public sealed class ContentLibrary
     /// folder, e.g. "phonics/graphemes.json"). The game uses this to read from inside its package,
     /// where System.IO can't see the files.
     /// </summary>
-    public ContentLibrary(Func<string, string> readFile)
+    public ContentLibrary(Func<string, string> readFile) : this(readFile, HomeLanguage.English, _ => false)
     {
+    }
+
+    /// <summary>
+    /// Reads a language's content: each file from the language's own folder (Content/af/…) when
+    /// <paramref name="exists"/> says it has one, else the shared English file.
+    /// </summary>
+    public ContentLibrary(Func<string, string> readFile, HomeLanguage language, Func<string, bool> exists)
+    {
+        Language = language;
         T Load<T>(string file)
         {
+            // The file really read: the language's own copy (af/…) or the shared one.
+            var path = Languages.ContentPath(language, file, exists);
             try
             {
-                return BipJson.Decode<T>(readFile(file));
+                return BipJson.Decode<T>(readFile(path));
             }
             catch (Exception error) when (error is not ContentLoadException)
             {
                 // Whatever the reader or the decoder threw, say which file it was.
-                throw new ContentLoadException(file, error);
+                throw new ContentLoadException(path, error);
             }
         }
 

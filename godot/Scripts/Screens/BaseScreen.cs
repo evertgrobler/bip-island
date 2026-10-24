@@ -26,6 +26,12 @@ public abstract partial class BaseScreen : Node2D
     protected Node2D Stage { get; } = new() { Name = "Stage" };
     protected Bip Bip { get; } = Buttons.Tappable(new Bip(), "bip");
     protected GameCoordinator Coordinator => GameCoordinator.Instance;
+    /// <summary>
+    /// The language this screen shows and speaks: the playing child's, unless the screen is for someone
+    /// else ("Who's playing?", a brother's or sister's break). The voice follows it
+    /// (<see cref="GameCoordinator.SpokenLanguage"/>).
+    /// </summary>
+    public virtual BipCore.HomeLanguage ScreenLanguage => Coordinator.Language;
     protected VoicePlayer Voice => Coordinator.Voice;
     protected BipSounds Sfx => Coordinator.Sounds;
 
@@ -100,7 +106,7 @@ public abstract partial class BaseScreen : Node2D
         if (Coordinator.StartGame(gameId, focus)) return;
         var card = new Node2D { ZIndex = 80, Scale = Vector2.One * 0.01f };
         card.AddChild(Sketch.Node(new SketchShape.RoundedRect(new Rect2(-360, -110, 720, 220), 36), 575, fill: Palette.Card, lineWidth: 6));
-        card.AddChild(Sketch.Label("Coming soon!", 64, Palette.Ink));
+        card.AddChild(Sketch.Label(BipCore.Texts.ComingSoon(ScreenLanguage), 64, Palette.Ink));
         Stage.AddChild(card);
         var pop = card.CreateTween();
         pop.TweenProperty(card, "scale", Vector2.One * 1.05f, 0.2);

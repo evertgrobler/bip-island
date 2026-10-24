@@ -4,6 +4,7 @@
 - Resources/Fonts/*.ttf      -> godot/assets/fonts/
 - Content/**/*.json          -> godot/assets/content/
 - Resources/Audio/*.m4a      -> godot/assets/audio/*.ogg  (Godot can't play .m4a; needs ffmpeg)
+- Resources/Audio/af/*.m4a   -> godot/assets/audio/af/*.ogg (each other language in its own folder)
 - Resources/Music/*.m4a      -> godot/assets/music/*.ogg  (the background loops, kept in stereo)
 
 Run it before opening, testing or exporting the Godot project. Clips already converted and
@@ -17,6 +18,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "godot" / "assets"
+# The language folders the game knows (BipCore Languages.Folder); English is the base folder itself.
+LANGUAGES = ("af",)
 
 
 def copy_tree(src: Path, dst: Path, pattern: str) -> int:
@@ -53,15 +56,27 @@ def main() -> int:
         shutil.rmtree(content_out)
     content = copy_tree(ROOT / "Content", content_out, "*.json")
 
-    audio_out = OUT / "audio"
-    audio_out.mkdir(parents=True, exist_ok=True)
-    clips = sorted((ROOT / "Resources" / "Audio").glob("*.m4a"))
-    wanted = {clip.stem + ".ogg" for clip in clips}
-    for stale in audio_out.glob("*.ogg"):
-        if stale.name not in wanted:
-            stale.unlink()
+    # The narrator clips: English in Resources/Audio/, each other language in its own folder
+    # (Resources/Audio/af/ -> assets/audio/af/, the same clip names). Only known language folders
+    # count, and a language folder in the build with no source folder any more is removed.
+    audio_in = ROOT / "Resources" / "Audio"
+    languages = [code for code in LANGUAGES if (audio_in / code).is_dir()]
+    if (OUT / "audio").is_dir():
+        for old in sorted(d for d in (OUT / "audio").iterdir() if d.is_dir() and d.name not in languages):
+            shutil.rmtree(old)
+    folders = [(audio_in, OUT / "audio")] + [(audio_in / code, OUT / "audio" / code) for code in languages]
+    jobs, clips = [], []
+    for source, audio_out in folders:
+        audio_out.mkdir(parents=True, exist_ok=True)
+        these = sorted(source.glob("*.m4a"))
+        wanted = {clip.stem + ".ogg" for clip in these}
+        for stale in audio_out.glob("*.ogg"):
+            if stale.name not in wanted:
+                stale.unlink()
+        jobs += [(clip, audio_out) for clip in these]
+        clips += these
     with ThreadPoolExecutor() as pool:
-        results = list(pool.map(lambda c: convert(c, audio_out), clips))
+        results = list(pool.map(lambda job: convert(*job), jobs))
 
     # The background loops: stereo, a little smaller (they play quietly under everything else).
     music_out = OUT / "music"

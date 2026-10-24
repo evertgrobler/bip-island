@@ -466,6 +466,32 @@
   `numbers.json` `spokenNumbers.joinTo` (`ContentLibrary.MidNumbersTo`), not code; `NUMBER_WORDS` lives once,
   in `scripts/spoken_numbers.py`. Narrator workflow: runs only on `claude/*` branches, commits even when a shard
   crashed, pulls before pushing, and counts only `.m4a` files. The ElevenLabs allow rules left `.claude/settings.json`.
+- **18 Oct, home language (step 2 of `docs/LANGUAGES.md`):** each child has a home language (`HomeLanguage`,
+  `SavedChild.Language`, read leniently on the property so an unknown value reads as English).
+  `ContentLibrary(readFile, language, exists)` reads `Content/af/<file>` over the shared file;
+  `GameCoordinator` keeps one library per language, follows the playing child's language
+  (`FollowChildLanguage` on open, choose, update and delete) and each child's progress report uses their own
+  language's content. `VoicePlayer.Language` picks `assets/audio/af/` (a missing Afrikaans clip is silence,
+  never the English one); `prepare_assets.py` converts each `Resources/Audio/<lang>/` folder. The words
+  children see are in `BipCore.Texts` (English and Afrikaans). The Children tab and the setup guide show a
+  language choice only when a second language is ready (`Content/af/language.json`), so this ships
+  invisibly: English plays exactly as before. The walk-through switches a child to Afrikaans and back.
+- **18 Oct 22:15 SAST (PR #53 review fixes):** Each language keeps its own learning: sounds, skills
+  (so the phonics groups) and game levels live per language in `ChildProgress.OtherLanguages` (English
+  stays where older saves have it, and an English-only save keeps its old shape); stars, stickers, the
+  play clock and recent games are shared. `SaveStore.Progress/Save` take the language and
+  `GameCoordinator.SaveProgress()` saves in the playing language. A saved language this build doesn't
+  have plays in English (`Languages.Playable`), voice included. `validate_content.py` checks
+  `BipCore/Texts.cs` (English half with sa_english, Afrikaans half with af_spelling once that check is in
+  the checkout). Self-test checks the English clips; clip counts are per language. Content load errors
+  name the real file (`Content/af/…`). `prepare_assets.py` only takes known language folders and removes
+  stale ones. CLAUDE.md now says Aoede is the narrator (recorder on `claude/aoede-narrator` until merged).
+- **19 Oct (PR #53, second review):** The language lives in one place, `GameCoordinator.Language`; each
+  screen says which language it shows (`BaseScreen.ScreenLanguage`) and the voice reads it through
+  `GameCoordinator.SpokenLanguage` (`VoicePlayer.LanguageSource`, no copy of its own). "Who's playing?" is
+  in English straight after the game opens, else in the language of the child at the computer; a brother's
+  or sister's break is in their language. "Charged! Off we go." is `Texts.Charged`. `AddChild` saves an
+  unknown language value as English, like `Update`.
 - **18 Oct, later:** Plain zero. The owner asked for a look round the game for improvements; the
   biggest find was the font's slashed zero (10 read as "1Ø" in every game, the star counts, the charging
   clock and the parent area). `scripts/fonts/plain_zero.py` swaps the zero's two half-holes for one
