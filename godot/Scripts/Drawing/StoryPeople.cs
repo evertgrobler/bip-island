@@ -18,7 +18,8 @@ public static class StoryPeople
 
     /// <param name="Dress">A dress instead of a top and shorts.</param>
     /// <param name="Long">Long trousers or jeans (the bottom colour down to the shoes).</param>
-    private sealed record Look(Color Skin, Color HairColour, Hair Hair, Color Top, Color Bottom, bool Grown = false,
+    /// <param name="Seed">The person's own first seed, so their wobble never depends on the order of the list.</param>
+    private sealed record Look(ulong Seed, Color Skin, Color HairColour, Hair Hair, Color Top, Color Bottom, bool Grown = false,
                                bool Dress = false, bool Long = false, Color? Extra = null, bool Glasses = false,
                                bool Freckles = false, bool Beard = false);
 
@@ -33,23 +34,22 @@ public static class StoryPeople
 
     private static readonly Dictionary<string, Look> People = new()
     {
-        ["pic_child_1"] = new(Dark, Black, Hair.Puffs, Palette.Sun, Palette.Sun, Dress: true),
-        ["pic_child_2"] = new(Dark, Black, Hair.Short, Palette.Red, Palette.Sea.Blend(0.4, Palette.Ink)),
-        ["pic_child_3"] = new(LightBrown, Black, Hair.Plait, Palette.Teal, Palette.Purple, Dress: false),
-        ["pic_child_4"] = new(LightBrown, Color.FromHtml("#4A3222"), Hair.Curly, Palette.Leaf, Palette.Brown),
-        ["pic_child_5"] = new(Fair, Blonde, Hair.Ponytail, Palette.Pink, Color.FromHtml("#4F79B8"), Long: true),
-        ["pic_child_6"] = new(Fair, Ginger, Hair.Short, Palette.Sea, Palette.Stone.Blend(0.3, Palette.Ink), Freckles: true),
-        ["pic_child_7"] = new(Brown, Black, Hair.Scarf, Palette.Orange, Palette.Orange, Dress: true, Extra: Palette.Purple),
-        ["pic_child_8"] = new(Dark, Black, Hair.Cap, Palette.Orange, Color.FromHtml("#4F79B8"), Extra: Palette.Sun),
-        ["pic_grownup_1"] = new(Dark, Black, Hair.Headwrap, Palette.Leaf, Palette.Leaf, Grown: true, Dress: true, Extra: Palette.Go),
-        ["pic_grownup_2"] = new(Brown, Black, Hair.Short, Color.FromHtml("#4F79B8"), Palette.Brown, Grown: true, Long: true, Beard: true),
-        ["pic_grownup_3"] = new(Brown, Grey, Hair.Bun, Palette.Purple, Color.FromHtml("#6D5A8A"), Grown: true, Dress: true, Glasses: true),
+        ["pic_child_1"] = new(6000, Dark, Black, Hair.Puffs, Palette.Sun, Palette.Sun, Dress: true),
+        ["pic_child_2"] = new(6040, Dark, Black, Hair.Short, Palette.Red, Palette.Sea.Blend(0.4, Palette.Ink)),
+        ["pic_child_3"] = new(6080, LightBrown, Black, Hair.Plait, Palette.Teal, Palette.Purple),
+        ["pic_child_4"] = new(6120, LightBrown, Color.FromHtml("#4A3222"), Hair.Curly, Palette.Leaf, Palette.Brown),
+        ["pic_child_5"] = new(6160, Fair, Blonde, Hair.Ponytail, Palette.Pink, Color.FromHtml("#4F79B8"), Long: true),
+        ["pic_child_6"] = new(6200, Fair, Ginger, Hair.Short, Palette.Sea, Palette.Stone.Blend(0.3, Palette.Ink), Freckles: true),
+        ["pic_child_7"] = new(6240, Brown, Black, Hair.Scarf, Palette.Orange, Palette.Orange, Dress: true, Extra: Palette.Purple),
+        ["pic_child_8"] = new(6280, Dark, Black, Hair.Cap, Palette.Orange, Color.FromHtml("#4F79B8"), Extra: Palette.Sun),
+        ["pic_grownup_1"] = new(6320, Dark, Black, Hair.Headwrap, Palette.Leaf, Palette.Leaf, Grown: true, Dress: true, Extra: Palette.Go),
+        ["pic_grownup_2"] = new(6360, Brown, Black, Hair.Short, Color.FromHtml("#4F79B8"), Palette.Brown, Grown: true, Long: true, Beard: true),
+        ["pic_grownup_3"] = new(6400, Brown, Grey, Hair.Bun, Palette.Purple, Color.FromHtml("#6D5A8A"), Grown: true, Dress: true, Glasses: true),
     };
 
     public static IEnumerable<string> Ids => People.Keys;
 
-    public static Node2D? Make(string id) =>
-        People.TryGetValue(id, out var look) ? Draw(look, (ulong)(6000 + Array.IndexOf(People.Keys.ToArray(), id) * 40)) : null;
+    public static Node2D? Make(string id) => People.TryGetValue(id, out var look) ? Draw(look, look.Seed) : null;
 
     private static Node2D Draw(Look look, ulong seed)
     {
@@ -59,7 +59,7 @@ public static class StoryPeople
         // Proportions: a child has a bigger head and shorter legs than a grown-up.
         var (hipY, shoulderY, headY, r) = look.Grown ? (-24.0, 60.0, 84.0, 27.0) : (-40.0, 38.0, 70.0, 33.0);
         const double footY = -102;
-        var halfBody = look.Grown ? 30.0 : 30.0;
+        const double halfBody = 30;
 
         // Behind the head: a long plait, a ponytail or a headscarf's back.
         if (look.Hair == Hair.Scarf)
@@ -69,14 +69,14 @@ public static class StoryPeople
             n.AddChild(Rotated(Pen(Ellipse(Vector2.Zero, 13, 28), Next(), fill: look.HairColour, lineWidth: 4), P(r + 10, headY - 4), -0.4));
 
         // Legs and shoes.
-        foreach (var (i, x) in Indexed(-14.0, 14.0))
+        foreach (var x in new[] { -14.0, 14.0 })
         {
             var legColour = look.Long ? look.Bottom : look.Skin;
             n.AddChild(Filled(RoundRect(R(x - 9, footY + 2, 18, hipY - footY + 6), 7), Next(), fill: legColour, lineWidth: 4));
             n.AddChild(Filled(Ellipse(P(x + (x < 0 ? -5 : 5), footY), 15, 8), Next(), fill: Palette.Ink.Blend(0.2, Palette.Brown), lineWidth: 3.5));
         }
         // Arms (drawn before the body so the sleeves cover the shoulders).
-        foreach (var (i, side) in Indexed(-1.0, 1.0))
+        foreach (var side in new[] { -1.0, 1.0 })
         {
             var top = shoulderY - 6;
             n.AddChild(Filled(Polygon(P(side * (halfBody - 4), top), P(side * (halfBody + 8), top), P(side * (halfBody + 20), hipY + 8), P(side * (halfBody + 8), hipY + 4)),
@@ -98,7 +98,7 @@ public static class StoryPeople
             n.AddChild(Filled(RoundRect(R(-halfBody, hipY + 4, halfBody * 2, shoulderY - hipY + 2), 14), Next(), fill: look.Top, lineWidth: 5));
         }
         // Sleeves.
-        foreach (var (i, side) in Indexed(-1.0, 1.0))
+        foreach (var side in new[] { -1.0, 1.0 })
             n.AddChild(Filled(Polygon(P(side * (halfBody - 6), shoulderY + 2), P(side * (halfBody + 6), shoulderY), P(side * (halfBody + 12), shoulderY - 22), P(side * (halfBody - 2), shoulderY - 24)),
                            Next(), fill: look.Top, lineWidth: 4));
 

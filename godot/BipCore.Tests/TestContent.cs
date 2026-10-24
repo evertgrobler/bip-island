@@ -12,6 +12,13 @@ internal static class TestContent
 
     public static ContentLibrary Library() => Cached.Value;
 
+    private static readonly Lazy<ContentLibrary> CachedAfrikaans = new(() =>
+        new ContentLibrary(file => File.ReadAllText(Path.Combine(Directory, file)), HomeLanguage.Afrikaans,
+                           file => File.Exists(Path.Combine(Directory, file))));
+
+    /// <summary>A home language's content (Content/af/ read over the shared files for Afrikaans), loaded once for all tests.</summary>
+    public static ContentLibrary Library(HomeLanguage language) => language == HomeLanguage.Afrikaans ? CachedAfrikaans.Value : Cached.Value;
+
     /// <summary>Rules for tests that don't depend on the content's numbers.</summary>
     public static readonly MasteryRules Rules = new()
     {

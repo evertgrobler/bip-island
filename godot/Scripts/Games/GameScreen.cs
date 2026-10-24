@@ -99,13 +99,14 @@ public abstract partial class GameScreen : BaseScreen
     /// A pick-one answer (a numeral, a picture). Right: sparkle, record, praise and
     /// <paramref name="sayWhenRight"/>, then the next question or the end. Wrong: soft boop and try
     /// again (and <paramref name="onRetry"/>, e.g. say the question again); after two misses <paramref name="right"/>
-    /// wiggles and Bip says a hint and <paramref name="sayWhenRight"/>, or <paramref name="hint"/> when given.
+    /// wiggles and Bip says a hint and <paramref name="sayWhenRight"/>, or <paramref name="hint"/> when given, or
+    /// <paramref name="onHint"/> runs instead (Bip's Stories brings back the scene that holds the answer).
     /// The retry and the hint wait a moment for the boop, and are skipped if the question was answered meanwhile
     /// (else they would cut off the praise, whose end moves the game on).
     /// </summary>
     protected void AnswerChoice(QuestionAttempt attempt, bool correct, Node2D node, Node2D? right, string skillId,
                                 IReadOnlyList<string> sayWhenRight, GameSession session, Action next, string? soundId = null,
-                                Action? onRetry = null, IReadOnlyList<string>? hint = null)
+                                Action? onRetry = null, IReadOnlyList<string>? hint = null, Action? onHint = null)
     {
         var outcome = attempt.Answer(correct);
         if (outcome.Kind == AnswerOutcomeKind.Correct)
@@ -131,6 +132,11 @@ public abstract partial class GameScreen : BaseScreen
             return;
         }
         if (right != null) ShowHint(right);
+        if (onHint != null)
+        {
+            WhileUnanswered(0.4, onHint);
+            return;
+        }
         IReadOnlyList<string> line = hint ?? [Coordinator.RandomHint(sayWhenRight.Count > 0), .. sayWhenRight];
         WhileUnanswered(0.4, () => Voice.Play(line));
     }

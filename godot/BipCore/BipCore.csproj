@@ -9,4 +9,8 @@
     <RootNamespace>BipCore</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- Tests can set up a game session in a given state (GameSession.MarkUsed) without reflection. -->
+    <InternalsVisibleTo Include="BipCore.Tests" />
+  </ItemGroup>
 </Project>

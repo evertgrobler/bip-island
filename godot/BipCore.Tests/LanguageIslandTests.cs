@@ -9,12 +9,8 @@ namespace BipCore.Tests;
 /// </summary>
 public sealed class LanguageIslandTests
 {
-    private static readonly Lazy<ContentLibrary> CachedAf = new(() =>
-        new ContentLibrary(file => File.ReadAllText(Path.Combine(TestContent.Directory, file)), HomeLanguage.Afrikaans,
-                           file => File.Exists(Path.Combine(TestContent.Directory, file))));
-
     private static ContentLibrary En => TestContent.Library();
-    private static ContentLibrary Af => CachedAf.Value;
+    private static ContentLibrary Af => TestContent.Library(HomeLanguage.Afrikaans);
 
     public static TheoryData<HomeLanguage> HomeLanguages => new() { HomeLanguage.English, HomeLanguage.Afrikaans };
 

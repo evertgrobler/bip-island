@@ -100,6 +100,9 @@ public sealed class GameSession
 
     public bool IsFinished => RoundsPlayed >= MaxRounds;
 
+    /// <summary>For tests: items this visit has already used (stories read, words asked), without playing them.</summary>
+    internal void MarkUsed(IEnumerable<string> items) => _usedItems.UnionWith(items);
+
     /// <summary>The next round, or null when the session is over (all rounds played, or nothing fresh left).</summary>
     public TRound? NextRound<TRound, TChoice>(IMiniGame<TRound, TChoice> game, Learner learner, IRandomSource rng)
         where TRound : class, IGameRound<TChoice>
