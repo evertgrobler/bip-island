@@ -39,6 +39,7 @@
   screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
 - **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
   review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
+- **Bip's Stories (24 Oct):** reading for meaning on Words Island, ages 5–10, 5 levels, 20 stories per language.
 - **Word Rocket (4 Oct):** the typing game, ages 4–8. Levels: find the letter (Bip says a sound, the child
   presses that key; c and k both count for /k/), three-letter words, longer words, Stage 2 tricky words.
   **Keys are the one exception to "any key replays":** letter keys type here, so Space, the replay
@@ -611,3 +612,13 @@
   ways against `VoiceBands`. The age is the number a grown-up typed, so the Children tab now asks them to
   change it on the birthday. No more "big-kid" wording; the recorder notes say `gemini_narrator.py` is on
   `claude/aoede-narrator`, and the Afrikaans Big lines wait for the owner's check.
+- **24 Oct, 16:50 SAST (Bip's Stories):** reading for meaning on Words Island, ages 5 to 10, five levels (owner:
+  reading from 5, just easier). A story one scene at a time, the narrator reading each sentence (click one to hear
+  it again), then two or three spoken questions per story with picture or word answers; two misses bring back the
+  scene that holds the answer. 20 stories in English and 20 written separately in Afrikaans on the same shared
+  scenes (`Content/stories/`, `Content/af/stories/`; the Afrikaans ones wait for the owner's check). Scenes are
+  data: 13 drawn backgrounds (`StoryScenes.cs`) and placed pictures, with eight children and three grown-ups
+  drawn for the stories (`StoryPeople.cs`). `StoriesGame` + `StoriesGameTests`, validator checks, a fourth plate on
+  Words Island (plates a little smaller), previews `Scenes/Games/bips_stories*.tscn`, and the walk-through reads a
+  story and answers with a hint. Cambridge Reading codes are placeholders (`ENG.RC.01/02`, to map); CAPS
+  `HL.RV.01` topic to confirm. Not recorded yet: 3 new lines and every story clip in both languages.
