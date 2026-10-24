@@ -169,7 +169,7 @@ public static class WalkTest
             await Wait(2.5);
             Check("the mystery box gives 5 stars, once", game.Progress.Stars == starsBefore + BipCore.ChildProgress.MysteryBonusStars && !game.MysteryAvailable,
                 $"stars {starsBefore} → {game.Progress.Stars}");
-            Check("the stars are saved", game.Store.Progress(game.ChildId).Stars == game.Progress.Stars);
+            Check("the stars are saved", game.Store.Progress(game.ChildId, game.Language).Stars == game.Progress.Stars);
         }
 
         // Keyboard: arrows move the glow over the islands, Enter opens one.
@@ -373,7 +373,7 @@ public static class WalkTest
             if (await TapNumeral(right: true))
             {
                 Check("the right numeral earns a star", game.Progress.Stars == starsBefore + 1, $"stars {starsBefore} → {game.Progress.Stars}");
-                Check("the answer is saved", game.Store.Progress(game.ChildId).Stars == game.Progress.Stars);
+                Check("the answer is saved", game.Store.Progress(game.ChildId, game.Language).Stars == game.Progress.Stars);
                 Check("the game's level is tracked", game.Progress.GameLevels.ContainsKey(BipCore.CountTapGame.GameId));
             }
             if (await Tap("home")) await Expect<GameIslandScreen>("home in a game goes back to its island");
@@ -404,7 +404,7 @@ public static class WalkTest
                   game.Progress.PictureStickers.Count == stickersBefore + 1 + starStickers
                   && game.Progress.StarStickersGiven == game.Progress.Stars / BipCore.ChildProgress.StarsPerSticker,
                   $"stickers {stickersBefore} → {game.Progress.PictureStickers.Count}, stars {game.Progress.Stars}");
-            Check("the stickers are saved", game.Store.Progress(game.ChildId).PictureStickers.Count == game.Progress.PictureStickers.Count);
+            Check("the stickers are saved", game.Store.Progress(game.ChildId, game.Language).PictureStickers.Count == game.Progress.PictureStickers.Count);
             Check("seven first-try answers, seven stars", game.Progress.Stars == starsBefore + 7, $"stars {starsBefore} → {game.Progress.Stars}");
             Check("both games are in the recent games", game.Progress.RecentGames.TakeLast(2).SequenceEqual(
                 [BipCore.CountTapGame.GameId, BipCore.QuickLookGame.GameId]));
@@ -482,10 +482,15 @@ public static class WalkTest
             Check("a parent can add a child", area.AddChild("Mia", 6) && game.Children.Count == before + 1);
             if (game.CurrentChild is { } playing)
             {
-                // The playing child's language switches the content and the voice at once, and back.
+                // The playing child's language switches the content and the voice at once, and back. A build
+                // without the Afrikaans content (no Content/af/language.json) keeps playing in English.
+                var jarBefore = game.Progress.Stars;
                 game.UpdateChild(playing with { Language = BipCore.HomeLanguage.Afrikaans });
-                Check("an Afrikaans child's game loads in Afrikaans", game.Language == BipCore.HomeLanguage.Afrikaans
-                      && game.Content?.Language == BipCore.HomeLanguage.Afrikaans && Audio.VoicePlayer.PathFor("vo_welcome").Contains("/af/"),
+                var afrikaans = GameCoordinator.AvailableLanguages.Contains(BipCore.HomeLanguage.Afrikaans);
+                var expected = afrikaans ? BipCore.HomeLanguage.Afrikaans : BipCore.HomeLanguage.English;
+                Check(afrikaans ? "an Afrikaans child's game loads in Afrikaans" : "Afrikaans isn't in this build, so the child still plays in English",
+                      game.Language == expected && game.Content?.Language == expected
+                      && Audio.VoicePlayer.PathFor("vo_welcome").Contains("/af/") == afrikaans && game.Progress.Stars == jarBefore,
                       $"{game.Language}, content {game.Content?.Language}, voice {Audio.VoicePlayer.PathFor("vo_welcome")}");
                 game.UpdateChild(playing with { Language = BipCore.HomeLanguage.English });
                 Check("and back in English", game.Language == BipCore.HomeLanguage.English && game.LettersOpen
@@ -553,7 +558,7 @@ public static class WalkTest
                 Check("a wrong picture stays on the question, no star", Screen() is SoundButtonsScreen { InputLocked: false } && game.Progress.Stars == starsBefore);
             if (Screen() is SoundButtonsScreen again && await Tap($"card:{again.RightIndex}"))
                 Check("the right picture after a miss: no star, but the answer is saved",
-                      game.Progress.Stars == starsBefore && game.Store.Progress(game.ChildId).Skills.Count > 0);
+                      game.Progress.Stars == starsBefore && game.Store.Progress(game.ChildId, game.Language).Skills.Count > 0);
             Check("the next question comes", await WaitFor(() => Screen() is SoundButtonsScreen { InputLocked: false, RightIndex: >= 0 }, 8));
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Sound Buttons goes back to words island");
 
@@ -675,7 +680,7 @@ public static class WalkTest
                   await WaitFor(() => Screen() is MeetSoundScreen { IntroDone: true }, 25));
             if (await Tap("next"))
             {
-                Check("the sound is marked as met and saved", game.Store.Progress(game.ChildId).Sounds.Stage(game.Course!.Sound("s")!) >= BipCore.SoundStage.Met);
+                Check("the sound is marked as met and saved", game.Store.Progress(game.ChildId, game.Language).Sounds.Stage(game.Course!.Sound("s")!) >= BipCore.SoundStage.Met);
                 Check("Meet the Sound goes back to the island", await WaitFor(() => Screen() is LettersIslandScreen, 6));
             }
             await Wait(0.6);
@@ -694,7 +699,7 @@ public static class WalkTest
                     Check("two misses: the hint, and still on the question", Screen() is SoundHuntScreen { InputLocked: false });
                 if (Screen() is SoundHuntScreen again && await Tap($"card:{again.RightIndex}"))
                     Check("the right picture after misses: no star, but the answer is saved",
-                          game.Progress.Stars == starsBefore && game.Store.Progress(game.ChildId).Skill("snd_g1").TotalAttempts > 0);
+                          game.Progress.Stars == starsBefore && game.Store.Progress(game.ChildId, game.Language).Skill("snd_g1").TotalAttempts > 0);
                 if (await Tap("home")) await Expect<LettersIslandScreen>("home from Sound Hunt goes back to letters island");
             }
 
@@ -709,16 +714,77 @@ public static class WalkTest
             }
 
             starsBefore = game.Progress.Stars;
+            static void PenButton(LetterTraceScreen on, Vector2 at, bool down) =>
+                on._UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = down, GlobalPosition = at });
+            static void PenClickOn(LetterTraceScreen on, Vector2 at) { PenButton(on, at, true); PenButton(on, at, false); }
+
+            // Home always works, even while the pen follows the pointer: one click goes home.
+            if (await Tap("trace")) await Expect<LetterTraceScreen>("Letter Trace opens from the island");
+            if (await WaitFor(() => Screen() is LetterTraceScreen { Started: true }, 3) && Screen() is LetterTraceScreen first &&
+                first.FindTappable("home") is { } house && Hit.GlobalArea(house) is { } houseArea)
+            {
+                PenClickOn(first, first.StartDotOnScreen);
+                Check("tap mode starts from the start dot", first.PenMode == BipCore.TracePenMode.Following);
+                PenClickOn(first, houseArea.GetCenter());
+                await Expect<LettersIslandScreen>("one click on home goes home while the pen follows");
+            }
+
             if (await Tap("trace")) await Expect<LetterTraceScreen>("Letter Trace opens from the island");
             Check("Letter Trace is ready to trace", await WaitFor(() => Screen() is LetterTraceScreen { Started: true }, 3));
             if (Screen() is LetterTraceScreen { Started: true } trace)
             {
-                // Trace round the letter with the button held: through every checkpoint.
+                void PenClick(Vector2 at) => PenClickOn(trace, at);
+                void PenMove(Vector2 at, bool held) =>
+                    trace._UnhandledInput(new InputEventMouseMotion { GlobalPosition = at, ButtonMask = held ? MouseButtonMask.Left : default });
+
+                // A mouse: the first half of the letter with the button held.
                 var points = trace.CheckpointsOnScreen.ToList();
-                trace._UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, GlobalPosition = points[0] });
-                foreach (var point in points) trace._UnhandledInput(new InputEventMouseMotion { GlobalPosition = point, ButtonMask = MouseButtonMask.Left });
-                trace._UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = points[^1] });
-                Check("tracing round the letter earns a star", game.Progress.Stars == starsBefore + 1, $"stars {starsBefore} → {game.Progress.Stars}");
+                // The pen starts drawing once the press has moved past a click's wobble.
+                PenButton(trace, points[0] + new Vector2(0, 40), true);
+                foreach (var point in points.Take(4)) PenMove(point, held: true);
+                PenButton(trace, points[3], false);
+                Check("dragging with the button held traces", trace.TouchedCount >= 4 && trace.PenMode == BipCore.TracePenMode.Idle,
+                      $"touched {trace.TouchedCount}, pen {trace.PenMode}");
+                var dragged = trace.TouchedCount;
+                PenMove(points[5], held: false);
+                Check("after letting go, moving draws nothing", trace.TouchedCount == dragged && trace.PenMode == BipCore.TracePenMode.Idle);
+
+                // Clicking the letter says its sound: never a miss, however often.
+                PenClick(points[8]);
+                PenClick(points[8]);
+                Check("clicks on the letter are not misses", !trace.StartDotHinted);
+
+                // A trackpad: two clicks away from the start dot, then the dot wiggles for a hint.
+                var paper = trace.StartDotOnScreen + new Vector2(520, 0);
+                PenClick(paper);
+                PenClick(paper);
+                Check("two clicks away from the start dot: the dot wiggles for a hint", trace.StartDotHinted && trace.PenMode == BipCore.TracePenMode.Idle);
+                PenClick(trace.StartDotOnScreen);
+                Check("a click on the start dot starts tap mode", trace.PenMode == BipCore.TracePenMode.Following && !trace.StartDotHinted);
+                PenMove(points[4], held: false);
+                PenClick(points[4]);
+                Check("clicking again lifts the pen", trace.PenMode == BipCore.TracePenMode.Idle);
+                var touched = trace.TouchedCount;
+                PenMove(points[6], held: false);
+                Check("a lifted pen draws nothing", trace.TouchedCount == touched);
+                // A wobbly click (3 points) near a checkpoint draws nothing.
+                PenButton(trace, points[6], true);
+                PenMove(points[6] + new Vector2(3, 0), held: true);
+                PenButton(trace, points[6] + new Vector2(3, 0), false);
+                Check("a wobbly click draws nothing", trace.TouchedCount == touched, $"touched {touched} → {trace.TouchedCount}");
+                // Following, then a drag takes over (its press went unseen): the start dot comes back.
+                PenClick(trace.StartDotOnScreen);
+                Check("tap mode hides the start dot", trace.PenMode == BipCore.TracePenMode.Following && !trace.StartDotShown);
+                PenMove(trace.StartDotOnScreen, held: true);
+                PenMove(trace.StartDotOnScreen, held: false);
+                Check("a drag that takes over from tap mode brings the start dot back",
+                      trace.PenMode == BipCore.TracePenMode.Idle && trace.StartDotShown);
+                Check("no star until the letter is finished", game.Progress.Stars == starsBefore);
+                // Click the dot again and finish the letter with the button up.
+                PenClick(trace.StartDotOnScreen);
+                foreach (var point in points) PenMove(point, held: false);
+                Check("tracing round the letter in tap mode earns a star", game.Progress.Stars == starsBefore + 1, $"stars {starsBefore} → {game.Progress.Stars}");
+                Check("a finished trace stops the pen", trace.PenMode == BipCore.TracePenMode.Idle);
                 Check("Letter Trace ends on the end card, with a picture sticker for finishing",
                       await WaitFor(() => Screen() is LetterTraceScreen && Screen()?.FindChild("NewSticker", true, false) != null, 8));
                 Check("Letter Trace goes back to the island", await WaitFor(() => Screen() is LettersIslandScreen, 12));
@@ -742,7 +808,7 @@ public static class WalkTest
                 Check("a wrong food goes back, no star", monster is { InputLocked: false } && game.Progress.Stars == starsBefore);
                 monster.DragToMonsterForTest(monster.RightIndex);
                 await Wait(0.5);
-                Check("dragging the right food to the monster is saved", game.Store.Progress(game.ChildId).Skills.ContainsKey("snd_g1"));
+                Check("dragging the right food to the monster is saved", game.Store.Progress(game.ChildId, game.Language).Skills.ContainsKey("snd_g1"));
                 Check("the next food comes", await WaitFor(() => monster is { InputLocked: false }, 8));
             }
             if (await Tap("home")) await Expect<LettersIslandScreen>("home from Feed the Monster goes back to letters island");

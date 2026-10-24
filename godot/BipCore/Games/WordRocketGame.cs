@@ -59,10 +59,11 @@ public sealed partial class WordRocketGame : IMiniGame<WordRocketGame.Round, str
         _course = course;
         _audio = content.AudioIds;
         // Only words whose graphemes spell them left to right: split digraphs (a-e in cake) can't
-        // light up one window per sound, so they stay out.
+        // light up one window per sound, so they stay out, as do words whose letters don't make their
+        // taught sounds (Word.Blendable).
         _words = content.Words.Words
             .Select(word => (Word: word, Parts: word.Graphemes.Select(course.Sound).OfType<PhonicsSound>().ToList()))
-            .Where(w => w.Parts.Count == w.Word.Graphemes.Count && string.Concat(w.Parts.Select(p => p.Grapheme)) == w.Word.Text
+            .Where(w => w.Word.Blendable && w.Parts.Count == w.Word.Graphemes.Count && string.Concat(w.Parts.Select(p => p.Grapheme)) == w.Word.Text
                         && Typeable(w.Word.Text))
             .ToList();
         // Lower-case words only: Mr and Mrs need a capital, and the game shows lower case.
@@ -161,7 +162,7 @@ public sealed partial class WordRocketGame : IMiniGame<WordRocketGame.Round, str
     {
         // Tricky words don't sound out, so a hint names the letter once letter names are taught;
         // before that Bip says the word again.
-        var names = PhonicsCourse.LetterNamesUnlocked(learner.KnownSoundIds);
+        var names = _course.LetterNamesUnlocked(learner.KnownSoundIds);
         var slots = word.Select(c => c.ToString()).Select(letter =>
         {
             var name = $"name_{letter}";

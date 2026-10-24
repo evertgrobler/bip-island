@@ -114,18 +114,25 @@ public static partial class AudioCatalogue
     public const int PraiseCount = 10;
     public const int HintCount = 4;
 
-    /// <summary>A word's clip: yo-yo → word_yoyo (file names have no hyphens).</summary>
-    public static string WordClip(string word) => $"word_{word.Replace("-", "")}";
-    public static string NumberClip(int n) => $"num_{n}";
+    /// <summary>
+    /// A word's clip: yo-yo → word_yoyo (file names have no hyphens), vlieër → word_vlieer (file names
+    /// are plain ASCII, so a Mac writing é or ë decomposed can never miss the file).
+    /// </summary>
+    public static string WordClip(string word) => $"word_{PlainLetters(word.Replace("-", ""))}";
 
-    /// <summary>The highest number with a mid-sentence clip (numbers.json spokenNumbers.joinTo).</summary>
-    public const int MidNumbersTo = 20;
+    /// <summary>The text without accents or diereses: ë → e, ê → e, ô → o.</summary>
+    public static string PlainLetters(string text) =>
+        string.Concat(text.Normalize(System.Text.NormalizationForm.FormD)
+            .Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark))
+            .Normalize(System.Text.NormalizationForm.FormC);
+    public static string NumberClip(int n) => $"num_{n}";
 
     /// <summary>
     /// A number in the middle of a sentence ("seven… plus three"), said so it carries on rather than
-    /// finishing; numbers above <see cref="MidNumbersTo"/> use the plain clip.
+    /// finishing; numbers above <paramref name="joinTo"/> (numbers.json spokenNumbers.joinTo, see
+    /// <see cref="ContentLibrary.MidNumberClip"/>) use the plain clip.
     /// </summary>
-    public static string MidNumberClip(int n) => n is >= 0 and <= MidNumbersTo ? $"num_{n}_mid" : NumberClip(n);
+    public static string MidNumberClip(int n, int joinTo) => n >= 0 && n <= joinTo ? $"num_{n}_mid" : NumberClip(n);
 
     /// <summary>
     /// A whole sentence with numbers in it, recorded as one clip (numbers.json spokenNumbers):

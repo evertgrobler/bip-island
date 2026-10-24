@@ -163,9 +163,6 @@ public static class Sketch
     }
 
     /// <summary>A label in the game font, centred on its position.</summary>
-    /// <summary>"1 star", "3 stars": a count with its word, singular for one.</summary>
-    public static string Plural(int count, string word) => $"{count} {word}{(count == 1 ? "" : "s")}";
-
     public static Label Label(string text, int size, Color colour, Font? font = null)
     {
         var label = new Label
@@ -237,6 +234,7 @@ public partial class SketchNode : Node2D, IHasBounds
     {
         _ink = ink;
         _lineWidth = lineWidth;
+        shape = WithoutRepeats(shape);
         if (fill is { } colour && shape.IsClosed)
         {
             var points = Sketch.Path(shape, wobble * 0.6f, unchecked(seed + 101));
@@ -252,6 +250,21 @@ public partial class SketchNode : Node2D, IHasBounds
             _line = Sketch.Path(shape, wobble, seed);
             _secondPass = Sketch.Path(shape, wobble * 1.4f, unchecked(seed + 7));
         }
+    }
+
+    /// <summary>
+    /// A polygon without repeated points (where two curves meet, or the last point is the first again):
+    /// a repeated point makes the wobbly outline cross itself, so the fill can't be worked out and the
+    /// shape is left white.
+    /// </summary>
+    private static SketchShape WithoutRepeats(SketchShape shape)
+    {
+        if (shape is not SketchShape.Polygon polygon) return shape;
+        var kept = new List<Vector2>(polygon.Points.Length);
+        foreach (var point in polygon.Points)
+            if (kept.Count == 0 || kept[^1].DistanceTo(point) > 0.5f) kept.Add(point);
+        while (kept.Count > 3 && kept[^1].DistanceTo(kept[0]) <= 0.5f) kept.RemoveAt(kept.Count - 1);
+        return kept.Count == polygon.Points.Length ? shape : new SketchShape.Polygon([.. kept]);
     }
 
     public Rect2 LocalBounds

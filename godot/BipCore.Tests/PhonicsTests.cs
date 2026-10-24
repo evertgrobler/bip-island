@@ -112,11 +112,13 @@ public sealed class PhonicsTests
         var named = course.AllSounds.Where(s => s.LetterName is not null);
         Assert.True(named.All(s => s.Group <= 5), "letter names belong to single letters in groups 1–5");
 
-        Assert.False(PhonicsCourse.LetterNamesUnlocked([]));
-        Assert.False(PhonicsCourse.LetterNamesUnlocked(Ids(course.FirstGroup.Sounds)));
+        Assert.Equal(26, course.Letters.Count);
+        Assert.False(course.LetterNamesUnlocked([]));
+        Assert.False(course.LetterNamesUnlocked(Ids(course.FirstGroup.Sounds)));
         var groupsOneToFive = Ids(course.SoundsUpToGroup(5)).ToHashSet();
-        Assert.True(PhonicsCourse.LetterNamesUnlocked(groupsOneToFive));
-        Assert.False(PhonicsCourse.LetterNamesUnlocked(groupsOneToFive.Where(id => id != "qu")), "q is only covered by qu");
+        Assert.True(course.LetterNamesUnlocked(groupsOneToFive));
+        Assert.False(course.LetterNamesUnlocked(groupsOneToFive.Where(id => id != "qu")), "q is only covered by qu");
+        Assert.False(course.LetterNamesUnlocked(Ids(course.SoundsUpToGroup(4))));
         Assert.Equal(new HashSet<string> { "q" }, PhonicsCourse.LettersCovered(["qu", "sh"]));
     }
 }

@@ -1,5 +1,5 @@
 {
-  "note": "Afrikaans decodable words for each sound group (Content/af/phonics/graphemes.json). Pictures reuse the game's hand-drawn art. Checked and signed off by the owner, 18 October 2026.",
+  "note": "Afrikaans decodable words for each sound group (Content/af/phonics/graphemes.json). Pictures reuse the game's hand-drawn art. Checked and signed off by the owner, 18 October 2026. \"blendable\": false marks a word whose letters don't all make their taught sound in it (an open syllable's long vowel, a schwa e, the i glide in koei): Sound Buttons and Word Rocket, which blend sound by sound, leave it out; validate_content.py --lang af finds these.",
   "words": [
     {
       "word": "mat",
@@ -624,6 +624,7 @@
       "audio": "word_motor",
       "picturable": true,
       "picture": "pic_car",
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -1073,6 +1074,7 @@
       "audio": "word_hamer",
       "picturable": true,
       "picture": "pic_hammer",
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -1244,6 +1246,7 @@
       "audio": "word_lepel",
       "picturable": true,
       "picture": "pic_spoon",
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -1690,6 +1693,7 @@
       "audio": "word_koning",
       "picturable": true,
       "picture": "pic_king",
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -1712,6 +1716,7 @@
       "audio": "word_kewer",
       "picturable": true,
       "picture": "pic_bug",
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -1733,6 +1738,7 @@
       "rime": "isse",
       "audio": "word_visse",
       "picturable": false,
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -2028,6 +2034,7 @@
       "audio": "word_koei",
       "picturable": true,
       "picture": "pic_cow",
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -2152,6 +2159,7 @@
       "rime": "uikens",
       "audio": "word_kuikens",
       "picturable": false,
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -2174,6 +2182,7 @@
       "audio": "word_kuiken",
       "picturable": true,
       "picture": "pic_chick",
+      "blendable": false,
       "objectives": [
         "1Rw.05",
         "1Ww.05"
@@ -2372,6 +2381,7 @@
       "audio": "word_eier",
       "picturable": true,
       "picture": "pic_egg",
+      "blendable": false,
       "tags": [
         "food"
       ],
@@ -2575,6 +2585,7 @@
       "rime": "ooi",
       "audio": "word_rooi",
       "picturable": false,
+      "blendable": false,
       "objectives": [
         "2Rw.01",
         "2Ww.01"
@@ -2660,6 +2671,7 @@
       "audio": "word_appel",
       "picturable": true,
       "picture": "pic_apple",
+      "blendable": false,
       "tags": [
         "food"
       ],

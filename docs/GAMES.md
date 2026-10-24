@@ -27,10 +27,12 @@ Seven games that move from hearing a sound, to spotting it, to writing it.
 | Meet the Sound | The letter bounces in, the narrator says its sound, a picture word follows | First meeting with a sound | 4–6 | Paper desk, chalkboard, sand |
 | Sound Hunt | Pick the picture that starts with the sound you hear, out of three | Hearing first sounds | 4–6 | Treasure chests, market stalls, picnic basket |
 | Bubble Pop | Letters float up; pop the one that makes the sound | Matching sound to letter | 4–7 | Bubbles, balloons, fireflies |
-| Letter Trace | Follow the letter's path with the mouse; sparkles trail behind | Letter formation | 4–6 | Sparkles, snail trail, paint |
+| Letter Trace | Follow the letter's path with the mouse or trackpad; sparkles trail behind | Letter formation | 4–6 | Sparkles, snail trail, paint |
 | Feed the Monster | Drag only the foods that start with the sound into a hungry monster | Sorting by sound | 4–7 | A new monster every week |
 | Letter Fishing | Fish letter-fish out of a pond to match the sound | Speed and recall | 5–8 | Pond, rock pool, river |
 | Sound Detective | Find everything starting with the sound in a busy drawn scene | Sounds in context | 5–8 | Beach, kitchen, farm, picnic |
+
+**Letter Trace on a trackpad (18 October 2026).** Two ways to draw, both always on: drag with the button held (a mouse), or click the green start dot above the letter (120 pt) and the pen follows the pointer with the button up until the letter is done or the child clicks again (a trackpad, where holding the button down is hard for small hands). A click is a press and release that moves less than 24 points, and a press draws nothing until it moves further, so a click never draws. Clicks on the bare paper are misses: a soft boop, and after two the dot wiggles and Bip says "Look for the one that's wiggling!" once, after the narrator has finished; a drag that traces forgives earlier stray clicks. A click on the letter just says its sound, and home and Bip always work, even while the pen follows. The trace is judged as before: every checkpoint touched, no timer. The pen's rules are `BipCore.TracePen` (tested in `TracePenTests`); the walk-through traces half a letter by dragging and finishes it in tap mode.
 
 ## Numbers
 

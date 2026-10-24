@@ -39,20 +39,34 @@ public partial class VoicePlayer : Node
     /// </summary>
     public bool Speaking => _inSequence || _player.Playing;
 
-    /// <summary>The playing child's language: which folder clips come from. An Afrikaans clip that isn't
-    /// recorded yet plays as a short silence like any missing clip, never the English one.</summary>
-    public static BipCore.HomeLanguage Language { get; set; } = BipCore.HomeLanguage.English;
+    /// <summary>
+    /// Where the language comes from: the coordinator points this at its
+    /// <see cref="Game.GameCoordinator.SpokenLanguage"/> once at start-up, so the voice never keeps a copy
+    /// of its own. English until then (previews and tests without the coordinator).
+    /// </summary>
+    public static Func<BipCore.HomeLanguage> LanguageSource { private get; set; } = () => BipCore.HomeLanguage.English;
 
-    public static string PathFor(string clip)
+    /// <summary>The language being spoken: which folder clips come from. An Afrikaans clip that isn't
+    /// recorded yet plays as a short silence like any missing clip, never the English one.</summary>
+    public static BipCore.HomeLanguage Language => LanguageSource();
+
+    public static string PathFor(string clip) => PathFor(clip, Language);
+
+    /// <summary>A clip's path in a given language (the self-test always checks the English one).</summary>
+    public static string PathFor(string clip, BipCore.HomeLanguage language)
     {
-        var language = Language;
-        if (clip.StartsWith('@') && clip.IndexOf('/') is var slash and > 1)
-        {
-            language = clip[1..slash] == "af" ? BipCore.HomeLanguage.Afrikaans : BipCore.HomeLanguage.English;
-            clip = clip[(slash + 1)..];
-        }
+        var (name, inLanguage) = Resolve(clip, language);
+        return FolderOf(inLanguage) + name + ".ogg";
+    }
+
+    public static bool HasClip(string clip) => HasClip(clip, Language);
+
+    public static bool HasClip(string clip, BipCore.HomeLanguage language) => ResourceLoader.Exists(PathFor(clip, language));
+
+    private static string FolderOf(BipCore.HomeLanguage language)
+    {
         var folder = BipCore.Languages.Folder(language);
-        return AudioFolder + (folder.Length > 0 ? folder + "/" : "") + clip + ".ogg";
+        return AudioFolder + (folder.Length > 0 ? folder + "/" : "");
     }
 
     /// <summary>
@@ -62,7 +76,11 @@ public partial class VoicePlayer : Node
     public static string InLanguage(string clip, BipCore.HomeLanguage language) =>
         $"@{(language == BipCore.HomeLanguage.Afrikaans ? "af" : "en")}/{clip}";
 
-    public static bool HasClip(string clip) => ResourceLoader.Exists(PathFor(clip));
+    /// <summary>Splits an <see cref="InLanguage"/> name ("@af/learn_cat") into its language and clip.</summary>
+    private static (string Clip, BipCore.HomeLanguage Language) Resolve(string clip, BipCore.HomeLanguage language) =>
+        clip.StartsWith('@') && clip.IndexOf('/') is var slash and > 1
+            ? (clip[(slash + 1)..], clip[1..slash] == "af" ? BipCore.HomeLanguage.Afrikaans : BipCore.HomeLanguage.English)
+            : (clip, language);
 
     private static string? StandIn(string clip) =>
         clip.EndsWith("_mid", StringComparison.Ordinal) ? clip[..^"_mid".Length]
@@ -72,10 +90,10 @@ public partial class VoicePlayer : Node
     public static List<string> Prefer(string sentence, IEnumerable<string> pieces) =>
         HasClip(sentence) ? [sentence] : pieces.ToList();
 
-    /// <summary>How many clips are in this build (for the parent area and the self-test report).</summary>
-    public static int CountClips()
+    /// <summary>How many clips this build has in a language (for the parent area and the self-test report).</summary>
+    public static int CountClips(BipCore.HomeLanguage language)
     {
-        using var dir = DirAccess.Open(AudioFolder);
+        using var dir = DirAccess.Open(FolderOf(language));
         if (dir == null) return 0;
         // Exported games list imported files as "name.ogg.import" (or "name.ogg.remap"); count each clip once.
         return dir.GetFiles()

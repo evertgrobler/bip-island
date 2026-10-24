@@ -26,12 +26,27 @@ public partial class GameCoordinator : Node
     public MusicPlayer Music { get; } = new() { Name = "Music" };
     public IRandomSource Rng { get; set; } = SystemRandomSource.Shared;
 
-    /// <summary>Null only if the bundled content couldn't be read (CI checks it, so this shouldn't happen).</summary>
     /// <summary>The game content in the playing child's language (null when it didn't load).</summary>
     public ContentLibrary? Content { get; private set; }
 
-    /// <summary>The language the loaded content and the voice are in: the playing child's.</summary>
+    /// <summary>
+    /// The language the playing child plays in, and the one place it is held: the loaded content was read
+    /// in it (<see cref="ContentLibrary.Language"/> only records which language a library was read in) and
+    /// the voice follows it through <see cref="SpokenLanguage"/>.
+    /// </summary>
     public HomeLanguage Language { get; private set; } = HomeLanguage.English;
+
+    /// <summary>
+    /// The language the voice speaks now: the screen's (<see cref="BaseScreen.ScreenLanguage"/>), which is
+    /// the playing child's except on "Who's playing?" and a brother's or sister's break.
+    /// </summary>
+    public HomeLanguage SpokenLanguage => IsInsideTree() && GetTree().CurrentScene is BaseScreen screen ? screen.ScreenLanguage : Language;
+
+    /// <summary>
+    /// "Who's playing?" in the language of the child at the computer; English while nobody is yet (the
+    /// game has just opened), since the last child's language may not be the next one's.
+    /// </summary>
+    public HomeLanguage PickerLanguage => _nobodyYet ? HomeLanguage.English : Language;
 
     private readonly Dictionary<HomeLanguage, ContentLibrary?> _contentByLanguage = [];
 
@@ -94,6 +109,7 @@ public partial class GameCoordinator : Node
         AddChild(Sounds);
         AddChild(Music);
         Music.NarratorSpeaking = () => Voice.Speaking;
+        VoicePlayer.LanguageSource = () => SpokenLanguage;
         _fadeLayer = new CanvasLayer { Layer = 100 };
         _fade = new ColorRect { Color = Palette.Paper, MouseFilter = Control.MouseFilterEnum.Ignore, Modulate = new Color(1, 1, 1, 0) };
         _fade.SetAnchorsPreset(Control.LayoutPreset.FullRect);
@@ -141,18 +157,32 @@ public partial class GameCoordinator : Node
         return library;
     }
 
-    /// <summary>Loads the playing child's language when it isn't the one loaded: content, games and voice.</summary>
-    private void FollowChildLanguage()
+    /// <summary>
+    /// The language a child plays in: their own when this build has it (<see cref="AvailableLanguages"/>),
+    /// else English, so a saved language that isn't ready never leaves the game silent.
+    /// </summary>
+    public HomeLanguage LanguageOf(Guid id) =>
+        Languages.Playable(Children.FirstOrDefault(c => c.Id == id)?.Language ?? HomeLanguage.English, AvailableLanguages);
+
+    /// <summary>
+    /// Loads the playing child's progress in their language (each language keeps its own sounds, skills
+    /// and levels; stars and stickers are shared), and that language's content, games and voice when
+    /// they aren't the ones loaded.
+    /// </summary>
+    private void LoadChildProgress()
     {
-        var language = CurrentChild?.Language ?? HomeLanguage.English;
+        var language = LanguageOf(ChildId);
+        Progress = Store.Progress(ChildId, language);
         if (Content != null && language == Language) return;
         LoadContent(language);
     }
 
+    /// <summary>Saves the playing child's progress, in the language it was loaded in.</summary>
+    public void SaveProgress() => Store.Save(Progress, ChildId, Language);
+
     private void LoadContent(HomeLanguage language)
     {
         Language = language;
-        VoicePlayer.Language = language;
         Content = ContentFor(language);
         Course = null;
         Hunt = null;
@@ -219,10 +249,9 @@ public partial class GameCoordinator : Node
         if (Store.LoadError is { } loadError) GD.PrintErr($"Bip Island: {loadError}");
         Children = Store.Children();
         ChildId = Store.LastChildId();
-        Progress = Store.Progress(ChildId);
+        LoadChildProgress();
         LoadBreak();
         _nobodyYet = true;
-        FollowChildLanguage();
     }
 
     /// <summary>Each child has their own play clock and break: load the current child's.</summary>
@@ -291,10 +320,9 @@ public partial class GameCoordinator : Node
         // Just opened: picking a resting child (their own picture) doesn't make anyone at the computer yet.
         if (_nobodyYet) _nobodyYet = IsResting(id);
         ChildId = id;
-        Progress = Store.Progress(id);
+        LoadChildProgress();
         LoadBreak();
         Store.SetLastChild(id);
-        FollowChildLanguage();
         _hasWelcomed = false;
         ShowMap();
     }
@@ -310,9 +338,11 @@ public partial class GameCoordinator : Node
     /// <summary>A parent changes a child's name, age, picture or language (the playing child's takes effect at once).</summary>
     public void UpdateChild(ChildSummary child)
     {
+        // The playing child's progress so far stays with the language it was earned in.
+        if (child.Id == ChildId) SaveProgress();
         Store.Update(child);
         Children = Store.Children();
-        FollowChildLanguage();
+        if (child.Id == ChildId && LanguageOf(ChildId) != Language) LoadChildProgress();
     }
 
     /// <summary>Removes a child and their progress. If they were playing, the first child takes over.</summary>
@@ -323,18 +353,18 @@ public partial class GameCoordinator : Node
         Children = Store.Children();
         if (Children.Any(c => c.Id == ChildId) || Children.Count == 0) return;
         ChildId = Children[0].Id;
-        Progress = Store.Progress(ChildId);
+        LoadChildProgress();
         LoadBreak();
         Store.SetLastChild(ChildId);
-        FollowChildLanguage();
     }
 
     /// <summary>What a parent sees for one child, or null when the content didn't load.</summary>
     public ProgressReport? Report(Guid id)
     {
         // Each child's report is in their own language's content (a brother may play in Afrikaans).
-        if (ContentFor(Children.FirstOrDefault(c => c.Id == id)?.Language ?? HomeLanguage.English) is not { } content) return null;
-        var childProgress = id == ChildId ? Progress : Store.Progress(id);
+        var language = LanguageOf(id);
+        if (ContentFor(language) is not { } content) return null;
+        var childProgress = id == ChildId ? Progress : Store.Progress(id, language);
         var band = Children.FirstOrDefault(c => c.Id == id)?.Age is { } age ? content.StartingBand(age) : Band.Foundation;
         var closed = ClosedIslandsFor(Children.FirstOrDefault(c => c.Id == id)?.Language ?? HomeLanguage.English);
         try
@@ -396,7 +426,7 @@ public partial class GameCoordinator : Node
         if (banked > 0)
         {
             Progress.NotePlayTime(banked, Today);
-            Store.Save(Progress, ChildId);
+            SaveProgress();
         }
         // The playing child can play, so they're the one at the computer now.
         if (phase == BreakPhase.Playing) _nobodyYet = false;
@@ -622,7 +652,7 @@ public partial class GameCoordinator : Node
     public void MarkMet(PhonicsSound sound)
     {
         Progress.MarkMet(sound.Id);
-        Store.Save(Progress, ChildId);
+        SaveProgress();
     }
 
     // Levels inside games
@@ -672,7 +702,7 @@ public partial class GameCoordinator : Node
         _visitSound = null;
         _visitCompleted = false;
         Progress.NotePlayed(gameId);
-        Store.Save(Progress, ChildId);
+        SaveProgress();
     }
 
     /// <summary>What happened this visit, for the celebration at the end.</summary>
@@ -703,7 +733,7 @@ public partial class GameCoordinator : Node
     {
         if (Content == null) return;
         PendingStickers().AddRange(StickerBook.AwardStickers(Progress, Content, _visitSound, finishedGame, Rng));
-        Store.Save(Progress, ChildId);
+        SaveProgress();
     }
 
     private List<string> PendingStickers()
