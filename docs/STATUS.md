@@ -622,3 +622,12 @@
   Words Island (plates a little smaller), previews `Scenes/Games/bips_stories*.tscn`, and the walk-through reads a
   story and answers with a hint. Cambridge Reading codes are placeholders (`ENG.RC.01/02`, to map); CAPS
   `HL.RV.01` topic to confirm. Not recorded yet: 3 new lines and every story clip in both languages.
+- **24 Oct, 23:05 SAST (PR #60 review fixes, Bip's Stories):** #60 was merged before its review, so these come in
+  their own PR. A quick wrong-then-right click no longer freezes the story: the answers go through the shared
+  `GameScreen.AnswerChoice` (new `onHint` action for the scene hint), so a retry or hint never cuts off the praise.
+  Clicking a sentence still ends with the arrow glowing, and the intro counts as heard only once it has played.
+  The hint scene sits between the question (still shown) and the cards, once. A level-up mid-visit finishes the
+  longer story it deals (`StoriesGame` alone ends the visit; test added). The validator checks backgrounds against
+  `StoryScenes.Backgrounds`, puts answer pictures in the manifest and the level-5 face rule, and Silly Sentences
+  and story level 1 share one reading rule. `GameSession.MarkUsed` (internal) replaces reflection in the tests.
+  The walk-through now checks the arrow after a clicked sentence and a quick wrong-then-right click.

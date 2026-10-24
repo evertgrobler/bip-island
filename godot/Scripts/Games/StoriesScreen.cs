@@ -34,6 +34,7 @@ public partial class StoriesScreen : GameScreen
     private readonly List<Node2D> _cards = [];
     private Node2D? _next;
     private Tween? _nextPulse;
+    private Node2D? _hintScene;
     private bool _introduced;
     private bool _questionsIntroduced;
 
@@ -57,6 +58,10 @@ public partial class StoriesScreen : GameScreen
     /// <summary>Which answer card is right (for the walk-through), or -1 when no question is showing.</summary>
     public int RightIndex => _round is { } round && CurrentPhase == Phase.Asking && _cards.Count > 0
         ? round.Choices.ToList().FindIndex(c => _game.IsCorrect(c, round)) : -1;
+    /// <summary>True when the green arrow glows to say the page is read (for the walk-through).</summary>
+    public bool ArrowGlows => _nextPulse != null && _nextPulse.IsValid() && _nextPulse.IsRunning();
+    /// <summary>Questions asked so far this visit (for the walk-through).</summary>
+    public int RoundsPlayed => _session.RoundsPlayed;
     /// <summary>True while the hint shows the answer's scene again.</summary>
     public bool ShowingHintScene { get; private set; }
 
@@ -90,6 +95,7 @@ public partial class StoriesScreen : GameScreen
         _cards.Clear();
         _next?.QueueFree();
         _next = null;
+        _hintScene = null;
         ShowingHintScene = false;
         ResetKeys();
     }
@@ -147,20 +153,36 @@ public partial class StoriesScreen : GameScreen
 
     private IReadOnlyList<string> PageClips(int page) => _round is { } round ? StoriesGame.SentenceClips(round.Story)[page] : [];
 
-    /// <summary>Reads the page, lighting each sentence as it is said; then the arrow glows.</summary>
+    /// <summary>
+    /// Reads the page, lighting each sentence as it is said; then the arrow glows. The intro comes first
+    /// until it has been heard to the end (a click on a sentence can cut it short; then the next page says it).
+    /// </summary>
     private void ReadPage()
     {
         var clips = PageClips(Page);
-        var offset = _introduced ? 0 : 1;
+        var withIntro = !_introduced;
+        var offset = withIntro ? 1 : 0;
         _nextPulse?.Kill();
-        Voice.Play(_introduced ? clips : [VoiceLine.BipsStories, .. clips], onClipStart: (index, _) => Light(index - offset),
+        Voice.Play(withIntro ? [VoiceLine.BipsStories, .. clips] : clips, onClipStart: (index, _) =>
+                   {
+                       if (withIntro && index >= 1) _introduced = true;
+                       Light(index - offset);
+                   },
                    completion: () =>
                    {
-                       Light(-1);
-                       if (_next != null && IsInstanceValid(_next)) _nextPulse = Buttons.Pulse(_next);
+                       _introduced = true;
+                       PageDone();
                    });
-        _introduced = true;
         Bip.Hop();
+    }
+
+    /// <summary>The page has been read (or a clicked sentence has): no sentence lit, and the arrow glows to turn the page.</summary>
+    private void PageDone()
+    {
+        Light(-1);
+        if (CurrentPhase != Phase.Reading || _next == null || !IsInstanceValid(_next)) return;
+        _nextPulse?.Kill();
+        _nextPulse = Buttons.Pulse(_next);
     }
 
     /// <summary>Highlights one sentence (the one being read), or none.</summary>
@@ -179,7 +201,7 @@ public partial class StoriesScreen : GameScreen
         CurrentPhase = Phase.Asking;
         _attempt = new QuestionAttempt();
         var question = Sketch.Label(round.Question.Text, round.Question.Text.Length > 44 ? 40 : 48, Palette.Ink);
-        var holder = new Node2D { Position = P(0, 300) };
+        var holder = new Node2D { Position = P(0, 330) };
         holder.AddChild(question);
         Stage.AddChild(holder);
         _shown.Add(holder);
@@ -254,17 +276,22 @@ public partial class StoriesScreen : GameScreen
         Bip.Hop();
     }
 
-    /// <summary>The hint: the scene that holds the answer comes back, small, above the cards, and is read again.</summary>
+    /// <summary>
+    /// The hint: the scene that holds the answer comes back, small, between the question and the cards, and is
+    /// read again. A further miss reads the same scene again rather than adding another.
+    /// </summary>
     private void ShowHintScene()
     {
         if (_round is not { } round) return;
         var page = Math.Clamp(round.Question.Scene - 1, 0, round.Scenes.Scenes.Count - 1);
-        foreach (var node in _shown) node.Visible = false;
-        var picture = StoryScenes.Scene(round.Scenes.Scenes[page], (ulong)(7000 + page * 120));
-        picture.Position = P(0, 260);
-        picture.Scale = Vector2.One * 0.44f;
-        Stage.AddChild(picture);
-        _shown.Add(picture);
+        if (_hintScene == null || !IsInstanceValid(_hintScene))
+        {
+            _hintScene = StoryScenes.Scene(round.Scenes.Scenes[page], (ulong)(7000 + page * 120));
+            _hintScene.Position = P(0, 175);
+            _hintScene.Scale = Vector2.One * 0.4f;
+            Stage.AddChild(_hintScene);
+            _shown.Add(_hintScene);
+        }
         ShowingHintScene = true;
         Voice.Play([VoiceLine.StoryLookAgain, .. PageClips(page),
                     StoriesGame.QuestionClip(round.Story, round.Number)]);
@@ -291,42 +318,18 @@ public partial class StoriesScreen : GameScreen
             && CurrentPhase == Phase.Reading && line < PageClips(Page).Count)
         {
             Buttons.Press(node);
-            Voice.Play([PageClips(Page)[line]], onClipStart: (_, _) => Light(line), completion: () => Light(-1));
+            // Reading one sentence again stops the page read, so the arrow still glows when it ends.
+            Voice.Play([PageClips(Page)[line]], onClipStart: (_, _) => Light(line), completion: PageDone);
             return;
         }
         if (!name.StartsWith("answer:", StringComparison.Ordinal) || !int.TryParse(name["answer:".Length..], out var index)
             || index >= _cards.Count || _round is not { } asked) return;
-        var card = _cards[index];
         var choice = asked.Choices[index];
-        var outcome = _attempt.Answer(_game.IsCorrect(choice, asked));
-        switch (outcome.Kind)
-        {
-            case AnswerOutcomeKind.Correct:
-                InputLocked = true;
-                StopHint();
-                var grow = card.CreateTween();
-                grow.TweenProperty(card, "scale", Vector2.One * 1.15f, 0.15);
-                grow.TweenProperty(card, "scale", Vector2.One * 1.05f, 0.1);
-                Buttons.Sparkle(card.Position, Stage);
-                Sfx.Play(BipSounds.Effect.Chime);
-                Bip.Celebrate();
-                var change = Record(outcome.FirstTry, _game.SkillId(asked));
-                Voice.Play([Coordinator.RandomPraise(), AnswerClip(choice)], completion: () => AfterAnswer(change, _session, NextRound));
-                break;
-            case AnswerOutcomeKind.TryAgain:
-                Sfx.Play(BipSounds.Effect.Boop);
-                Buttons.Shake(card);
-                Bip.Tilt();
-                After(0.4, () => Voice.Play([StoriesGame.QuestionClip(asked.Story, asked.Number)]));
-                break;
-            default:
-                Sfx.Play(BipSounds.Effect.Boop);
-                Buttons.Shake(card);
-                Bip.Tilt();
-                // The scene that holds the answer is the hint; the right card doesn't wiggle, so the child finds it.
-                After(0.4, ShowHintScene);
-                break;
-        }
+        // The shared answer flow: a retry or the hint never cuts off the praise of a quick right answer.
+        // The scene that holds the answer is the hint; the right card doesn't wiggle, so the child finds it.
+        AnswerChoice(_attempt, _game.IsCorrect(choice, asked), _cards[index], right: null, _game.SkillId(asked), [AnswerClip(choice)],
+                     _session, NextRound, onRetry: () => Voice.Play([StoriesGame.QuestionClip(asked.Story, asked.Number)]),
+                     onHint: ShowHintScene);
     }
 
     public override void ReplayPrompt()

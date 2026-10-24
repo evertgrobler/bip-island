@@ -148,10 +148,33 @@ public sealed class StoriesGameTests
     private static GameSession SessionWith(StoriesGame game, IEnumerable<string> used)
     {
         var session = new GameSession(StoriesGame.GameId, game.Skins[0], 20);
-        var items = (HashSet<string>)typeof(GameSession).GetField("_usedItems", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
-            .GetValue(session)!;
-        items.UnionWith(used);
+        session.MarkUsed(used);
         return session;
+    }
+
+    /// <summary>
+    /// A game level-up in the middle of a visit (two level-2 questions right, then the child is on game
+    /// level 2): the next story is a level-3 story, and the visit asks all three of its questions.
+    /// </summary>
+    [Fact]
+    public void ALevelUpMidVisitStillFinishesTheLongerStory()
+    {
+        var content = Content(HomeLanguage.English);
+        var game = new StoriesGame(content);
+        for (ulong seed = 1; seed <= 20; seed++)
+        {
+            var rng = new SeededGenerator(seed);
+            var session = GameSession.Start(game, content.Games.Session, new HashSet<string>(), rng);
+            var first = session.NextRound(game, AtLevel(1), rng)!;
+            var second = session.NextRound(game, AtLevel(1), rng)!;
+            Assert.Equal(2, first.Story.Level);
+            Assert.Same(first.Story, second.Story);
+            var rest = new List<StoriesGame.Round>();
+            while (session.NextRound(game, AtLevel(2), rng) is StoriesGame.Round round) rest.Add(round);
+            Assert.Equal(3, rest.Count);
+            Assert.All(rest, r => Assert.Equal(3, r.Story.Level));
+            Assert.Equal([1, 2, 3], rest.Select(r => r.Number));
+        }
     }
 
     [Theory]

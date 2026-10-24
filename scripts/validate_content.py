@@ -130,12 +130,25 @@ for grp in range(1, max(g["group"] for g in ph["graphemes"]) + 1):
 # Little words every sentence may use (Afrikaans: the article, "is" and the small joining words).
 LITTLE_WORDS = {"af": {"'n", "die", "is", "in", "op", "en", "het", "my", "sy", "hy", "se"}}.get(LANG, {"in", "on", "it", "a", "is", "has", "at", "an"})
 known_tricky = {t.lower() for t in tricky["stage1"]["words"] + tricky["stage2"]["words"]} | LITTLE_WORDS
+
+# One reading rule for every sentence a child reads (Silly Sentences, Bip's Stories level 1).
+def reading_words(text):
+    """The words of a sentence as a child reads them: lower case, without punctuation or quotes ("'n" stays)."""
+    for tok in text.split():
+        t = tok.strip('.,!?"').lower()
+        t = t if t == "'n" else t.strip("'")
+        if t: yield t
+
+def decodable_group(word):
+    """The phonics group a word can be sounded out from (a plural -s counts as its root), or None."""
+    base = word[:-1] if word.endswith("s") and word[:-1] in WORDS else word
+    return WORDS[base]["decodableFromGroup"] if base in WORDS else None
+
 for s in sentences:
-    for tok in s["text"].split():
-        t = tok.strip(".,!?").lower()
-        base = t[:-1] if t.endswith("s") and t[:-1] in WORDS else t
-        if base in WORDS:
-            if WORDS[base]["decodableFromGroup"] > s["decodableFromGroup"]: err(f"{s['id']}: '{t}' needs a later group")
+    for t in reading_words(s["text"]):
+        group = decodable_group(t)
+        if group is not None:
+            if group > s["decodableFromGroup"]: err(f"{s['id']}: '{t}' needs a later group")
         elif t not in known_tricky:
             err(f"{s['id']}: '{t}' is neither decodable nor a tricky word")
 
@@ -632,6 +645,17 @@ EARLY_SHARE = {1: 0.75}
 FACED_OBJECTS = {"pic_sun", "pic_mouth", "pic_morning_2", "pic_bedtime_1", "pic_biscuits_6", "pic_kiss", "pic_chin"}
 FRAME_W, FRAME_H, PICTURE_HALF = 480, 220, 100  # half the scene frame; half a picture at scale 1
 backgrounds = set(scenes_doc["backgrounds"])
+# The backgrounds the game draws (StoryScenes.Backgrounds, each its own case; anything else would quietly
+# draw the park): scenes.json lists exactly those.
+scenes_cs = REPO / "godot" / "Scripts" / "Drawing" / "StoryScenes.cs"
+scenes_src = scenes_cs.read_text(encoding="utf-8") if scenes_cs.exists() else ""
+drawn_list = re.search(r"Backgrounds\s*=\s*\[(.*?)\];", scenes_src, re.S)
+drawn_backgrounds = set(re.findall(r'"([a-z_]+)"', drawn_list.group(1))) if drawn_list else set()
+if backgrounds != drawn_backgrounds:
+    err(f"stories/scenes.json backgrounds must match StoryScenes.Backgrounds in godot/Scripts/Drawing/StoryScenes.cs: "
+        f"only in scenes.json {sorted(backgrounds - drawn_backgrounds)}, only in C# {sorted(drawn_backgrounds - backgrounds)}")
+for b in sorted(drawn_backgrounds - {"park"}):  # the park is the default case
+    if f'case "{b}"' not in scenes_src: err(f"StoryScenes.cs lists background {b} but has no case drawing it")
 new_pictures = {np_["id"]: np_["brief"] for np_ in scenes_doc["newPictures"]}
 people_cs = REPO / "godot" / "Scripts" / "Drawing" / "StoryPeople.cs"
 people_src = people_cs.read_text(encoding="utf-8") if people_cs.exists() else ""
@@ -658,17 +682,14 @@ for ss in scenes_doc["sets"]:
 used_sets, story_ids = {}, set()
 def early_words(story):
     """(decodable words, all words) in a story's sentences, for the early levels."""
-    known = {t.lower() for t in tricky["stage1"]["words"] + tricky["stage2"]["words"]} | LITTLE_WORDS
     most = EARLY_GROUPS.get(story["level"], 99)
     good = total = 0
     for scene_text in story["text"]:
         for sentence in scene_text:
-            for tok in sentence.split():
-                t = tok.strip(".,!?\"'").lower() if tok != "'n" else tok
-                if not t: continue
+            for t in reading_words(sentence):
                 total += 1
-                base = t[:-1] if t.endswith("s") and t[:-1] in WORDS else t
-                if (base in WORDS and WORDS[base]["decodableFromGroup"] <= most) or t in known: good += 1
+                group = decodable_group(t)
+                if (group is not None and group <= most) or t in known_tricky: good += 1
     return good, total
 for st in stories:
     sid, lv = st["id"], st["level"]
@@ -723,7 +744,10 @@ for st in stories:
         if lv <= 2 and not all(pics): err(f"{qwhere}: levels 1 and 2 answer with pictures")
         for c in choices:
             answer_n += 1
-            if c.get("picture") and c["picture"] not in drawable: err(f"{qwhere}: picture {c['picture']} doesn't exist")
+            if c.get("picture"):
+                if c["picture"] not in drawable: err(f"{qwhere}: picture {c['picture']} doesn't exist")
+                if lv == 5 and c["picture"] in FACED_OBJECTS: err(f"{qwhere}: {c['picture']} has a face; level 5 keeps faces to people and animals")
+                p(c["picture"], new_pictures.get(c["picture"], c["text"]))
             clip = word_clip(c["text"])
             if " " in c["text"] or clip not in audio:
                 a(f"vo_story_{sid}_a{answer_n}", c["text"], "Bip's Stories answer choice: short and clear.")
