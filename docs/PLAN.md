@@ -51,7 +51,7 @@ Activities for each sound:
 
 Use ElevenLabs for every spoken word, instruction and praise line, and test the 44 pure phonemes separately because text-to-speech tends to say letter names (“tee”) or add an “uh” (“tuh”) to short sounds. A first test clip (Alice, a British educator voice, with the v3 model) is in your ElevenLabs Flows from 1 October; listen to whether the t comes out clean.
 
-**Voice:** "Bip Island Narrator", a female South African English teacher voice designed in ElevenLabs (voice ID Mq5hYfc3xyDzuW3pPMck). This is the only narrator voice in the game.
+**Voice:** "Bip Island Narrator", a female South African English teacher voice designed in ElevenLabs (voice ID Mq5hYfc3xyDzuW3pPMck); since 18 October 2026 new clips are made with Chatterbox copying her (`scripts/speak_clips.py`). This is the only narrator voice in the game.
 
 **How to write sounds so the voice says them right:**
 

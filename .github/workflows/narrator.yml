@@ -1,0 +1,80 @@
+# Records missing narrator clips with Chatterbox, copying the original Bip Island Narrator
+# (scripts/speak_clips.py, list in voice-lab/request.txt), then commits them to the same branch.
+# GitHub's runners can reach huggingface.co, where the model lives; cloud sessions can't.
+name: Narrator
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/**"]
+    paths:
+      - "voice-lab/request.txt"
+      - "scripts/speak_clips.py"
+      - ".github/workflows/narrator.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: narrator-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  speak:
+    # Only claude/* branches: a run commits straight to its branch, and main only changes through a PR.
+    if: startsWith(github.ref, 'refs/heads/claude/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ffmpeg and Chatterbox (CPU)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts faster-whisper
+      - name: Speak this shard's clips
+        run: |
+          python3 scripts/validate_content.py > /dev/null
+          python3 scripts/speak_clips.py --from voice-lab/request.txt --shard ${{ matrix.shard }}/4 --verify --report out/failed-${{ matrix.shard }}.txt
+          mkdir -p out
+          # New or re-recorded clips (a removed clip shows as modified too, so copy only files that exist).
+          { git ls-files --others --exclude-standard Resources/Audio; git ls-files --modified Resources/Audio; } | sort -u |
+            while read -r f; do if [ -f "$f" ]; then cp "$f" out/; fi; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clips-${{ matrix.shard }}
+          path: out/
+          if-no-files-found: ignore
+
+  commit:
+    needs: speak
+    # Commit what the shards that finished recorded, even if one shard crashed.
+    if: ${{ !cancelled() && startsWith(github.ref, 'refs/heads/claude/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: new
+          pattern: clips-*
+          merge-multiple: true
+      - name: Commit the clips
+        run: |
+          mkdir -p new && cp new/*.m4a Resources/Audio/ 2>/dev/null || true
+          # Clips that never came out right are removed; the game joins those lines from pieces.
+          cat new/failed-*.txt 2>/dev/null | sort > voice-lab/last-failed.txt || true
+          while read -r clip; do git rm -q -f --ignore-unmatch "Resources/Audio/$clip.m4a"; done < voice-lab/last-failed.txt
+          git add voice-lab/last-failed.txt
+          git config user.name "narrator"
+          git config user.email "narrator@users.noreply.github.com"
+          git add Resources/Audio
+          git commit -m "Narrator clips from Chatterbox, checked by Whisper ($(ls new/*.m4a 2>/dev/null | wc -l) new or re-recorded)" || echo "Nothing new"
+          # The run takes hours; others may have pushed to the branch meanwhile.
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

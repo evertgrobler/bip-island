@@ -330,5 +330,86 @@
         "frog"
       ]
     }
-  ]
+  ],
+  "spokenNumbers": {
+    "note": "Whole sentences with numbers in them, recorded as one clip each so Bip sounds natural (clip vo_say_<id>_<a>[_<b>]). Outside these ranges the game joins clips: num_<n>_mid (a number said mid-sentence) up to joinTo, then the linking words. Placeholders: {a} {b} {sum} {left} {double} {rest} (10 - a) {parity} (odd or even).",
+    "joinTo": 20,
+    "sentences": [
+      {
+        "id": "build_tower",
+        "text": "Build a tower of {a}.",
+        "numbers": "one",
+        "from": 1,
+        "to": 10
+      },
+      {
+        "id": "find_tower",
+        "text": "Can you find the tower of {a}?",
+        "numbers": "one",
+        "from": 1,
+        "to": 10
+      },
+      {
+        "id": "join",
+        "text": "{a} and {b}. How many altogether?",
+        "numbers": "sum",
+        "to": 10
+      },
+      {
+        "id": "join_make",
+        "text": "{a} and {b} make {sum}.",
+        "numbers": "sum",
+        "to": 10
+      },
+      {
+        "id": "take_away",
+        "text": "{a} take away {b}.",
+        "numbers": "takeaway",
+        "from": 2,
+        "to": 10
+      },
+      {
+        "id": "make_ten",
+        "text": "{a}. Add cubes to make ten!",
+        "numbers": "one",
+        "from": 1,
+        "to": 9
+      },
+      {
+        "id": "make_ten_right",
+        "text": "{a} and {rest} make ten.",
+        "numbers": "one",
+        "from": 1,
+        "to": 9
+      },
+      {
+        "id": "double",
+        "text": "Double {a}. How many?",
+        "numbers": "one",
+        "from": 1,
+        "to": 10
+      },
+      {
+        "id": "double_right",
+        "text": "Double {a} is {double}.",
+        "numbers": "one",
+        "from": 1,
+        "to": 10
+      },
+      {
+        "id": "odd_even",
+        "text": "{a}. Is it odd or even?",
+        "numbers": "one",
+        "from": 1,
+        "to": 20
+      },
+      {
+        "id": "odd_even_right",
+        "text": "{a} is {parity}.",
+        "numbers": "one",
+        "from": 1,
+        "to": 20
+      }
+    ]
+  }
 }

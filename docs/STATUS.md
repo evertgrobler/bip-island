@@ -125,7 +125,7 @@
   them), or every check run leaves untracked files behind.
 - ElevenLabs keys are often created **restricted** (no `voices_read`/`user_read`): reads fail but
   TTS works. A transient `401` under parallel load goes away with 2 workers + backoff.
-- The narrator voice belongs to one ElevenLabs account; keys from other accounts get
+- New narrator clips come from Chatterbox (Narrator workflow), not ElevenLabs. The original voice belongs to one ElevenLabs account; keys from other accounts get
   `voice_not_found`. Ask the owner for a key from the voice-owner account.
 - Session-only secrets live in `/tmp` (`opencode/.elkey`, `gen_batch.py`, `jobs.json`,
   `bip-full/raw/`, `bip-test/`): never commit, never print.
@@ -419,6 +419,49 @@
   `Resources/Music/README.md` records each loop's source and prompt (the owner still has to confirm the
   ElevenLabs plans allow public use; the validator requires the README). Voice samples are removed from
   the repo (public); they stay in #49's history. NARRATOR_VOICE.md leaves the voice ID to CLAUDE.md.
+- **11 Oct:** Natural-sounding sums (owner: Block Towers "sounds very robotic"; it joined separately recorded
+  numbers that each ended like a full stop). Owner picked "both, mixed": whole recorded sentences for the
+  common small numbers (`numbers.json` `spokenNumbers`: 233 `vo_say_<id>_<a>[_<b>]` clips such as "Three and
+  two. How many altogether?", build/find a tower, take away within 10, make ten, doubles, odd or even), and
+  `num_<n>_mid` clips (0–20, said so they lead on) plus `vo_and` for sentences still joined from pieces (bigger
+  numbers, Bip's Balance, counting hints). The player leaves only 0.03 s after a lead-on clip. Until a clip is
+  recorded the game plays the old pieces (`VoicePlayer.Prefer`, and `num_7_mid` falls back to `num_7`).
+  The ElevenLabs connector is now on the owner's new, free account, where the old narrator
+  (`Mq5hYfc3xyDzuW3pPMck`) doesn't exist and a free plan can't share or clone a voice. Owner chose a new design:
+  "Bip Island Narrator" **`P7kHKZAtnEEhLBZBK8pP`** (Voice Design `eleven_ttv_v3` from the saved brief, preview A
+  of 3). New clips use it; older clips stay in the first voice until re-recorded. A clip costs about 1 credit a
+  character (free plan: 10,000 a month); the account limits back-to-back generations.
+  **17 Oct:** ElevenLabs then disabled the free tier on that account ("unusual activity … upgrade").
+- **18 Oct:** Open-source narrator. Research (Chatterbox, Qwen3-TTS, Fish Audio, Voxtral, XTTS; Afrikaans and
+  isiZulu have no good open voice yet, English first) and a listening test (`claude/voice-lab` branch): Chatterbox
+  copying the **original** narrator from `vo_welcome` + `vo_bip_charging` sounded closest; the owner picked it.
+  So the game keeps one voice: the ElevenLabs clips of the second voice are dropped, `num_0`–`num_20` and the
+  linking words are back to the originals, and `scripts/speak_clips.py` (seed 0, Chatterbox defaults, levelled
+  to -14.5 LUFS) records the 233 whole sentences through the **Narrator** workflow
+  (GitHub runners reach huggingface.co; cloud sessions can't). The workflow runs 4 shards in parallel and
+  commits the clips to the branch; a push by the workflow doesn't start the Godot CI, so push once after it.
+  Every clip is checked by Whisper (faster-whisper `base.en`): the words heard must match the text, or the
+  clip is recorded again with the next seed (up to 5). The first run, before this check, gave "Five is odd."
+  and "Five," a repeated word; the checked run showed Chatterbox garbles one-word clips, so the 21 lead-on
+  numbers and `vo_and` aren't recorded (the game falls back to the original `num_<n>` and `word_and`), and a
+  sentence that fails 5 takes is removed (listed in `voice-lab/last-failed.txt`) so the game joins it from pieces. Phonics sounds (`snd_`) stay ElevenLabs: Chatterbox can't say pure sounds
+  (owner listened, 18 Oct). **Afrikaans tried and shelved (owner: "completely wrong and unnatural"):**
+  Chatterbox Multilingual reading it as Dutch, Microsoft's Adri (af-ZA neural) and UBC's Simba-TTS-afr,
+  each also converted into the narrator with Chatterbox voice conversion; Meta's MMS Afrikaans is gone from
+  Hugging Face. Only a paid native Afrikaans voice (ElevenLabs) or better open models later are worth trying.
+  Result: all 233 Block Towers sentences recorded by Chatterbox and passed the Whisper check (none removed,
+  `last-failed.txt` empty); `scripts/check_all.sh` green. Still open: Afrikaans round 3 (Seed-VC, OpenVoice) and
+  a Gemini TTS Afrikaans test on `claude/voice-lab` (needs a `GEMINI_API_KEY` secret; not part of this PR).
+- **18 Oct (review fixes, PR #51):** `vo_say_it_with_me` (a Meet the Sound line from `audio/script.csv`) is the
+  original narrator's again: the request's `vo_say_*` had caught it. `voice-lab/request.txt` now lists the 11
+  sentence ids (`vo_say_<id>_*`), and the validator fails if a script.csv clip starts with `vo_say_<sentence id>_`.
+  `speak_clips.py` keeps a clip that was there before when no new take passes Whisper (only a brand-new clip is
+  removed), transcribes each take once, and **skips the 21 `num_<n>_mid` clips and `vo_and`**: they stay in the
+  manifest, but the owner has moved the narrator to Gemini "Aoede" (`claude/aoede-narrator`), which records them;
+  until then the game falls back to `num_<n>` and `word_and`. The highest lead-on number comes from
+  `numbers.json` `spokenNumbers.joinTo` (`ContentLibrary.MidNumbersTo`), not code; `NUMBER_WORDS` lives once,
+  in `scripts/spoken_numbers.py`. Narrator workflow: runs only on `claude/*` branches, commits even when a shard
+  crashed, pulls before pushing, and counts only `.m4a` files. The ElevenLabs allow rules left `.claude/settings.json`.
 - **18 Oct, later:** Plain zero. The owner asked for a look round the game for improvements; the
   biggest find was the font's slashed zero (10 read as "1Ø" in every game, the star counts, the charging
   clock and the parent area). `scripts/fonts/plain_zero.py` swaps the zero's two half-holes for one

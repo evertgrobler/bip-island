@@ -473,35 +473,46 @@ public partial class BlockTowersScreen : GameScreen
     private List<string> Prompt(BlockTowersGame.Round round)
     {
         var n = AudioCatalogue.NumberClip;
+        var mid = Coordinator.Content!.MidNumberClip;
+        var say = AudioCatalogue.SentenceClip;
         return round.Mode switch
         {
-            Mode.Build => [VoiceLine.BuildTower, n(round.Target)],
+            Mode.Build => VoicePlayer.Prefer(say("build_tower", round.Target, null), [VoiceLine.BuildTower, n(round.Target)]),
             Mode.Which => round.Ask switch
             {
                 BlockTowersGame.Ask.Tallest => [VoiceLine.TallestTower],
                 BlockTowersGame.Ask.Shortest => [VoiceLine.ShortestTower],
-                _ => [VoiceLine.FindTower, n(round.Target)],
+                _ => VoicePlayer.Prefer(say("find_tower", round.Target, null), [VoiceLine.FindTower, n(round.Target)]),
             },
-            Mode.Join => [n(round.A), AudioCatalogue.WordClip("and"), n(round.B), VoiceLine.HowManyAltogether],
-            Mode.TakeAway => _taken >= round.B
-                ? [n(round.A), VoiceLine.TakeAway, n(round.B), VoiceLine.HowManyLeft]
-                : [n(round.A), VoiceLine.TakeAway, n(round.B)],
-            Mode.MakeTen => [n(round.A), VoiceLine.MakeTen],
-            Mode.Doubles => [VoiceLine.Double, n(round.A), VoiceLine.HowMany],
-            Mode.OddEven => [n(round.A), VoiceLine.OddOrEven],
+            Mode.Join => VoicePlayer.Prefer(say("join", round.A, round.B),
+                [mid(round.A), VoiceLine.And, n(round.B), VoiceLine.HowManyAltogether]),
+            Mode.TakeAway =>
+            [
+                .. VoicePlayer.Prefer(say("take_away", round.A, round.B), [mid(round.A), VoiceLine.TakeAway, n(round.B)]),
+                .. (_taken >= round.B ? new[] { VoiceLine.HowManyLeft } : Array.Empty<string>()),
+            ],
+            Mode.MakeTen => VoicePlayer.Prefer(say("make_ten", round.A, null), [n(round.A), VoiceLine.MakeTen]),
+            Mode.Doubles => VoicePlayer.Prefer(say("double", round.A, null), [VoiceLine.Double, n(round.A), VoiceLine.HowMany]),
+            Mode.OddEven => VoicePlayer.Prefer(say("odd_even", round.A, null), [n(round.A), VoiceLine.OddOrEven]),
             Mode.TensOnes => [VoiceLine.BuildNumber, n(round.Target)],
             _ => [VoiceLine.WhatComesNext],
         };
     }
 
-    private static List<string> SayWhenRight(BlockTowersGame.Round round)
+    private List<string> SayWhenRight(BlockTowersGame.Round round)
     {
         var n = AudioCatalogue.NumberClip;
+        var mid = Coordinator.Content!.MidNumberClip;
+        var say = AudioCatalogue.SentenceClip;
         return round.Mode switch
         {
-            Mode.Join => [n(round.A), AudioCatalogue.WordClip("and"), n(round.B), VoiceLine.Make, n(round.Target)],
-            Mode.MakeTen => [n(round.A), AudioCatalogue.WordClip("and"), n(round.Target), VoiceLine.Make, n(BlockTowersGame.Ten)],
-            Mode.OddEven => [n(round.A), round.A % 2 == 0 ? AudioCatalogue.WordClip("even") : VoiceLine.Odd],
+            Mode.Join => VoicePlayer.Prefer(say("join_make", round.A, round.B),
+                [mid(round.A), VoiceLine.And, mid(round.B), VoiceLine.Make, n(round.Target)]),
+            Mode.MakeTen => VoicePlayer.Prefer(say("make_ten_right", round.A, null),
+                [mid(round.A), VoiceLine.And, mid(round.Target), VoiceLine.Make, n(BlockTowersGame.Ten)]),
+            Mode.Doubles => VoicePlayer.Prefer(say("double_right", round.A, null), [n(round.Target)]),
+            Mode.OddEven => VoicePlayer.Prefer(say("odd_even_right", round.A, null),
+                [n(round.A), round.A % 2 == 0 ? AudioCatalogue.WordClip("even") : VoiceLine.Odd]),
             _ => [n(round.Target)],
         };
     }

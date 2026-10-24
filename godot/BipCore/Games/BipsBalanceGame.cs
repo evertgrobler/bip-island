@@ -184,9 +184,11 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     // What Bip says. Plain lists of clips, so the tests can check each one has a recording.
 
     /// <summary>The sentence out loud, with "what number" for the box (or the answer, once found).</summary>
-    public static List<string> Say(Sentence sentence, Slot? hidden = null)
+    public List<string> Say(Sentence sentence, Slot? hidden = null)
     {
-        string Part(Slot slot) => slot == hidden ? VoiceLine.WhatNumber : AudioCatalogue.NumberClip(sentence[slot]);
+        // The first two numbers lead on into the rest of the sentence; the last one finishes it.
+        string Part(Slot slot) => slot == hidden ? VoiceLine.WhatNumber
+            : slot == Slot.Result ? AudioCatalogue.NumberClip(sentence[slot]) : content.MidNumberClip(sentence[slot]);
         return [Part(Slot.Left), sentence.Op == Op.Plus ? VoiceLine.Plus : VoiceLine.TakeAway, Part(Slot.Right),
                 VoiceLine.EqualsWord, Part(Slot.Result)];
     }
@@ -197,8 +199,8 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
         if (round.Story is { } story && round.Thing is { } thing)
             return story.Clips.Select(clip => clip switch
             {
-                "{a}" => AudioCatalogue.NumberClip(round.Sentence.Left),
-                "{b}" => AudioCatalogue.NumberClip(round.Sentence.Right),
+                "{a}" => content.MidNumberClip(round.Sentence.Left),
+                "{b}" => content.MidNumberClip(round.Sentence.Right),
                 "{things}" => thing.AudioPlural,
                 _ => clip,
             }).ToList();
@@ -207,7 +209,7 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     }
 
     /// <summary>After a right answer: the whole sentence.</summary>
-    public static List<string> SayWhenRight(Round round) => Say(round.Sentence);
+    public List<string> SayWhenRight(Round round) => Say(round.Sentence);
 
     /// <summary>
     /// The spoken hint after two misses: Bip counts, one number at a time, along the short way, and
@@ -216,7 +218,7 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     /// shorter (20 − 18: "18… 19, 20"); a missing number counts between the two numbers shown
     /// (7 + ? = 10: "7… 8, 9, 10"). A fact family points back to the finished sum on the sign.
     /// </summary>
-    public static List<string> Hint(Round round)
+    public List<string> Hint(Round round)
     {
         var s = round.Sentence;
         if (round.Helper is { } helper) return [VoiceLine.BalanceHelps, .. Say(helper)];
@@ -234,10 +236,13 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
     }
 
     /// <summary>"Let's count on (or back) together", then every number from <paramref name="from"/> to <paramref name="to"/>.</summary>
-    private static List<string> Count(int from, int to)
+    private List<string> Count(int from, int to)
     {
         var step = to >= from ? 1 : -1;
-        var numbers = Enumerable.Range(0, Math.Abs(to - from) + 1).Select(i => AudioCatalogue.NumberClip(from + step * i));
+        var count = Math.Abs(to - from) + 1;
+        // "8… 9, 10": every number but the last carries on.
+        var numbers = Enumerable.Range(0, count)
+            .Select(i => i < count - 1 ? content.MidNumberClip(from + step * i) : AudioCatalogue.NumberClip(from + step * i));
         return [step > 0 ? VoiceLine.CountOnTogether : VoiceLine.CountBackTogether, .. numbers];
     }
 

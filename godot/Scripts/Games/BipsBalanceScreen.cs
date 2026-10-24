@@ -341,7 +341,7 @@ public partial class BipsBalanceScreen : GameScreen
             Sfx.Play(BipSounds.Effect.Chime);
             Bip.Celebrate();
             var change = Record(outcome.FirstTry, _game.SkillId(round));
-            Voice.Play([Coordinator.RandomPraise(), .. BipsBalanceGame.SayWhenRight(round)],
+            Voice.Play([Coordinator.RandomPraise(), .. _game.SayWhenRight(round)],
                        completion: () => AfterAnswer(change, _session, AskQuestion));
             return;
         }
@@ -364,7 +364,7 @@ public partial class BipsBalanceScreen : GameScreen
         if (right != null) ShowHint(right);
         // (Not for fact families: their finished sum is the help, and the sign sits where the cubes would.)
         if (round.Hidden == Slot.Result && round.Story == null && round.Mode != Mode.FactFamily) ShowCubes(round);
-        var hint = BipsBalanceGame.Hint(round);
+        var hint = _game.Hint(round);
         After(0.4, () => Voice.Play(round.Hidden == Slot.Result ? hint : [AudioCatalogue.LookHint, .. hint]));
     }
 }

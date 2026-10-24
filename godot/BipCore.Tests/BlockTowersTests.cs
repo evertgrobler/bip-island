@@ -176,5 +176,39 @@ public sealed class BlockTowersTests
         Assert.Contains(AudioCatalogue.WordClip("and"), _content.AudioIds);
         Assert.Contains(AudioCatalogue.WordClip("even"), _content.AudioIds);
         for (var n = 0; n <= 99; n++) Assert.Contains(AudioCatalogue.NumberClip(n), _content.AudioIds);
+        Assert.InRange(_content.MidNumbersTo, 10, 20);
+        for (var n = 0; n <= _content.MidNumbersTo; n++) Assert.Contains(_content.MidNumberClip(n), _content.AudioIds);
+        Assert.Equal(AudioCatalogue.NumberClip(_content.MidNumbersTo + 1), _content.MidNumberClip(_content.MidNumbersTo + 1));
+    }
+
+    /// <summary>The whole sentences the screen asks for first (numbers.json spokenNumbers), over the numbers they cover.</summary>
+    [Fact]
+    public void TheWholeSentencesCoverTheSmallNumbers()
+    {
+        string Say(string id, int a, int? b = null) => AudioCatalogue.SentenceClip(id, a, b);
+        for (var a = 1; a <= 10; a++)
+        {
+            Assert.Contains(Say("build_tower", a), _content.AudioIds);
+            Assert.Contains(Say("find_tower", a), _content.AudioIds);
+            Assert.Contains(Say("double", a), _content.AudioIds);
+            Assert.Contains(Say("double_right", a), _content.AudioIds);
+            for (var b = 1; a + b <= 10; b++)
+            {
+                Assert.Contains(Say("join", a, b), _content.AudioIds);
+                Assert.Contains(Say("join_make", a, b), _content.AudioIds);
+            }
+            for (var b = 1; b < a; b++) Assert.Contains(Say("take_away", a, b), _content.AudioIds);
+        }
+        for (var a = 1; a <= 9; a++)
+        {
+            Assert.Contains(Say("make_ten", a), _content.AudioIds);
+            Assert.Contains(Say("make_ten_right", a), _content.AudioIds);
+        }
+        for (var a = 1; a <= 20; a++)
+        {
+            Assert.Contains(Say("odd_even", a), _content.AudioIds);
+            Assert.Contains(Say("odd_even_right", a), _content.AudioIds);
+        }
+        Assert.Contains(VoiceLine.And, VoiceLine.All);
     }
 }
