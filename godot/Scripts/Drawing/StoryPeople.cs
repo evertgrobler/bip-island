@@ -18,7 +18,8 @@ public static class StoryPeople
 
     /// <param name="Dress">A dress instead of a top and shorts.</param>
     /// <param name="Long">Long trousers or jeans (the bottom colour down to the shoes).</param>
-    private sealed record Look(Color Skin, Color HairColour, Hair Hair, Color Top, Color Bottom, bool Grown = false,
+    /// <param name="Seed">The person's own first seed, so their wobble never depends on the order of the list.</param>
+    private sealed record Look(ulong Seed, Color Skin, Color HairColour, Hair Hair, Color Top, Color Bottom, bool Grown = false,
                                bool Dress = false, bool Long = false, Color? Extra = null, bool Glasses = false,
                                bool Freckles = false, bool Beard = false);
 
@@ -33,26 +34,22 @@ public static class StoryPeople
 
     private static readonly Dictionary<string, Look> People = new()
     {
-        ["pic_child_1"] = new(Dark, Black, Hair.Puffs, Palette.Sun, Palette.Sun, Dress: true),
-        ["pic_child_2"] = new(Dark, Black, Hair.Short, Palette.Red, Palette.Sea.Blend(0.4, Palette.Ink)),
-        ["pic_child_3"] = new(LightBrown, Black, Hair.Plait, Palette.Teal, Palette.Purple),
-        ["pic_child_4"] = new(LightBrown, Color.FromHtml("#4A3222"), Hair.Curly, Palette.Leaf, Palette.Brown),
-        ["pic_child_5"] = new(Fair, Blonde, Hair.Ponytail, Palette.Pink, Color.FromHtml("#4F79B8"), Long: true),
-        ["pic_child_6"] = new(Fair, Ginger, Hair.Short, Palette.Sea, Palette.Stone.Blend(0.3, Palette.Ink), Freckles: true),
-        ["pic_child_7"] = new(Brown, Black, Hair.Scarf, Palette.Orange, Palette.Orange, Dress: true, Extra: Palette.Purple),
-        ["pic_child_8"] = new(Dark, Black, Hair.Cap, Palette.Orange, Color.FromHtml("#4F79B8"), Extra: Palette.Sun),
-        ["pic_grownup_1"] = new(Dark, Black, Hair.Headwrap, Palette.Leaf, Palette.Leaf, Grown: true, Dress: true, Extra: Palette.Go),
-        ["pic_grownup_2"] = new(Brown, Black, Hair.Short, Color.FromHtml("#4F79B8"), Palette.Brown, Grown: true, Long: true, Beard: true),
-        ["pic_grownup_3"] = new(Brown, Grey, Hair.Bun, Palette.Purple, Color.FromHtml("#6D5A8A"), Grown: true, Dress: true, Glasses: true),
+        ["pic_child_1"] = new(6000, Dark, Black, Hair.Puffs, Palette.Sun, Palette.Sun, Dress: true),
+        ["pic_child_2"] = new(6040, Dark, Black, Hair.Short, Palette.Red, Palette.Sea.Blend(0.4, Palette.Ink)),
+        ["pic_child_3"] = new(6080, LightBrown, Black, Hair.Plait, Palette.Teal, Palette.Purple),
+        ["pic_child_4"] = new(6120, LightBrown, Color.FromHtml("#4A3222"), Hair.Curly, Palette.Leaf, Palette.Brown),
+        ["pic_child_5"] = new(6160, Fair, Blonde, Hair.Ponytail, Palette.Pink, Color.FromHtml("#4F79B8"), Long: true),
+        ["pic_child_6"] = new(6200, Fair, Ginger, Hair.Short, Palette.Sea, Palette.Stone.Blend(0.3, Palette.Ink), Freckles: true),
+        ["pic_child_7"] = new(6240, Brown, Black, Hair.Scarf, Palette.Orange, Palette.Orange, Dress: true, Extra: Palette.Purple),
+        ["pic_child_8"] = new(6280, Dark, Black, Hair.Cap, Palette.Orange, Color.FromHtml("#4F79B8"), Extra: Palette.Sun),
+        ["pic_grownup_1"] = new(6320, Dark, Black, Hair.Headwrap, Palette.Leaf, Palette.Leaf, Grown: true, Dress: true, Extra: Palette.Go),
+        ["pic_grownup_2"] = new(6360, Brown, Black, Hair.Short, Color.FromHtml("#4F79B8"), Palette.Brown, Grown: true, Long: true, Beard: true),
+        ["pic_grownup_3"] = new(6400, Brown, Grey, Hair.Bun, Palette.Purple, Color.FromHtml("#6D5A8A"), Grown: true, Dress: true, Glasses: true),
     };
 
     public static IEnumerable<string> Ids => People.Keys;
 
-    /// <summary>Each person's first seed, worked out once (40 seeds apart, in the order above).</summary>
-    private static readonly Dictionary<string, ulong> Seeds =
-        People.Keys.Select((id, i) => (id, seed: (ulong)(6000 + i * 40))).ToDictionary(p => p.id, p => p.seed);
-
-    public static Node2D? Make(string id) => People.TryGetValue(id, out var look) ? Draw(look, Seeds[id]) : null;
+    public static Node2D? Make(string id) => People.TryGetValue(id, out var look) ? Draw(look, look.Seed) : null;
 
     private static Node2D Draw(Look look, ulong seed)
     {

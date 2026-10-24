@@ -643,7 +643,7 @@ EARLY_GROUPS = {"af": {1: 4}}.get(LANG, {1: 5})
 EARLY_SHARE = {1: 0.75}
 # Hand-drawn or emoji objects with faces; the oldest level (ages 9-10) keeps faces to people and animals.
 FACED_OBJECTS = {"pic_sun", "pic_mouth", "pic_morning_2", "pic_bedtime_1", "pic_biscuits_6", "pic_kiss", "pic_chin"}
-FRAME_W, FRAME_H, PICTURE_HALF = 480, 220, 100  # half the scene frame; half a picture at scale 1
+FRAME_W, FRAME_H, PICTURE_HALF = 480, 220, 110  # half the scene frame; half a picture at scale 1 (a 220 box)
 backgrounds = set(scenes_doc["backgrounds"])
 # The backgrounds the game draws (StoryScenes.Backgrounds, each its own case; anything else would quietly
 # draw the park): scenes.json lists exactly those.
@@ -751,6 +751,9 @@ for st in stories:
             clip = word_clip(c["text"])
             if " " in c["text"] or clip not in audio:
                 a(f"vo_story_{sid}_a{answer_n}", c["text"], "Bip's Stories answer choice: short and clear.")
+stories_game = next((gm for gm in games if gm["id"] == "bips_stories"), None)
+if stories_game is None or len(stories_game.get("levels", [])) != len(STORY_LEVELS):
+    err(f"games.json bips_stories: needs {len(STORY_LEVELS)} levels, one for each story level")
 for lv in STORY_LEVELS:
     have = sum(1 for st in stories if st["level"] == lv)
     if have != STORIES_PER_LEVEL: err(f"stories: level {lv} has {have} stories ({STORIES_PER_LEVEL} needed)")

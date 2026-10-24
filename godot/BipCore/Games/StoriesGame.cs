@@ -12,7 +12,6 @@ public sealed class StoriesGame(ContentLibrary content) : IMiniGame<StoriesGame.
 {
     public const string GameId = "bips_stories";
     public const int QuestionsPerVisit = 3;
-    public const int Levels = 5;
 
     /// <param name="Number">The question's number in its story, from 1.</param>
     /// <param name="NewStory">True for a story's first question: the screen reads the story before asking.</param>
@@ -42,8 +41,11 @@ public sealed class StoriesGame(ContentLibrary content) : IMiniGame<StoriesGame.
     public static string StoryItem(Story story) => $"story:{story.Id}";
     public static string QuestionItem(Story story, int number) => $"story:{story.Id}:q{number}";
 
+    /// <summary>Story levels: one for each of the game's levels in games.json (the validator keeps them in step).</summary>
+    public int Levels => Entry.LevelSteps.Count;
+
     /// <summary>The story level a game level deals (game levels count from 0, stories from 1).</summary>
-    public static int StoryLevel(int gameLevel) => Math.Clamp(gameLevel + 1, 1, Levels);
+    public int StoryLevel(int gameLevel) => Math.Clamp(gameLevel + 1, 1, Levels);
 
     public StorySceneSet ScenesOf(Story story) => _sets[story.Scenes];
 

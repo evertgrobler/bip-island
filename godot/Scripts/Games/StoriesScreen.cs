@@ -128,28 +128,8 @@ public partial class StoriesScreen : GameScreen
     }
 
     /// <summary>A sentence on a light card, at least 120 points tall: click it to hear it again.</summary>
-    private Node2D SentenceLine(string text, ulong seed, int level)
-    {
-        var line = Buttons.Tappable(new Node2D(), $"line:{_lines.Count}");
-        const float width = 1040, height = 120;
-        line.AddChild(Pen(RoundRect(R(-width / 2, -height / 2, width, height), 24), seed, fill: Palette.Card, lineWidth: 4));
-        var label = new Label
-        {
-            Text = text,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            AutowrapMode = TextServer.AutowrapMode.WordSmart,
-            MouseFilter = Control.MouseFilterEnum.Ignore,
-            Size = new Vector2(width - 50, height - 10),
-            Position = new Vector2(-(width - 50) / 2, -(height - 10) / 2),
-        };
-        label.AddThemeFontOverride("font", Fonts.Letters);
-        label.AddThemeFontSizeOverride("font_size", level <= 2 ? 50 : text.Length > 60 ? 34 : 40);
-        label.AddThemeColorOverride("font_color", Palette.Ink);
-        line.AddChild(label);
-        Hit.SetArea(line, new Rect2(-width / 2, -height / 2, width, height));
-        return line;
-    }
+    private Node2D SentenceLine(string text, ulong seed, int level) =>
+        Buttons.Tappable(TextCard(text, 1040, 120, 24, 4, 50, level <= 2 ? 50 : text.Length > 60 ? 34 : 40, seed), $"line:{_lines.Count}");
 
     private IReadOnlyList<string> PageClips(int page) => _round is { } round ? StoriesGame.SentenceClips(round.Story)[page] : [];
 
@@ -230,11 +210,17 @@ public partial class StoriesScreen : GameScreen
         SayQuestion();
     }
 
-    private static Node2D WordCard(string text, ulong seed)
+    private static Node2D WordCard(string text, ulong seed) => TextCard(text, 380, 220, 30, 6, 40, text.Length > 24 ? 36 : 44, seed);
+
+    /// <summary>
+    /// Words on a light hand-drawn card, wrapped and centred, with the whole card as its click area: a story
+    /// sentence and a word answer are both made this way.
+    /// </summary>
+    private static Node2D TextCard(string text, float width, float height, float radius, float lineWidth, float margin, int fontSize, ulong seed)
     {
         var card = new Node2D();
-        const float width = 380, height = 220;
-        card.AddChild(Pen(RoundRect(R(-width / 2, -height / 2, width, height), 30), seed, fill: Palette.Card, lineWidth: 6));
+        card.AddChild(Pen(RoundRect(R(-width / 2, -height / 2, width, height), radius), seed, fill: Palette.Card, lineWidth: lineWidth));
+        var inner = new Vector2(width - margin, height - 20);
         var label = new Label
         {
             Text = text,
@@ -242,11 +228,11 @@ public partial class StoriesScreen : GameScreen
             VerticalAlignment = VerticalAlignment.Center,
             AutowrapMode = TextServer.AutowrapMode.WordSmart,
             MouseFilter = Control.MouseFilterEnum.Ignore,
-            Size = new Vector2(width - 40, height - 30),
-            Position = new Vector2(-(width - 40) / 2, -(height - 30) / 2),
+            Size = inner,
+            Position = -inner / 2,
         };
         label.AddThemeFontOverride("font", Fonts.Letters);
-        label.AddThemeFontSizeOverride("font_size", text.Length > 24 ? 36 : 44);
+        label.AddThemeFontSizeOverride("font_size", fontSize);
         label.AddThemeColorOverride("font_color", Palette.Ink);
         card.AddChild(label);
         Hit.SetArea(card, new Rect2(-width / 2, -height / 2, width, height));

@@ -631,3 +631,7 @@
   `StoryScenes.Backgrounds`, puts answer pictures in the manifest and the level-5 face rule, and Silly Sentences
   and story level 1 share one reading rule. `GameSession.MarkUsed` (internal) replaces reflection in the tests.
   The walk-through now checks the arrow after a clicked sentence and a quick wrong-then-right click.
+  Second review round (same PR): pictures fit a 220 box in the frame check (three scenes moved in), the story
+  levels come from games.json (`StoriesGame.Levels`), one cached Afrikaans library for all tests
+  (`TestContent.Library(HomeLanguage)`), one `TextCard` for sentences and word answers, each person's seed in
+  their own row, and "Thandi has a bag" (the bag is drawn purple).
