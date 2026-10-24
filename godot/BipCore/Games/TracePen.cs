@@ -35,7 +35,10 @@ public enum TraceTapResult
     Stopped,
     /// <summary>A tap on the paper away from the start dot: soft sound, try again.</summary>
     Missed,
-    /// <summary>A second (or later) tap on the paper: show the dot and say a hint.</summary>
+    /// <summary>
+    /// The second tap on the paper: show the dot and say a hint, once. Later misses are plain
+    /// <see cref="Missed"/> (the dot keeps wiggling) until the pen starts or a drag traces.
+    /// </summary>
     Hint,
 }
 
@@ -44,6 +47,8 @@ public enum TraceTapResult
 /// always did. A click on the start dot (press and release without moving much) starts tap mode:
 /// the pen then follows the pointer with the button up, until the trace is finished or the child
 /// clicks again. Clicks on the bare paper are misses: soft retry, then a hint after two. No timers.
+/// The count starts again whenever the pen starts or a drag traces, so a mouse user who traces in
+/// strokes never gets the hint for an old stray click.
 /// A press draws nothing until it has moved past <see cref="TapSlop"/>, so a click never both
 /// draws and counts as a miss. Where a click landed comes from the screen's hit test
 /// (<see cref="TraceSpot"/>); how a finished trace is judged (every checkpoint touched) stays with
@@ -63,7 +68,7 @@ public sealed class TracePen
     public TracePenMode Mode { get; private set; } = TracePenMode.Idle;
     /// <summary>True once the trace is finished: the pen does nothing more.</summary>
     public bool IsFinished { get; private set; }
-    /// <summary>Clicks on the paper since the pen last started.</summary>
+    /// <summary>Clicks on the paper since the pen last started or a drag last traced.</summary>
     public int Misses => _attempt.Misses;
 
     /// <summary>
@@ -99,8 +104,10 @@ public sealed class TracePen
                 if (Vector2.Distance(at, pressed) <= TapSlop) return false;
                 _pressedAt = null;
             }
-            // A drag (even one whose press went unseen, which also ends following).
+            // A drag (even one whose press went unseen, which also ends following). It traces, so
+            // any earlier stray clicks are forgiven.
             Mode = TracePenMode.Dragging;
+            _attempt = new QuestionAttempt();
             return true;
         }
         // The button is up: a drag whose release we didn't see (outside the window, behind the
@@ -129,7 +136,8 @@ public sealed class TracePen
                 _attempt = new QuestionAttempt();
                 return TraceTapResult.Started;
             case TraceSpot.Paper:
-                return _attempt.Answer(false).Kind == AnswerOutcomeKind.Hint ? TraceTapResult.Hint : TraceTapResult.Missed;
+                _attempt.Answer(false);
+                return _attempt.Misses == QuestionAttempt.MissesBeforeHint ? TraceTapResult.Hint : TraceTapResult.Missed;
             default:
                 return TraceTapResult.None;
         }

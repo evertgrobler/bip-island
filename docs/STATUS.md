@@ -431,3 +431,7 @@
   nothing until it moves past a click's wobble, so a click never both draws and misses; clicking the letter is never
   a miss; the start dot uses the screen's own hit test (`TraceSpot`); one hit test per press (`BaseScreen.TapOn`,
   `IsAlwaysOn`). A click-to-pick-up mode for the drag games is a follow-up PR.
+- **24 Oct, 09:30 SAST:** Second review round for #59: the hint is said once, when the start dot first wiggles
+  (later misses just boop), and it waits for the narrator to finish, so it never cuts off "Trace the letter".
+  A drag that traces forgives earlier stray clicks (`TracePen` resets its misses), so a mouse user who traces in
+  strokes never gets the trackpad hint; a press that drew nothing still counts.

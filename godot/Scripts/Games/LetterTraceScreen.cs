@@ -149,17 +149,30 @@ public partial class LetterTraceScreen : GameScreen
             case TraceTapResult.Missed or TraceTapResult.Hint:
                 Sfx.Play(BipSounds.Effect.Boop);
                 Bip.Tilt();
-                if (result != TraceTapResult.Hint) break;
-                // Two misses: the start dot wiggles and Bip says "Look for the one that's wiggling!"
-                if (!StartDotHinted)
-                {
-                    _pulse?.Kill();
-                    _pulse = null;
-                    ShowHint(_startDot);
-                }
-                After(0.6, () => { if (!InputLocked && StartDotHinted) Voice.Play([Coordinator.RandomHint(followedBySound: false)]); });
+                if (result != TraceTapResult.Hint || StartDotHinted) break;
+                // Two misses: the start dot wiggles and Bip says "Look for the one that's wiggling!",
+                // once (later misses just boop while it wiggles).
+                _pulse?.Kill();
+                _pulse = null;
+                ShowHint(_startDot);
+                After(0.6, SayHintWhenQuiet);
                 break;
         }
+    }
+
+    /// <summary>
+    /// The hint, but never over the narrator: it waits for the opening "Trace the letter…" (or the
+    /// letter's sound) to finish, and is dropped if the dot stopped wiggling meanwhile.
+    /// </summary>
+    private void SayHintWhenQuiet()
+    {
+        if (InputLocked || !StartDotHinted) return;
+        if (Voice.Speaking)
+        {
+            After(0.3, SayHintWhenQuiet);
+            return;
+        }
+        Voice.Play([Coordinator.RandomHint(followedBySound: false)]);
     }
 
     /// <summary>
