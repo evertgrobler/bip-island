@@ -26,8 +26,9 @@
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
 - **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
-- **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
-  123 Morning Order step scenes.
+- **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
+  the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
+  remain only as a fallback for new words and in the parent area's child menus.
 - **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
   installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
   parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
@@ -39,14 +40,13 @@
   **Keys are the one exception to "any key replays":** letter keys type here, so Space, the replay
   button or a click on the craft say it again, Enter does nothing, and Esc is never typed (the parent
   layer takes it first, so the Esc hold still opens the gate). Skins: rocket, hot-air balloon, submarine.
-- **Known open items:** cover second screens in the kid lock; Windows exe
-  icon; more games (waves 2b/3/4), real art, music; paid signing only if shared beyond the family.
+- **Known open items:** cover second screens in the kid lock; more games (waves 2b/3/4); paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
 
 - Engine move: Godot 4 .NET (C#), Velopack updates, direct `.dmg` / `Setup.exe` downloads, no stores,
   no paid signing for now. Details in `docs/GODOT_MIGRATION.md`.
-- Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts).
+- Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts), with a plain zero (owner, 18 Oct).
 - Voice: "Bip Island Narrator" `Mq5hYfc3xyDzuW3pPMck`, `eleven_v3`, SA English teacher.
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
 - No timers/lives/game-over. Wrong → boop → retry → hint after 2 misses. 120 pt targets.
@@ -419,3 +419,35 @@
   `Resources/Music/README.md` records each loop's source and prompt (the owner still has to confirm the
   ElevenLabs plans allow public use; the validator requires the README). Voice samples are removed from
   the repo (public); they stay in #49's history. NARRATOR_VOICE.md leaves the voice ID to CLAUDE.md.
+- **18 Oct, later:** Plain zero. The owner asked for a look round the game for improvements; the
+  biggest find was the font's slashed zero (10 read as "1Ø" in every game, the star counts, the charging
+  clock and the parent area). `scripts/fonts/plain_zero.py` swaps the zero's two half-holes for one
+  oval hole with the same stroke widths, removes its old hinting, and copies the fonts to `site/fonts/`;
+  `zero.tf` follows. OFL 1.1 with no Reserved Font Name, so the changed files keep their name
+  (`Resources/Fonts/README.md`). The other finds were done the same day (PR #52): matching plates for the
+  island games, a bigger centred Bip's Path grid and a real zip picture. Still offered and not chosen:
+  bigger blocks in Bip's Balance take-away.
+  Word Builder (owner flagged it, 18 Oct): the picture and the answer boxes sat on the left with the right
+  half empty. They are now one row centred over the letters (`WordBuilderScreen`), and the sparkle follows the boxes.
+  Windows icon (was a known open item): `godot/icons/app-icon.ico` (16 to 256 px, from the Mac icon) is set
+  in the Windows export (`application/icon`, `modify_resources=true`, Godot writes it without rcedit) and
+  passed to `vpk --icon` for Setup.exe in `check_all.sh` and `godot.yml`. The Words island plates sat on
+  Bip's antenna, so every island's games moved up 25 points; the zip picture was made narrower.
+- **18 Oct, art:** the owner asked for the art too, "so that we do everything once". `ArtPictures` (split
+  over `ArtPictures.cs`, `.More` letter sounds, `.Rest` other words, `.Sentences`, `.Steps`, `.Animals`)
+  draws every picture that was an emoji: 178 picture ids (rand coins and notes in their real colours,
+  the letter-sound pictures, all words, the 32 sentence pictures built as scenes from the word pictures),
+  drawn versions of the 98 emoji the step scenes used (`ArtPictures.ForEmoji`, picked up by
+  `StepPictures.Glyph`), and the profile animals in `Avatars.Badge`. Each picture has its own seed block
+  (`Pic`), and `SketchNode` drops repeated polygon points, which otherwise leave a shape white. Body parts
+  (chin, lip, wing) get the orange pointer from `WordPictures.Pointer`. Every page of the picture gallery
+  was looked at; `EmojiPictures.Icons` is now empty.
+- **18 Oct, Afrikaans round 3:** Seed-VC and OpenVoice converting Microsoft's Adri towards the narrator
+  ran on `claude/voice-lab` (Seed-VC needs torchvision 0.23.0 with torch 2.8; OpenVoice needs `vad=True`
+  on a CPU runner). The owner listened: "still very bad". Every free route has now been tried and
+  rejected; Afrikaans is parked. Left to try: Gemini TTS (needs a `GEMINI_API_KEY` secret; the test
+  is ready on `claude/voice-lab`), a paid native Afrikaans ElevenLabs voice, or a person recording.
+- **18 Oct, review fixes (#52):** Bip's Path win sparkles now land on Bip (board point turned into Stage
+  space); the zip's 0.85 scale sits on an inner node so cards keep it narrow; `SketchNode` itself drops
+  repeated polygon points before the fill, for every drawing (`Clean` is gone); `FaceOnly` has its own
+  seed blocks (4940/4950/4960); `ArtPictures.Has` looks ids up directly; the Sound Buttons plate seed is 819.

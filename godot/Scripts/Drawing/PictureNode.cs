@@ -31,14 +31,15 @@ public static class PictureNode
         "pic_pig" => Pig(),
         "pic_igloo" => Igloo(),
         "pic_nest" => Nest(),
-        _ => WordPictures.Make(id) ?? StepPictures.Make(id) ?? EmojiPictures.Make(id) ?? Placeholder(word),
+        "pic_zip" => Zip(),
+        _ => ArtPictures.Make(id) ?? WordPictures.Make(id) ?? StepPictures.Make(id) ?? EmojiPictures.Make(id) ?? Placeholder(word),
     };
 
     public static Node2D Make(string word) => Make($"pic_{word}", word);
 
     /// <summary>True when an id has a real picture (hand-drawn, a step scene or an emoji), not the placeholder.</summary>
     public static bool HasArt(string id) =>
-        HandDrawnIds.Contains(id) || WordPictures.Ids.Contains(id) || StepPictures.Make(id) is { } step && Free(step) || EmojiPictures.Icons.ContainsKey(id);
+        HandDrawnIds.Contains(id) || ArtPictures.Has(id) || WordPictures.Ids.Contains(id) || StepPictures.Make(id) is { } step && Free(step) || EmojiPictures.Icons.ContainsKey(id);
 
     private static bool Free(Node node)
     {
@@ -50,7 +51,7 @@ public static class PictureNode
     public static readonly string[] HandDrawnIds =
     {
         "pic_sun", "pic_ant", "pic_ants", "pic_tap", "pic_pan", "pic_ink", "pic_net", "pic_pin", "pic_pins",
-        "pic_tin", "pic_apple", "pic_tent", "pic_pig", "pic_igloo", "pic_nest",
+        "pic_tin", "pic_apple", "pic_tent", "pic_pig", "pic_igloo", "pic_nest", "pic_zip",
     };
 
     private static Node2D Sun()
@@ -280,6 +281,36 @@ public static class PictureNode
         n.AddChild(Pen(Ellipse(P(0, -12), 26, 22), fill: Palette.Sun, lineWidth: 3.5, seed: 422));
         n.AddChild(Pen(Ellipse(P(0, 64), 64, 16), fill: Palette.Ice, lineWidth: 4.5, seed: 423));
         return n;
+    }
+
+    /// <summary>A zip, half open: the two tapes joined at the top, the slider with its pull, and the
+    /// tapes parting below it (the emoji stand-in was a face with a zipped mouth).</summary>
+    private static Node2D Zip()
+    {
+        // The 0.85 is on an inner node: callers set the returned node's own scale.
+        var n = new Node2D { Scale = Vector2.One * 0.85f };
+        foreach (var (i, side) in new[] { -1.0, 1.0 }.Select((side, i) => (i, side)))
+        {
+            n.AddChild(Pen(Polygon(P(side * 4, 100), P(side * 42, 100), P(side * 42, 10), P(side * 72, -96), P(side * 34, -96), P(side * 4, 10)),
+                           fill: Palette.Teal, lineWidth: 4.5, seed: (ulong)(430 + i)));
+            // Teeth along the open edge, below the slider.
+            for (var t = 1; t <= 3; t++)
+            {
+                var x = side * (6 + 30 * t / 4.0);
+                var y = 10 - 106 * t / 4.0;
+                n.AddChild(Pen(RoundRect(R(x - 10, y - 6, 20, 12), 3), fill: Palette.Stone, lineWidth: 3, seed: (ulong)(432 + i * 4 + t)));
+            }
+        }
+        // Teeth meshed up the closed part, left and right in turn.
+        for (var row = 0; row < 5; row++)
+        {
+            var left = row % 2 == 0;
+            n.AddChild(Pen(RoundRect(R(left ? -18 : -2, 84 - row * 15, 20, 12), 3), fill: Palette.Stone, lineWidth: 3, seed: (ulong)(440 + row)));
+        }
+        n.AddChild(Pen(RoundRect(R(-24, -6, 48, 30), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 446));
+        n.AddChild(Pen(RoundRect(R(-13, -58, 26, 54), 10), fill: Palette.Orange, lineWidth: 4.5, seed: 447));
+        n.AddChild(Pen(Ellipse(P(0, -42), 5, 8), fill: Palette.Card, lineWidth: 3, seed: 448));
+        return Group(n);
     }
 
     /// Not drawn yet: a dashed frame with the word written in, so it's obvious this is a stand-in.
