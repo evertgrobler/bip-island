@@ -33,10 +33,24 @@ The game's structure stays the same; the content gets an Afrikaans version.
 Curriculum: Cambridge has no Afrikaans; the Afrikaans side follows **CAPS Afrikaans Huistaal**
 (Grade R and Foundation Phase), mapped in `docs/CURRICULUM.md` like the Cambridge codes.
 
+**Progress per language (decided 18 October 2026):** each language keeps its own sound and word
+mastery, phonics groups and game levels (`ChildProgress.OtherLanguages`, by language folder; English's
+stays where older saves have it, so nothing is migrated). Stars, stickers, the play clock and recent
+games are shared. A saved language this build doesn't have (no `Content/af/language.json`) plays in
+English (`Languages.Playable`).
+
 Content lives beside the English: `Content/af/…` with the same file shapes, so every game, test and
 the validator work unchanged. Spelling follows the AWS (Afrikaanse Woordelys en Spelreëls), checked
 by a new `scripts/af_spelling.py` the way `sa_english.py` checks English. No slang, everyday South
 African life, the same rule as English.
+
+Afrikaans has 7 sound groups, so it has its own `Content/af/curriculum/skills.json`: snd_g1 to snd_g7
+in the Afrikaans groups' bands (which groups an older child is treated as knowing), no snd_g8 or
+snd_g9, letter names after group 4, spelling with digraphs after group 5 and longer words after group
+7; every other skill matches the shared file (`validate_content.py --lang af` checks this). Letter names
+unlock once the sounds of every letter the language's sounds cover are known (22 letters in Afrikaans:
+no c, q, x or z). Words whose letters don't all make their taught sound (hamer, appel, koei) are marked
+`"blendable": false` and stay out of Sound Buttons and Word Rocket; the validator finds them.
 
 Rough size: about 90 instruction lines, about 250 picture words, 25 letter names, about 60 sounds,
 16 sentence pairs, numbers 0–100: about 1,100 clips, like English.
@@ -61,7 +75,15 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 
 ### C. Voice
 
-- **English:** being re-voiced with Aoede now (`scripts/gemini_narrator.py`, daily free runs).
+- **Two voice bands by age** (owner approved `docs/VOICE_PLAN.md`, 18 Oct): Little (up to 6) hears the
+  sparkling lines, Big (7 and up) an upbeat, relaxed version of Bip's own 30 lines per language
+  (`<clip>_big`, `BipCore.VoiceBands`). Sounds, words, numbers, sentences and instructions are one
+  recording for every age. One narrator for boys and girls; no gender setting.
+
+- **English:** being re-voiced with Aoede (owner decision, 18 October 2026). The recorder,
+  `scripts/gemini_narrator.py` (daily free runs), is on branch `claude/aoede-narrator` and reaches `main`
+  through its own pull request. Until a clip is re-recorded, the current clip plays (Chatterbox, and
+  ElevenLabs for the letter sounds); CLAUDE.md says the same.
 - **Afrikaans:** the same recorder with an Afrikaans style line and an Afrikaans speech check
   (Whisper's multilingual model, which knows Afrikaans), on the same free daily runs.
 - **Everything is re-recorded with Aoede, letter sounds included, in both languages** (owner, 18 Oct:
@@ -73,7 +95,8 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 
 ## Build order (each step is its own pull request, reviewed and green before the next)
 
-1. **English with Aoede** (running now): every English clip, letter sounds included.
+1. **English with Aoede** (running now on branch `claude/aoede-narrator`, its own pull request): every
+   English clip, letter sounds included.
 2. **Language plumbing:** home language per child (save file, setup guide, Children tab), content
    and audio folders per language, the game loading by language, on-screen text in both languages
    (about a dozen strings plus the parent area), tests. English plays exactly as before.

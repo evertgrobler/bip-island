@@ -18,10 +18,14 @@ namespace BipIsland.Games;
 /// </summary>
 public partial class BipsPathScreen : GameScreen
 {
-    /// <summary>Square size. A little smaller than the Mac app's 100, and the grid starts further in,
-    /// so the biggest grid (6 × 6) clears the home button and the block palette.</summary>
+    /// <summary>Square size on the board before it is scaled.</summary>
     private const double Cell = 92;
-    /// <summary>The longest strip: two rows of six (the longest content program needs ten).</summary>
+    /// <summary>The board's middle: the left half of the screen, clear of the home button at its
+    /// biggest (6 × 6). The strip and its buttons take the right half.</summary>
+    private static readonly Vector2 BoardCentre = P(-330, 60);
+    /// <summary>The widest a board is drawn; smaller grids are scaled up to it (at most 1.2 times).</summary>
+    private const double BoardSize = 552;
+    /// <summary>The longest strip: three rows of four (the longest content program needs ten).</summary>
     private const int MaxBlocks = 12;
     /// <summary>Little Bip stands on his feet, so he sits a bit below a square's centre to look centred.</summary>
     private static readonly Vector2 TokenOffset = new(0, 44);
@@ -31,6 +35,8 @@ public partial class BipsPathScreen : GameScreen
     private BipsPathGame.Round? _round;
     private QuestionAttempt _attempt = new();
     private Node2D? _grid;
+    private int _rows;
+    private int _cols;
     private Bip? _token;
     private Node2D? _facingArrow;
     private readonly List<string> _strip = [];
@@ -57,18 +63,19 @@ public partial class BipsPathScreen : GameScreen
 
     protected override void Build()
     {
-        // Bip and the replay button sit bottom right, clear of the biggest grid and the strip.
-        AddGameChrome(P(700, -390), P(440, -400), 0.6f);
+        // Bip bottom left under the board, the replay button bottom right; the strip's buttons in a row
+        // under the strip, and the arrow blocks along the bottom.
+        AddGameChrome(P(700, -390), P(-700, -400), 0.7f);
         var go = Buttons.Tappable(Buttons.Play(), "go");
-        go.Position = P(640, -160);
+        go.Position = P(580, -130);
         go.ZIndex = 10;
         Stage.AddChild(go);
         var undo = UndoButton();
-        undo.Position = P(260, -160);
+        undo.Position = P(200, -130);
         undo.ZIndex = 10;
         Stage.AddChild(undo);
         var clear = ClearButton();
-        clear.Position = P(430, -160);
+        clear.Position = P(360, -130);
         clear.ZIndex = 10;
         Stage.AddChild(clear);
         After(StartDelay, AskQuestion);
@@ -99,14 +106,18 @@ public partial class BipsPathScreen : GameScreen
         SayPrompt();
     }
 
-    private static Vector2 CellPoint(GridPosition at) => CellPoint(at.Row, at.Column);
+    private Vector2 CellPoint(GridPosition at) => CellPoint(at.Row, at.Column);
 
-    private static Vector2 CellPoint(int row, int column) =>
-        P(-620 + column * Cell + Cell / 2, 290 - row * Cell - Cell / 2);
+    /// <summary>A square's middle on the board, which is centred on (0, 0) and placed and scaled as a whole.</summary>
+    private Vector2 CellPoint(int row, int column) =>
+        P((column - (_cols - 1) / 2.0) * Cell, ((_rows - 1) / 2.0 - row) * Cell);
 
     private void DrawLevel(GridLevel level)
     {
-        var board = new Node2D { ZIndex = 5 };
+        _rows = level.Grid.Rows;
+        _cols = level.Grid.Cols;
+        var scale = (float)Math.Min(1.2, BoardSize / (Cell * Math.Max(_rows, _cols)));
+        var board = new Node2D { ZIndex = 5, Position = BoardCentre, Scale = Vector2.One * scale };
         for (var row = 0; row < level.Grid.Rows; row++)
         {
             for (var col = 0; col < level.Grid.Cols; col++)
@@ -228,8 +239,8 @@ public partial class BipsPathScreen : GameScreen
         for (var i = 0; i < _strip.Count; i++)
         {
             var node = Buttons.Tappable(new Node2D(), $"strip:{i}");
-            // Two rows of six along the top right, clear of the level stars in the middle; 120 pt to tap.
-            node.Position = P(185 + i % 6 * 128, 392 - i / 6 * 128);
+            // Three rows of four on the right, under the level stars and inside every screen shape; 120 pt to tap.
+            node.Position = P(150 + i % 4 * 130, 300 - i / 4 * 130);
             node.ZIndex = 10;
             node.AddChild(Pen(RoundRect(R(-60, -60, 120, 120), 20), (ulong)(999 + i), fill: Palette.LightTeal, lineWidth: 4));
             node.AddChild(BlockIcon(_strip[i]));
@@ -405,7 +416,8 @@ public partial class BipsPathScreen : GameScreen
         _trail.Clear();
     }
 
-    private Vector2 TokenSpot => _token is { } token ? token.Position - TokenOffset : Vector2.Zero;
+    /// <summary>Where Bip stands, in Stage space: the token sits on the board, which is moved and scaled.</summary>
+    private Vector2 TokenSpot => _token is { } token && _grid is { } grid ? grid.Transform * (token.Position - TokenOffset) : Vector2.Zero;
 
     private void Win(BipsPathGame.Round round)
     {

@@ -1279,10 +1279,12 @@
         },
         {
           "choices": 4,
+          "sameThemeFirst": true,
           "note": "Four pictures; animals, food and clothes too, from the same theme first"
         },
         {
           "choices": 5,
+          "sameThemeFirst": true,
           "note": "Five pictures; every theme"
         }
       ]
@@ -1308,10 +1310,12 @@
         },
         {
           "choices": 3,
+          "sameThemeFirst": true,
           "note": "Three spoken words; animals, food and clothes too"
         },
         {
           "choices": 3,
+          "sameThemeFirst": true,
           "note": "Three spoken words; every theme"
         }
       ]
@@ -1333,6 +1337,7 @@
       "levels": [
         {
           "choices": 3,
+          "storiesUpTo": "foundation",
           "note": "Three pictures; the youngest stories"
         },
         {

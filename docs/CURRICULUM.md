@@ -1,5 +1,7 @@
 # Bip Island — Curriculum guide
 
+**Ages 5 to 10 in English and Afrikaans, with CAPS beside Cambridge, are planned in `docs/CURRICULUM_5_10.md` (approved 18 October 2026).**
+
 How every Bip Island mini-game lines up with the **Cambridge** curriculum for ages 4–8, and how the content data in `Content/` is organised. Read this, `docs/GAMES.md` and `CLAUDE.md` before building or changing any game.
 
 ## Which Cambridge frameworks, at which ages

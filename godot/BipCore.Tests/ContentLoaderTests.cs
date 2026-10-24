@@ -47,6 +47,8 @@ public sealed class ContentLoaderTests : IDisposable
         CheckRoundTrip<GamesFile>("curriculum/games.json");
         CheckRoundTrip<GraphemesFile>("phonics/graphemes.json");
         CheckRoundTrip<WordsFile>("words/words.json");
+        CheckRoundTrip<WordsFile>("af/words/words.json");
+        CheckRoundTrip<SkillsFile>("af/curriculum/skills.json");
         CheckRoundTrip<TrickyWordsFile>("words/tricky_words.json");
         CheckRoundTrip<SentencesFile>("words/sentences.json");
         CheckRoundTrip<EndingsFile>("words/endings.json");

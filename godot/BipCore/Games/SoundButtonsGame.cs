@@ -35,7 +35,7 @@ public sealed class SoundButtonsGame : IMiniGame<SoundButtonsGame.Round, HuntPic
     /// </summary>
     internal List<Word> Candidates(Learner learner)
     {
-        var decodable = _words.Where(w => w.DecodableFromGroup <= learner.UnlockedPhonicsGroup).ToList();
+        var decodable = _words.Where(w => w.Blendable && w.DecodableFromGroup <= learner.UnlockedPhonicsGroup).ToList();
         if (this.Level(learner).SoundCounts is List<int> counts)
         {
             var atLevel = decodable.Where(w => counts.Contains(w.SoundCount)).ToList();

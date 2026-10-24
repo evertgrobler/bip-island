@@ -26,6 +26,17 @@ public abstract partial class BaseScreen : Node2D
     protected Node2D Stage { get; } = new() { Name = "Stage" };
     protected Bip Bip { get; } = Buttons.Tappable(new Bip(), "bip");
     protected GameCoordinator Coordinator => GameCoordinator.Instance;
+    /// <summary>
+    /// The language this screen shows and speaks: the playing child's, unless the screen is for someone
+    /// else ("Who's playing?", a brother's or sister's break). The voice follows it
+    /// (<see cref="GameCoordinator.SpokenLanguage"/>).
+    /// </summary>
+    public virtual BipCore.HomeLanguage ScreenLanguage => Coordinator.Language;
+    /// <summary>
+    /// The voice band this screen speaks in: the playing child's, unless the screen is for someone else
+    /// (<see cref="GameCoordinator.SpokenBand"/>), like <see cref="ScreenLanguage"/>.
+    /// </summary>
+    public virtual BipCore.VoiceBand ScreenBand => Coordinator.ChildBand;
     protected VoicePlayer Voice => Coordinator.Voice;
     protected BipSounds Sfx => Coordinator.Sounds;
 
@@ -100,7 +111,7 @@ public abstract partial class BaseScreen : Node2D
         if (Coordinator.StartGame(gameId, focus)) return;
         var card = new Node2D { ZIndex = 80, Scale = Vector2.One * 0.01f };
         card.AddChild(Sketch.Node(new SketchShape.RoundedRect(new Rect2(-360, -110, 720, 220), 36), 575, fill: Palette.Card, lineWidth: 6));
-        card.AddChild(Sketch.Label(BipCore.Texts.ComingSoon(Coordinator.Language), 64, Palette.Ink));
+        card.AddChild(Sketch.Label(BipCore.Texts.ComingSoon(ScreenLanguage), 64, Palette.Ink));
         Stage.AddChild(card);
         var pop = card.CreateTween();
         pop.TweenProperty(card, "scale", Vector2.One * 1.05f, 0.2);
@@ -142,15 +153,17 @@ public abstract partial class BaseScreen : Node2D
     }
 
     /// <summary>Handles a click at a canvas position: the topmost tappable node under it wins.</summary>
-    public void Tap(Vector2 at)
+    public void Tap(Vector2 at) => TapOn(TappableAt(at));
+
+    /// <summary>Bip and the home button: they always work, even mid-question or while locked.</summary>
+    protected static bool IsAlwaysOn(string? name) => name is "bip" or "home";
+
+    /// <summary>Handles a click on a node already found with <see cref="TappableAt"/> (null: nothing there).</summary>
+    protected void TapOn(Node2D? target)
     {
-        var target = Tappables(Stage)
-            .Where(n => Hit.IsShown(n) && Hit.GlobalArea(n) is { } area && area.HasPoint(at))
-            .OrderByDescending(Depth)
-            .FirstOrDefault();
         if (target == null || Buttons.TapName(target) is not { } name) return;
 
-        // Bip and the home button always work, even mid-question.
+        // Bip and the home button always work, even mid-question (IsAlwaysOn).
         if (name == "bip")
         {
             Sfx.Play(BipSounds.Effect.Beep);
@@ -168,6 +181,12 @@ public abstract partial class BaseScreen : Node2D
         if (InputLocked) return;
         HandleTap(name, target);
     }
+
+    /// <summary>The topmost tappable node shown under a canvas position, if any.</summary>
+    protected Node2D? TappableAt(Vector2 at) => Tappables(Stage)
+        .Where(n => Hit.IsShown(n) && Hit.GlobalArea(n) is { } area && area.HasPoint(at))
+        .OrderByDescending(Depth)
+        .FirstOrDefault();
 
     /// <summary>The tappable node with this tap name, if the screen shows one (for the walk-through test).</summary>
     public Node2D? FindTappable(string name) =>

@@ -43,7 +43,7 @@ public partial class ScreenPreview : Node
                 for (var i = 0; i < content.MasteryRules.MasteredWindow; i++)
                     game.Progress.RecordAnswer(true, group.SkillId, null, day, content.MasteryRules);
         }
-        game.Store.Save(game.Progress, game.ChildId);
+        game.SaveProgress();
     }
 
     /// <summary>A 20-minute break with 12 minutes to go (two bars lit), or the day's play used up.</summary>
@@ -70,7 +70,7 @@ public partial class ScreenPreview : Node
             for (var i = 0; i < 37; i++) game.Progress.RecordAnswer(true, "count_10", null, game.Today, content.MasteryRules);
             for (var i = 0; i < 9; i++)
                 StickerBook.AwardStickers(game.Progress, content, i % 2 == 0 ? "s" : null, finishedGame: true, game.Rng);
-            game.Store.Save(game.Progress, game.ChildId);
+            game.SaveProgress();
         }
         return new StickerScreen();
     }

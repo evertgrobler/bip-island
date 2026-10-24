@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BipCore;
+using BipIsland.Game;
 using Godot;
 using static BipIsland.Drawing.Up;
 
@@ -13,24 +15,25 @@ namespace BipIsland.Drawing;
 /// </summary>
 public static class LanguagePictures
 {
-    /// <summary>The paint colours, the same as Paint Pots' (Content/art/paints.json).</summary>
-    private static readonly Dictionary<string, Color> Colours = new()
-    {
-        ["red"] = Color.FromHtml("#D8392B"), ["yellow"] = Color.FromHtml("#F6C42B"), ["blue"] = Color.FromHtml("#2F6CC9"),
-        ["green"] = Color.FromHtml("#3E9B4F"), ["orange"] = Color.FromHtml("#F08A24"), ["purple"] = Color.FromHtml("#7E4AA8"),
-        ["pink"] = Color.FromHtml("#F2A3B3"), ["white"] = Color.FromHtml("#FFFDF5"), ["black"] = Color.FromHtml("#26221F"),
-        ["grey"] = Color.FromHtml("#8E8B87"),
-    };
+    /// <summary>
+    /// The paint colours Paint Pots uses (Content/art/paints.json), read from the content so both games
+    /// always show the same shade for a colour's name.
+    /// </summary>
+    private static IReadOnlyList<PaintColour> Colours => GameCoordinator.Instance?.Content?.Paints.Colours ?? [];
 
     public const int MostDots = 10;
 
     public static IEnumerable<string> Ids =>
-        Colours.Keys.Select(c => $"pic_colour_{c}").Concat(Enumerable.Range(1, MostDots).Select(n => $"pic_count_{n}"));
+        Colours.Select(c => $"pic_colour_{c.Id}").Concat(Enumerable.Range(1, MostDots).Select(n => $"pic_count_{n}"));
 
     public static Node2D? Make(string id)
     {
-        if (id.StartsWith("pic_colour_", StringComparison.Ordinal) && Colours.TryGetValue(id["pic_colour_".Length..], out var colour))
-            return Splash(colour, (ulong)(5000 + Array.IndexOf(Colours.Keys.ToArray(), id["pic_colour_".Length..]) * 10));
+        if (id.StartsWith("pic_colour_", StringComparison.Ordinal))
+        {
+            var colours = Colours.ToList();
+            var index = colours.FindIndex(c => c.Id == id["pic_colour_".Length..]);
+            return index < 0 ? null : Splash(Color.FromHtml(colours[index].Hex), (ulong)(5000 + index * 10));
+        }
         if (id.StartsWith("pic_count_", StringComparison.Ordinal) && int.TryParse(id["pic_count_".Length..], out var n) && n is >= 1 and <= MostDots)
             return Dots(n);
         return null;
@@ -40,6 +43,10 @@ public static class LanguagePictures
     private static Node2D Splash(Color colour, ulong seed)
     {
         var n = new Node2D();
+        // White paint on a white card would be only an outline: it sits on a soft grey swatch instead,
+        // like a dab of white on a grey palette, so it still reads as white paint.
+        if (colour.Luminance > 0.9f)
+            n.AddChild(Pen(RoundRect(R(-108, -104, 216, 216), 26), seed + 9, fill: Palette.Stone, lineWidth: 3, wobble: 1.5));
         var edge = Enumerable.Range(0, 28).Select(i =>
         {
             var a = i / 28.0 * 2 * Math.PI;

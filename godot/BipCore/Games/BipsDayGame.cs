@@ -45,20 +45,28 @@ public sealed class BipsDayGame : IMiniGame<BipsDayGame.Round, DayCard>
 
     public Round? MakeRound(Learner learner, GameSession session, IRandomSource rng)
     {
-        // The first level keeps to the youngest stories; later levels use them all.
-        var open = Cards.Where(c => learner.GameLevel > 0 || c.Band == Band.Foundation).Select(c => c.Card).ToList();
+        var level = this.Level(learner);
+        // A level can keep to the youngest stories (games.json "storiesUpTo"); without it, every story.
+        var open = Cards.Where(c => level.StoriesUpTo is not { } upTo || c.Band <= upTo).Select(c => c.Card).ToList();
         if (rng.Pick(open.Where(c => !session.UsedItems.Contains($"{c.Set}_{c.N}")).ToList()) is not DayCard target) return null;
-        var wanted = Math.Max(this.Level(learner).Choices ?? ChoiceCount, 2);
-        // One card from each other story, so no two choices mean nearly the same thing.
+        var wanted = Math.Max(level.Choices ?? ChoiceCount, 2);
+        // One card from each other story, and none that could pass for another choice or the answer:
+        // stories repeat moments ("Brush your teeth" is in the morning and at bedtime).
         var picked = new List<DayCard>();
         foreach (var card in rng.Shuffled(open.Where(c => c.Set != target.Set)))
         {
             if (picked.Count >= wanted - 1) break;
-            if (picked.All(p => p.Set != card.Set && p.Picture != card.Picture && p.LearningText != card.LearningText)) picked.Add(card);
+            if (picked.Prepend(target).All(p => CanShareRound(p, card))) picked.Add(card);
         }
         if (picked.Count < wanted - 1) return null;
         return new Round(target, rng.Shuffled(picked.Prepend(target)), _learning);
     }
+
+    /// <summary>Two moments can share a round when they're from different stories and neither their picture nor their words match.</summary>
+    public static bool CanShareRound(DayCard a, DayCard b) =>
+        a.Set != b.Set && a.Picture != b.Picture
+        && !a.LearningText.Equals(b.LearningText, StringComparison.OrdinalIgnoreCase)
+        && !a.HomeText.Equals(b.HomeText, StringComparison.OrdinalIgnoreCase);
 
     public bool IsCorrect(DayCard choice, Round round) => choice.Set == round.Target.Set && choice.N == round.Target.N;
 

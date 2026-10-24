@@ -30,15 +30,18 @@ public static class LanguageWords
                                && !a.Af.Equals(b.Af, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
-    /// A fresh word and <paramref name="choices"/> - 1 others. From the second level the others come
-    /// from the same theme first (red among colours), which is harder than red among animals.
+    /// A fresh word and the level's choices - 1 others (<paramref name="defaultChoices"/> when the level
+    /// doesn't say). On levels with <c>sameThemeFirst</c> the others come from the same theme first (red
+    /// among colours), which is harder than red among animals.
     /// </summary>
-    public static LanguageWordRound? MakeRound(ContentLibrary content, Learner learner, int choices, GameSession session, IRandomSource rng)
+    public static LanguageWordRound? MakeRound(ContentLibrary content, Learner learner, GameLevel level, int defaultChoices,
+                                               GameSession session, IRandomSource rng)
     {
+        var choices = Math.Max(level.Choices ?? defaultChoices, 2);
         var open = OpenAt(content, learner.GameLevel);
         if (rng.Pick(open.Where(w => !session.UsedItems.Contains(w.Id)).ToList()) is not LanguageWord target) return null;
         var others = rng.Shuffled(open.Where(w => CanShareRound(w, target)));
-        var ordered = learner.GameLevel > 0 ? others.Where(w => w.Theme == target.Theme).Concat(others.Where(w => w.Theme != target.Theme)) : others;
+        var ordered = level.SameThemeFirst == true ? others.Where(w => w.Theme == target.Theme).Concat(others.Where(w => w.Theme != target.Theme)) : others;
         var picked = new List<LanguageWord>();
         foreach (var word in ordered)
         {

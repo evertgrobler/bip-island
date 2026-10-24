@@ -74,12 +74,14 @@ def problems(text):
 
 
 # C# string literals: on-screen text in the game.
-def cs_strings(source):
+def cs_strings(source, skipped=None):
     """
     Every string literal in C# source: "...", @"...", $"..." (the text outside each {hole}, and
     the literals inside the holes too, as in $"{(n == 1 ? "star" : "stars")}"), and raw triple-quoted strings.
-    Comments and character literals are skipped.
+    Comments and character literals are skipped. When given a list, `skipped` gets the (start, end) of
+    every top-level literal, comment and character literal, so callers can read the code around them.
     """
+    if skipped is None: skipped = []
     out = []
     i, n = 0, len(source)
 
@@ -142,18 +144,50 @@ def cs_strings(source):
         return k + 1
 
     while i < n:
-        c = source[i]
+        c, start = source[i], i
         if source.startswith("//", i):
-            i = source.find("\n", i); i = n if i < 0 else i; continue
-        if source.startswith("/*", i):
-            i = source.find("*/", i + 2); i = n if i < 0 else i + 2; continue
-        if c == "'":
+            i = source.find("\n", i); i = n if i < 0 else i
+        elif source.startswith("/*", i):
+            i = source.find("*/", i + 2); i = n if i < 0 else i + 2
+        elif c == "'":
             close = source.find("'", i + (3 if source[i + 1:i + 2] == "\\" else 2))
-            i = n if close < 0 else close + 1; continue
-        if c == '"' or (c in "$@" and (source[i + 1:i + 2] == '"' or source[i + 1:i + 3] in ('@"', '$"'))):
-            i = literal(i); continue
-        i += 1
+            i = n if close < 0 else close + 1
+        elif c == '"' or (c in "$@" and (source[i + 1:i + 2] == '"' or source[i + 1:i + 3] in ('@"', '$"'))):
+            i = literal(i)
+        else:
+            i += 1; continue
+        skipped.append((start, i))
     return [t for t in out if t.strip()]
+
+
+def cs_pick_pairs(source, method="Pick"):
+    """
+    The literals of each two-language call in C# source, as (english, afrikaans) lists of strings:
+    BipCore's Texts.Pick(language, "English text", "Afrikaans text"). Also returns every literal that
+    sits outside such a call, so nothing in the file goes unchecked.
+    """
+    skipped = []
+    everything = cs_strings(source, skipped)
+    starts = {start: end for start, end in skipped}
+    pairs = []
+    for match in re.finditer(r"\b" + re.escape(method) + r"\(", source):
+        if any(start <= match.start() < end for start, end in skipped): continue
+        args, depth, i, arg_start = [], 1, match.end(), match.end()
+        while i < len(source) and depth:
+            if i in starts: i = starts[i]; continue
+            c = source[i]
+            if c == "(": depth += 1
+            elif c == ")": depth -= 1
+            if (c == "," and depth == 1) or depth == 0:
+                args.append(source[arg_start:i]); arg_start = i + 1
+            i += 1
+        if len(args) == 3 and cs_strings(args[1]) + cs_strings(args[2]):
+            pairs.append((cs_strings(args[1]), cs_strings(args[2])))
+    rest = list(everything)
+    for english, afrikaans in pairs:
+        for text in english + afrikaans:
+            if text in rest: rest.remove(text)
+    return pairs, rest
 
 
 HTML_TAG = re.compile(r"<script.*?</script>|<style.*?</style>|<[^>]+>", re.S | re.I)

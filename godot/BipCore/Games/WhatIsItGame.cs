@@ -15,7 +15,7 @@ public sealed class WhatIsItGame(ContentLibrary content) : IMiniGame<LanguageWor
     public IReadOnlyList<GameSkin> Skins { get; } = [new("speech_bubbles", "Speech bubbles")];
 
     public LanguageWordRound? MakeRound(Learner learner, GameSession session, IRandomSource rng) =>
-        LanguageWords.MakeRound(content, learner, Math.Max(this.Level(learner).Choices ?? ChoiceCount, 2), session, rng);
+        LanguageWords.MakeRound(content, learner, this.Level(learner), ChoiceCount, session, rng);
 
     public bool IsCorrect(LanguageWord choice, LanguageWordRound round) => choice.Id == round.Target.Id;
 
