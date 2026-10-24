@@ -12,6 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sa_english
+from spoken_numbers import number_word
 
 ROOT = Path(__file__).resolve().parent.parent / "Content"
 errors = []
@@ -440,9 +441,6 @@ for n in range(0, 101):
 
 # Numbers said inside a sentence: whole recorded sentences (vo_say_...) and, for bigger numbers,
 # num_<n>_mid clips the game joins to the linking words (numbers.json "spokenNumbers").
-NUMBER_WORDS = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
-                "fifteen sixteen seventeen eighteen nineteen twenty").split()
-def number_word(n): return NUMBER_WORDS[n]
 spoken = numbers.get("spokenNumbers") or {}
 join_to = spoken.get("joinTo", 0)
 if not 10 <= join_to <= 20: err("spokenNumbers.joinTo must be 10-20")
@@ -471,6 +469,11 @@ for sen in spoken.get("sentences", []):
         text = re.sub(r"\{([a-z]+)\}", fill, sen.get("text", ""))
         text = text[0].upper() + text[1:]
         a(f"vo_say_{sid}_{x}" + (f"_{y}" if y is not None else ""), text, "One whole sentence, said naturally.")
+# A voice-script clip must never look like a recorded sentence (speak_clips.py finds those by
+# vo_say_<sentence id>_*, and AudioCatalogue.SentenceClip names them the same way).
+for clip in script_clips:
+    for sid in seen_spoken:
+        if clip.startswith(f"vo_say_{sid}_"): err(f"audio/script.csv {clip}: clashes with spoken sentence {sid} (vo_say_{sid}_...)")
 for o in numbers["countingObjects"]:
     p(o["picture"], o["id"])
     plural = o["audioPlural"][len("word_"):]

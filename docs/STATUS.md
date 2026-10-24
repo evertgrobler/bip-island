@@ -437,7 +437,7 @@
   copying the **original** narrator from `vo_welcome` + `vo_bip_charging` sounded closest; the owner picked it.
   So the game keeps one voice: the ElevenLabs clips of the second voice are dropped, `num_0`–`num_20` and the
   linking words are back to the originals, and `scripts/speak_clips.py` (seed 0, Chatterbox defaults, levelled
-  to -14.5 LUFS) records the 233 sentences, 21 lead-on numbers and `vo_and` through the **Narrator** workflow
+  to -14.5 LUFS) records the 233 whole sentences through the **Narrator** workflow
   (GitHub runners reach huggingface.co; cloud sessions can't). The workflow runs 4 shards in parallel and
   commits the clips to the branch; a push by the workflow doesn't start the Godot CI, so push once after it.
   Every clip is checked by Whisper (faster-whisper `base.en`): the words heard must match the text, or the
@@ -452,6 +452,16 @@
   Result: all 233 Block Towers sentences recorded by Chatterbox and passed the Whisper check (none removed,
   `last-failed.txt` empty); `scripts/check_all.sh` green. Still open: Afrikaans round 3 (Seed-VC, OpenVoice) and
   a Gemini TTS Afrikaans test on `claude/voice-lab` (needs a `GEMINI_API_KEY` secret; not part of this PR).
+- **18 Oct (review fixes, PR #51):** `vo_say_it_with_me` (a Meet the Sound line from `audio/script.csv`) is the
+  original narrator's again: the request's `vo_say_*` had caught it. `voice-lab/request.txt` now lists the 11
+  sentence ids (`vo_say_<id>_*`), and the validator fails if a script.csv clip starts with `vo_say_<sentence id>_`.
+  `speak_clips.py` keeps a clip that was there before when no new take passes Whisper (only a brand-new clip is
+  removed), transcribes each take once, and **skips the 21 `num_<n>_mid` clips and `vo_and`**: they stay in the
+  manifest, but the owner has moved the narrator to Gemini "Aoede" (`claude/aoede-narrator`), which records them;
+  until then the game falls back to `num_<n>` and `word_and`. The highest lead-on number comes from
+  `numbers.json` `spokenNumbers.joinTo` (`ContentLibrary.MidNumbersTo`), not code; `NUMBER_WORDS` lives once,
+  in `scripts/spoken_numbers.py`. Narrator workflow: runs only on `claude/*` branches, commits even when a shard
+  crashed, pulls before pushing, and counts only `.m4a` files. The ElevenLabs allow rules left `.claude/settings.json`.
 - **18 Oct, home language (step 2 of `docs/LANGUAGES.md`):** each child has a home language (`HomeLanguage`,
   `SavedChild.Language`, read leniently on the property so an unknown value reads as English).
   `ContentLibrary(readFile, language, exists)` reads `Content/af/<file>` over the shared file;

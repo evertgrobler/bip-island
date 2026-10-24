@@ -473,7 +473,7 @@ public partial class BlockTowersScreen : GameScreen
     private List<string> Prompt(BlockTowersGame.Round round)
     {
         var n = AudioCatalogue.NumberClip;
-        var mid = AudioCatalogue.MidNumberClip;
+        var mid = Coordinator.Content!.MidNumberClip;
         var say = AudioCatalogue.SentenceClip;
         return round.Mode switch
         {
@@ -499,10 +499,10 @@ public partial class BlockTowersScreen : GameScreen
         };
     }
 
-    private static List<string> SayWhenRight(BlockTowersGame.Round round)
+    private List<string> SayWhenRight(BlockTowersGame.Round round)
     {
         var n = AudioCatalogue.NumberClip;
-        var mid = AudioCatalogue.MidNumberClip;
+        var mid = Coordinator.Content!.MidNumberClip;
         var say = AudioCatalogue.SentenceClip;
         return round.Mode switch
         {
