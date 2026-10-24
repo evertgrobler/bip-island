@@ -36,7 +36,7 @@ public abstract partial class BaseScreen : Node2D
     /// The voice band this screen speaks in: the playing child's, unless the screen is for someone else
     /// (<see cref="GameCoordinator.SpokenBand"/>), like <see cref="ScreenLanguage"/>.
     /// </summary>
-    public virtual BipCore.VoiceBand ScreenBand => Coordinator.Band;
+    public virtual BipCore.VoiceBand ScreenBand => Coordinator.ChildBand;
     protected VoicePlayer Voice => Coordinator.Voice;
     protected BipSounds Sfx => Coordinator.Sounds;
 

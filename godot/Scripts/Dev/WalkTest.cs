@@ -265,7 +265,7 @@ public static class WalkTest
             var otherAge = game.Children.First(c => c.Id == other.Id).Age;
             game.UpdateChild(game.Children.First(c => c.Id == other.Id) with { Age = 9 });
             Check("Who's playing? is said in the young voice whoever played last",
-                  game.Band == BipCore.VoiceBand.Big && game.SpokenBand == BipCore.VoiceBand.Little);
+                  game.ChildBand == BipCore.VoiceBand.Big && game.SpokenBand == BipCore.VoiceBand.Little);
             var lilyPlayed = game.Store.LoadBreak(lily.Id)?.PlayedTodaySeconds ?? 0;
             await Tap("child:" + lily.Id);
             await WaitFor(() => Screen() is ChargingScreen, 5);
@@ -515,7 +515,7 @@ public static class WalkTest
                 game.UpdateChild(playing with { Age = 4 });
                 Check("...a four-year-old the young ones", Audio.VoicePlayer.ResolveClip(welcome, all) == welcome);
                 game.UpdateChild(playing with { Age = playing.Age });
-                Check("...and back for the child's own age", game.Band == BipCore.VoiceBands.For(playing.Age));
+                Check("...and back for the child's own age", game.ChildBand == BipCore.VoiceBands.For(playing.Age));
             }
             if (game.Children.FirstOrDefault(c => c.Name == "Mia") is { } mia)
             {

@@ -52,7 +52,7 @@ public partial class GameCoordinator : Node
     /// The playing child's voice band, worked out from their age each time (<see cref="VoiceBands.For"/>),
     /// so it can't go stale when a child is chosen, changed or removed.
     /// </summary>
-    public VoiceBand Band => BandOf(ChildId);
+    public VoiceBand ChildBand => BandOf(ChildId);
 
     /// <summary>A child's voice band from the age a grown-up set in the Children tab (Little when there's none).</summary>
     public VoiceBand BandOf(Guid id) => VoiceBands.For(Children.FirstOrDefault(c => c.Id == id)?.Age);
@@ -61,7 +61,7 @@ public partial class GameCoordinator : Node
     /// The band the voice speaks in now: the screen's (<see cref="BaseScreen.ScreenBand"/>), which is the
     /// playing child's except on "Who's playing?" (Little) and a brother's or sister's break (theirs).
     /// </summary>
-    public VoiceBand SpokenBand => IsInsideTree() && GetTree().CurrentScene is BaseScreen screen ? screen.ScreenBand : Band;
+    public VoiceBand SpokenBand => IsInsideTree() && GetTree().CurrentScene is BaseScreen screen ? screen.ScreenBand : ChildBand;
 
     private readonly Dictionary<HomeLanguage, ContentLibrary?> _contentByLanguage = [];
 
@@ -368,7 +368,7 @@ public partial class GameCoordinator : Node
         Store.Delete(id);
         Children = Store.Children();
         // The store always keeps one child, so the list is never empty here; the voice band follows
-        // whoever is playing by itself (Band).
+        // whoever is playing by itself (ChildBand).
         if (Children.Any(c => c.Id == ChildId) || Children.Count == 0) return;
         ChildId = Children[0].Id;
         LoadChildProgress();

@@ -602,7 +602,7 @@
 - **24 Oct, 16:05 SAST (PR #57 review fixes, voice bands):** merged main (#51 to #56, #59) and retargeted
   to `main`. The band works like the language: each screen says whose band it speaks in
   (`BaseScreen.ScreenBand`), the voice reads `GameCoordinator.SpokenBand` (`VoicePlayer.BandSource`, no copy
-  of its own), the playing child's band is worked out from their age each time (`GameCoordinator.Band`), so
+  of its own), the playing child's band is worked out from their age each time (`GameCoordinator.ChildBand`), so
   it can't go stale when a child is changed or removed. "Who's playing?" is always said in the Little band; a
   resting brother's or sister's charging screen in their own. What plays is `VoiceBands.Resolve` (stand-in,
   then band; unit-tested, and the walk-through checks it for an 8- and a 4-year-old). `BigVersions` is looked

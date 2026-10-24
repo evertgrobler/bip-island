@@ -153,7 +153,7 @@ public partial class ChargingScreen : BaseScreen
     public override HomeLanguage ScreenLanguage => _peek is Guid peek ? Coordinator.LanguageOf(peek) : Coordinator.Language;
 
     /// <summary>...and in their own voice band.</summary>
-    public override VoiceBand ScreenBand => _peek is Guid peek ? Coordinator.BandOf(peek) : Coordinator.Band;
+    public override VoiceBand ScreenBand => _peek is Guid peek ? Coordinator.BandOf(peek) : Coordinator.ChildBand;
 
     private readonly List<Node2D> _bars = [];
     private Node2D? _battery;
