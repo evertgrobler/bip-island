@@ -322,7 +322,7 @@ public partial class GameIslandScreen : BaseScreen
     }
 
     /// <summary>Words Island has four games, so its plates are a little smaller than the other islands'.</summary>
-    private const float WordsPlate = 0.9f;
+    private const float WordsPlate = 0.85f;
 
     /// <summary>Bip's Stories: an open story book, a little picture on one page and lines of words on the other.</summary>
     private static Node2D StoriesButton()
