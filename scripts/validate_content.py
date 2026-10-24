@@ -11,12 +11,13 @@ shared files. When Content/af/ exists the same checks run again for it (--lang a
 Content/af/asset_manifest.json, with Afrikaans number words, audio/af/script.csv and the
 Afrikaans spelling check (af_spelling.py) in place of the South African English one.
 """
-import csv, json, re, subprocess, sys
+import csv, json, re, subprocess, sys, unicodedata
 from collections import deque
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sa_english, af_spelling, spoken_numbers
+af_spelling.self_test()
 
 LANG = sys.argv[sys.argv.index("--lang") + 1] if "--lang" in sys.argv else ""
 CONTENT = Path(__file__).resolve().parent.parent / "Content"
@@ -97,6 +98,27 @@ for w in words_doc["words"]:
     if w["picturable"] and not w.get("picture"): err(f"word {w['word']}: picturable but no picture id")
     check_objs(f"word {w['word']}", w["objectives"])
 
+# Words whose letters don't all make their taught sound must say so ("blendable": false), or Sound Buttons
+# and Word Rocket would blend them into another word. Afrikaans (graphemes.json teaches e as /ɛ/ and i as
+# /ə/): an e after the first vowel is a schwa (appel), a single a, e, o or u before one consonant and a
+# vowel is long (hamer, motor), and an i straight after a vowel is a glide (koei).
+def is_vowel(gid): return all(c in "aeiouy" for c in G[gid]["grapheme"])
+def af_unblendable(parts):
+    vowels = [i for i, gid in enumerate(parts) if is_vowel(gid)]
+    for i, gid in enumerate(parts):
+        if gid == "e" and i != vowels[0]: return "its e after the first vowel is a schwa"
+        if gid in ("a", "e", "o", "u") and i + 2 < len(parts) and not is_vowel(parts[i + 1]) and is_vowel(parts[i + 2]):
+            return f"its {gid} in an open syllable is long"
+        if gid == "i" and i > 0 and is_vowel(parts[i - 1]): return "its i after a vowel is a glide"
+    return None
+UNBLENDABLE = {"af": af_unblendable}.get(LANG, lambda parts: None)
+for w in words_doc["words"]:
+    if not isinstance(w.get("blendable", True), bool): err(f"word {w['word']}: blendable must be true or false")
+    if any(p not in G for p in w["graphemes"]): continue
+    why = UNBLENDABLE(w["graphemes"])
+    if why and w.get("blendable", True): err(f"word {w['word']}: {why}, so it needs \"blendable\": false")
+    if not why and w.get("blendable", True) is False: err(f"word {w['word']}: blends sound by sound, so drop \"blendable\": false")
+
 # enough words per group for rounds of 3 options with distinct first sounds
 for grp in range(1, max(g["group"] for g in ph["graphemes"]) + 1):
     pool = [w for w in words_doc["words"] if w["decodableFromGroup"] <= grp and w["picturable"]]
@@ -139,9 +161,35 @@ def visit(n, stack=()):
     state[n] = 2
 for n in SK: visit(n)
 
-# --- every phonics group is taught by the skill snd_g<group> (the game links them by this id)
+# --- every phonics group is taught by the skill snd_g<group> (the game links them by this id), in the
+# group's band (the band decides which groups an older child is treated as knowing), and every snd_g
+# skill has a group in this language to master (a language with fewer groups has its own skills.json).
+GROUP_NUMBERS = {grp["group"] for grp in ph["groups"]}
 for grp in ph["groups"]:
-    if f"snd_g{grp['group']}" not in SK: err(f"phonics group {grp['group']}: no skill snd_g{grp['group']} in skills.json")
+    skill = SK.get(f"snd_g{grp['group']}")
+    if skill is None: err(f"phonics group {grp['group']}: no skill snd_g{grp['group']} in skills.json")
+    elif skill["band"] != grp["band"]: err(f"phonics group {grp['group']}: band {grp['band']}, but skill snd_g{grp['group']} is {skill['band']}")
+def phonics_group(skill_id):
+    m = re.fullmatch(r"snd_g(\d+)", skill_id)
+    return int(m.group(1)) if m else None
+for sid in SK:
+    if phonics_group(sid) is not None and phonics_group(sid) not in GROUP_NUMBERS:
+        err(f"skill {sid}: there is no phonics group {phonics_group(sid)} in this language's graphemes.json")
+
+# --- a language's own skills.json is the shared one with its own phonics skills: the same other skills
+# (only their snd_g prerequisites may differ), mastery rules and starting bands, so the two never drift.
+if LANG and (ROOT / "curriculum" / "skills.json").exists():
+    with open(CONTENT / "curriculum" / "skills.json", encoding="utf-8") as f: shared_skills = json.load(f)
+    for key in ("mastery", "masteryRules", "startingBand"):
+        if skills_doc.get(key) != shared_skills.get(key): err(f"{LANG}/curriculum/skills.json: {key} differs from the shared skills.json")
+    shared_sk = {x["id"]: x for x in shared_skills["skills"] if phonics_group(x["id"]) is None}
+    own_sk = {x["id"]: x for x in skills_doc["skills"] if phonics_group(x["id"]) is None}
+    for sid in sorted(set(shared_sk) ^ set(own_sk)): err(f"{LANG}/curriculum/skills.json: skill {sid} is in only one of it and the shared skills.json")
+    for sid in sorted(set(shared_sk) & set(own_sk)):
+        mine, theirs = own_sk[sid], shared_sk[sid]
+        if {k: v for k, v in mine.items() if k != "prerequisites"} != {k: v for k, v in theirs.items() if k != "prerequisites"} or \
+           [x for x in mine["prerequisites"] if phonics_group(x) is None] != [x for x in theirs["prerequisites"] if phonics_group(x) is None]:
+            err(f"{LANG}/curriculum/skills.json: skill {sid} differs from the shared one (only its snd_g prerequisites may)")
 
 # --- mastery rules the game reads (the prose in "mastery" is for people)
 rules = skills_doc.get("masteryRules", {})
@@ -177,7 +225,7 @@ for gm in games:
         if "bubbles" in lv and not 3 <= lv["bubbles"] <= 8: err(f"{where}: bubbles must be 3 to 8")
         if "spares" in lv and (not isinstance(lv["spares"], int) or not 0 <= lv["spares"] <= 4): err(f"{where}: spares must be 0 to 4")
         if "cards" in lv and not 2 <= lv["cards"] <= 6: err(f"{where}: cards must be 2 to 6")
-        if "soundCounts" in lv and not any(w["picturable"] and w["soundCount"] in lv["soundCounts"] for w in words_doc["words"]):
+        if "soundCounts" in lv and not any(w["picturable"] and w.get("blendable", True) and w["soundCount"] in lv["soundCounts"] for w in words_doc["words"]):
             err(f"{where}: no picturable words with {lv['soundCounts']} sounds")
     # A level without a band carries on the band before it.
     current, bands = 0, []
@@ -187,7 +235,9 @@ for gm in games:
     if bands != sorted(bands): err(f"game {gm['id']}: level bands must not go backwards")
 for gm in games:
     for s in gm["skills"]:
-        if s not in SK: err(f"game {gm['id']}: unknown skill {s}")
+        # A game lists every phonics group it practises; a language without that group just skips it.
+        if s not in SK and not (phonics_group(s) is not None and phonics_group(s) not in GROUP_NUMBERS):
+            err(f"game {gm['id']}: unknown skill {s}")
     check_objs(f"game {gm['id']}", gm["objectives"])
 
 
@@ -421,8 +471,10 @@ def a(id_, text, notes=""):
 def p(id_, brief):
     pictures.setdefault(id_, {"id": id_, "brief": brief})
 def word_clip(text):
-    """A word's clip, as AudioCatalogue.WordClip names it: yo-yo -> word_yoyo (file names have no hyphens)."""
-    return f"word_{text.lower().replace('-', '')}"
+    """A word's clip, as AudioCatalogue.WordClip names it: yo-yo -> word_yoyo (file names have no hyphens),
+    vlieër -> word_vlieer (file names are plain ASCII: a Mac may write ë decomposed)."""
+    plain = "".join(c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn")
+    return f"word_{plain.lower().replace('-', '')}"
 
 for g in ph["graphemes"]:
     a(g["audio"], g["grapheme"], f"PURE SOUND /{g['ipa']}/ ({g['kind']}). {g['narratorHint']}")
@@ -507,11 +559,15 @@ for st in seqs:
         a(c["audio"], c["text"]); p(c["picture"], f"{st['id']} step {c['n']}: {c['text']}")
 
 for sh in SHAPES.values():
-    a(f"word_{sh['name'].replace(' ', '_')}", sh["name"])
+    a(word_clip(sh["name"].replace(" ", "_")), sh["name"])
 for col in COLOURS.values():
     a(f"word_{col['id']}", col["name"])
 for pt in POTS.values():
     p(pt["label"], f"label for the {pt['colour']} paint pot")
+
+# Clip and picture ids are file names: plain lower-case ASCII, so every computer spells them the same.
+for id_ in list(audio) + list(pictures):
+    if not re.fullmatch(r"[a-z0-9_]+", id_): err(f"asset id {id_!r}: file names are lower-case ASCII letters, digits and _")
 
 manifest = {"note": "Generated by scripts/validate_content.py. Every voice clip uses the official narrator (CLAUDE.md, 'Art and voice'). Game instructions (vo_find_the_sound etc.), praise and hints are added by each game, not listed here.",
             "audio": sorted(audio.values(), key=lambda x: x["id"]),

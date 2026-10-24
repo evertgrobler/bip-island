@@ -99,7 +99,16 @@ public sealed class PhonicsCourse
         return letters;
     }
 
-    /// <summary>Letter names ("this is ess") are only taught once the sounds of all 26 letters are known.</summary>
-    public static bool LetterNamesUnlocked(IEnumerable<string> knownSounds) =>
-        LettersCovered(knownSounds).Count == Alphabet.Count;
+    /// <summary>The letters this course's sounds cover: all 26 in English, 22 in Afrikaans (no c, q, x or z).</summary>
+    public HashSet<string> Letters => LettersCovered(AllSounds.Select(s => s.Id));
+
+    /// <summary>
+    /// Letter names ("this is ess") are only taught once the sounds of every letter this course covers
+    /// are known: all 26 in English (after group 5), the 22 single letters in Afrikaans (after group 4).
+    /// </summary>
+    public bool LetterNamesUnlocked(IEnumerable<string> knownSounds)
+    {
+        var letters = Letters;
+        return letters.Count > 0 && letters.IsSubsetOf(LettersCovered(knownSounds));
+    }
 }

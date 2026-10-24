@@ -44,6 +44,14 @@ the validator work unchanged. Spelling follows the AWS (Afrikaanse Woordelys en 
 by a new `scripts/af_spelling.py` the way `sa_english.py` checks English. No slang, everyday South
 African life, the same rule as English.
 
+Afrikaans has 7 sound groups, so it has its own `Content/af/curriculum/skills.json`: snd_g1 to snd_g7
+in the Afrikaans groups' bands (which groups an older child is treated as knowing), no snd_g8 or
+snd_g9, letter names after group 4, spelling with digraphs after group 5 and longer words after group
+7; every other skill matches the shared file (`validate_content.py --lang af` checks this). Letter names
+unlock once the sounds of every letter the language's sounds cover are known (22 letters in Afrikaans:
+no c, q, x or z). Words whose letters don't all make their taught sound (hamer, appel, koei) are marked
+`"blendable": false` and stay out of Sound Buttons and Word Rocket; the validator finds them.
+
 Rough size: about 90 instruction lines, about 250 picture words, 25 letter names, about 60 sounds,
 16 sentence pairs, numbers 0–100: about 1,100 clips, like English.
 

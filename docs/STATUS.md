@@ -44,6 +44,11 @@
   **Keys are the one exception to "any key replays":** letter keys type here, so Space, the replay
   button or a click on the craft say it again, Enter does nothing, and Esc is never typed (the parent
   layer takes it first, so the Esc hold still opens the gate). Skins: rocket, hot-air balloon, submarine.
+- **Afrikaans (24 Oct):** the home-language plumbing is in (#53), and the Afrikaans content now exists in
+  `Content/af/` (7 klanke groups, 137 words, 16 sentences, numbers, art names, Morning Order, Bip's lines,
+  its own `curriculum/skills.json`), signed off by the owner on 18 October 2026 and checked by
+  `validate_content.py --lang af` and `af_spelling.py`. It stays hidden from children until
+  `Content/af/language.json` lands (with the Afrikaans voice and the download page change, `docs/LANGUAGES.md` step 8).
 - **Known open items:** cover second screens in the kid lock; more games (waves 2b/3/4); paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
@@ -547,3 +552,14 @@
   (later misses just boop), and it waits for the narrator to finish, so it never cuts off "Trace the letter".
   A drag that traces forgives earlier stray clicks (`TracePen` resets its misses), so a mouse user who traces in
   strokes never gets the trackpad hint; a press that drew nothing still counts.
+- **24 Oct, 10:55 SAST:** Afrikaans content (#54) merged with main and review fixes: Afrikaans has its own
+  `Content/af/curriculum/skills.json` (snd_g1 to snd_g7 in the Afrikaans groups' bands, no snd_g8/snd_g9;
+  letter names after group 4, spell_digraph after group 5, read_longer after group 7), and the validator checks
+  each group's band against its snd_gN skill, that every snd_gN skill has a group, and that a language's own
+  skills.json matches the shared one apart from its phonics skills. Letter names unlock once every letter the
+  language's sounds cover is known (`PhonicsCourse.Letters`; 22 in Afrikaans). Words whose letters don't make
+  their taught sound are marked `"blendable": false` and left out of Sound Buttons and Word Rocket (they stay in
+  the first-sound games and Word Builder): motor, hamer, lepel, koning, kewer (open syllable), appel, eier,
+  visse, kuiken, kuikens (schwa e), koei, rooi (i glide); the lists are otherwise unchanged. Clip ids are plain
+  ASCII (`word_vlieer`; the validator rejects any other). `af_spelling` flags "N kat" and accepts "’n" and the
+  letter n; its tests run with the validator. The validator runs every other language and fails once at the end.
