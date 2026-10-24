@@ -191,7 +191,7 @@ public static class BlockDrawing
         {
             var half = size / 2 - 4;
             var outline = Pen(RoundRect(R(-half, -half, half * 2, half * 2), size * 0.16), seed + (ulong)i,
-                              fill: Palette.Card.WithAlpha(0.6f), ink: Palette.Ink.WithAlpha(0.3f), lineWidth: 3, wobble: 2.5);
+                              fill: Palette.GapFill, ink: Palette.Ink.WithAlpha(0.3f), lineWidth: 3, wobble: 2.5);
             outline.Position = CubeAt(i, to, size);
             ghost.AddChild(outline);
         }
