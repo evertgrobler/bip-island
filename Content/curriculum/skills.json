@@ -1,5 +1,5 @@
 {
-  "note": "The game's skill map. Each skill links to Cambridge objective codes and unlocks after its prerequisites. Bands: foundation = age 4-5 (Cambridge Early Years, working towards Stage 1), stage1 = 5-6, stage2 = 6-7, stage3 = 7-8.",
+  "note": "The game's skill map. Each skill links to Cambridge objective codes and unlocks after its prerequisites. Bands: foundation = age 4-5 (Cambridge Early Years, working towards Stage 1), stage1 = 5-6, stage2 = 6-7, stage3 = 7-8. A skill below a child's starting band counts as known by age, unless it has \"ageSkip\": false (the Language Island's second language, which a child's age says nothing about).",
   "mastery": {
     "moveUp": "3 correct in a row at the current level",
     "dropBack": "2 misses in a row",
@@ -862,6 +862,42 @@
       "prerequisites": [
         "symmetry_finish"
       ]
+    },
+    {
+      "id": "lang_listen",
+      "island": "language",
+      "band": "foundation",
+      "name": "New language: hear a word, find its picture",
+      "objectives": [
+        "FAL.LS.01",
+        "FAL.LS.02"
+      ],
+      "prerequisites": [],
+      "ageSkip": false
+    },
+    {
+      "id": "lang_words",
+      "island": "language",
+      "band": "foundation",
+      "name": "New language: pick the word for a picture",
+      "objectives": [
+        "FAL.LS.01",
+        "FAL.LS.02"
+      ],
+      "prerequisites": [],
+      "ageSkip": false
+    },
+    {
+      "id": "lang_day",
+      "island": "language",
+      "band": "foundation",
+      "name": "New language: understand what Bip is doing",
+      "objectives": [
+        "FAL.LS.01",
+        "FAL.LS.03"
+      ],
+      "prerequisites": [],
+      "ageSkip": false
     }
   ]
 }

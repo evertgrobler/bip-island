@@ -449,11 +449,11 @@ public partial class StickerScreen : BaseScreen
             }
             return;
         }
-        var earned = StickerBook.Earned(progress, content);
+        var earned = StickerBook.Earned(progress, content, Coordinator.ClosedIslands);
         if (_pageIndex == PicturePageCount + 1)
         {
             const int perRow = 8;
-            var skills = content.Skills.Skills;
+            var skills = StickerBook.Skills(content, Coordinator.ClosedIslands);
             for (var i = 0; i < skills.Count; i++)
             {
                 var gotSkill = earned.Contains("skill_" + skills[i].Id);

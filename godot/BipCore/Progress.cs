@@ -181,9 +181,10 @@ public sealed class ChildProgress : IEquatable<ChildProgress>
 
     /// <summary>
     /// Skills below the child's starting band count as known: a 6-year-old starting at stage 1
-    /// isn't made to work through every foundation sound first.
+    /// isn't made to work through every foundation sound first. Skills marked <c>ageSkip: false</c> (a
+    /// second language: a 6-year-old who has never heard Afrikaans doesn't know its first words) never are.
     /// </summary>
-    public bool IsTreatedAsKnown(Skill skill, Band startingBand) => skill.Band < startingBand;
+    public bool IsTreatedAsKnown(Skill skill, Band startingBand) => skill.SkippedByAge && skill.Band < startingBand;
 
     /// <summary>Counts as known for unlocking other skills: mastered, or below the starting band.</summary>
     public bool IsKnown(Skill skill, Band startingBand) => IsMastered(skill.Id) || IsTreatedAsKnown(skill, startingBand);

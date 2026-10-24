@@ -184,6 +184,16 @@ public static class Sketch
     }
 
     /// <summary>
+    /// A label no wider than <paramref name="maxWidth"/>: <paramref name="size"/>, or smaller for a long
+    /// word ("liewenheersbesie" in a speech bubble).
+    /// </summary>
+    public static Label FittedLabel(string text, int size, float maxWidth, Color colour, Font? font = null)
+    {
+        var width = (font ?? Fonts.Letters).GetMultilineStringSize(text, HorizontalAlignment.Center, -1, size).X;
+        return Label(text, width > maxWidth ? Math.Max(1, (int)(size * maxWidth / width)) : size, colour, font);
+    }
+
+    /// <summary>
     /// A letter in chalky handwriting with a coloured shadow behind it (sunshine yellow unless given);
     /// <paramref name="withShadow"/> false draws it plain (Swift: shadow: nil).
     /// </summary>

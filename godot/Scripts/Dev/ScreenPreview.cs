@@ -101,6 +101,7 @@ public partial class ScreenPreview : Node
             BipIsland.Games.WordRocketScreen.PreviewLetters = Typed;
         }
         if (Screen == BipsBalanceGame.GameId && Level >= 0) game.Progress.GameLevels[BipsBalanceGame.GameId] = new SkillMastery(Level);
+        if (Screen is "language" or "map_language" or ShowMeGame.GameId or WhatIsItGame.GameId or BipsDayGame.GameId) game.PreviewLanguageIsland();
         // A game opens the way an island opens it, with its first question straight away.
         BipIsland.Games.GameScreen.StartDelay = 0;
         if (game.StartGame(Screen)) return;
@@ -111,6 +112,7 @@ public partial class ScreenPreview : Node
             "numbers" => new GameIslandScreen(Island.Numbers, greet: false),
             "words" => new GameIslandScreen(Island.Words, greet: false),
             "coding" => new GameIslandScreen(Island.Coding, greet: false),
+            "language" => new GameIslandScreen(Island.Language, greet: false),
             "charging" => ChargingPreview(game, dayDone: false),
             "day_done" => ChargingPreview(game, dayDone: true),
             "art" => new ArtIslandScreen(greet: false),

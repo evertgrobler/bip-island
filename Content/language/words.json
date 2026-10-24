@@ -1,0 +1,935 @@
+{
+  "note": "Language Island (docs/LANGUAGES.md): everyday words in both languages, by theme. A child learns the language that isn't their home language: Bip says the word in the new language (clip learn_<id> in that language's folder) and, after two misses, in the child's own. Themes open by game level (fromLevel). Every picture is one of the game's hand-drawn pictures.",
+  "themes": [
+    {
+      "id": "family",
+      "fromLevel": 0,
+      "en": "Family and people",
+      "af": "Familie en mense"
+    },
+    {
+      "id": "colours",
+      "fromLevel": 0,
+      "en": "Colours",
+      "af": "Kleure"
+    },
+    {
+      "id": "numbers",
+      "fromLevel": 0,
+      "en": "Numbers to 10",
+      "af": "Getalle tot 10"
+    },
+    {
+      "id": "animals",
+      "fromLevel": 1,
+      "en": "Animals",
+      "af": "Diere"
+    },
+    {
+      "id": "food",
+      "fromLevel": 1,
+      "en": "Food",
+      "af": "Kos"
+    },
+    {
+      "id": "clothes",
+      "fromLevel": 1,
+      "en": "Clothes",
+      "af": "Klere"
+    },
+    {
+      "id": "body",
+      "fromLevel": 2,
+      "en": "My body",
+      "af": "My liggaam"
+    },
+    {
+      "id": "home",
+      "fromLevel": 2,
+      "en": "Home and school",
+      "af": "Huis en skool"
+    },
+    {
+      "id": "toys",
+      "fromLevel": 2,
+      "en": "Toys and going places",
+      "af": "Speelgoed en ry"
+    },
+    {
+      "id": "weather",
+      "fromLevel": 2,
+      "en": "Weather and outside",
+      "af": "Weer en buite"
+    }
+  ],
+  "words": [
+    {
+      "id": "mum",
+      "theme": "family",
+      "en": "Mum",
+      "af": "Ma",
+      "picture": "pic_mum"
+    },
+    {
+      "id": "dad",
+      "theme": "family",
+      "en": "Dad",
+      "af": "Pa",
+      "picture": "pic_dad"
+    },
+    {
+      "id": "sister",
+      "theme": "family",
+      "en": "sister",
+      "af": "suster",
+      "picture": "pic_sister"
+    },
+    {
+      "id": "girl",
+      "theme": "family",
+      "en": "girl",
+      "af": "meisie",
+      "picture": "pic_girl"
+    },
+    {
+      "id": "man",
+      "theme": "family",
+      "en": "man",
+      "af": "man",
+      "picture": "pic_man"
+    },
+    {
+      "id": "king",
+      "theme": "family",
+      "en": "king",
+      "af": "koning",
+      "picture": "pic_king"
+    },
+    {
+      "id": "queen",
+      "theme": "family",
+      "en": "queen",
+      "af": "koningin",
+      "picture": "pic_queen"
+    },
+    {
+      "id": "red",
+      "theme": "colours",
+      "en": "red",
+      "af": "rooi",
+      "picture": "pic_colour_red"
+    },
+    {
+      "id": "yellow",
+      "theme": "colours",
+      "en": "yellow",
+      "af": "geel",
+      "picture": "pic_colour_yellow"
+    },
+    {
+      "id": "blue",
+      "theme": "colours",
+      "en": "blue",
+      "af": "blou",
+      "picture": "pic_colour_blue"
+    },
+    {
+      "id": "green",
+      "theme": "colours",
+      "en": "green",
+      "af": "groen",
+      "picture": "pic_colour_green"
+    },
+    {
+      "id": "orange",
+      "theme": "colours",
+      "en": "orange",
+      "af": "oranje",
+      "picture": "pic_colour_orange"
+    },
+    {
+      "id": "purple",
+      "theme": "colours",
+      "en": "purple",
+      "af": "pers",
+      "picture": "pic_colour_purple"
+    },
+    {
+      "id": "pink",
+      "theme": "colours",
+      "en": "pink",
+      "af": "pienk",
+      "picture": "pic_colour_pink"
+    },
+    {
+      "id": "white",
+      "theme": "colours",
+      "en": "white",
+      "af": "wit",
+      "picture": "pic_colour_white"
+    },
+    {
+      "id": "black",
+      "theme": "colours",
+      "en": "black",
+      "af": "swart",
+      "picture": "pic_colour_black"
+    },
+    {
+      "id": "grey",
+      "theme": "colours",
+      "en": "grey",
+      "af": "grys",
+      "picture": "pic_colour_grey"
+    },
+    {
+      "id": "n1",
+      "theme": "numbers",
+      "en": "one",
+      "af": "een",
+      "picture": "pic_count_1"
+    },
+    {
+      "id": "n2",
+      "theme": "numbers",
+      "en": "two",
+      "af": "twee",
+      "picture": "pic_count_2"
+    },
+    {
+      "id": "n3",
+      "theme": "numbers",
+      "en": "three",
+      "af": "drie",
+      "picture": "pic_count_3"
+    },
+    {
+      "id": "n4",
+      "theme": "numbers",
+      "en": "four",
+      "af": "vier",
+      "picture": "pic_count_4"
+    },
+    {
+      "id": "n5",
+      "theme": "numbers",
+      "en": "five",
+      "af": "vyf",
+      "picture": "pic_count_5"
+    },
+    {
+      "id": "n6",
+      "theme": "numbers",
+      "en": "six",
+      "af": "ses",
+      "picture": "pic_count_6"
+    },
+    {
+      "id": "n7",
+      "theme": "numbers",
+      "en": "seven",
+      "af": "sewe",
+      "picture": "pic_count_7"
+    },
+    {
+      "id": "n8",
+      "theme": "numbers",
+      "en": "eight",
+      "af": "agt",
+      "picture": "pic_count_8"
+    },
+    {
+      "id": "n9",
+      "theme": "numbers",
+      "en": "nine",
+      "af": "nege",
+      "picture": "pic_count_9"
+    },
+    {
+      "id": "n10",
+      "theme": "numbers",
+      "en": "ten",
+      "af": "tien",
+      "picture": "pic_count_10"
+    },
+    {
+      "id": "cat",
+      "theme": "animals",
+      "en": "cat",
+      "af": "kat",
+      "picture": "pic_cat"
+    },
+    {
+      "id": "dog",
+      "theme": "animals",
+      "en": "dog",
+      "af": "hond",
+      "picture": "pic_dog"
+    },
+    {
+      "id": "cow",
+      "theme": "animals",
+      "en": "cow",
+      "af": "koei",
+      "picture": "pic_cow"
+    },
+    {
+      "id": "pig",
+      "theme": "animals",
+      "en": "pig",
+      "af": "vark",
+      "picture": "pic_pig"
+    },
+    {
+      "id": "sheep",
+      "theme": "animals",
+      "en": "sheep",
+      "af": "skaap",
+      "picture": "pic_sheep"
+    },
+    {
+      "id": "goat",
+      "theme": "animals",
+      "en": "goat",
+      "af": "bok",
+      "picture": "pic_goat"
+    },
+    {
+      "id": "duck",
+      "theme": "animals",
+      "en": "duck",
+      "af": "eend",
+      "picture": "pic_duck"
+    },
+    {
+      "id": "frog",
+      "theme": "animals",
+      "en": "frog",
+      "af": "padda",
+      "picture": "pic_frog"
+    },
+    {
+      "id": "fish",
+      "theme": "animals",
+      "en": "fish",
+      "af": "vis",
+      "picture": "pic_fish"
+    },
+    {
+      "id": "bird",
+      "theme": "animals",
+      "en": "bird",
+      "af": "voël",
+      "picture": "pic_bird"
+    },
+    {
+      "id": "owl",
+      "theme": "animals",
+      "en": "owl",
+      "af": "uil",
+      "picture": "pic_owl"
+    },
+    {
+      "id": "snake",
+      "theme": "animals",
+      "en": "snake",
+      "af": "slang",
+      "picture": "pic_snake"
+    },
+    {
+      "id": "snail",
+      "theme": "animals",
+      "en": "snail",
+      "af": "slak",
+      "picture": "pic_snail"
+    },
+    {
+      "id": "bee",
+      "theme": "animals",
+      "en": "bee",
+      "af": "by",
+      "picture": "pic_bee"
+    },
+    {
+      "id": "ant",
+      "theme": "animals",
+      "en": "ant",
+      "af": "mier",
+      "picture": "pic_ant"
+    },
+    {
+      "id": "rabbit",
+      "theme": "animals",
+      "en": "rabbit",
+      "af": "konyn",
+      "picture": "pic_rabbit"
+    },
+    {
+      "id": "crab",
+      "theme": "animals",
+      "en": "crab",
+      "af": "krap",
+      "picture": "pic_crab"
+    },
+    {
+      "id": "octopus",
+      "theme": "animals",
+      "en": "octopus",
+      "af": "seekat",
+      "picture": "pic_octopus"
+    },
+    {
+      "id": "ladybird",
+      "theme": "animals",
+      "en": "ladybird",
+      "af": "liewenheersbesie",
+      "picture": "pic_ladybird"
+    },
+    {
+      "id": "chick",
+      "theme": "animals",
+      "en": "chick",
+      "af": "kuiken",
+      "picture": "pic_chick"
+    },
+    {
+      "id": "hen",
+      "theme": "animals",
+      "en": "hen",
+      "af": "hen",
+      "picture": "pic_hen"
+    },
+    {
+      "id": "bat",
+      "theme": "animals",
+      "en": "bat",
+      "af": "vlermuis",
+      "picture": "pic_bat"
+    },
+    {
+      "id": "apple",
+      "theme": "food",
+      "en": "apple",
+      "af": "appel",
+      "picture": "pic_apple"
+    },
+    {
+      "id": "banana",
+      "theme": "food",
+      "en": "banana",
+      "af": "piesang",
+      "picture": "pic_banana"
+    },
+    {
+      "id": "cake",
+      "theme": "food",
+      "en": "cake",
+      "af": "koek",
+      "picture": "pic_cake"
+    },
+    {
+      "id": "biscuit",
+      "theme": "food",
+      "en": "biscuit",
+      "af": "koekie",
+      "picture": "pic_biscuit"
+    },
+    {
+      "id": "egg",
+      "theme": "food",
+      "en": "egg",
+      "af": "eier",
+      "picture": "pic_egg"
+    },
+    {
+      "id": "milk",
+      "theme": "food",
+      "en": "milk",
+      "af": "melk",
+      "picture": "pic_milk"
+    },
+    {
+      "id": "juice",
+      "theme": "food",
+      "en": "juice",
+      "af": "sap",
+      "picture": "pic_juice"
+    },
+    {
+      "id": "jam",
+      "theme": "food",
+      "en": "jam",
+      "af": "konfyt",
+      "picture": "pic_jam"
+    },
+    {
+      "id": "plum",
+      "theme": "food",
+      "en": "plum",
+      "af": "pruim",
+      "picture": "pic_plum"
+    },
+    {
+      "id": "sandwich",
+      "theme": "food",
+      "en": "sandwich",
+      "af": "toebroodjie",
+      "picture": "pic_sandwich"
+    },
+    {
+      "id": "lollipop",
+      "theme": "food",
+      "en": "lollipop",
+      "af": "suigstokkie",
+      "picture": "pic_lollipop"
+    },
+    {
+      "id": "pie",
+      "theme": "food",
+      "en": "pie",
+      "af": "pastei",
+      "picture": "pic_pie"
+    },
+    {
+      "id": "bun",
+      "theme": "food",
+      "en": "bun",
+      "af": "bolletjie",
+      "picture": "pic_bun"
+    },
+    {
+      "id": "hat",
+      "theme": "clothes",
+      "en": "hat",
+      "af": "hoed",
+      "picture": "pic_hat"
+    },
+    {
+      "id": "cap",
+      "theme": "clothes",
+      "en": "cap",
+      "af": "pet",
+      "picture": "pic_cap"
+    },
+    {
+      "id": "coat",
+      "theme": "clothes",
+      "en": "coat",
+      "af": "jas",
+      "picture": "pic_coat"
+    },
+    {
+      "id": "shirt",
+      "theme": "clothes",
+      "en": "shirt",
+      "af": "hemp",
+      "picture": "pic_shirt"
+    },
+    {
+      "id": "sock",
+      "theme": "clothes",
+      "en": "sock",
+      "af": "sokkie",
+      "picture": "pic_sock"
+    },
+    {
+      "id": "ring",
+      "theme": "clothes",
+      "en": "ring",
+      "af": "ring",
+      "picture": "pic_ring"
+    },
+    {
+      "id": "umbrella",
+      "theme": "clothes",
+      "en": "umbrella",
+      "af": "sambreel",
+      "picture": "pic_umbrella"
+    },
+    {
+      "id": "hand",
+      "theme": "body",
+      "en": "hand",
+      "af": "hand",
+      "picture": "pic_hand"
+    },
+    {
+      "id": "foot",
+      "theme": "body",
+      "en": "foot",
+      "af": "voet",
+      "picture": "pic_foot"
+    },
+    {
+      "id": "leg",
+      "theme": "body",
+      "en": "leg",
+      "af": "been",
+      "picture": "pic_leg"
+    },
+    {
+      "id": "nose",
+      "theme": "body",
+      "en": "nose",
+      "af": "neus",
+      "picture": "pic_nose"
+    },
+    {
+      "id": "mouth",
+      "theme": "body",
+      "en": "mouth",
+      "af": "mond",
+      "picture": "pic_mouth"
+    },
+    {
+      "id": "neck",
+      "theme": "body",
+      "en": "neck",
+      "af": "nek",
+      "picture": "pic_neck"
+    },
+    {
+      "id": "thumb",
+      "theme": "body",
+      "en": "thumb",
+      "af": "duim",
+      "picture": "pic_thumb"
+    },
+    {
+      "id": "chin",
+      "theme": "body",
+      "en": "chin",
+      "af": "ken",
+      "picture": "pic_chin"
+    },
+    {
+      "id": "tail",
+      "theme": "body",
+      "en": "tail",
+      "af": "stert",
+      "picture": "pic_tail"
+    },
+    {
+      "id": "wing",
+      "theme": "body",
+      "en": "wing",
+      "af": "vlerk",
+      "picture": "pic_wing"
+    },
+    {
+      "id": "home",
+      "theme": "home",
+      "en": "house",
+      "af": "huis",
+      "picture": "pic_home"
+    },
+    {
+      "id": "bed",
+      "theme": "home",
+      "en": "bed",
+      "af": "bed",
+      "picture": "pic_bed"
+    },
+    {
+      "id": "cup",
+      "theme": "home",
+      "en": "cup",
+      "af": "koppie",
+      "picture": "pic_cup"
+    },
+    {
+      "id": "bowl",
+      "theme": "home",
+      "en": "bowl",
+      "af": "bak",
+      "picture": "pic_bowl"
+    },
+    {
+      "id": "spoon",
+      "theme": "home",
+      "en": "spoon",
+      "af": "lepel",
+      "picture": "pic_spoon"
+    },
+    {
+      "id": "fork",
+      "theme": "home",
+      "en": "fork",
+      "af": "vurk",
+      "picture": "pic_fork"
+    },
+    {
+      "id": "pot",
+      "theme": "home",
+      "en": "pot",
+      "af": "pot",
+      "picture": "pic_pot"
+    },
+    {
+      "id": "lamp",
+      "theme": "home",
+      "en": "lamp",
+      "af": "lamp",
+      "picture": "pic_lamp"
+    },
+    {
+      "id": "book",
+      "theme": "home",
+      "en": "book",
+      "af": "boek",
+      "picture": "pic_book"
+    },
+    {
+      "id": "pen",
+      "theme": "home",
+      "en": "pen",
+      "af": "pen",
+      "picture": "pic_pen"
+    },
+    {
+      "id": "pencil",
+      "theme": "home",
+      "en": "pencil",
+      "af": "potlood",
+      "picture": "pic_pencil"
+    },
+    {
+      "id": "desk",
+      "theme": "home",
+      "en": "desk",
+      "af": "lessenaar",
+      "picture": "pic_desk"
+    },
+    {
+      "id": "box",
+      "theme": "home",
+      "en": "box",
+      "af": "doos",
+      "picture": "pic_box"
+    },
+    {
+      "id": "soap",
+      "theme": "home",
+      "en": "soap",
+      "af": "seep",
+      "picture": "pic_soap"
+    },
+    {
+      "id": "tap",
+      "theme": "home",
+      "en": "tap",
+      "af": "kraan",
+      "picture": "pic_tap"
+    },
+    {
+      "id": "gate",
+      "theme": "home",
+      "en": "gate",
+      "af": "hek",
+      "picture": "pic_gate"
+    },
+    {
+      "id": "shop",
+      "theme": "home",
+      "en": "shop",
+      "af": "winkel",
+      "picture": "pic_shop"
+    },
+    {
+      "id": "letter",
+      "theme": "home",
+      "en": "letter",
+      "af": "brief",
+      "picture": "pic_letter"
+    },
+    {
+      "id": "ball",
+      "theme": "toys",
+      "en": "ball",
+      "af": "bal",
+      "picture": "pic_ball"
+    },
+    {
+      "id": "doll",
+      "theme": "toys",
+      "en": "doll",
+      "af": "pop",
+      "picture": "pic_doll"
+    },
+    {
+      "id": "teddy",
+      "theme": "toys",
+      "en": "teddy",
+      "af": "teddiebeer",
+      "picture": "pic_teddy"
+    },
+    {
+      "id": "drum",
+      "theme": "toys",
+      "en": "drum",
+      "af": "trom",
+      "picture": "pic_drum"
+    },
+    {
+      "id": "kite",
+      "theme": "toys",
+      "en": "kite",
+      "af": "vlieër",
+      "picture": "pic_kite"
+    },
+    {
+      "id": "bike",
+      "theme": "toys",
+      "en": "bike",
+      "af": "fiets",
+      "picture": "pic_bike"
+    },
+    {
+      "id": "car",
+      "theme": "toys",
+      "en": "car",
+      "af": "motor",
+      "picture": "pic_car"
+    },
+    {
+      "id": "bus",
+      "theme": "toys",
+      "en": "bus",
+      "af": "bus",
+      "picture": "pic_bus"
+    },
+    {
+      "id": "train",
+      "theme": "toys",
+      "en": "train",
+      "af": "trein",
+      "picture": "pic_train"
+    },
+    {
+      "id": "truck",
+      "theme": "toys",
+      "en": "truck",
+      "af": "vragmotor",
+      "picture": "pic_truck"
+    },
+    {
+      "id": "boat",
+      "theme": "toys",
+      "en": "boat",
+      "af": "boot",
+      "picture": "pic_boat"
+    },
+    {
+      "id": "ship",
+      "theme": "toys",
+      "en": "ship",
+      "af": "skip",
+      "picture": "pic_ship"
+    },
+    {
+      "id": "sun",
+      "theme": "weather",
+      "en": "sun",
+      "af": "son",
+      "picture": "pic_sun"
+    },
+    {
+      "id": "rain",
+      "theme": "weather",
+      "en": "rain",
+      "af": "reën",
+      "picture": "pic_rain"
+    },
+    {
+      "id": "cloud",
+      "theme": "weather",
+      "en": "cloud",
+      "af": "wolk",
+      "picture": "pic_cloud"
+    },
+    {
+      "id": "storm",
+      "theme": "weather",
+      "en": "storm",
+      "af": "storm",
+      "picture": "pic_storm"
+    },
+    {
+      "id": "fog",
+      "theme": "weather",
+      "en": "fog",
+      "af": "mis",
+      "picture": "pic_fog"
+    },
+    {
+      "id": "moon",
+      "theme": "weather",
+      "en": "moon",
+      "af": "maan",
+      "picture": "pic_moon"
+    },
+    {
+      "id": "star",
+      "theme": "weather",
+      "en": "star",
+      "af": "ster",
+      "picture": "pic_star"
+    },
+    {
+      "id": "night",
+      "theme": "weather",
+      "en": "night",
+      "af": "nag",
+      "picture": "pic_night"
+    },
+    {
+      "id": "tree",
+      "theme": "weather",
+      "en": "tree",
+      "af": "boom",
+      "picture": "pic_tree"
+    },
+    {
+      "id": "leaf",
+      "theme": "weather",
+      "en": "leaf",
+      "af": "blaar",
+      "picture": "pic_leaf"
+    },
+    {
+      "id": "rock",
+      "theme": "weather",
+      "en": "rock",
+      "af": "rots",
+      "picture": "pic_rock"
+    },
+    {
+      "id": "sea",
+      "theme": "weather",
+      "en": "sea",
+      "af": "see",
+      "picture": "pic_sea"
+    },
+    {
+      "id": "shell",
+      "theme": "weather",
+      "en": "shell",
+      "af": "skulp",
+      "picture": "pic_shell"
+    },
+    {
+      "id": "fire",
+      "theme": "weather",
+      "en": "fire",
+      "af": "vuur",
+      "picture": "pic_fire"
+    },
+    {
+      "id": "mud",
+      "theme": "weather",
+      "en": "mud",
+      "af": "modder",
+      "picture": "pic_mud"
+    }
+  ]
+}

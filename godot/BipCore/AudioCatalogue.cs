@@ -78,6 +78,13 @@ public static class VoiceLine
     public const string StoryHowManyNow = "vo_story_how_many_now";
     /// <summary>"and" in the middle of a sum ("three and two"), not the reading word word_and.</summary>
     public const string And = "vo_and";
+    // Language Island
+    public const string LanguageIsland = "vo_language_island";
+    public const string ShowMe = "vo_show_me";
+    public const string WhatIsIt = "vo_what_is_it";
+    public const string BipsDay = "vo_bips_day";
+    /// <summary>"In English, it's…" / "In Afrikaans is dit…": the hint before the word in the child's own language.</summary>
+    public const string InOurLanguage = "vo_in_our_language";
 
     /// <summary>Every instruction clip, in the order above.</summary>
     public static readonly IReadOnlyList<string> All =
@@ -92,6 +99,7 @@ public static class VoiceLine
         Double, HowMany, OddOrEven, Odd, BuildNumber, WhatComesNext,
         Balance, Plus, EqualsWord, WhatNumber, WhichNumber, BalanceHelps, CountOnTogether, CountBackTogether,
         StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow, And,
+        LanguageIsland, ShowMe, WhatIsIt, BipsDay, InOurLanguage,
     ];
 }
 
@@ -136,7 +144,7 @@ public static partial class AudioCatalogue
     /// <summary>Clips that lead straight into the next one, so the player leaves almost no gap after them.</summary>
     public static bool LeadsOn(string clip) =>
         clip.EndsWith("_mid", StringComparison.Ordinal)
-        || clip is VoiceLine.And or VoiceLine.Plus or VoiceLine.TakeAway or VoiceLine.EqualsWord or VoiceLine.Make;
+        || clip is VoiceLine.And or VoiceLine.Plus or VoiceLine.TakeAway or VoiceLine.EqualsWord or VoiceLine.Make or VoiceLine.InOurLanguage;
 
     public static readonly IReadOnlyList<string> PraiseClips = Enumerable.Range(1, PraiseCount).Select(n => $"praise_{n:00}").ToList();
     /// <summary>The one hint that stands alone ("Look for the one that's wiggling!"); the others lead into a sound.</summary>
@@ -147,9 +155,9 @@ public static partial class AudioCatalogue
     /// <summary>Clips written in audio/script.csv rather than generated from the content.</summary>
     public static IReadOnlyList<string> ScriptedClips => [.. VoiceLine.All, .. PraiseClips, .. HintClips];
 
-    /// <summary>The naming contract: snd_, word_, num_, vo_, name_, money_ with lower-case keys; praise_NN and hint_NN.</summary>
+    /// <summary>The naming contract: snd_, word_, num_, vo_, name_, money_, learn_ with lower-case keys; praise_NN and hint_NN.</summary>
     public static bool FollowsNamingContract(string name) => NamingContract().IsMatch(name);
 
-    [GeneratedRegex(@"^((snd|word|num|vo|name|money)_[a-z0-9_]+|(praise|hint)_[0-9]{2})$")]
+    [GeneratedRegex(@"^((snd|word|num|vo|name|money|learn)_[a-z0-9_]+|(praise|hint)_[0-9]{2})$")]
     private static partial Regex NamingContract();
 }

@@ -55,6 +55,7 @@ games = load("curriculum/games.json")["games"]
 shapes_doc = load("art/shapes.json")
 paints_doc = load("art/paints.json")
 mirror_doc = load("art/mirror.json")
+language_doc = load("language/words.json")
 
 # --- objectives referenced anywhere must exist
 def check_objs(where, codes):
@@ -149,6 +150,9 @@ for hs in homophones:
 SK = {s["id"]: s for s in skills_doc["skills"]}
 for s in SK.values():
     check_objs(f"skill {s['id']}", s["objectives"])
+    if not isinstance(s.get("ageSkip", True), bool): err(f"skill {s['id']}: ageSkip must be true or false")
+    # A second language isn't learnt by growing older: these skills are never known by age.
+    if s["island"] == "language" and s.get("ageSkip", True): err(f"skill {s['id']}: Language Island skills need \"ageSkip\": false")
     for p in s["prerequisites"]:
         if p not in SK: err(f"skill {s['id']}: unknown prerequisite {p}")
 state = {}
@@ -209,7 +213,7 @@ if not isinstance(games_doc.get("session", {}).get("roundsPerSession"), int) or 
 game_ids = [gm["id"] for gm in games]
 if len(game_ids) != len(set(game_ids)): err("games.json: duplicate game id")
 LEVEL_KEYS = {"band", "countTo", "choices", "flashTenths", "bubbles", "speedPercent", "soundCounts", "gridBand", "cards", "spares",
-              "modes", "shapes", "pots", "mirror", "from", "steps", "note"}
+              "modes", "shapes", "pots", "mirror", "from", "steps", "storiesUpTo", "sameThemeFirst", "note"}
 BANDS = ["foundation", "stage1", "stage2", "stage3"]
 for gm in games:
     levels = gm.get("levels", [])
@@ -217,7 +221,8 @@ for gm in games:
         where = f"game {gm['id']} level {i + 1}"
         for k in lv:
             if k not in LEVEL_KEYS: err(f"{where}: unknown key {k}")
-        for k in ("band", "gridBand"):
+        if "sameThemeFirst" in lv and not isinstance(lv["sameThemeFirst"], bool): err(f"{where}: sameThemeFirst must be true or false")
+        for k in ("band", "gridBand", "storiesUpTo"):
             if k in lv and lv[k] not in BANDS: err(f"{where}: unknown {k} {lv[k]}")
         for k in ("countTo", "choices", "flashTenths", "bubbles", "speedPercent", "cards"):
             if k in lv and (not isinstance(lv[k], int) or lv[k] < 1): err(f"{where}: {k} must be a positive whole number")
@@ -276,7 +281,7 @@ for gm in games:
 
 # --- Art Island: shapes, paints and mirror pictures
 import math
-ISLANDS = {"letters", "numbers", "words", "coding", "art"}
+ISLANDS = {"letters", "numbers", "words", "coding", "art", "language"}
 for gm in games:
     if gm["island"] not in ISLANDS: err(f"game {gm['id']}: unknown island {gm['island']}")
 for s_ in skills_doc["skills"]:
@@ -558,6 +563,47 @@ for st in seqs:
     for c in st["cards"]:
         a(c["audio"], c["text"]); p(c["picture"], f"{st['id']} step {c['n']}: {c['text']}")
 
+# --- Language Island (docs/LANGUAGES.md): every word in both languages, with a picture; its clip
+# learn_<id> says it in this run's language (each language's folder has its own).
+THEMES = {t["id"]: t for t in language_doc["themes"]}
+if len(THEMES) != len(language_doc["themes"]): err("language/words.json: two themes share an id")
+if not any(t["fromLevel"] == 0 for t in THEMES.values()): err("language/words.json: no theme opens at level 0")
+# Every theme opens at some level of both word games, so none stays closed for good.
+for gid in ("show_me", "what_is_it"):
+    count = len(next((g.get("levels", []) for g in games if g["id"] == gid), []))
+    for t in THEMES.values():
+        if not isinstance(t["fromLevel"], int) or not 0 <= t["fromLevel"] < max(count, 1):
+            err(f"language theme {t['id']}: fromLevel {t['fromLevel']} is past {gid}'s {count} levels")
+# Picture words for colours are drawn in Paint Pots' paints (art/paints.json).
+for w in language_doc["words"]:
+    if w["picture"].startswith("pic_colour_") and w["picture"][len("pic_colour_"):] not in COLOURS:
+        err(f"language word {w['id']}: {w['picture']} names no colour in art/paints.json")
+seen_ids, seen_pictures = set(), set()
+for w in language_doc["words"]:
+    where = f"language word {w['id']}"
+    if w["id"] in seen_ids: err(f"{where}: duplicate id")
+    if w["picture"] in seen_pictures: err(f"{where}: picture {w['picture']} is used by another word")
+    seen_ids.add(w["id"]); seen_pictures.add(w["picture"])
+    if w["theme"] not in THEMES: err(f"{where}: unknown theme {w['theme']}")
+    if not w["en"].strip() or not w["af"].strip(): err(f"{where}: needs both an English and an Afrikaans word")
+    if not re.fullmatch(r"[a-z0-9_]+", w["id"]): err(f"{where}: ids are lower case letters, digits and _")
+    a(f"learn_{w['id']}", w["af" if LANG == "af" else "en"], "Language Island: the word on its own, clear and friendly.")
+    p(w["picture"], w["en"])
+if not LANG:
+    for t in THEMES.values():
+        for problem in af_spelling.problems(t["af"]): err(f"language theme {t['id']}: {problem}")
+    for w in language_doc["words"]:
+        for problem in af_spelling.problems(w["af"]): err(f"language word {w['id']}: {problem}")
+# Bip's Day pairs each Morning Order card with the same card in the other language: same stories, same pictures.
+if LANG:
+    english_sets = {st["id"]: st for st in json.loads((CONTENT / "coding" / "sequences.json").read_text(encoding="utf-8"))["sets"]}
+    for st in seqs:
+        other = english_sets.get(st["id"])
+        if other is None: err(f"sequence {st['id']}: no English story with this id (Bip's Day pairs them)"); continue
+        # The same picture and clip name card by card: Bip's Day plays the card's clip from the other language's folder.
+        if [(c["n"], c["picture"], c["audio"]) for c in st["cards"]] != [(c["n"], c["picture"], c["audio"]) for c in other["cards"]]:
+            err(f"sequence {st['id']}: cards differ from the English story (Bip's Day pairs them card by card, picture and clip)")
+
 for sh in SHAPES.values():
     a(word_clip(sh["name"].replace(" ", "_")), sh["name"])
 for col in COLOURS.values():
@@ -580,7 +626,7 @@ with open(ROOT / "asset_manifest.json", "w", encoding="utf-8") as f:
 SKIP_KEYS = {"id", "audio", "objectives", "graphemes", "ipa", "rime", "code", "kind", "band", "firstSound",
              "handwritingFamily", "note", "notes", "narratorHint", "mnemonicPicture", "picture", "skills",
              "prerequisites", "content", "island", "skin", "skins", "label", "colour", "shape", "letterName",
-             "grapheme", "sequenceRules"}
+             "grapheme", "sequenceRules", "af"}
 
 sa_waiting = set()
 OTHER_LANGUAGES = {"af"}  # folders in Content/ that hold another language's own files
@@ -656,7 +702,7 @@ for note in sorted(sa_waiting): print(f"WAITING (South African English): {note}"
 # --- Text colours (BipCore.TextContrast checks the named ones in a unit test): a label, letter or
 # parent text never gets a hand-written colour (an alpha, a darker shade, white or a raw hex). Shadows and
 # emoji (whose colour fonts ignore the tint) are fine.
-TEXT_CALL = re.compile(r"(Sketch\.(Label|Letter)|ParentUi\.Text|\bp\.Text|\)\.Text)\(")
+TEXT_CALL = re.compile(r"(Sketch\.(Label|FittedLabel|Letter)|ParentUi\.Text|\bp\.Text|\)\.Text)\(")
 RAW_COLOUR = re.compile(r"WithAlpha\(|Palette\.White|new Color\(|Darkened\(|Lightened\(|Hex\(")
 SCRIPTS = Path(__file__).resolve().parent.parent / "godot" / "Scripts"
 for path in sorted(SCRIPTS.rglob("*.cs")):

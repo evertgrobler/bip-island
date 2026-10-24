@@ -253,6 +253,22 @@ Choices for the owner:
 
 **Decided (owner, 10 October 2026):** the owner left the choice to Claude, so it is **A: Bip's Balance first**, levels 1–5, then the order above.
 
+## Language Island (added 18 October 2026)
+
+The second-language island (`docs/LANGUAGES.md`): an English child learns Afrikaans, an Afrikaans child
+English. Listening and pointing only; no reading, spelling or microphone. Words in
+`Content/language/words.json` (both languages, a picture each, themes opening by level); Bip's Day reuses
+the Morning Order stories, written in both languages.
+
+| Game | How it plays | Levels |
+| --- | --- | --- |
+| Show Me | Bip says a word in the new language; click its picture | 3, 4, then 5 pictures; themes open by level, the others from the same theme first from level 2 |
+| What Is It? | A picture; Bip says each bubble's word as it lights up; click the one that names it | 2, then 3 words |
+| Bip's Day | Bip says what he's doing in the new language ("Borsel jou tande"); find the picture | 3, then 4 pictures; the youngest stories first |
+
+Two misses: the right answer wiggles and Bip says it in the child's own language, then the new one.
+The island opens only when both languages are in the game, and Bip never recommends it: it's the child's pick.
+
 ## Rewards and surprises
 
 Rewards are things to collect: every correct answer moves the child up a ladder of stars, stickers, creatures and decorations. There is nothing to buy, no countdowns and no “come back or lose it”.

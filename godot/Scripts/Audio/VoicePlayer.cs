@@ -53,7 +53,11 @@ public partial class VoicePlayer : Node
     public static string PathFor(string clip) => PathFor(clip, Language);
 
     /// <summary>A clip's path in a given language (the self-test always checks the English one).</summary>
-    public static string PathFor(string clip, BipCore.HomeLanguage language) => FolderOf(language) + clip + ".ogg";
+    public static string PathFor(string clip, BipCore.HomeLanguage language)
+    {
+        var (name, inLanguage) = Resolve(clip, language);
+        return FolderOf(inLanguage) + name + ".ogg";
+    }
 
     public static bool HasClip(string clip) => HasClip(clip, Language);
 
@@ -64,6 +68,19 @@ public partial class VoicePlayer : Node
         var folder = BipCore.Languages.Folder(language);
         return AudioFolder + (folder.Length > 0 ? folder + "/" : "");
     }
+
+    /// <summary>
+    /// A clip from one language's folder whatever the child's language ("@af/learn_cat"): the Language
+    /// Island says words in the language being learnt and, as a hint, in the child's own.
+    /// </summary>
+    public static string InLanguage(string clip, BipCore.HomeLanguage language) =>
+        $"@{(language == BipCore.HomeLanguage.Afrikaans ? "af" : "en")}/{clip}";
+
+    /// <summary>Splits an <see cref="InLanguage"/> name ("@af/learn_cat") into its language and clip.</summary>
+    private static (string Clip, BipCore.HomeLanguage Language) Resolve(string clip, BipCore.HomeLanguage language) =>
+        clip.StartsWith('@') && clip.IndexOf('/') is var slash and > 1
+            ? (clip[(slash + 1)..], clip[1..slash] == "af" ? BipCore.HomeLanguage.Afrikaans : BipCore.HomeLanguage.English)
+            : (clip, language);
 
     private static string? StandIn(string clip) =>
         clip.EndsWith("_mid", StringComparison.Ordinal) ? clip[..^"_mid".Length]

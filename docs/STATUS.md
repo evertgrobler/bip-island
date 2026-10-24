@@ -481,6 +481,20 @@
   children see are in `BipCore.Texts` (English and Afrikaans). The Children tab and the setup guide show a
   language choice only when a second language is ready (`Content/af/language.json`), so this ships
   invisibly: English plays exactly as before. The walk-through switches a child to Afrikaans and back.
+- **18 Oct, Language Island (step 6 of `docs/LANGUAGES.md`):** the sixth island, built and hidden like Afrikaans:
+  it opens only when the other language is in the game (`GameCoordinator.LanguageOpen`; previews and the
+  walk-through open it with `PreviewLanguageIsland()`). An English child learns Afrikaans, an Afrikaans child
+  English (`Languages.Learning`). Words: `Content/language/words.json`, 124 everyday words in both languages
+  in 10 themes that open by game level, each with a picture (colours are paint splashes and numbers counting
+  dots, `Scripts/Drawing/LanguagePictures.cs`) and a clip `learn_<id>` in each language's folder. Games:
+  **Show Me** (hear the word, click its picture; 3, 4, then 5 pictures), **What Is It?** (a picture; Bip says
+  each bubble's word as it lights up; click the right one) and **Bip's Day** (Bip says a Morning Order moment in
+  the new language; find its picture). Two misses: "In English, it's… cat. Kat!" (`vo_in_our_language`, the
+  child's own clip, then the new one; `VoicePlayer.InLanguage` plays a clip from a given language's folder).
+  Bip doesn't recommend it (`IslandExtensions.Course`); it's the child's own pick. Curriculum: CAPS First
+  Additional Language, listening and speaking (`FAL.LS.01`–`03`). The validator checks every word has both
+  languages and its own picture, spells the Afrikaans, and that each Afrikaans Morning Order story matches
+  the English one card by card. The new words still need the owner's check before they're recorded.
 - **18 Oct 22:15 SAST (PR #53 review fixes):** Each language keeps its own learning: sounds, skills
   (so the phonics groups) and game levels live per language in `ChildProgress.OtherLanguages` (English
   stays where older saves have it, and an English-only save keeps its old shape); stars, stickers, the
@@ -563,3 +577,13 @@
   visse, kuiken, kuikens (schwa e), koei, rooi (i glide); the lists are otherwise unchanged. Clip ids are plain
   ASCII (`word_vlieer`; the validator rejects any other). `af_spelling` flags "N kat" and accepts "’n" and the
   letter n; its tests run with the validator. The validator runs every other language and fails once at the end.
+- **24 Oct, 11:20 SAST (PR #56 review fixes, Language Island):** merged main. The wrong-answer replay and
+  hint wait 0.4 s and are skipped once the question is answered (`GameScreen.WhileUnanswered`; a quick
+  wrong-then-right click used to cut off the praise and leave the game stuck), and the Language screens use the
+  shared `AnswerChoice` (`onRetry`, `hint`). Bip's Day never deals a choice whose words or picture match the
+  answer (`BipsDayGame.CanShareRound`). Level rules are in games.json (`storiesUpTo`, `sameThemeFirst`).
+  Skills with `"ageSkip": false` (the Language Island's) are never known by age. The closed Language Island
+  stays out of the parent report and the sticker book (`GameCoordinator.ClosedIslandsFor`). Long words shrink to
+  fit What Is It?'s bubbles (`Sketch.FittedLabel`, under the text-colour rule). Colour splashes read
+  `art/paints.json`; white sits on a soft grey swatch. The validator also checks Bip's Day clip names, theme
+  levels and colour pictures; the af skills overlay carries the Language Island skills.

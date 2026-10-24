@@ -25,7 +25,8 @@ public sealed class PlayRecommender(ContentLibrary content)
 
     public IslandSuggestion? Suggest(ChildProgress progress, Band startingBand, int day, MasteryRules rules, IRandomSource rng)
     {
-        var open = UnlockedGames(progress, startingBand);
+        // Bip recommends the home-language course only (the Language Island is the child's own pick).
+        var open = UnlockedGames(progress, startingBand).Where(g => IslandExtensions.Course.Contains(g.Island)).ToList();
         if (open.Count == 0) return null;
 
         // 1. Reviews first: a mastered skill that is due, through one of its games.
@@ -35,7 +36,7 @@ public sealed class PlayRecommender(ContentLibrary content)
         // 2. The island played least lately (never played counts as longest ago). When the last
         // three visits were all one island, suggesting another one is Bip's balancing nudge.
         int LastPlayed(Island island) => progress.RecentGames.FindLastIndex(id => content.Game(id)?.Island == island);
-        var pick = IslandExtensions.All.OrderBy(LastPlayed).First();
+        var pick = IslandExtensions.Course.OrderBy(LastPlayed).First();
         if (rng.Pick(open.Where(g => g.Island == pick).ToList()) is not GameEntry game) return null;
 
         var recent = progress.RecentGames.TakeLast(SameIslandVisitsBeforeNudge).ToList();

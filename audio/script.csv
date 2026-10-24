@@ -89,3 +89,8 @@ vo_story_come_along.m4a,more come along.,"Story sum, after a number: ""three… 
 vo_story_go_away.m4a,go away.,"Story sum, after a number: ""three… go away.""",go away.
 vo_story_how_many_now.m4a,How many are there now?,"Ends a story sum. Curious, inviting.",How many are there now?
 vo_and.m4a,"and,","Middle of ""three and two"". Just the one word, even tone, leading on.",and
+vo_language_island.m4a,Welcome to Language Island! Let's learn some Afrikaans words together.,"Language Island intro, English child.",
+vo_show_me.m4a,"Listen to the Afrikaans word, then click on its picture.",Show Me.,
+vo_what_is_it.m4a,"What is this in Afrikaans? Listen to the words, then click on the right one.",What Is It?,
+vo_bips_day.m4a,"What is Bip doing? Listen to the Afrikaans, then find the picture.",Bip's Day.,
+vo_in_our_language.m4a,"In English, it's","Language Island hint; the English word follows straight after. Carry on, don't finish.",
