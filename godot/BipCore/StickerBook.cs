@@ -15,21 +15,28 @@ namespace BipCore;
 /// </summary>
 public static class StickerBook
 {
+    /// <summary>
+    /// The skills with a sticker: every skill except those on islands that are closed for this child
+    /// (the Language Island before Afrikaans is switched on), whose stars could never be won.
+    /// </summary>
+    public static List<Skill> Skills(ContentLibrary content, IReadOnlyCollection<Island>? closedIslands = null) =>
+        content.Skills.Skills.Where(s => closedIslands == null || !closedIslands.Contains(s.Island)).ToList();
+
     /// <summary>Every sticker that exists: a sound sticker per sound, then a skill sticker per skill.</summary>
-    public static List<string> AllStickers(ContentLibrary content) =>
+    public static List<string> AllStickers(ContentLibrary content, IReadOnlyCollection<Island>? closedIslands = null) =>
         new PhonicsCourse(content).AllSounds.Select(s => $"sound_{s.Id}")
-            .Concat(content.Skills.Skills.Select(s => $"skill_{s.Id}"))
+            .Concat(Skills(content, closedIslands).Select(s => $"skill_{s.Id}"))
             .ToList();
 
     /// <summary>Stickers earned so far: mastered sounds and mastered skills.</summary>
-    public static HashSet<string> Earned(ChildProgress progress, ContentLibrary content)
+    public static HashSet<string> Earned(ChildProgress progress, ContentLibrary content, IReadOnlyCollection<Island>? closedIslands = null)
     {
         var earned = new HashSet<string>();
         foreach (var sound in new PhonicsCourse(content).AllSounds)
         {
             if (progress.Sounds.Stage(sound) == SoundStage.Mastered) earned.Add($"sound_{sound.Id}");
         }
-        foreach (var skill in content.Skills.Skills)
+        foreach (var skill in Skills(content, closedIslands))
         {
             if (progress.IsMastered(skill.Id)) earned.Add($"skill_{skill.Id}");
         }
@@ -37,10 +44,10 @@ public static class StickerBook
     }
 
     /// <summary>Stickers still to find, shown as grey outlines.</summary>
-    public static List<string> Missing(ChildProgress progress, ContentLibrary content)
+    public static List<string> Missing(ChildProgress progress, ContentLibrary content, IReadOnlyCollection<Island>? closedIslands = null)
     {
-        var got = Earned(progress, content);
-        return AllStickers(content).Where(s => !got.Contains(s)).ToList();
+        var got = Earned(progress, content, closedIslands);
+        return AllStickers(content, closedIslands).Where(s => !got.Contains(s)).ToList();
     }
 
     /// <summary>Stars towards the next picture sticker (10 stars a sticker).</summary>

@@ -1,5 +1,5 @@
 {
-  "note": "The game's skill map. Each skill links to Cambridge objective codes and unlocks after its prerequisites. Bands: foundation = age 4-5 (Cambridge Early Years, working towards Stage 1), stage1 = 5-6, stage2 = 6-7, stage3 = 7-8.",
+  "note": "The game's skill map. Each skill links to Cambridge objective codes and unlocks after its prerequisites. Bands: foundation = age 4-5 (Cambridge Early Years, working towards Stage 1), stage1 = 5-6, stage2 = 6-7, stage3 = 7-8. A skill below a child's starting band counts as known by age, unless it has \"ageSkip\": false (the Language Island's second language, which a child's age says nothing about).",
   "mastery": {
     "moveUp": "3 correct in a row at the current level",
     "dropBack": "2 misses in a row",
@@ -872,7 +872,8 @@
         "FAL.LS.01",
         "FAL.LS.02"
       ],
-      "prerequisites": []
+      "prerequisites": [],
+      "ageSkip": false
     },
     {
       "id": "lang_words",
@@ -883,7 +884,8 @@
         "FAL.LS.01",
         "FAL.LS.02"
       ],
-      "prerequisites": []
+      "prerequisites": [],
+      "ageSkip": false
     },
     {
       "id": "lang_day",
@@ -894,7 +896,8 @@
         "FAL.LS.01",
         "FAL.LS.03"
       ],
-      "prerequisites": []
+      "prerequisites": [],
+      "ageSkip": false
     }
   ]
 }

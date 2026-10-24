@@ -176,7 +176,9 @@ public sealed class BlockTowersTests
         Assert.Contains(AudioCatalogue.WordClip("and"), _content.AudioIds);
         Assert.Contains(AudioCatalogue.WordClip("even"), _content.AudioIds);
         for (var n = 0; n <= 99; n++) Assert.Contains(AudioCatalogue.NumberClip(n), _content.AudioIds);
-        for (var n = 0; n <= AudioCatalogue.MidNumbersTo; n++) Assert.Contains(AudioCatalogue.MidNumberClip(n), _content.AudioIds);
+        Assert.InRange(_content.MidNumbersTo, 10, 20);
+        for (var n = 0; n <= _content.MidNumbersTo; n++) Assert.Contains(_content.MidNumberClip(n), _content.AudioIds);
+        Assert.Equal(AudioCatalogue.NumberClip(_content.MidNumbersTo + 1), _content.MidNumberClip(_content.MidNumbersTo + 1));
     }
 
     /// <summary>The whole sentences the screen asks for first (numbers.json spokenNumbers), over the numbers they cover.</summary>
@@ -208,6 +210,5 @@ public sealed class BlockTowersTests
             Assert.Contains(Say("odd_even_right", a), _content.AudioIds);
         }
         Assert.Contains(VoiceLine.And, VoiceLine.All);
-        Assert.Equal(AudioCatalogue.MidNumbersTo, _content.Numbers.SpokenNumbers!.JoinTo);
     }
 }

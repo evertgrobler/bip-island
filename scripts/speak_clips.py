@@ -7,16 +7,23 @@ loudness and saved as Resources/Audio/<clip>.m4a (44.1 kHz mono AAC). A fixed se
 reference keep the voice the same on every run. Runs on CPU; the "Narrator" GitHub Actions workflow
 runs it (huggingface.co, where the model lives, is blocked in cloud sessions).
 
-  python3 scripts/speak_clips.py 'vo_say_*' num_7_mid          # clips not recorded yet
-  python3 scripts/speak_clips.py vo_and --redo                  # record again
+  python3 scripts/speak_clips.py 'vo_say_join_*'               # clips not recorded yet
+  python3 scripts/speak_clips.py vo_say_join_3_2 --redo         # record again
   python3 scripts/speak_clips.py --from voice-lab/request.txt --shard 1/4 --verify
 
 Every new clip is checked by ear-by-machine: Whisper (speech recognition) transcribes it and the
 words must match the text; a clip that doesn't match (a repeated or missing word) is recorded again
-with the next seed, up to TRIES times. --verify also checks clips that already exist.
+with the next seed, up to TRIES times. --verify also checks clips that already exist. A clip that
+was there before keeps its old file when no new take passes; a new clip with no good take is removed.
+
+One-word clips (SKIP: the lead-on numbers num_<n>_mid and vo_and) are never recorded here: Chatterbox
+garbles them. The Aoede narrator (scripts/gemini_narrator.py, branch claude/aoede-narrator) records them.
 """
-import argparse, csv, fnmatch, json, re, subprocess, tempfile
+import argparse, csv, fnmatch, json, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from spoken_numbers import NUMBER_WORDS
 
 ROOT = Path(__file__).resolve().parent.parent
 AUDIO = ROOT / "Resources" / "Audio"
@@ -26,6 +33,7 @@ SEED = 0
 TRIES = 5  # seeds SEED, SEED+1, ... until Whisper hears the right words
 SETTINGS = {"exaggeration": 0.5, "cfg_weight": 0.5}  # Chatterbox defaults; the owner picked these by ear
 TARGET_LUFS = -14.5  # the game's existing narrator clips sit at about -14 to -15.5 LUFS
+SKIP = ["num_*_mid", "vo_and"]  # one-word clips Chatterbox garbles ("Five,", "and")
 TRIM = ("silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.05,areverse,"
         "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.08,areverse")
 
@@ -61,10 +69,6 @@ def reference_wav(folder):
     return folder / "reference.wav"
 
 
-NUMBER_WORDS = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
-                "fifteen sixteen seventeen eighteen nineteen twenty").split()
-
-
 def words(text):
     """The words of a line, lower case, numbers as words ("5" -> "five"), punctuation dropped."""
     out = []
@@ -83,9 +87,11 @@ class Listener:
         segments, _ = self.model.transcribe(str(path), language="en", beam_size=5)
         return " ".join(seg.text for seg in segments).strip()
 
-    def ok(self, path, text):
+    def check(self, path, text):
+        """What Whisper heard, and whether it is the text (one transcription)."""
+        heard = self.heard(path)
         # Compare without spaces: Whisper writes "take away" as "takeaway" and "altogether" as "all together".
-        return "".join(words(self.heard(path))) == "".join(words(text))
+        return heard, "".join(words(heard)) == "".join(words(text))
 
 
 def wanted(patterns, all_texts):
@@ -94,7 +100,10 @@ def wanted(patterns, all_texts):
         hits = sorted(c for c in all_texts if fnmatch.fnmatchcase(c, p))
         if not hits: raise SystemExit(f"No clip matches {p!r}")
         names += hits
-    return list(dict.fromkeys(names))
+    names = list(dict.fromkeys(names))
+    skipped = [c for c in names if any(fnmatch.fnmatchcase(c, s) for s in SKIP)]
+    if skipped: print(f"Skipping {len(skipped)} one-word clips (the Aoede narrator records them): {', '.join(skipped)}", flush=True)
+    return [c for c in names if c not in skipped]
 
 
 def main():
@@ -119,9 +128,11 @@ def main():
         path = AUDIO / f"{c}.m4a"
         if a.redo or not path.exists():
             todo.append(c)
-        elif a.verify and not listener.ok(path, all_texts[c]):
-            print(f"Wrong words in {c}: heard {listener.heard(path)!r}, expected {all_texts[c]!r}", flush=True)
-            todo.append(c)
+        elif a.verify:
+            heard, right = listener.check(path, all_texts[c])
+            if not right:
+                print(f"Wrong words in {c}: heard {heard!r}, expected {all_texts[c]!r}", flush=True)
+                todo.append(c)
     print(f"Speaking {len(todo)} clips (shard {a.shard}).", flush=True)
     failed = []
     if a.report: Path(a.report).parent.mkdir(parents=True, exist_ok=True); Path(a.report).write_text("")
@@ -135,6 +146,10 @@ def main():
         ref = reference_wav(tmp)
         for i, clip in enumerate(todo, 1):
             text, out = all_texts[clip], AUDIO / f"{clip}.m4a"
+            # Keep the clip that was there (e.g. an original narrator recording) until a new take passes.
+            kept = tmp / "kept.m4a"
+            had = out.exists()
+            if had: shutil.copy2(out, kept)
             for seed in range(SEED, SEED + TRIES):
                 torch.manual_seed(seed)
                 wav = model.generate(text, audio_prompt_path=str(ref), **SETTINGS)
@@ -144,17 +159,23 @@ def main():
                 gain = TARGET_LUFS - loudness(trimmed)
                 ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,alimiter=limit=0.9", "-ar", "44100", "-ac", "1",
                        "-c:a", "aac", "-b:a", "96k", str(out))
-                if listener.ok(out, text): break
-                print(f"  seed {seed}: heard {listener.heard(out)!r}; trying again", flush=True)
+                heard, right = listener.check(out, text)
+                if right: break
+                print(f"  seed {seed}: heard {heard!r}; trying again", flush=True)
             else:
-                # No good take: remove it, so the game joins the line from its pieces instead.
-                out.unlink(missing_ok=True)
-                failed.append(clip)
-                print(f"  FAILED {clip}: no take matched after {TRIES} tries; removed", flush=True)
+                if had:
+                    # No good take: put the old clip back (Whisper may have misheard a good one).
+                    shutil.copy2(kept, out)
+                    print(f"  FAILED {clip}: no take matched after {TRIES} tries; kept the clip that was there", flush=True)
+                else:
+                    # No good take of a new clip: remove it, so the game joins the line from its pieces instead.
+                    out.unlink(missing_ok=True)
+                    failed.append(clip)
+                    print(f"  FAILED {clip}: no take matched after {TRIES} tries; removed", flush=True)
             print(f"[{i}/{len(todo)}] {clip}: {text}", flush=True)
     if a.report:
         Path(a.report).write_text("".join(f"{c}\n" for c in failed))
-    print(f"Done: {len(todo) - len(failed)} recorded, {len(failed)} removed ({', '.join(failed) or 'none'}).", flush=True)
+    print(f"Done: {len(todo) - len(failed)} recorded or kept, {len(failed)} removed ({', '.join(failed) or 'none'}).", flush=True)
 
 
 if __name__ == "__main__":

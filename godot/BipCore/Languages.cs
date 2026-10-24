@@ -46,6 +46,14 @@ public static class Languages
     };
 
     /// <summary>
+    /// The language a child really plays in: their own when this build has it, else English. A save
+    /// from a newer build, or a language taken out again, must never leave a child with no voice
+    /// (the Afrikaans clips would be missing) or a game half in one language.
+    /// </summary>
+    public static HomeLanguage Playable(HomeLanguage saved, IEnumerable<HomeLanguage> available) =>
+        saved != HomeLanguage.English && available.Contains(saved) ? saved : HomeLanguage.English;
+
+    /// <summary>
     /// The path to read for a content file in a language: its own copy when it has one, else the
     /// English file (data with no words in it, like the coding levels, is shared).
     /// </summary>

@@ -39,23 +39,43 @@ public partial class VoicePlayer : Node
     /// </summary>
     public bool Speaking => _inSequence || _player.Playing;
 
-    /// <summary>The playing child's language: which folder clips come from. An Afrikaans clip that isn't
+    /// <summary>
+    /// Where the language comes from: the coordinator points this at its
+    /// <see cref="Game.GameCoordinator.SpokenLanguage"/> once at start-up, so the voice never keeps a copy
+    /// of its own. English until then (previews and tests without the coordinator).
+    /// </summary>
+    public static Func<BipCore.HomeLanguage> LanguageSource { private get; set; } = () => BipCore.HomeLanguage.English;
+
+    /// <summary>
+    /// Where the voice band comes from, like <see cref="LanguageSource"/>: the coordinator points it at its
+    /// <see cref="Game.GameCoordinator.SpokenBand"/> (the screen's band), so it never goes stale. Little until then.
+    /// </summary>
+    public static Func<BipCore.VoiceBand> BandSource { private get; set; } = () => BipCore.VoiceBand.Little;
+
+    /// <summary>The band being spoken in: a Big child (7 and up) hears Bip's own lines in their older version when it's recorded.</summary>
+    public static BipCore.VoiceBand Band => BandSource();
+
+    /// <summary>The language being spoken: which folder clips come from. An Afrikaans clip that isn't
     /// recorded yet plays as a short silence like any missing clip, never the English one.</summary>
-    public static BipCore.HomeLanguage Language { get; set; } = BipCore.HomeLanguage.English;
+    public static BipCore.HomeLanguage Language => LanguageSource();
 
-    /// <summary>The playing child's voice band: a Big child (7 and up) hears Bip's own lines in their older version when it's recorded.</summary>
-    public static BipCore.VoiceBand Band { get; set; } = BipCore.VoiceBand.Little;
+    public static string PathFor(string clip) => PathFor(clip, Language);
 
-    public static string PathFor(string clip)
+    /// <summary>A clip's path in a given language (the self-test always checks the English one).</summary>
+    public static string PathFor(string clip, BipCore.HomeLanguage language)
     {
-        var language = Language;
-        if (clip.StartsWith('@') && clip.IndexOf('/') is var slash and > 1)
-        {
-            language = clip[1..slash] == "af" ? BipCore.HomeLanguage.Afrikaans : BipCore.HomeLanguage.English;
-            clip = clip[(slash + 1)..];
-        }
+        var (name, inLanguage) = Resolve(clip, language);
+        return FolderOf(inLanguage) + name + ".ogg";
+    }
+
+    public static bool HasClip(string clip) => HasClip(clip, Language);
+
+    public static bool HasClip(string clip, BipCore.HomeLanguage language) => ResourceLoader.Exists(PathFor(clip, language));
+
+    private static string FolderOf(BipCore.HomeLanguage language)
+    {
         var folder = BipCore.Languages.Folder(language);
-        return AudioFolder + (folder.Length > 0 ? folder + "/" : "") + clip + ".ogg";
+        return AudioFolder + (folder.Length > 0 ? folder + "/" : "");
     }
 
     /// <summary>
@@ -65,20 +85,40 @@ public partial class VoicePlayer : Node
     public static string InLanguage(string clip, BipCore.HomeLanguage language) =>
         $"@{(language == BipCore.HomeLanguage.Afrikaans ? "af" : "en")}/{clip}";
 
-    public static bool HasClip(string clip) => ResourceLoader.Exists(PathFor(clip));
+    /// <summary>Splits an <see cref="InLanguage"/> name ("@af/learn_cat") into its language and clip.</summary>
+    private static (string Clip, BipCore.HomeLanguage Language) Resolve(string clip, BipCore.HomeLanguage language) =>
+        clip.StartsWith('@') && clip.IndexOf('/') is var slash and > 1
+            ? (clip[(slash + 1)..], clip[1..slash] == "af" ? BipCore.HomeLanguage.Afrikaans : BipCore.HomeLanguage.English)
+            : (clip, language);
 
-    private static string? StandIn(string clip) =>
-        clip.EndsWith("_mid", StringComparison.Ordinal) ? clip[..^"_mid".Length]
-        : clip == BipCore.VoiceLine.And ? BipCore.AudioCatalogue.WordClip("and") : null;
+    /// <summary>
+    /// The clip that really plays for <paramref name="clip"/> in the band being spoken in
+    /// (<see cref="BipCore.VoiceBands.Resolve"/>); <paramref name="recorded"/> stands in for the build's clips in the walk-through.
+    /// </summary>
+    public static string ResolveClip(string clip, Func<string, bool>? recorded = null) =>
+        BipCore.VoiceBands.Resolve(clip, Band, recorded ?? HasClip);
+
+    /// <summary>The recorded Big praise per language, worked out once: which clips a build has never changes while it runs.</summary>
+    private static readonly Dictionary<BipCore.HomeLanguage, IReadOnlyList<string>> BigPraiseByLanguage = [];
+
+    /// <summary>The praise the band being spoken in picks from (<see cref="BipCore.VoiceBands.PraisePool"/>).</summary>
+    public static IReadOnlyList<string> PraisePool()
+    {
+        if (Band != BipCore.VoiceBand.Big) return BipCore.AudioCatalogue.PraiseClips;
+        var language = Language;
+        if (!BigPraiseByLanguage.TryGetValue(language, out var pool))
+            BigPraiseByLanguage[language] = pool = BipCore.VoiceBands.PraisePool(BipCore.VoiceBand.Big, clip => HasClip(clip, language));
+        return pool;
+    }
 
     /// <summary>The whole recorded sentence when this build has it, otherwise the clips that make it up.</summary>
     public static List<string> Prefer(string sentence, IEnumerable<string> pieces) =>
         HasClip(sentence) ? [sentence] : pieces.ToList();
 
-    /// <summary>How many clips are in this build (for the parent area and the self-test report).</summary>
-    public static int CountClips()
+    /// <summary>How many clips this build has in a language (for the parent area and the self-test report).</summary>
+    public static int CountClips(BipCore.HomeLanguage language)
     {
-        using var dir = DirAccess.Open(AudioFolder);
+        using var dir = DirAccess.Open(FolderOf(language));
         if (dir == null) return 0;
         // Exported games list imported files as "name.ogg.import" (or "name.ogg.remap"); count each clip once.
         return dir.GetFiles()
@@ -117,9 +157,7 @@ public partial class VoicePlayer : Node
         }
         var name = clips[index];
         onClipStart?.Invoke(index, name);
-        // A lead-on clip not recorded yet falls back to the plain one (num_7_mid → num_7, vo_and → word_and).
-        if (!HasClip(name) && StandIn(name) is { } standIn && HasClip(standIn)) name = standIn;
-        name = BipCore.VoiceBands.Pick(name, Band, HasClip);
+        name = ResolveClip(name);
 
         var length = SilentStubLength;
         if (HasClip(name) && GD.Load<AudioStream>(PathFor(name)) is { } stream)

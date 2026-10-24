@@ -62,10 +62,11 @@ Counted with a script from `Content/asset_manifest.json`, `Content/af/asset_mani
 | **Total** | | **1,238** | **94** | **984** | |
 
 **2,222 clips in all** (the earlier ~1,964 figure was before the 248 Language Island words were
-added). 94 English clips are done; letter sounds (*) are recorded into `voice-lab/aoede_phonics/` and
+added). 94 English clips are done; letter sounds (*) are recorded into `voice-lab/aoede_phonics/` (on the recorder's branch) and
 only count once you've approved them by ear.
 
-How the recorder groups them today (`group()` in `scripts/gemini_narrator.py`):
+How the recorder groups them today (`group()` in `scripts/gemini_narrator.py`, on branch `claude/aoede-narrator` until
+its own pull request reaches `main`; until then new clips are made with `scripts/speak_clips.py`):
 
 | Style | English | Afrikaans | Batch | First-pass requests |
 | --- | ---: | ---: | ---: | ---: |
@@ -80,7 +81,9 @@ Two things to fix in passing (no extra cost, saves requests):
   of 36 (7 requests). Add `learn_` to the words group.
 - `docs/LANGUAGES.md` says the 124 Language Island words wait for the owner's check before recording,
   but the recorder would record them now. Hold them back (a skip list, or record them last) until
-  they're signed off.
+  they're signed off. The same goes for the 30 Afrikaans Big lines: `audio/af/script.csv` marks them
+  "To be checked", and nothing records them yet (the recorder isn't on `main`); its pull request must
+  hold them back (a hold list) until the owner has checked them on the Word Check page.
 
 ## 2. Which clips stay the same for everyone, and which get an older version
 
@@ -229,8 +232,13 @@ single band, never mixed within one band.
 
 ## 5. How the game picks the right version
 
-**Picking:** when a child is chosen, the game sets the voice band from their age (3–6 or unset →
-Little; 7–10 → Big), next to the language it already sets (`VoicePlayer.Language`). Optionally a
+**Picking:** each screen says whose band it speaks in (`BaseScreen.ScreenBand`), as it does for the
+language: the playing child's band from their age (3–6 or unset → Little; 7–10 → Big), Little on
+"Who's playing?" (whoever comes to the computer may be young), and a resting brother's or sister's own
+band on their charging screen. The voice reads it through `GameCoordinator.SpokenBand`, so it never goes
+stale. **The age is the one a grown-up typed in the Children tab** (`SavedChild.Age`, a number, not a
+birthday), so it doesn't move up by itself: the parent area asks grown-ups to change it on the child's
+birthday. Storing a birth month instead is a possible follow-up. Optionally a
 grown-up can override it per child in the Children tab ("Bip's voice: Little / Big / By age"); see
 question 2.
 
@@ -263,7 +271,8 @@ question 2.
   column says "Big band (ages 7–10)").
 - `scripts/validate_content.py`: every `_big` row has a Little row of the same name (praise pool
   excepted), and `sa_english.py` / `af_spelling.py` already cover the script files.
-- `scripts/gemini_narrator.py`: `group()` returns `"big"` for clips ending `_big` and a new
+- `scripts/gemini_narrator.py` (on `claude/aoede-narrator`): `group()` returns `"big"` for `vo_`, `hint_` and
+  `praise_` clips ending `_big` (never `word_big`, a real word) and a new
   `"clear"` style for instructions and sentences (section 6); `learn_` joins the words group; a
   priority order replaces plain alphabetical (section 7).
 - `docs/LANGUAGES.md`, `audio/NARRATOR_VOICE.md`: a short "voice bands" note. No change to the
@@ -374,7 +383,7 @@ this order; the batches stay one style each.
 
 1. **Is 7 the right age to switch to the Big voice, or would you rather 8?**
 2. **Should a grown-up be able to choose per child** ("Little", "Big" or "by age") in the Children
-   tab, for a 6-year-old who wants the big-kid voice or a 7-year-old who loves the sparkly one?
+   tab, for a 6-year-old who wants the older children's voice or a 7-year-old who loves the sparkly one?
 3. **Happy with one narrator (Aoede) for boys and girls?** Or would you like a one-request test of a
    male voice (Achird or Puck) for the Big praise, just to hear it?
 4. **The Big lines:** do the English drafts above sound right to you, and can someone fluent check

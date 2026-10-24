@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace BipCore;
 
-/// <summary>One child on this computer, as the picker and the parent area show them.</summary>
 /// <summary>A child as the screens see them; <paramref name="Language"/> is the language they play in.</summary>
 public sealed record ChildSummary(Guid Id, string Name, int? Age, string Avatar, HomeLanguage Language = HomeLanguage.English);
 
@@ -145,7 +144,7 @@ public sealed class SaveStore
             ? ProfileRules.FreeAvatar(_file.Children.Select(c => c.Avatar))
             : ProfileRules.ValidAvatar(avatar);
         var id = AddChildRecord(clean, ClampAge(age), picture, new ChildProgress());
-        Find(id)!.Language = language;
+        Find(id)!.Language = Enum.IsDefined(language) ? language : HomeLanguage.English;
         Save();
         return id;
     }
@@ -170,13 +169,18 @@ public sealed class SaveStore
         Save();
     }
 
-    public ChildProgress Progress(Guid childId) =>
-        Find(childId) is { } row ? ChildProgress.Decode(row.Progress.Encode()) : new ChildProgress();
+    /// <summary>
+    /// A child's progress in the language they play in: stars, stickers, recent games and play time are
+    /// shared; sounds, skills and game levels are that language's own (see <see cref="ChildProgress.InLanguage"/>).
+    /// </summary>
+    public ChildProgress Progress(Guid childId, HomeLanguage language = HomeLanguage.English) =>
+        Find(childId) is { } row ? row.Progress.InLanguage(language) : new ChildProgress();
 
-    public void Save(ChildProgress progress, Guid childId)
+    /// <summary>Saves progress loaded with <see cref="Progress"/> in the same language; the other languages' learning is kept.</summary>
+    public void Save(ChildProgress progress, Guid childId, HomeLanguage language = HomeLanguage.English)
     {
         if (Find(childId) is not { } row) return;
-        row.Progress = ChildProgress.Decode(progress.Encode());
+        row.Progress = row.Progress.WithLanguage(progress, language);
         Save();
     }
 

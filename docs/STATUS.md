@@ -12,7 +12,7 @@
 - **Games:** 17 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
   Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance), Words (Sound Buttons, Word Builder, Word Rocket),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
-  game, 8-question visits, star celebration.
+  game, 8-question visits, star celebration. Letter Trace works with a mouse or a trackpad (18 Oct).
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
   in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
   Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
@@ -26,8 +26,13 @@
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
 - **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
-- **Pictures:** 15 hand-drawn + emoji stand-ins (Noto Color Emoji, bundled) for every manifest picture;
-  123 Morning Order step scenes.
+- **Text contrast (18 Oct):** every text colour meets WCAG (4.5:1, 3:1 for big glyphs). Use `Palette.Ink`,
+  `SoftInk`, `QuietInk`, `AlertOrange`, `WrongRed`, `ProblemRed` or `GoodGreen` for text, and the named fills
+  (`BalanceBoxFill`, `GapFill`, …) behind it. Their values live in `BipCore.PaletteColours`; a unit test
+  (`TextContrastTests`) fails if a pair drops below, and the validator rejects a hand-written text colour.
+- **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
+  the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
+  remain only as a fallback for new words and in the parent area's child menus.
 - **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
   installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
   parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
@@ -39,14 +44,18 @@
   **Keys are the one exception to "any key replays":** letter keys type here, so Space, the replay
   button or a click on the craft say it again, Enter does nothing, and Esc is never typed (the parent
   layer takes it first, so the Esc hold still opens the gate). Skins: rocket, hot-air balloon, submarine.
-- **Known open items:** cover second screens in the kid lock; Windows exe
-  icon; more games (waves 2b/3/4), real art, music; paid signing only if shared beyond the family.
+- **Afrikaans (24 Oct):** the home-language plumbing is in (#53), and the Afrikaans content now exists in
+  `Content/af/` (7 klanke groups, 137 words, 16 sentences, numbers, art names, Morning Order, Bip's lines,
+  its own `curriculum/skills.json`), signed off by the owner on 18 October 2026 and checked by
+  `validate_content.py --lang af` and `af_spelling.py`. It stays hidden from children until
+  `Content/af/language.json` lands (with the Afrikaans voice and the download page change, `docs/LANGUAGES.md` step 8).
+- **Known open items:** cover second screens in the kid lock; more games (waves 2b/3/4); paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
 
 - Engine move: Godot 4 .NET (C#), Velopack updates, direct `.dmg` / `Setup.exe` downloads, no stores,
   no paid signing for now. Details in `docs/GODOT_MIGRATION.md`.
-- Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts).
+- Font: Atkinson Hyperlegible for all text, bundled (no Andika/Patrick Hand/system fonts), with a plain zero (owner, 18 Oct).
 - Voice: "Bip Island Narrator" `Mq5hYfc3xyDzuW3pPMck`, `eleven_v3`, SA English teacher.
 - Phonics: sounds first, GK-clipped stops, UK/SA spelling, no slang.
 - No timers/lives/game-over. Wrong → boop → retry → hint after 2 misses. 120 pt targets.
@@ -437,7 +446,7 @@
   copying the **original** narrator from `vo_welcome` + `vo_bip_charging` sounded closest; the owner picked it.
   So the game keeps one voice: the ElevenLabs clips of the second voice are dropped, `num_0`–`num_20` and the
   linking words are back to the originals, and `scripts/speak_clips.py` (seed 0, Chatterbox defaults, levelled
-  to -14.5 LUFS) records the 233 sentences, 21 lead-on numbers and `vo_and` through the **Narrator** workflow
+  to -14.5 LUFS) records the 233 whole sentences through the **Narrator** workflow
   (GitHub runners reach huggingface.co; cloud sessions can't). The workflow runs 4 shards in parallel and
   commits the clips to the branch; a push by the workflow doesn't start the Godot CI, so push once after it.
   Every clip is checked by Whisper (faster-whisper `base.en`): the words heard must match the text, or the
@@ -452,6 +461,16 @@
   Result: all 233 Block Towers sentences recorded by Chatterbox and passed the Whisper check (none removed,
   `last-failed.txt` empty); `scripts/check_all.sh` green. Still open: Afrikaans round 3 (Seed-VC, OpenVoice) and
   a Gemini TTS Afrikaans test on `claude/voice-lab` (needs a `GEMINI_API_KEY` secret; not part of this PR).
+- **18 Oct (review fixes, PR #51):** `vo_say_it_with_me` (a Meet the Sound line from `audio/script.csv`) is the
+  original narrator's again: the request's `vo_say_*` had caught it. `voice-lab/request.txt` now lists the 11
+  sentence ids (`vo_say_<id>_*`), and the validator fails if a script.csv clip starts with `vo_say_<sentence id>_`.
+  `speak_clips.py` keeps a clip that was there before when no new take passes Whisper (only a brand-new clip is
+  removed), transcribes each take once, and **skips the 21 `num_<n>_mid` clips and `vo_and`**: they stay in the
+  manifest, but the owner has moved the narrator to Gemini "Aoede" (`claude/aoede-narrator`), which records them;
+  until then the game falls back to `num_<n>` and `word_and`. The highest lead-on number comes from
+  `numbers.json` `spokenNumbers.joinTo` (`ContentLibrary.MidNumbersTo`), not code; `NUMBER_WORDS` lives once,
+  in `scripts/spoken_numbers.py`. Narrator workflow: runs only on `claude/*` branches, commits even when a shard
+  crashed, pulls before pushing, and counts only `.m4a` files. The ElevenLabs allow rules left `.claude/settings.json`.
 - **18 Oct, home language (step 2 of `docs/LANGUAGES.md`):** each child has a home language (`HomeLanguage`,
   `SavedChild.Language`, read leniently on the property so an unknown value reads as English).
   `ContentLibrary(readFile, language, exists)` reads `Content/af/<file>` over the shared file;
@@ -479,7 +498,7 @@
 - **18 Oct, voice bands (`docs/VOICE_PLAN.md`, approved):** Bip's own lines come in two versions by the
   child's age (`BipCore.VoiceBands`): Little (up to 6, or no age) and Big (7 and up). 30 Big lines per
   language in the voice scripts (`praise_01_big`…`praise_12_big`, `hint_NN_big`, level and round lines,
-  greetings, charging and day done). `VoicePlayer.Band` is set from the playing child's age; a Big child
+  greetings, charging and day done). The band comes from the playing child's age; a Big child
   hears `<clip>_big` when it's in the build, else the young clip; Big praise is used once 4 of its clips are
   recorded. The validator checks every `_big` row has its young row. One narrator for boys and girls.
 - **18 Oct, owner approved the plans:** ages 5 to 10 in English and Afrikaans with Cambridge and CAPS side
@@ -488,3 +507,107 @@
   MacBook Neo findings (`docs/MACBOOK_NEO.md`: it runs; first install is Open Anyway; Letter Trace needs a
   tap-to-start mode for trackpads; test the kid lock and the top-row keys on the real machine).
   `CLAUDE.md` and `docs/PLAN.md` now say so, and the narrator is Gemini Aoede for both languages.
+- **18 Oct 22:15 SAST (PR #53 review fixes):** Each language keeps its own learning: sounds, skills
+  (so the phonics groups) and game levels live per language in `ChildProgress.OtherLanguages` (English
+  stays where older saves have it, and an English-only save keeps its old shape); stars, stickers, the
+  play clock and recent games are shared. `SaveStore.Progress/Save` take the language and
+  `GameCoordinator.SaveProgress()` saves in the playing language. A saved language this build doesn't
+  have plays in English (`Languages.Playable`), voice included. `validate_content.py` checks
+  `BipCore/Texts.cs` (English half with sa_english, Afrikaans half with af_spelling once that check is in
+  the checkout). Self-test checks the English clips; clip counts are per language. Content load errors
+  name the real file (`Content/af/…`). `prepare_assets.py` only takes known language folders and removes
+  stale ones. CLAUDE.md now says Aoede is the narrator (recorder on `claude/aoede-narrator` until merged).
+- **19 Oct (PR #53, second review):** The language lives in one place, `GameCoordinator.Language`; each
+  screen says which language it shows (`BaseScreen.ScreenLanguage`) and the voice reads it through
+  `GameCoordinator.SpokenLanguage` (`VoicePlayer.LanguageSource`, no copy of its own). "Who's playing?" is
+  in English straight after the game opens, else in the language of the child at the computer; a brother's
+  or sister's break is in their language. "Charged! Off we go." is `Texts.Charged`. `AddChild` saves an
+  unknown language value as English, like `Update`.
+- **18 Oct, later:** Plain zero. The owner asked for a look round the game for improvements; the
+  biggest find was the font's slashed zero (10 read as "1Ø" in every game, the star counts, the charging
+  clock and the parent area). `scripts/fonts/plain_zero.py` swaps the zero's two half-holes for one
+  oval hole with the same stroke widths, removes its old hinting, and copies the fonts to `site/fonts/`;
+  `zero.tf` follows. OFL 1.1 with no Reserved Font Name, so the changed files keep their name
+  (`Resources/Fonts/README.md`). The other finds were done the same day (PR #52): matching plates for the
+  island games, a bigger centred Bip's Path grid and a real zip picture. Still offered and not chosen:
+  bigger blocks in Bip's Balance take-away.
+  Word Builder (owner flagged it, 18 Oct): the picture and the answer boxes sat on the left with the right
+  half empty. They are now one row centred over the letters (`WordBuilderScreen`), and the sparkle follows the boxes.
+  Windows icon (was a known open item): `godot/icons/app-icon.ico` (16 to 256 px, from the Mac icon) is set
+  in the Windows export (`application/icon`, `modify_resources=true`, Godot writes it without rcedit) and
+  passed to `vpk --icon` for Setup.exe in `check_all.sh` and `godot.yml`. The Words island plates sat on
+  Bip's antenna, so every island's games moved up 25 points; the zip picture was made narrower.
+- **18 Oct, art:** the owner asked for the art too, "so that we do everything once". `ArtPictures` (split
+  over `ArtPictures.cs`, `.More` letter sounds, `.Rest` other words, `.Sentences`, `.Steps`, `.Animals`)
+  draws every picture that was an emoji: 178 picture ids (rand coins and notes in their real colours,
+  the letter-sound pictures, all words, the 32 sentence pictures built as scenes from the word pictures),
+  drawn versions of the 98 emoji the step scenes used (`ArtPictures.ForEmoji`, picked up by
+  `StepPictures.Glyph`), and the profile animals in `Avatars.Badge`. Each picture has its own seed block
+  (`Pic`), and `SketchNode` drops repeated polygon points, which otherwise leave a shape white. Body parts
+  (chin, lip, wing) get the orange pointer from `WordPictures.Pointer`. Every page of the picture gallery
+  was looked at; `EmojiPictures.Icons` is now empty.
+- **18 Oct, Afrikaans round 3:** Seed-VC and OpenVoice converting Microsoft's Adri towards the narrator
+  ran on `claude/voice-lab` (Seed-VC needs torchvision 0.23.0 with torch 2.8; OpenVoice needs `vad=True`
+  on a CPU runner). The owner listened: "still very bad". Every free route has now been tried and
+  rejected; Afrikaans is parked. Left to try: Gemini TTS (needs a `GEMINI_API_KEY` secret; the test
+  is ready on `claude/voice-lab`), a paid native Afrikaans ElevenLabs voice, or a person recording.
+- **18 Oct, review fixes (#52):** Bip's Path win sparkles now land on Bip (board point turned into Stage
+  space); the zip's 0.85 scale sits on an inner node so cards keep it narrow; `SketchNode` itself drops
+  repeated polygon points before the fill, for every drawing (`Clean` is gone); `FaceOnly` has its own
+  seed blocks (4940/4950/4960); `ArtPictures.Has` looks ids up directly; the Sound Buttons plate seed is 819.
+- **18 Oct, colour contrast:** every piece of text checked against WCAG (4.5:1 for normal text, 3:1 for
+  large). Fixed: Word Builder's teal tiles and its island button (white letters, 2.3:1 → dark ink, 6.3:1),
+  the Morning Order number pictures (white on light blue → ink), the mystery box "?" (→ ink), the grown-ups'
+  hint on the charging screen and "more stars for the next sticker" (ink at 85%, 8.2:1), the parent area's
+  grey text (ink at 75%, 6:1) and the setup guide's orange "Try it now" (5.9:1). After review: Bip's Balance's
+  "?" and wrong number, the parent fields' placeholders and the gap "?" marks too; named text colours in
+  `Palette`, their values and the contrast check in BipCore (`PaletteColours`, `TextContrast`, unit-tested).
+- **18 Oct, 17:50 SAST:** Letter Trace works on a trackpad (a family has a trackpad-only MacBook). Tap mode sits
+  alongside the drag: click the green start dot above the letter (120 pt) and the pen follows the pointer with the
+  button up until the letter is done or the child clicks again; dragging with the button held works as before.
+  Clicks on the bare paper boop softly, and after two the dot wiggles with
+  Bip's "look for the one that's wiggling" hint. Judging is unchanged (every checkpoint, no timer). Rules in
+  `BipCore.TracePen` (10 tests in `TracePenTests`); the walk-through drags half a letter, misses twice, starts,
+  stops and restarts tap mode, and finishes the letter with the button up. `BaseScreen.TappableAt` is shared.
+- **19 Oct, 06:20 SAST:** Review fixes for #59 (Letter Trace tap mode): home and Bip work with one click while the pen
+  follows; the start dot comes back however the pen stops following (`TracePen.ShowsStartDot`); a press draws
+  nothing until it moves past a click's wobble, so a click never both draws and misses; clicking the letter is never
+  a miss; the start dot uses the screen's own hit test (`TraceSpot`); one hit test per press (`BaseScreen.TapOn`,
+  `IsAlwaysOn`). A click-to-pick-up mode for the drag games is a follow-up PR.
+- **24 Oct, 09:30 SAST:** Second review round for #59: the hint is said once, when the start dot first wiggles
+  (later misses just boop), and it waits for the narrator to finish, so it never cuts off "Trace the letter".
+  A drag that traces forgives earlier stray clicks (`TracePen` resets its misses), so a mouse user who traces in
+  strokes never gets the trackpad hint; a press that drew nothing still counts.
+- **24 Oct, 10:55 SAST:** Afrikaans content (#54) merged with main and review fixes: Afrikaans has its own
+  `Content/af/curriculum/skills.json` (snd_g1 to snd_g7 in the Afrikaans groups' bands, no snd_g8/snd_g9;
+  letter names after group 4, spell_digraph after group 5, read_longer after group 7), and the validator checks
+  each group's band against its snd_gN skill, that every snd_gN skill has a group, and that a language's own
+  skills.json matches the shared one apart from its phonics skills. Letter names unlock once every letter the
+  language's sounds cover is known (`PhonicsCourse.Letters`; 22 in Afrikaans). Words whose letters don't make
+  their taught sound are marked `"blendable": false` and left out of Sound Buttons and Word Rocket (they stay in
+  the first-sound games and Word Builder): motor, hamer, lepel, koning, kewer (open syllable), appel, eier,
+  visse, kuiken, kuikens (schwa e), koei, rooi (i glide); the lists are otherwise unchanged. Clip ids are plain
+  ASCII (`word_vlieer`; the validator rejects any other). `af_spelling` flags "N kat" and accepts "’n" and the
+  letter n; its tests run with the validator. The validator runs every other language and fails once at the end.
+- **24 Oct, 11:20 SAST (PR #56 review fixes, Language Island):** merged main. The wrong-answer replay and
+  hint wait 0.4 s and are skipped once the question is answered (`GameScreen.WhileUnanswered`; a quick
+  wrong-then-right click used to cut off the praise and leave the game stuck), and the Language screens use the
+  shared `AnswerChoice` (`onRetry`, `hint`). Bip's Day never deals a choice whose words or picture match the
+  answer (`BipsDayGame.CanShareRound`). Level rules are in games.json (`storiesUpTo`, `sameThemeFirst`).
+  Skills with `"ageSkip": false` (the Language Island's) are never known by age. The closed Language Island
+  stays out of the parent report and the sticker book (`GameCoordinator.ClosedIslandsFor`). Long words shrink to
+  fit What Is It?'s bubbles (`Sketch.FittedLabel`, under the text-colour rule). Colour splashes read
+  `art/paints.json`; white sits on a soft grey swatch. The validator also checks Bip's Day clip names, theme
+  levels and colour pictures; the af skills overlay carries the Language Island skills.
+- **24 Oct, 16:05 SAST (PR #57 review fixes, voice bands):** merged main (#51 to #56, #59) and retargeted
+  to `main`. The band works like the language: each screen says whose band it speaks in
+  (`BaseScreen.ScreenBand`), the voice reads `GameCoordinator.SpokenBand` (`VoicePlayer.BandSource`, no copy
+  of its own), the playing child's band is worked out from their age each time (`GameCoordinator.Band`), so
+  it can't go stale when a child is changed or removed. "Who's playing?" is always said in the Little band; a
+  resting brother's or sister's charging screen in their own. What plays is `VoiceBands.Resolve` (stand-in,
+  then band; unit-tested, and the walk-through checks it for an 8- and a 4-year-old). `BigVersions` is looked
+  up through a HashSet; the recorded Big praise is worked out once per language. Only `vo_`/`hint_`/`praise_`
+  clips have `_big` rows: the validator (reusing `script_clips`) and `VoiceBandTests` check both scripts both
+  ways against `VoiceBands`. The age is the number a grown-up typed, so the Children tab now asks them to
+  change it on the birthday. No more "big-kid" wording; the recorder notes say `gemini_narrator.py` is on
+  `claude/aoede-narrator`, and the Afrikaans Big lines wait for the owner's check.

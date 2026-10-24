@@ -7,6 +7,8 @@ namespace BipCore;
 /// lines, greetings and the charging lines. Everything the child learns from (sounds, words, numbers,
 /// sentences, game instructions) is one recording for every age. The band follows the child's age, not
 /// their learning level, so an older child catching up is never spoken to like a four-year-old.
+/// The age is the number a grown-up set in the parent area's Children tab (<c>SavedChild.Age</c>), not a
+/// birthday, so it only moves up when a grown-up changes it; the Children tab asks them to on the birthday.
 /// </summary>
 public enum VoiceBand { Little, Big }
 
@@ -21,7 +23,10 @@ public static class VoiceBands
 
     public static VoiceBand For(int? age) => age >= BigFromAge ? VoiceBand.Big : VoiceBand.Little;
 
-    /// <summary>The lines with a Big version, by their Little (base) names; praise has its own Big pool.</summary>
+    /// <summary>
+    /// The lines with a Big version, by their Little (base) names; praise has its own Big pool. Only Bip's
+    /// own vo_, hint_ and praise_ lines ever have one, so a word clip such as word_big is never taken for one.
+    /// </summary>
     public static readonly IReadOnlyList<string> BigVersions =
     [
         .. AudioCatalogue.HintClips,
@@ -30,6 +35,9 @@ public static class VoiceBands
         VoiceLine.ArtIsland, VoiceLine.LanguageIsland, VoiceLine.IslandSleeping, VoiceLine.WhoIsPlaying,
         VoiceLine.BipCharging, VoiceLine.DayDone,
     ];
+
+    /// <summary><see cref="BigVersions"/> for looking up every clip the voice plays.</summary>
+    private static readonly HashSet<string> BigVersionSet = new(BigVersions, StringComparer.Ordinal);
 
     public static readonly IReadOnlyList<string> BigPraiseClips =
         Enumerable.Range(1, BigPraiseCount).Select(n => $"praise_{n:00}{Suffix}").ToList();
@@ -44,7 +52,17 @@ public static class VoiceBands
     /// Little one, so a line not recorded yet is never silent.
     /// </summary>
     public static string Pick(string clip, VoiceBand band, Func<string, bool> recorded) =>
-        band == VoiceBand.Big && BigVersions.Contains(clip) && recorded(BigClip(clip)) ? BigClip(clip) : clip;
+        band == VoiceBand.Big && BigVersionSet.Contains(clip) && recorded(BigClip(clip)) ? BigClip(clip) : clip;
+
+    /// <summary>
+    /// The clip the voice really plays for <paramref name="clip"/>: a lead-on clip not recorded yet falls
+    /// back to its plain one (num_7_mid → num_7, vo_and → word_and), then the band picks its version.
+    /// </summary>
+    public static string Resolve(string clip, VoiceBand band, Func<string, bool> recorded)
+    {
+        if (!recorded(clip) && AudioCatalogue.StandIn(clip) is { } standIn && recorded(standIn)) clip = standIn;
+        return Pick(clip, band, recorded);
+    }
 
     /// <summary>The praise a band picks from: the recorded Big pool once it has a few lines, else the Little pool.</summary>
     public static IReadOnlyList<string> PraisePool(VoiceBand band, Func<string, bool> recorded)

@@ -151,6 +151,16 @@ public sealed class ChildProgress : IEquatable<ChildProgress>
     [JsonInclude] public Dictionary<int, int> PlaySecondsByDay { get; private set; } = [];
     /// <summary>The child's level in each game (games.json levels), keyed by game id.</summary>
     [JsonInclude] public Dictionary<string, SkillMastery> GameLevels { get; private set; } = [];
+    /// <summary>
+    /// What the child has learnt in each language other than English, by language folder ("af"): its
+    /// own <see cref="Sounds"/>, <see cref="Skills"/> (which open the phonics groups) and
+    /// <see cref="GameLevels"/>. English's stay in those fields themselves, where saves from before
+    /// languages have them. Stars, stickers, recent games and play time are the same in every language.
+    /// The game never sees this: <see cref="InLanguage"/> puts one language's learning in the fields above.
+    /// Null (and left out of the save) until the child plays in another language, so an English-only
+    /// save is exactly what it was before languages.
+    /// </summary>
+    [JsonInclude] public Dictionary<string, LanguageLearning>? OtherLanguages { get; private set; }
 
     public ChildProgress() { }
 
@@ -171,9 +181,10 @@ public sealed class ChildProgress : IEquatable<ChildProgress>
 
     /// <summary>
     /// Skills below the child's starting band count as known: a 6-year-old starting at stage 1
-    /// isn't made to work through every foundation sound first.
+    /// isn't made to work through every foundation sound first. Skills marked <c>ageSkip: false</c> (a
+    /// second language: a 6-year-old who has never heard Afrikaans doesn't know its first words) never are.
     /// </summary>
-    public bool IsTreatedAsKnown(Skill skill, Band startingBand) => skill.Band < startingBand;
+    public bool IsTreatedAsKnown(Skill skill, Band startingBand) => skill.SkippedByAge && skill.Band < startingBand;
 
     /// <summary>Counts as known for unlocking other skills: mastered, or below the starting band.</summary>
     public bool IsKnown(Skill skill, Band startingBand) => IsMastered(skill.Id) || IsTreatedAsKnown(skill, startingBand);
@@ -264,10 +275,60 @@ public sealed class ChildProgress : IEquatable<ChildProgress>
     public int DaysPlayed(int days, int day) =>
         PlaySecondsByDay.Count(p => p.Key > day - days && p.Key <= day && p.Value > 0);
 
+    /// <summary>
+    /// This saved progress as a game in <paramref name="language"/> sees it: the shared stars, stickers,
+    /// recent games and play time, with that language's learning in <see cref="Sounds"/>,
+    /// <see cref="Skills"/> and <see cref="GameLevels"/> (empty the first time the child plays in it).
+    /// </summary>
+    public ChildProgress InLanguage(HomeLanguage language)
+    {
+        var view = Decode(Encode());
+        view.OtherLanguages = null;
+        var folder = Languages.Folder(language);
+        if (folder.Length == 0) return view;
+        var own = OtherLanguages?.GetValueOrDefault(folder) is { } found
+            ? BipJson.Decode<LanguageLearning>(BipJson.Encode(found))
+            : new LanguageLearning();
+        view.Sounds = own.Sounds ?? new MasteryTracker();
+        view.Skills = own.Skills ?? [];
+        view.GameLevels = own.GameLevels ?? [];
+        return view;
+    }
+
+    /// <summary>
+    /// This saved progress with <paramref name="view"/> (made by <see cref="InLanguage"/> for
+    /// <paramref name="language"/>) put back: the shared things from the view, its learning under its
+    /// language, and every other language's learning as it was saved.
+    /// </summary>
+    public ChildProgress WithLanguage(ChildProgress view, HomeLanguage language)
+    {
+        var saved = Decode(Encode());
+        var merged = Decode(view.Encode());
+        merged.OtherLanguages = saved.OtherLanguages;
+        var folder = Languages.Folder(language);
+        if (folder.Length == 0) return merged;
+        (merged.OtherLanguages ??= [])[folder] = new LanguageLearning
+        {
+            Sounds = merged.Sounds, Skills = merged.Skills, GameLevels = merged.GameLevels,
+        };
+        merged.Sounds = saved.Sounds ?? new MasteryTracker();
+        merged.Skills = saved.Skills ?? [];
+        merged.GameLevels = saved.GameLevels ?? [];
+        return merged;
+    }
+
     /// <summary>Two progress records are equal when they save to the same JSON (key order aside).</summary>
     public bool Equals(ChildProgress? other) =>
         other is not null && JsonNode.DeepEquals(JsonNode.Parse(Encode()), JsonNode.Parse(other.Encode()));
 
     public override bool Equals(object? obj) => Equals(obj as ChildProgress);
     public override int GetHashCode() => Stars;
+}
+
+/// <summary>A child's learning in one language other than English (see <see cref="ChildProgress.OtherLanguages"/>).</summary>
+public sealed class LanguageLearning
+{
+    [JsonInclude] public MasteryTracker Sounds { get; internal set; } = new();
+    [JsonInclude] public Dictionary<string, SkillRecord> Skills { get; internal set; } = [];
+    [JsonInclude] public Dictionary<string, SkillMastery> GameLevels { get; internal set; } = [];
 }

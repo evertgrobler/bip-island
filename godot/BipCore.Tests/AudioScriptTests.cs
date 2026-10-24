@@ -11,9 +11,13 @@ public sealed class AudioScriptTests
 {
     private sealed record Row(string File, string Text, string Notes);
 
-    private static List<Row> LoadScript()
+    /// <summary>The clip names a voice script lists ("audio/script.csv", or "audio/af/script.csv" for Afrikaans).</summary>
+    internal static List<string> ScriptClips(string script) =>
+        LoadScript(script).Select(r => ClipName(r.File)).ToList();
+
+    private static List<Row> LoadScript(string script = "audio/script.csv")
     {
-        var csv = File.ReadAllText(Path.Combine(TestContent.RepoRoot, "audio", "script.csv"));
+        var csv = File.ReadAllText(Path.Combine(TestContent.RepoRoot, script));
         var records = ParseCsv(csv);
         Assert.NotEmpty(records);
         Assert.Equal(["file", "text", "notes"], records[0].Take(3));
