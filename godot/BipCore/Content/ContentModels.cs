@@ -559,6 +559,79 @@ public sealed record LanguageWord
     public string Audio => $"learn_{Id}";
 }
 
+// MARK: - stories/scenes.json and stories/stories.json
+
+/// <summary>Bip's Stories scenes, shared by both languages: each set is one story's pictures, scene by scene.</summary>
+public sealed record StoryScenesFile
+{
+    public string? Note { get; init; }
+    /// <summary>The backgrounds the game draws (Scripts/Drawing/StoryScenes.cs).</summary>
+    public required List<string> Backgrounds { get; init; }
+    /// <summary>Pictures drawn for the stories (the people), with a brief for the gallery.</summary>
+    public required List<PictureAsset> NewPictures { get; init; }
+    public required List<StorySceneSet> Sets { get; init; }
+}
+
+public sealed record StorySceneSet
+{
+    public required string Id { get; init; }
+    public required List<StoryScene> Scenes { get; init; }
+}
+
+/// <summary>One picture of a story: a drawn background with pictures placed on it.</summary>
+public sealed record StoryScene
+{
+    public required string Background { get; init; }
+    public required List<PlacedPicture> Pictures { get; init; }
+}
+
+/// <summary>A picture on a scene: x and y from the middle of the 960 × 440 frame (y up), scale 1 = 220 points.</summary>
+public sealed record PlacedPicture
+{
+    public required string Picture { get; init; }
+    public required double X { get; init; }
+    public required double Y { get; init; }
+    public required double Scale { get; init; }
+    public bool? Flip { get; init; }
+}
+
+public sealed record StoriesFile
+{
+    public string? Note { get; init; }
+    public required List<Story> Stories { get; init; }
+}
+
+/// <summary>A short story at a level (1-5): its sentences scene by scene, and its questions.</summary>
+public sealed record Story
+{
+    public required string Id { get; init; }
+    public required int Level { get; init; }
+    public required string Title { get; init; }
+    /// <summary>The scene set it is told on (stories/scenes.json).</summary>
+    public required string Scenes { get; init; }
+    public string? Note { get; init; }
+    /// <summary>Each scene's sentences, in order.</summary>
+    public required List<List<string>> Text { get; init; }
+    public required List<StoryQuestion> Questions { get; init; }
+}
+
+public sealed record StoryQuestion
+{
+    /// <summary>who, where, what, why or feel.</summary>
+    public required string Kind { get; init; }
+    public required string Text { get; init; }
+    /// <summary>The scene (from 1) that holds the answer; it comes back as the hint.</summary>
+    public required int Scene { get; init; }
+    public required StoryAnswer Answer { get; init; }
+    public required List<StoryAnswer> Others { get; init; }
+}
+
+public sealed record StoryAnswer
+{
+    public required string Text { get; init; }
+    public string? Picture { get; init; }
+}
+
 // MARK: - coding/patterns.json
 
 public sealed record PatternsFile

@@ -1,0 +1,1295 @@
+{
+  "note": "Bip se Stories in Afrikaans: 20 stories written in Afrikaans on the same scenes as the English ones, not translated. All of them wait for the owner's check (or a fluent reader's) before they are recorded.",
+  "stories": [
+    {
+      "id": "modderhond",
+      "level": 1,
+      "title": "Die Modderhond",
+      "scenes": "l1_mud",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Die hond is in die modder."
+        ],
+        [
+          "Ma was die hond by die kraan."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie is in die modder?",
+          "scene": 1,
+          "answer": {
+            "text": "hond",
+            "picture": "pic_dog"
+          },
+          "others": [
+            {
+              "text": "kat",
+              "picture": "pic_cat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "krap_stap_see_toe",
+      "level": 1,
+      "title": "Die Krap",
+      "scenes": "l1_crab",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Die krap sit op 'n rots."
+        ],
+        [
+          "Dit stap na die see."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "where",
+          "text": "Waarheen stap die krap?",
+          "scene": 2,
+          "answer": {
+            "text": "see",
+            "picture": "pic_sea"
+          },
+          "others": [
+            {
+              "text": "huis",
+              "picture": "pic_home"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nandi_se_sak",
+      "level": 1,
+      "title": "Nandi se Sak",
+      "scenes": "l1_bag",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Nandi het 'n sak."
+        ],
+        [
+          "'n Pop en 'n koppie is in die sak."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "Wat is in die sak saam met die koppie?",
+          "scene": 2,
+          "answer": {
+            "text": "pop",
+            "picture": "pic_doll"
+          },
+          "others": [
+            {
+              "text": "bal",
+              "picture": "pic_ball"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "padda_op_die_stomp",
+      "level": 1,
+      "title": "Op die Stomp",
+      "scenes": "l1_frog",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "'n Padda sit op 'n stomp."
+        ],
+        [
+          "Die eend kom op die stomp."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie sit eerste op die stomp?",
+          "scene": 1,
+          "answer": {
+            "text": "padda",
+            "picture": "pic_frog"
+          },
+          "others": [
+            {
+              "text": "eend",
+              "picture": "pic_duck"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "thabo_se_bus",
+      "level": 2,
+      "title": "Die Bus",
+      "scenes": "l2_bus",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Pa en Thabo sit op die bank."
+        ],
+        [
+          "Die bus stop.",
+          "Thabo klim op die bus."
+        ],
+        [
+          "Thabo is in die klas.",
+          "Sy boek is op die tafel."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie klim op die bus?",
+          "scene": 2,
+          "answer": {
+            "text": "Thabo",
+            "picture": "pic_child_2"
+          },
+          "others": [
+            {
+              "text": "Nandi",
+              "picture": "pic_child_1"
+            },
+            {
+              "text": "Ruan",
+              "picture": "pic_child_4"
+            }
+          ]
+        },
+        {
+          "kind": "where",
+          "text": "Waar is Thabo aan die einde?",
+          "scene": 3,
+          "answer": {
+            "text": "in die klas",
+            "picture": "pic_desk"
+          },
+          "others": [
+            {
+              "text": "by die see",
+              "picture": "pic_sea"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mia_se_koek",
+      "level": 2,
+      "title": "Mia se Koek",
+      "scenes": "l2_cake",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Ouma en Mia klits eiers in 'n bak."
+        ],
+        [
+          "Hulle bak 'n groot koek."
+        ],
+        [
+          "Dit is Mia se verjaardag.",
+          "Haar maats kom koek eet."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie help vir Mia?",
+          "scene": 1,
+          "answer": {
+            "text": "Ouma",
+            "picture": "pic_grownup_3"
+          },
+          "others": [
+            {
+              "text": "Pa",
+              "picture": "pic_grownup_2"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat eet die maats?",
+          "scene": 3,
+          "answer": {
+            "text": "koek",
+            "picture": "pic_cake"
+          },
+          "others": [
+            {
+              "text": "brood",
+              "picture": "pic_bun"
+            },
+            {
+              "text": "vis",
+              "picture": "pic_fish"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bal_in_die_boom",
+      "level": 2,
+      "title": "Die Bal in die Boom",
+      "scenes": "l2_ball",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Ruan en Thabo skop die bal."
+        ],
+        [
+          "Die bal sit vas in 'n boom."
+        ],
+        [
+          "Pa haal die bal met 'n leer af."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "where",
+          "text": "Waar sit die bal vas?",
+          "scene": 2,
+          "answer": {
+            "text": "boom",
+            "picture": "pic_tree"
+          },
+          "others": [
+            {
+              "text": "see",
+              "picture": "pic_sea"
+            },
+            {
+              "text": "huis",
+              "picture": "pic_home"
+            }
+          ]
+        },
+        {
+          "kind": "who",
+          "text": "Wie haal die bal af?",
+          "scene": 3,
+          "answer": {
+            "text": "Pa",
+            "picture": "pic_grownup_2"
+          },
+          "others": [
+            {
+              "text": "Ouma",
+              "picture": "pic_grownup_3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vlieer_en_reen",
+      "level": 2,
+      "title": "Die Vlieër",
+      "scenes": "l2_rain",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Nandi en Zara speel met 'n vlieër."
+        ],
+        [
+          "Swart wolke kom.",
+          "Dit reën!"
+        ],
+        [
+          "Die meisies hardloop huis toe.",
+          "Hulle lees 'n boek."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "Wat gebeur toe die wolke kom?",
+          "scene": 2,
+          "answer": {
+            "text": "Dit reën.",
+            "picture": "pic_rain"
+          },
+          "others": [
+            {
+              "text": "Die son skyn.",
+              "picture": "pic_sun"
+            }
+          ]
+        },
+        {
+          "kind": "where",
+          "text": "Waarheen hardloop die meisies?",
+          "scene": 3,
+          "answer": {
+            "text": "huis",
+            "picture": "pic_home"
+          },
+          "others": [
+            {
+              "text": "winkel",
+              "picture": "pic_shop"
+            },
+            {
+              "text": "see",
+              "picture": "pic_sea"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "markdag",
+      "level": 3,
+      "title": "Markdag",
+      "scenes": "l3_market",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Saterdagoggend stap Ma en Kabelo mark toe.",
+          "Daar is appels, piesangs en pruime."
+        ],
+        [
+          "Ma koop 'n sak appels.",
+          "Kabelo betaal met 'n muntstuk."
+        ],
+        [
+          "By die huis bak Ma 'n appeltert.",
+          "Die hele kombuis ruik heerlik."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie betaal by die mark?",
+          "scene": 2,
+          "answer": {
+            "text": "Kabelo",
+            "picture": "pic_child_8"
+          },
+          "others": [
+            {
+              "text": "Ma",
+              "picture": "pic_grownup_1"
+            },
+            {
+              "text": "Ouma",
+              "picture": "pic_grownup_3"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat koop Ma?",
+          "scene": 2,
+          "answer": {
+            "text": "appels",
+            "picture": "pic_apple"
+          },
+          "others": [
+            {
+              "text": "piesangs",
+              "picture": "pic_banana"
+            },
+            {
+              "text": "pruime",
+              "picture": "pic_plum"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat bak Ma by die huis?",
+          "scene": 3,
+          "answer": {
+            "text": "'n appeltert",
+            "picture": "pic_pie"
+          },
+          "others": [
+            {
+              "text": "brood",
+              "picture": "pic_bun"
+            },
+            {
+              "text": "koekies",
+              "picture": "pic_biscuit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oupa_se_bootjie",
+      "level": 3,
+      "title": "Oupa se Bootjie",
+      "scenes": "l3_boat",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Oupa en Ruan stoot die bootjie in die water.",
+          "Ruan het sy net by hom."
+        ],
+        [
+          "Die see is kalm.",
+          "Ruan gooi sy net uit en vang twee visse."
+        ],
+        [
+          "Op die strand kry hulle 'n krap.",
+          "Hulle sit die krap terug in die water."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "Wat gooi Ruan uit?",
+          "scene": 2,
+          "answer": {
+            "text": "net",
+            "picture": "pic_net"
+          },
+          "others": [
+            {
+              "text": "bal",
+              "picture": "pic_ball"
+            },
+            {
+              "text": "hoed",
+              "picture": "pic_hat"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Hoeveel visse vang hy?",
+          "scene": 2,
+          "answer": {
+            "text": "twee",
+            "picture": "pic_count_2"
+          },
+          "others": [
+            {
+              "text": "drie",
+              "picture": "pic_count_3"
+            },
+            {
+              "text": "een",
+              "picture": "pic_count_1"
+            }
+          ]
+        },
+        {
+          "kind": "where",
+          "text": "Waar sit hulle die krap?",
+          "scene": 3,
+          "answer": {
+            "text": "in die water"
+          },
+          "others": [
+            {
+              "text": "in die boot"
+            },
+            {
+              "text": "op 'n rots"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slakke_soek",
+      "level": 3,
+      "title": "Slakke Soek",
+      "scenes": "l3_school",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Juffrou Botha lees vir die klas 'n storie oor slakke."
+        ],
+        [
+          "Buite in die tuin soek die kinders slakke.",
+          "Lina kry een op 'n blaar."
+        ],
+        [
+          "In die klas teken hulle die slak met potlode."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie lees vir die klas?",
+          "scene": 1,
+          "answer": {
+            "text": "Juffrou Botha",
+            "picture": "pic_grownup_1"
+          },
+          "others": [
+            {
+              "text": "Pieter",
+              "picture": "pic_child_6"
+            },
+            {
+              "text": "Lina",
+              "picture": "pic_child_3"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat soek die kinders in die tuin?",
+          "scene": 2,
+          "answer": {
+            "text": "slakke",
+            "picture": "pic_snail"
+          },
+          "others": [
+            {
+              "text": "voëls",
+              "picture": "pic_bird"
+            },
+            {
+              "text": "visse",
+              "picture": "pic_fish"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat doen hulle in die klas?",
+          "scene": 3,
+          "answer": {
+            "text": "Hulle teken."
+          },
+          "others": [
+            {
+              "text": "Hulle sing."
+            },
+            {
+              "text": "Hulle slaap."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ouma_se_tuin",
+      "level": 3,
+      "title": "Ouma se Tuin",
+      "scenes": "l3_garden",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Zara en Ouma plant sade in die tuin.",
+          "Hulle gee die sade water met 'n beker."
+        ],
+        [
+          "Die aand reën dit sag op die tuin."
+        ],
+        [
+          "'n Week later is daar klein groen plantjies!",
+          "Ouma gee vir Zara 'n drukkie."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "where",
+          "text": "Waar plant hulle die sade?",
+          "scene": 1,
+          "answer": {
+            "text": "in die tuin"
+          },
+          "others": [
+            {
+              "text": "by die see"
+            },
+            {
+              "text": "in die klas"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wanneer reën dit?",
+          "scene": 2,
+          "answer": {
+            "text": "in die aand"
+          },
+          "others": [
+            {
+              "text": "in die oggend"
+            },
+            {
+              "text": "op skool"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat sien hulle 'n week later?",
+          "scene": 3,
+          "answer": {
+            "text": "plantjies",
+            "picture": "pic_seed_3"
+          },
+          "others": [
+            {
+              "text": "slakke",
+              "picture": "pic_snail"
+            },
+            {
+              "text": "paddas",
+              "picture": "pic_frog"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "die_groot_wedstryd",
+      "level": 4,
+      "title": "Die Groot Wedstryd",
+      "scenes": "l4_match",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Dis Saterdag en die span speel sokker.",
+          "Nandi, Thabo en Ruan is gereed."
+        ],
+        [
+          "Thabo val en sy knie bloei.",
+          "Die afrigter help hom na die bank."
+        ],
+        [
+          "Nandi kry die bal.",
+          "Sy hardloop so vinnig as wat sy kan."
+        ],
+        [
+          "Sy skop en dis 'n doel!",
+          "Almal juig, ook Thabo op die bank."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie val?",
+          "scene": 2,
+          "answer": {
+            "text": "Thabo",
+            "picture": "pic_child_2"
+          },
+          "others": [
+            {
+              "text": "Nandi",
+              "picture": "pic_child_1"
+            },
+            {
+              "text": "Ruan",
+              "picture": "pic_child_4"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Hoekom sit Thabo op die bank?",
+          "scene": 2,
+          "answer": {
+            "text": "Sy knie is seer."
+          },
+          "others": [
+            {
+              "text": "Hy is honger."
+            },
+            {
+              "text": "Hy is moeg."
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat doen almal aan die einde?",
+          "scene": 4,
+          "answer": {
+            "text": "Hulle juig."
+          },
+          "others": [
+            {
+              "text": "Hulle huil."
+            },
+            {
+              "text": "Hulle gaan slaap."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pannekoek",
+      "level": 4,
+      "title": "Pannekoek",
+      "scenes": "l4_pancakes",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Pa, Mia en Kabelo bak pannekoek.",
+          "In die bak gaan eiers, melk en meel."
+        ],
+        [
+          "Die pan word warm op die stoof.",
+          "Mia gooi die eerste pannekoek in."
+        ],
+        [
+          "Kabelo speel met die hond en vergeet van die pan.",
+          "Die pannekoek brand en die kombuis is vol rook!"
+        ],
+        [
+          "Die volgende pannekoeke is perfek.",
+          "Hulle eet dit met konfyt."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie bak saam met Pa?",
+          "scene": 1,
+          "answer": {
+            "text": "Mia en Kabelo"
+          },
+          "others": [
+            {
+              "text": "Ma en Ouma"
+            },
+            {
+              "text": "Nandi en Zara"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Hoekom brand die eerste pannekoek?",
+          "scene": 3,
+          "answer": {
+            "text": "Kabelo het van die pan vergeet."
+          },
+          "others": [
+            {
+              "text": "Die stoof was koud."
+            },
+            {
+              "text": "Die melk was op."
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Waarmee is die kombuis vol?",
+          "scene": 3,
+          "answer": {
+            "text": "rook"
+          },
+          "others": [
+            {
+              "text": "water"
+            },
+            {
+              "text": "sand"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "die_neskassie",
+      "level": 4,
+      "title": "Die Neskassie",
+      "scenes": "l4_nestbox",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Pieter se pa het 'n paar ou planke.",
+          "Saam saag hulle die planke kort."
+        ],
+        [
+          "Pieter slaan die spykers met die hamer in.",
+          "Hy werk stadig en versigtig."
+        ],
+        [
+          "Pa klim op die leer en hang die kassie in die boom."
+        ],
+        [
+          "Na 'n week bou twee voëls 'n nes in die kassie.",
+          "Pieter kyk elke dag na hulle."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "Waarmee slaan Pieter die spykers in?",
+          "scene": 2,
+          "answer": {
+            "text": "hamer",
+            "picture": "pic_hammer"
+          },
+          "others": [
+            {
+              "text": "lepel",
+              "picture": "pic_spoon"
+            },
+            {
+              "text": "boek",
+              "picture": "pic_book"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Hoekom klim Pa op die leer?",
+          "scene": 3,
+          "answer": {
+            "text": "Om die kassie in die boom te hang."
+          },
+          "others": [
+            {
+              "text": "Om 'n bal af te haal."
+            },
+            {
+              "text": "Om die kat te help."
+            }
+          ]
+        },
+        {
+          "kind": "who",
+          "text": "Wie bou 'n nes in die kassie?",
+          "scene": 4,
+          "answer": {
+            "text": "voëls",
+            "picture": "pic_bird"
+          },
+          "others": [
+            {
+              "text": "bye",
+              "picture": "pic_bee"
+            },
+            {
+              "text": "slakke",
+              "picture": "pic_snail"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lina_se_verrassing",
+      "level": 4,
+      "title": "Lina se Verrassing",
+      "scenes": "l4_birthday",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Vandag word Lina agt, maar Pa sê niks by die ontbyttafel nie.",
+          "Sy eet stil haar pap."
+        ],
+        [
+          "Met haar sak op die rug stap sy skool toe."
+        ],
+        [
+          "Sy maak die klasdeur oop en almal skree: \"Verras!\"",
+          "Juffrou het 'n groot sjokoladekoek gebak."
+        ],
+        [
+          "Na skool wag Pa by die huis met 'n hondjie.",
+          "Hy het die geheim die hele dag gehou!"
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "Wat eet Lina vir ontbyt?",
+          "scene": 1,
+          "answer": {
+            "text": "pap",
+            "picture": "pic_bowl"
+          },
+          "others": [
+            {
+              "text": "brood",
+              "picture": "pic_bun"
+            },
+            {
+              "text": "vis",
+              "picture": "pic_fish"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Hoekom sê Pa niks by die ontbyttafel nie?",
+          "scene": 4,
+          "answer": {
+            "text": "Hy wou haar verras."
+          },
+          "others": [
+            {
+              "text": "Hy was kwaad."
+            },
+            {
+              "text": "Hy was siek."
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat kry Lina van Pa?",
+          "scene": 4,
+          "answer": {
+            "text": "'n hondjie",
+            "picture": "pic_dog"
+          },
+          "others": [
+            {
+              "text": "'n fiets",
+              "picture": "pic_bike"
+            },
+            {
+              "text": "'n vlieër",
+              "picture": "pic_kite"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wagter_hardloop_weg",
+      "level": 5,
+      "title": "Wagter Hardloop Weg",
+      "scenes": "l5_beach_dog",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Elke Sondag stap Thabo en sy hond, Wagter, op die strand."
+        ],
+        [
+          "Skielik sien Wagter 'n seemeeu en hardloop agterna.",
+          "Thabo roep en roep, maar Wagter luister nie."
+        ],
+        [
+          "Thabo soek agter elke rots, maar hy kry hom nêrens nie."
+        ],
+        [
+          "Donker wolke trek oor die see en dit begin reën."
+        ],
+        [
+          "By die strandwag se hut hoor hy 'n bekende blaf.",
+          "Die strandwag hou vir Wagter vas."
+        ],
+        [
+          "Tuis slaap Wagter op die mat.",
+          "Van nou af bly hy aan sy leiband."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "feel",
+          "text": "Hoe voel Thabo toe hy Wagter nie kan kry nie?",
+          "scene": 3,
+          "answer": {
+            "text": "bekommerd"
+          },
+          "others": [
+            {
+              "text": "verveeld"
+            },
+            {
+              "text": "trots"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat sien Wagter op die strand?",
+          "scene": 2,
+          "answer": {
+            "text": "'n seemeeu",
+            "picture": "pic_bird"
+          },
+          "others": [
+            {
+              "text": "'n krap",
+              "picture": "pic_crab"
+            },
+            {
+              "text": "'n vis",
+              "picture": "pic_fish"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Hoekom word Thabo nat?",
+          "scene": 4,
+          "answer": {
+            "text": "Dit begin reën."
+          },
+          "others": [
+            {
+              "text": "Hy val in die see."
+            },
+            {
+              "text": "Wagter spat hom nat."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "die_skoolkonsert",
+      "level": 5,
+      "title": "Die Skoolkonsert",
+      "scenes": "l5_concert",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Meneer Smit kies Kabelo om in die skoolkonsert die trom te speel."
+        ],
+        [
+          "Elke middag oefen hy agter in die tuin.",
+          "Die kat skrik en hardloop weg."
+        ],
+        [
+          "Op die aand van die konsert bewe Kabelo se hande.",
+          "Ouma sê saggies: \"Luister net na die musiek.\""
+        ],
+        [
+          "Die gordyn gaan oop en die koor begin sing."
+        ],
+        [
+          "Kabelo laat 'n stokkie val, maar hy speel met sy hand verder."
+        ],
+        [
+          "Aan die einde klap almal hande.",
+          "Kabelo is baie trots."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Wie sê Kabelo moet net na die musiek luister?",
+          "scene": 3,
+          "answer": {
+            "text": "Ouma",
+            "picture": "pic_grownup_3"
+          },
+          "others": [
+            {
+              "text": "Meneer Smit",
+              "picture": "pic_grownup_2"
+            },
+            {
+              "text": "Zara",
+              "picture": "pic_child_7"
+            }
+          ]
+        },
+        {
+          "kind": "feel",
+          "text": "Hoe voel Kabelo aan die einde?",
+          "scene": 6,
+          "answer": {
+            "text": "trots"
+          },
+          "others": [
+            {
+              "text": "bang"
+            },
+            {
+              "text": "hartseer"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Hoekom speel Kabelo met sy hand?",
+          "scene": 5,
+          "answer": {
+            "text": "Hy het 'n stokkie laat val."
+          },
+          "others": [
+            {
+              "text": "Sy hand was seer."
+            },
+            {
+              "text": "Die trom was stukkend."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slang_op_die_paadjie",
+      "level": 5,
+      "title": "Slang op die Paadjie",
+      "scenes": "l5_hike",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Mia en haar boet Pieter pak hoede, water en toebroodjies vir 'n staptog."
+        ],
+        [
+          "Saam met Pa klim hulle die bergpaadjie uit."
+        ],
+        [
+          "Skielik staan Pa stil. 'n Slang lê oor die paadjie!",
+          "\"Staan doodstil,\" fluister hy."
+        ],
+        [
+          "Na 'n rukkie gly die slang weg in die gras in."
+        ],
+        [
+          "Bo-op die berg eet hulle hul toebroodjies en kyk na die see ver onder.",
+          "\"Daardie slang was seker banger as ons,\" lag Pieter."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "Wat lê oor die paadjie?",
+          "scene": 3,
+          "answer": {
+            "text": "'n slang",
+            "picture": "pic_snake"
+          },
+          "others": [
+            {
+              "text": "'n stomp",
+              "picture": "pic_log"
+            },
+            {
+              "text": "'n slak",
+              "picture": "pic_snail"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Hoekom staan almal doodstil?",
+          "scene": 3,
+          "answer": {
+            "text": "Daar lê 'n slang op die paadjie."
+          },
+          "others": [
+            {
+              "text": "Hulle is moeg."
+            },
+            {
+              "text": "Dit begin reën."
+            }
+          ]
+        },
+        {
+          "kind": "feel",
+          "text": "Hoe voel Pieter bo-op die berg?",
+          "scene": 5,
+          "answer": {
+            "text": "vrolik"
+          },
+          "others": [
+            {
+              "text": "kwaad"
+            },
+            {
+              "text": "hartseer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "die_strand_word_skoon",
+      "level": 5,
+      "title": "Die Strand Word Skoon",
+      "scenes": "l5_cleanup",
+      "note": "Written in Afrikaans (not translated). Waiting for the owner's check (or a fluent reader's) before it is recorded.",
+      "text": [
+        [
+          "Graad 4 gaan strand toe, maar oral lê blikkies en plastieksakke."
+        ],
+        [
+          "Juffrou Mokoena deel handskoene en vullissakke uit."
+        ],
+        [
+          "Agter 'n rots kry Pieter 'n krap wat in 'n ou visnet vasgedraai is."
+        ],
+        [
+          "Saggies trek Zara en Pieter die net los.",
+          "Die krap skarrel terug see toe."
+        ],
+        [
+          "Teen middagete het die klas twaalf groot sakke vol."
+        ],
+        [
+          "Terug by die skool maak hulle 'n plakkaat: \"Hou ons strand skoon!\""
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "feel",
+          "text": "Hoe voel Zara toe die krap terug see toe skarrel?",
+          "scene": 4,
+          "answer": {
+            "text": "bly"
+          },
+          "others": [
+            {
+              "text": "kwaad"
+            },
+            {
+              "text": "bang"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "Wat deel Juffrou Mokoena uit?",
+          "scene": 2,
+          "answer": {
+            "text": "handskoene en sakke"
+          },
+          "others": [
+            {
+              "text": "toebroodjies"
+            },
+            {
+              "text": "boeke"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Hoekom maak die klas 'n plakkaat?",
+          "scene": 6,
+          "answer": {
+            "text": "Sodat almal die strand skoon hou."
+          },
+          "others": [
+            {
+              "text": "Vir 'n verjaardag."
+            },
+            {
+              "text": "Om iets te verkoop."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

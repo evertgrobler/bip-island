@@ -59,6 +59,8 @@ public sealed class ContentLoaderTests : IDisposable
         CheckRoundTrip<ShapesFile>("art/shapes.json");
         CheckRoundTrip<PaintsFile>("art/paints.json");
         CheckRoundTrip<MirrorFile>("art/mirror.json");
+        CheckRoundTrip<StoryScenesFile>("stories/scenes.json");
+        CheckRoundTrip<StoriesFile>("stories/stories.json");
         CheckRoundTrip<AssetManifestFile>("asset_manifest.json");
     }
 

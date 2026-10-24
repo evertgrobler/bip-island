@@ -1,0 +1,1283 @@
+{
+  "note": "Bip's Stories (docs/GAMES.md): 20 short stories, four per level. Level 1 (age 5): 2 scenes, one short sentence each, one question with 2 pictures; level 2 (6): 3 scenes, 2 questions; level 3 (7): 3 scenes, 3 literal questions; level 4 (8): 4 scenes, one \"why\" question; level 5 (9-10): 5-6 scenes, one \"how did they feel\" question. Clips: vo_story_<id>_<n> per sentence, vo_story_<id>_q<n> per question, an answer's word clip when there is one, else vo_story_<id>_a<n>.",
+  "stories": [
+    {
+      "id": "muddy_dog",
+      "level": 1,
+      "title": "The Muddy Dog",
+      "scenes": "l1_mud",
+      "text": [
+        [
+          "The dog is in the mud."
+        ],
+        [
+          "Mum has the dog at the tap."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Who is in the mud?",
+          "scene": 1,
+          "answer": {
+            "text": "dog",
+            "picture": "pic_dog"
+          },
+          "others": [
+            {
+              "text": "cat",
+              "picture": "pic_cat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crab_on_a_rock",
+      "level": 1,
+      "title": "The Crab",
+      "scenes": "l1_crab",
+      "text": [
+        [
+          "A crab sat on a rock."
+        ],
+        [
+          "It can run to the sea."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "where",
+          "text": "What did the crab sit on?",
+          "scene": 1,
+          "answer": {
+            "text": "rock",
+            "picture": "pic_rock"
+          },
+          "others": [
+            {
+              "text": "bed",
+              "picture": "pic_bed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "thandis_bag",
+      "level": 1,
+      "title": "Thandi's Bag",
+      "scenes": "l1_bag",
+      "text": [
+        [
+          "Thandi has a red bag."
+        ],
+        [
+          "The bag has a doll and a cup."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "What is in the bag with the doll?",
+          "scene": 2,
+          "answer": {
+            "text": "cup",
+            "picture": "pic_cup"
+          },
+          "others": [
+            {
+              "text": "ball",
+              "picture": "pic_ball"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frog_on_a_log",
+      "level": 1,
+      "title": "On the Log",
+      "scenes": "l1_frog",
+      "text": [
+        [
+          "A frog sat on a log."
+        ],
+        [
+          "Then a duck sat on the log."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Who sat on the log with the frog?",
+          "scene": 2,
+          "answer": {
+            "text": "duck",
+            "picture": "pic_duck"
+          },
+          "others": [
+            {
+              "text": "hen",
+              "picture": "pic_hen"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bus_to_school",
+      "level": 2,
+      "title": "The Bus",
+      "scenes": "l2_bus",
+      "text": [
+        [
+          "Sipho and Dad sit on a bench."
+        ],
+        [
+          "The bus stops.",
+          "Sipho gets on the bus."
+        ],
+        [
+          "Sipho sits at his desk.",
+          "His book is on the desk."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Who sat on the bench with Sipho?",
+          "scene": 1,
+          "answer": {
+            "text": "Dad",
+            "picture": "pic_grownup_2"
+          },
+          "others": [
+            {
+              "text": "Gran",
+              "picture": "pic_grownup_3"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What is on Sipho's desk?",
+          "scene": 3,
+          "answer": {
+            "text": "book",
+            "picture": "pic_book"
+          },
+          "others": [
+            {
+              "text": "cake",
+              "picture": "pic_cake"
+            },
+            {
+              "text": "fish",
+              "picture": "pic_fish"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "emmas_cake",
+      "level": 2,
+      "title": "Emma's Cake",
+      "scenes": "l2_cake",
+      "text": [
+        [
+          "Emma and Gran mix eggs in a bowl."
+        ],
+        [
+          "Then they bake a big cake."
+        ],
+        [
+          "It is Emma's birthday.",
+          "Her friends come to eat the cake."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Who helps Emma bake?",
+          "scene": 1,
+          "answer": {
+            "text": "Gran",
+            "picture": "pic_grownup_3"
+          },
+          "others": [
+            {
+              "text": "Dad",
+              "picture": "pic_grownup_2"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What do they mix in the bowl?",
+          "scene": 1,
+          "answer": {
+            "text": "eggs",
+            "picture": "pic_egg"
+          },
+          "others": [
+            {
+              "text": "fish",
+              "picture": "pic_fish"
+            },
+            {
+              "text": "socks",
+              "picture": "pic_sock"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ball_in_the_tree",
+      "level": 2,
+      "title": "Up in the Tree",
+      "scenes": "l2_ball",
+      "text": [
+        [
+          "Kyle and Sipho kick a ball."
+        ],
+        [
+          "Kick! The ball is stuck in a tree."
+        ],
+        [
+          "A man gets it down with a ladder."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "where",
+          "text": "Where did the ball go?",
+          "scene": 2,
+          "answer": {
+            "text": "tree",
+            "picture": "pic_tree"
+          },
+          "others": [
+            {
+              "text": "sea",
+              "picture": "pic_sea"
+            },
+            {
+              "text": "shop",
+              "picture": "pic_shop"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did the man use to get the ball?",
+          "scene": 3,
+          "answer": {
+            "text": "ladder",
+            "picture": "pic_ladder"
+          },
+          "others": [
+            {
+              "text": "rope",
+              "picture": "pic_rope"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kite_and_rain",
+      "level": 2,
+      "title": "Kite Day",
+      "scenes": "l2_rain",
+      "text": [
+        [
+          "Thandi and Aisha fly a kite."
+        ],
+        [
+          "Then the rain comes.",
+          "Drip, drip, drip!"
+        ],
+        [
+          "They run home and look at a book."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "What did the girls fly?",
+          "scene": 1,
+          "answer": {
+            "text": "kite",
+            "picture": "pic_kite"
+          },
+          "others": [
+            {
+              "text": "bike",
+              "picture": "pic_bike"
+            },
+            {
+              "text": "boat",
+              "picture": "pic_boat"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did they look at at home?",
+          "scene": 3,
+          "answer": {
+            "text": "book",
+            "picture": "pic_book"
+          },
+          "others": [
+            {
+              "text": "cake",
+              "picture": "pic_cake"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "market_day",
+      "level": 3,
+      "title": "Market Day",
+      "scenes": "l3_market",
+      "text": [
+        [
+          "On Saturday, Mum and Tumi go to the market.",
+          "There are apples, bananas and plums."
+        ],
+        [
+          "Tumi chooses six bananas.",
+          "He pays with a big coin."
+        ],
+        [
+          "At home, Mum bakes a pie.",
+          "Tumi has a banana while he waits."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "where",
+          "text": "Where did Mum and Tumi go?",
+          "scene": 1,
+          "answer": {
+            "text": "the market"
+          },
+          "others": [
+            {
+              "text": "the beach"
+            },
+            {
+              "text": "the farm"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did Tumi choose?",
+          "scene": 2,
+          "answer": {
+            "text": "bananas",
+            "picture": "pic_banana"
+          },
+          "others": [
+            {
+              "text": "apples",
+              "picture": "pic_apple"
+            },
+            {
+              "text": "plums",
+              "picture": "pic_plum"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did Mum bake at home?",
+          "scene": 3,
+          "answer": {
+            "text": "a pie",
+            "picture": "pic_pie"
+          },
+          "others": [
+            {
+              "text": "bread",
+              "picture": "pic_bun"
+            },
+            {
+              "text": "biscuits",
+              "picture": "pic_biscuit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "grandpas_boat",
+      "level": 3,
+      "title": "Grandpa's Boat",
+      "scenes": "l3_boat",
+      "text": [
+        [
+          "Grandpa and Kyle push the little boat into the sea.",
+          "Kyle holds his net."
+        ],
+        [
+          "They sail past the rocks.",
+          "Kyle catches two fish in his net."
+        ],
+        [
+          "Back on the beach, they find a crab.",
+          "They let the crab go, and take the fish home."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Who went in the boat with Kyle?",
+          "scene": 1,
+          "answer": {
+            "text": "Grandpa",
+            "picture": "pic_grownup_2"
+          },
+          "others": [
+            {
+              "text": "Mum",
+              "picture": "pic_grownup_1"
+            },
+            {
+              "text": "Gran",
+              "picture": "pic_grownup_3"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did Kyle catch in his net?",
+          "scene": 2,
+          "answer": {
+            "text": "fish",
+            "picture": "pic_fish"
+          },
+          "others": [
+            {
+              "text": "shell",
+              "picture": "pic_shell"
+            },
+            {
+              "text": "sock",
+              "picture": "pic_sock"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did they let go?",
+          "scene": 3,
+          "answer": {
+            "text": "the crab",
+            "picture": "pic_crab"
+          },
+          "others": [
+            {
+              "text": "the fish",
+              "picture": "pic_fish"
+            },
+            {
+              "text": "the bird",
+              "picture": "pic_bird"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "snail_hunt",
+      "level": 3,
+      "title": "The Snail Hunt",
+      "scenes": "l3_school",
+      "text": [
+        [
+          "In Grade 2, Mrs Dlamini reads the class a book about snails."
+        ],
+        [
+          "Then the children look for snails in the school garden.",
+          "Priya finds one on a leaf."
+        ],
+        [
+          "Back in class, they draw the snail with pencils."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Who found a snail?",
+          "scene": 2,
+          "answer": {
+            "text": "Priya",
+            "picture": "pic_child_3"
+          },
+          "others": [
+            {
+              "text": "Jack",
+              "picture": "pic_child_6"
+            },
+            {
+              "text": "Mrs Dlamini",
+              "picture": "pic_grownup_1"
+            }
+          ]
+        },
+        {
+          "kind": "where",
+          "text": "Where did Priya find the snail?",
+          "scene": 2,
+          "answer": {
+            "text": "on a leaf",
+            "picture": "pic_leaf"
+          },
+          "others": [
+            {
+              "text": "on a rock",
+              "picture": "pic_rock"
+            },
+            {
+              "text": "in a bag",
+              "picture": "pic_bag"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did they draw with?",
+          "scene": 3,
+          "answer": {
+            "text": "pencils",
+            "picture": "pic_pencil"
+          },
+          "others": [
+            {
+              "text": "spoons",
+              "picture": "pic_spoon"
+            },
+            {
+              "text": "sticks",
+              "picture": "pic_wood"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gogos_garden",
+      "level": 3,
+      "title": "Gogo's Garden",
+      "scenes": "l3_garden",
+      "text": [
+        [
+          "Aisha and Gogo plant seeds in the garden.",
+          "They water them with a jug."
+        ],
+        [
+          "That night, rain falls on the garden."
+        ],
+        [
+          "A week later, little green plants pop up!",
+          "Gogo gives Aisha a big hug."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Who planted seeds with Aisha?",
+          "scene": 1,
+          "answer": {
+            "text": "Gogo",
+            "picture": "pic_grownup_3"
+          },
+          "others": [
+            {
+              "text": "Dad",
+              "picture": "pic_grownup_2"
+            },
+            {
+              "text": "Jack",
+              "picture": "pic_child_6"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did they water the seeds with?",
+          "scene": 1,
+          "answer": {
+            "text": "a jug",
+            "picture": "pic_jug"
+          },
+          "others": [
+            {
+              "text": "a cup",
+              "picture": "pic_cup"
+            },
+            {
+              "text": "a pot",
+              "picture": "pic_pot"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What came up a week later?",
+          "scene": 3,
+          "answer": {
+            "text": "plants",
+            "picture": "pic_seed_3"
+          },
+          "others": [
+            {
+              "text": "snails",
+              "picture": "pic_snail"
+            },
+            {
+              "text": "frogs",
+              "picture": "pic_frog"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the_big_match",
+      "level": 4,
+      "title": "The Big Match",
+      "scenes": "l4_match",
+      "text": [
+        [
+          "It is the last soccer match of the term.",
+          "Thandi, Sipho and Kyle play for the Blue Team."
+        ],
+        [
+          "Sipho falls and hurts his knee.",
+          "Coach Peters helps him to the bench."
+        ],
+        [
+          "Now Thandi must play up front.",
+          "She runs fast and kicks the ball hard."
+        ],
+        [
+          "Goal! The Blue Team wins.",
+          "Sipho cheers from the bench with a plaster on his knee."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "who",
+          "text": "Who scored the goal?",
+          "scene": 3,
+          "answer": {
+            "text": "Thandi",
+            "picture": "pic_child_1"
+          },
+          "others": [
+            {
+              "text": "Sipho",
+              "picture": "pic_child_2"
+            },
+            {
+              "text": "Kyle",
+              "picture": "pic_child_4"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Why did Sipho sit on the bench?",
+          "scene": 2,
+          "answer": {
+            "text": "He hurt his knee."
+          },
+          "others": [
+            {
+              "text": "He was hungry."
+            },
+            {
+              "text": "He lost his ball."
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What happened at the end?",
+          "scene": 4,
+          "answer": {
+            "text": "The Blue Team won."
+          },
+          "others": [
+            {
+              "text": "It started to rain."
+            },
+            {
+              "text": "The coach went home."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pancake_morning",
+      "level": 4,
+      "title": "Pancake Morning",
+      "scenes": "l4_pancakes",
+      "text": [
+        [
+          "Emma and her friend Tumi help Dad make pancakes.",
+          "They mix eggs, milk and flour in a bowl."
+        ],
+        [
+          "Dad heats the pan on the stove.",
+          "Emma pours in the first pancake. Sizzle!"
+        ],
+        [
+          "Tumi plays with the dog and forgets to flip it.",
+          "Oh no, it burns, and smoke fills the kitchen!"
+        ],
+        [
+          "The next pancakes are just right.",
+          "They eat them with jam."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "What did they mix in the bowl?",
+          "scene": 1,
+          "answer": {
+            "text": "eggs, milk and flour"
+          },
+          "others": [
+            {
+              "text": "apples and honey"
+            },
+            {
+              "text": "rice and peas"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Why did the first pancake burn?",
+          "scene": 3,
+          "answer": {
+            "text": "Tumi forgot to flip it."
+          },
+          "others": [
+            {
+              "text": "The pan was cold."
+            },
+            {
+              "text": "Mum was late."
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did they eat the pancakes with?",
+          "scene": 4,
+          "answer": {
+            "text": "jam",
+            "picture": "pic_jam"
+          },
+          "others": [
+            {
+              "text": "fish",
+              "picture": "pic_fish"
+            },
+            {
+              "text": "chips",
+              "picture": "pic_chip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the_nest_box",
+      "level": 4,
+      "title": "The Nest Box",
+      "scenes": "l4_nestbox",
+      "text": [
+        [
+          "Jack wants to help the birds in his garden.",
+          "He and his dad cut old planks with a saw."
+        ],
+        [
+          "Jack hammers in the nails carefully.",
+          "Soon they have a little wooden box with a round hole."
+        ],
+        [
+          "Dad climbs the ladder and hangs the box in the tree."
+        ],
+        [
+          "A week later, two birds build a nest inside.",
+          "Jack watches them and smiles."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "What did Jack and his dad make?",
+          "scene": 2,
+          "answer": {
+            "text": "a box for birds",
+            "picture": "pic_box"
+          },
+          "others": [
+            {
+              "text": "a boat",
+              "picture": "pic_boat"
+            },
+            {
+              "text": "a kite",
+              "picture": "pic_kite"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Why did Jack make the box?",
+          "scene": 1,
+          "answer": {
+            "text": "To help the birds."
+          },
+          "others": [
+            {
+              "text": "To keep his toys in."
+            },
+            {
+              "text": "To sell at the market."
+            }
+          ]
+        },
+        {
+          "kind": "where",
+          "text": "Where did Dad hang the box?",
+          "scene": 3,
+          "answer": {
+            "text": "in the tree",
+            "picture": "pic_tree"
+          },
+          "others": [
+            {
+              "text": "on the gate",
+              "picture": "pic_gate"
+            },
+            {
+              "text": "on the bus",
+              "picture": "pic_bus"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "priyas_birthday",
+      "level": 4,
+      "title": "Priya's Surprise",
+      "scenes": "l4_birthday",
+      "text": [
+        [
+          "It is Priya's eighth birthday, but at breakfast Dad says nothing.",
+          "Priya eats her porridge quietly."
+        ],
+        [
+          "She walks to school slowly with her bag."
+        ],
+        [
+          "When she opens the classroom door, everyone shouts, \"Surprise!\"",
+          "Her teacher has a big chocolate cake."
+        ],
+        [
+          "After school, Dad has a present for her: a puppy!",
+          "He was keeping the secret all day."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "why",
+          "text": "Why was Priya quiet at breakfast?",
+          "scene": 1,
+          "answer": {
+            "text": "Dad said nothing about her birthday."
+          },
+          "others": [
+            {
+              "text": "She was sick."
+            },
+            {
+              "text": "She was late for school."
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did her teacher have?",
+          "scene": 3,
+          "answer": {
+            "text": "cake",
+            "picture": "pic_cake"
+          },
+          "others": [
+            {
+              "text": "book",
+              "picture": "pic_book"
+            },
+            {
+              "text": "ball",
+              "picture": "pic_ball"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What was Dad's present?",
+          "scene": 4,
+          "answer": {
+            "text": "a puppy",
+            "picture": "pic_dog"
+          },
+          "others": [
+            {
+              "text": "a bike",
+              "picture": "pic_bike"
+            },
+            {
+              "text": "a kite",
+              "picture": "pic_kite"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rocky_runs_off",
+      "level": 5,
+      "title": "Rocky Runs Off",
+      "scenes": "l5_beach_dog",
+      "text": [
+        [
+          "Every Sunday, Sipho walks his dog, Rocky, along the beach."
+        ],
+        [
+          "Today Rocky sees a seagull and races off after it.",
+          "Sipho shouts, but Rocky doesn't stop."
+        ],
+        [
+          "Sipho looks behind every rock.",
+          "His heart is beating fast."
+        ],
+        [
+          "Dark clouds roll in from the sea, and it starts to rain."
+        ],
+        [
+          "Then he hears barking near the lifeguard hut.",
+          "A lifeguard is holding Rocky! \"He was waiting for you,\" she says."
+        ],
+        [
+          "At home, Rocky falls asleep on the rug.",
+          "Next time, Sipho will keep him on his lead."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "why",
+          "text": "Why did Rocky run away?",
+          "scene": 2,
+          "answer": {
+            "text": "He chased a seagull."
+          },
+          "others": [
+            {
+              "text": "He was scared of the rain."
+            },
+            {
+              "text": "He wanted his supper."
+            }
+          ]
+        },
+        {
+          "kind": "feel",
+          "text": "How did Sipho feel when he couldn't find Rocky?",
+          "scene": 3,
+          "answer": {
+            "text": "worried"
+          },
+          "others": [
+            {
+              "text": "bored"
+            },
+            {
+              "text": "proud"
+            }
+          ]
+        },
+        {
+          "kind": "where",
+          "text": "Where was Rocky in the end?",
+          "scene": 5,
+          "answer": {
+            "text": "with the lifeguard"
+          },
+          "others": [
+            {
+              "text": "in the sea"
+            },
+            {
+              "text": "at school"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the_school_concert",
+      "level": 5,
+      "title": "The School Concert",
+      "scenes": "l5_concert",
+      "text": [
+        [
+          "Mr Naidoo chooses Tumi to play the drum in the school concert."
+        ],
+        [
+          "Every afternoon Tumi practises in the garden. Boom, boom, boom!",
+          "Even the cat runs away."
+        ],
+        [
+          "On the night of the concert, Tumi's hands are shaking.",
+          "Gran whispers, \"Just listen to the music.\""
+        ],
+        [
+          "The curtain opens and the choir starts to sing."
+        ],
+        [
+          "Halfway through, Tumi drops a drumstick!",
+          "He keeps the beat with his hand."
+        ],
+        [
+          "At the end, everyone claps and cheers.",
+          "Tumi smiles from ear to ear."
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "feel",
+          "text": "How did Tumi feel before the concert started?",
+          "scene": 3,
+          "answer": {
+            "text": "nervous"
+          },
+          "others": [
+            {
+              "text": "sleepy"
+            },
+            {
+              "text": "cross"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did Tumi drop?",
+          "scene": 5,
+          "answer": {
+            "text": "a drumstick"
+          },
+          "others": [
+            {
+              "text": "his hat"
+            },
+            {
+              "text": "his bag"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Why did the cat run away?",
+          "scene": 2,
+          "answer": {
+            "text": "The drum was very loud."
+          },
+          "others": [
+            {
+              "text": "It saw a dog."
+            },
+            {
+              "text": "It was raining."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "snake_on_the_path",
+      "level": 5,
+      "title": "Snake on the Path",
+      "scenes": "l5_hike",
+      "text": [
+        [
+          "Emma and her brother Jack pack hats, water and sandwiches for a hike."
+        ],
+        [
+          "They follow the path up the hill with Dad."
+        ],
+        [
+          "Suddenly Dad stops. A snake is lying across the path!",
+          "\"Stand still and stay calm,\" he says quietly."
+        ],
+        [
+          "After a while, the snake slides away into the grass."
+        ],
+        [
+          "At the top, they eat their sandwiches and look at the sea far below.",
+          "Jack laughs, \"I think that snake was more scared of us than we were of it!\""
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "why",
+          "text": "Why did Dad stop on the path?",
+          "scene": 3,
+          "answer": {
+            "text": "A snake was lying across it."
+          },
+          "others": [
+            {
+              "text": "He was tired."
+            },
+            {
+              "text": "It started to rain."
+            }
+          ]
+        },
+        {
+          "kind": "feel",
+          "text": "How did the children feel when they saw the snake?",
+          "scene": 3,
+          "answer": {
+            "text": "scared"
+          },
+          "others": [
+            {
+              "text": "bored"
+            },
+            {
+              "text": "sleepy"
+            }
+          ]
+        },
+        {
+          "kind": "what",
+          "text": "What did they eat at the top?",
+          "scene": 5,
+          "answer": {
+            "text": "sandwiches",
+            "picture": "pic_sandwich"
+          },
+          "others": [
+            {
+              "text": "pie",
+              "picture": "pic_pie"
+            },
+            {
+              "text": "biscuits",
+              "picture": "pic_biscuit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "beach_clean_up",
+      "level": 5,
+      "title": "The Beach Clean-up",
+      "scenes": "l5_cleanup",
+      "text": [
+        [
+          "When Grade 4 visits the beach, Aisha sees cans and plastic bags everywhere."
+        ],
+        [
+          "Ms Mokoena hands out gloves and rubbish bags.",
+          "\"Let's clean up our beach,\" she says."
+        ],
+        [
+          "Behind a rock, Jack finds a crab caught in an old fishing net."
+        ],
+        [
+          "Very gently, Aisha and Jack pull the net away.",
+          "The crab scuttles back to the sea."
+        ],
+        [
+          "By lunchtime, the class has filled twelve big bags."
+        ],
+        [
+          "Back at school, they paint a poster: \"Keep our beach clean!\""
+        ]
+      ],
+      "questions": [
+        {
+          "kind": "what",
+          "text": "What did Jack find behind a rock?",
+          "scene": 3,
+          "answer": {
+            "text": "a crab in a net"
+          },
+          "others": [
+            {
+              "text": "a lost shoe"
+            },
+            {
+              "text": "a treasure box"
+            }
+          ]
+        },
+        {
+          "kind": "why",
+          "text": "Why did the class pick up the rubbish?",
+          "scene": 2,
+          "answer": {
+            "text": "To keep the beach clean."
+          },
+          "others": [
+            {
+              "text": "To sell it."
+            },
+            {
+              "text": "To build a boat."
+            }
+          ]
+        },
+        {
+          "kind": "feel",
+          "text": "How do you think the children felt at the end?",
+          "scene": 6,
+          "answer": {
+            "text": "proud"
+          },
+          "others": [
+            {
+              "text": "bored"
+            },
+            {
+              "text": "angry"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

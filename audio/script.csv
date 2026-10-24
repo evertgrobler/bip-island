@@ -94,3 +94,6 @@ vo_show_me.m4a,"Listen to the Afrikaans word, then click on its picture.",Show M
 vo_what_is_it.m4a,"What is this in Afrikaans? Listen to the words, then click on the right one.",What Is It?,
 vo_bips_day.m4a,"What is Bip doing? Listen to the Afrikaans, then find the picture.",Bip's Day.,
 vo_in_our_language.m4a,"In English, it's","Language Island hint; the English word follows straight after. Carry on, don't finish.",
+vo_bips_stories.m4a,"Here is a story. Listen, and click on a sentence to hear it again. Click the green arrow to turn the page.","Bip's Stories intro, said once a visit before the first page.",
+vo_story_questions.m4a,"Now listen to the question, then click on the answer.","Bip's Stories, before the first question; the question follows.",
+vo_story_look_again.m4a,"Let's look at this part of the story again.","Bip's Stories hint after two misses; the scene's sentences and the question follow.",

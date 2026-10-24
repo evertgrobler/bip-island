@@ -168,7 +168,7 @@ public partial class LettersIslandScreen : BaseScreen
 
 /// <summary>
 /// Numbers, Words and Coding Islands (Swift: NumbersIslandScene, WordsIslandScene, CodingIslandScene):
-/// the same layout with a row of game buttons (four on Numbers, three on Words, two on Coding). Bip starts the left game.
+/// the same layout with a row of game buttons (four on Numbers and Words, two on Coding). Bip starts the left game.
 /// </summary>
 public partial class GameIslandScreen : BaseScreen
 {
@@ -208,7 +208,7 @@ public partial class GameIslandScreen : BaseScreen
         Node2D[] games = _island switch
         {
             Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton()],
-            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton()],
+            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton(), StoriesButton()],
             Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
@@ -280,11 +280,13 @@ public partial class GameIslandScreen : BaseScreen
     private static Node2D SoundButtonsButton()
     {
         var buttons = Buttons.Tappable(new Node2D(), "buttons");
+        buttons.AddChild(Pen(Ellipse(Vector2.Zero, 172, 110), 818, fill: Palette.Card, lineWidth: 6));
         foreach (var (i, letter) in Indexed("c", "a", "t"))
         {
-            var x = (i - 1) * 130.0;
-            buttons.AddChild(Pen(Ellipse(P(x, 0), 62, 62), (ulong)(812 + i), fill: Palette.Card, lineWidth: 5));
-            var text = Sketch.Letter(letter, 84, shadow: Palette.Purple);
+            // Four games share Words Island, so the letters sit a little closer than on a three-game island.
+            var x = (i - 1) * 100.0;
+            buttons.AddChild(Pen(Ellipse(P(x, 0), 48, 48), (ulong)(812 + i), fill: Palette.Card, lineWidth: 5));
+            var text = Sketch.Letter(letter, 66, shadow: Palette.Purple);
             text.Position = P(x, 0);
             buttons.AddChild(text);
         }
@@ -294,11 +296,12 @@ public partial class GameIslandScreen : BaseScreen
     private static Node2D BuilderButton()
     {
         var builder = Buttons.Tappable(new Node2D(), "builder");
+        builder.AddChild(Pen(Ellipse(Vector2.Zero, 165, 110), 819, fill: Palette.Card, lineWidth: 6));
         foreach (var (i, letter) in Indexed("c", "a", "t"))
         {
-            var x = (i - 1) * 120.0;
-            builder.AddChild(Pen(RoundRect(R(x - 52, -52, 104, 104), 18), (ulong)(815 + i), fill: Palette.Teal, lineWidth: 5));
-            var text = Sketch.Letter(letter, 76, colour: Palette.White, withShadow: false);
+            var x = (i - 1) * 96.0;
+            builder.AddChild(Pen(RoundRect(R(x - 42, -42, 84, 84), 16), (ulong)(815 + i), fill: Palette.Teal, lineWidth: 5));
+            var text = Sketch.Letter(letter, 62, colour: Palette.White, withShadow: false);
             text.Position = P(x, 0);
             builder.AddChild(text);
         }
@@ -320,6 +323,21 @@ public partial class GameIslandScreen : BaseScreen
         letter.Position = P(0, 6);
         rocket.AddChild(letter);
         return rocket;
+    }
+
+    /// <summary>Bip's Stories: an open story book with a little picture on one page and lines of words on the other.</summary>
+    private static Node2D StoriesButton()
+    {
+        var book = Buttons.Tappable(new Node2D(), "stories");
+        book.AddChild(Pen(Ellipse(Vector2.Zero, 160, 140), 870, fill: Palette.Card, lineWidth: 6));
+        book.AddChild(Pen(Polygon(P(-120, -60), P(0, -80), P(120, -60), P(120, 70), P(0, 50), P(-120, 70)), 871, fill: Palette.Teal, lineWidth: 5));
+        book.AddChild(Pen(Polygon(P(-108, -48), P(-4, -66), P(-4, 54), P(-108, 60)), 872, fill: Palette.White, lineWidth: 4));
+        book.AddChild(Pen(Polygon(P(4, -66), P(108, -48), P(108, 60), P(4, 54)), 873, fill: Palette.White, lineWidth: 4));
+        book.AddChild(Pen(Ellipse(P(-56, 14), 30, 24), 874, fill: Palette.Sun, lineWidth: 3.5, wobble: 1));
+        book.AddChild(Pen(Polygon(P(-96, -36), P(-60, 0), P(-30, -26), P(-16, -40)), 875, fill: Palette.Grass, lineWidth: 3.5, wobble: 1));
+        foreach (var (i, y) in Indexed(28.0, 6.0, -16.0, -38.0))
+            book.AddChild(Pen(Polyline(P(20, y), P(i == 3 ? 66 : 94, y + 2)), (ulong)(876 + i), lineWidth: 4, wobble: 1));
+        return book;
     }
 
     private static Node2D OrderButton()
@@ -415,6 +433,7 @@ public partial class GameIslandScreen : BaseScreen
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
         "rocket" => WordRocketGame.GameId,
+        "stories" => StoriesGame.GameId,
         "order" => MorningOrderGame.GameId,
         _ => BipsPathGame.GameId,
     };

@@ -928,6 +928,30 @@
       "strand": "Listening and speaking (first additional language)",
       "summary": "Understand short, simple sentences about daily routines",
       "source": "CAPS Foundation Phase First Additional Language (English FAL; Afrikaans Eerste Addisionele Taal), Grade R-3, Listening and Speaking"
+    },
+    {
+      "code": "ENG.RC.01",
+      "framework": "english",
+      "stage": 1,
+      "strand": "Reading: understanding a story (code to map)",
+      "summary": "Listen to and read a short story, then answer who, where and what questions about it",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020, Reading (exact code to map)"
+    },
+    {
+      "code": "ENG.RC.02",
+      "framework": "english",
+      "stage": 3,
+      "strand": "Reading: understanding a story (code to map)",
+      "summary": "Answer why questions and say how a character feels, using what the story tells",
+      "source": "Cambridge Primary English curriculum framework (0058), 2020, Reading (exact code to map)"
+    },
+    {
+      "code": "HL.RV.01",
+      "framework": "caps",
+      "stage": 1,
+      "strand": "Reading and viewing: comprehension (home language)",
+      "summary": "Answer literal and then inferential questions about a story that is read aloud or read",
+      "source": "CAPS Home Language (English HL; Afrikaans Huistaal), Foundation Phase Grade R-3 and Intermediate Phase Grade 4, Reading and Viewing (topic to confirm)"
     }
   ]
 }

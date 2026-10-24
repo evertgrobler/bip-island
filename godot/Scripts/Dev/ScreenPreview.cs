@@ -19,7 +19,8 @@ public partial class ScreenPreview : Node
     [Export] public string Screen { get; set; } = "map";
     /// <summary>The grown-ups' layer on top: "gate", "switch" (letting another child play), "progress", "children", "settings", "update" (the button), or "setup:N" / "setup:tourN" (the first-time guide).</summary>
     [Export] public string Parent { get; set; } = "";
-    /// <summary>Word Rocket: the skin, the child's level in it (-1 keeps theirs), and letters typed before a hint.</summary>
+    /// <summary>Word Rocket: the skin, the child's level in it (-1 keeps theirs), and letters typed before a hint.
+    /// Bip's Stories: the level, and Typed 1 to open on the questions.</summary>
     [Export] public string Skin { get; set; } = "";
     [Export] public int Level { get; set; } = -1;
     [Export] public int Typed { get; set; }
@@ -99,6 +100,12 @@ public partial class ScreenPreview : Node
             if (Level >= 0) game.Progress.GameLevels[WordRocketGame.GameId] = new SkillMastery(Level);
             BipIsland.Games.WordRocketScreen.PreviewSkin = Skin.Length > 0 ? Skin : null;
             BipIsland.Games.WordRocketScreen.PreviewLetters = Typed;
+        }
+        if (Screen == StoriesGame.GameId)
+        {
+            if (Level >= 0) game.Progress.GameLevels[StoriesGame.GameId] = new SkillMastery(Level);
+            // Typed = 1: open on the questions instead of the first page.
+            BipIsland.Games.StoriesScreen.PreviewQuestions = Typed > 0;
         }
         if (Screen == BipsBalanceGame.GameId && Level >= 0) game.Progress.GameLevels[BipsBalanceGame.GameId] = new SkillMastery(Level);
         if (Screen is "language" or "map_language" or ShowMeGame.GameId or WhatIsItGame.GameId or BipsDayGame.GameId) game.PreviewLanguageIsland();

@@ -85,6 +85,10 @@ public static class VoiceLine
     public const string BipsDay = "vo_bips_day";
     /// <summary>"In English, it's…" / "In Afrikaans is dit…": the hint before the word in the child's own language.</summary>
     public const string InOurLanguage = "vo_in_our_language";
+    // Bip's Stories (Words Island)
+    public const string BipsStories = "vo_bips_stories";
+    public const string StoryQuestions = "vo_story_questions";
+    public const string StoryLookAgain = "vo_story_look_again";
 
     /// <summary>Every instruction clip, in the order above.</summary>
     public static readonly IReadOnlyList<string> All =
@@ -100,6 +104,7 @@ public static class VoiceLine
         Balance, Plus, EqualsWord, WhatNumber, WhichNumber, BalanceHelps, CountOnTogether, CountBackTogether,
         StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow, And,
         LanguageIsland, ShowMe, WhatIsIt, BipsDay, InOurLanguage,
+        BipsStories, StoryQuestions, StoryLookAgain,
     ];
 }
 
