@@ -104,7 +104,7 @@ public partial class MapScreen : BaseScreen
             box.ZIndex = 10;
             box.AddChild(Pen(RoundRect(R(-70, -70, 140, 140), 24), 682, fill: Palette.Purple, lineWidth: 6));
             box.AddChild(Pen(Ellipse(P(0, 70), 26, 18), 683, fill: Palette.Pink, lineWidth: 4));
-            box.AddChild(Sketch.Label("?", 84, Palette.White));
+            box.AddChild(Sketch.Label("?", 84, Palette.Ink));
             Stage.AddChild(box);
             Buttons.Pulse(box);
         }
@@ -145,7 +145,7 @@ public partial class MapScreen : BaseScreen
         if (!open)
         {
             decoration.Modulate = new Color(1, 1, 1, 0.45f);
-            var sleepy = Sketch.Label("z z z", 52, Palette.Ink.WithAlpha(0.6));
+            var sleepy = Sketch.Label("z z z", 52, Palette.SleepyZ);
             var holder = new Node2D { Position = P(150, 110) };
             holder.AddChild(sleepy);
             island.AddChild(holder);

@@ -26,6 +26,10 @@
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
 - **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
+- **Text contrast (18 Oct):** every text colour meets WCAG (4.5:1, 3:1 for big glyphs). Use `Palette.Ink`,
+  `SoftInk`, `QuietInk`, `AlertOrange`, `WrongRed`, `ProblemRed` or `GoodGreen` for text, and the named fills
+  (`BalanceBoxFill`, `GapFill`, …) behind it. Their values live in `BipCore.PaletteColours`; a unit test
+  (`TextContrastTests`) fails if a pair drops below, and the validator rejects a hand-written text colour.
 - **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
   the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
   remain only as a fallback for new words and in the parent area's child menus.
@@ -520,6 +524,13 @@
   space); the zip's 0.85 scale sits on an inner node so cards keep it narrow; `SketchNode` itself drops
   repeated polygon points before the fill, for every drawing (`Clean` is gone); `FaceOnly` has its own
   seed blocks (4940/4950/4960); `ArtPictures.Has` looks ids up directly; the Sound Buttons plate seed is 819.
+- **18 Oct, colour contrast:** every piece of text checked against WCAG (4.5:1 for normal text, 3:1 for
+  large). Fixed: Word Builder's teal tiles and its island button (white letters, 2.3:1 → dark ink, 6.3:1),
+  the Morning Order number pictures (white on light blue → ink), the mystery box "?" (→ ink), the grown-ups'
+  hint on the charging screen and "more stars for the next sticker" (ink at 85%, 8.2:1), the parent area's
+  grey text (ink at 75%, 6:1) and the setup guide's orange "Try it now" (5.9:1). After review: Bip's Balance's
+  "?" and wrong number, the parent fields' placeholders and the gap "?" marks too; named text colours in
+  `Palette`, their values and the contrast check in BipCore (`PaletteColours`, `TextContrast`, unit-tested).
 - **18 Oct, 17:50 SAST:** Letter Trace works on a trackpad (a family has a trackpad-only MacBook). Tap mode sits
   alongside the drag: click the green start dot above the letter (120 pt) and the pen follows the pointer with the
   button up until the letter is done or the child clicks again; dragging with the button held works as before.

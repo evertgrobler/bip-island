@@ -157,9 +157,9 @@ public partial class ParentLayer
             "To leave the game, change settings or see your child's progress, hold the Esc key for 3 seconds (a ring fills in the top corner), then answer a maths question, or enter your passcode if you set one.",
             17, bold: true, wrap: true));
         if (guide.PractisedGate)
-            column.AddChild(ParentUi.Text("Well done: that's how you open the grown-up area any time.", 18, bold: true, colour: Palette.Leaf.Darkened(0.35f), wrap: true));
+            column.AddChild(ParentUi.Text("Well done: that's how you open the grown-up area any time.", 18, bold: true, colour: Palette.GoodGreen, wrap: true));
         else
-            column.AddChild(ParentUi.Text("Try it now: press and hold Esc for 3 seconds.", 20, bold: true, colour: Palette.Orange.Darkened(0.25f), wrap: true));
+            column.AddChild(ParentUi.Text("Try it now: press and hold Esc for 3 seconds.", 20, bold: true, colour: Palette.AlertOrange, wrap: true));
         column.AddChild(ParentUi.Text(
             "Tip: hold Option (Mac) or Alt (Windows) while the game opens to play in a normal window without the lock.",
             15, colour: ParentUi.Secondary, wrap: true));

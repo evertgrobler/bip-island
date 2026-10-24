@@ -412,7 +412,7 @@ public partial class LetterTile : Node2D
         Tile = tile;
         AddChild(Pen(RoundRect(R(-56, -56, 112, 112), 20), 972, fill: Palette.Teal, lineWidth: 5));
         var size = tile.Text.Length >= 3 ? 50 : tile.Text.Length == 2 ? 62 : 76;
-        AddChild(Sketch.Letter(tile.Text, size, Palette.White, withShadow: false));
+        AddChild(Sketch.Letter(tile.Text, size, Palette.Ink, withShadow: false));
         Hit.SetArea(this, new Rect2(-60, -60, 120, 120));
     }
 

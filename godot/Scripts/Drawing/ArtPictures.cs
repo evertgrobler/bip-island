@@ -154,7 +154,7 @@ public static partial class ArtPictures
         p.Fill(Circle(0, 0, r), metal, 5);
         if (centre is { } middle) p.Fill(Circle(0, 0, r * 0.66), middle, 4);
         else p.Line(Circle(0, 0, r * 0.82), metal.Darkened(0.25f), 3);
-        p.Text(value, (int)(r * (value.Length > 2 ? 0.62 : 0.72)), 0, 0, Palette.Ink.WithAlpha(0.8));
+        p.Text(value, (int)(r * (value.Length > 2 ? 0.62 : 0.72)), 0, 0, Palette.SoftInk);
         p.Shine(-r * 0.5, r * 0.5, r * 0.3, r * 0.16);
         return p.Node;
     }
@@ -166,7 +166,7 @@ public static partial class ArtPictures
         p.Line(RoundRect(R(-96, -44, 192, 88), 6), colour.Darkened(0.3f), 3);
         // The watermark circle and the big number, as on the real notes.
         p.Fill(Circle(-50, 0, 30), colour.Lightened(0.35f), 3);
-        p.Text(value, 50, 42, 2, Palette.Ink.WithAlpha(0.85));
+        p.Text(value, 50, 42, 2, Palette.SoftInk);
         return p.Node;
     }
 

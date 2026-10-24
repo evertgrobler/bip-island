@@ -79,7 +79,7 @@ public static class ArtDrawing
         var holder = new Node2D { Rotation = Turn(degrees * Math.PI / 180) };
         holder.AddChild(Pen(Outline(shape, width, height), seed, fill: Palette.Card.WithAlpha(0.85),
                             ink: Palette.Ink.WithAlpha(0.35), lineWidth: 5, wobble: 3.5));
-        var mark = Sketch.Label("?", (int)Math.Clamp(Math.Min(width, height) * 0.45, 30, 90), Palette.Ink.WithAlpha(0.45));
+        var mark = Sketch.Label("?", (int)Math.Clamp(Math.Min(width, height) * 0.45, 30, 90), Palette.QuietInk);
         holder.AddChild(mark);
         return holder;
     }
