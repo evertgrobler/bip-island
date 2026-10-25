@@ -65,7 +65,10 @@ public sealed class ProgressReport
     public const int NeedsPracticeAfterAnswers = 5;
     public const int RecentGamesShown = 6;
 
-    public ProgressReport(ContentLibrary content, ChildProgress progress, Band startingBand, int today)
+    /// <param name="closedIslands">Islands this child can't visit (the Language Island before Afrikaans is
+    /// switched on): left out of the report and the sticker count.</param>
+    public ProgressReport(ContentLibrary content, ChildProgress progress, Band startingBand, int today,
+                          IReadOnlyCollection<Island>? closedIslands = null)
     {
         var rules = content.MasteryRules;
 
@@ -78,14 +81,14 @@ public sealed class ProgressReport
             return record.TotalAttempts == 0 ? SkillStatus.Ready : SkillStatus.Learning;
         }
 
-        var lines = content.Skills.Skills.Select(skill =>
+        var lines = StickerBook.Skills(content, closedIslands).Select(skill =>
         {
             var record = progress.Skill(skill.Id);
             var window = record.Recent.TakeLast(Math.Max(1, rules.MasteredWindow)).ToList();
             return new SkillLine(skill.Id, skill.Name, skill.Island, skill.Band, StatusOf(skill),
                                  window.Count(a => a.Correct), window.Count, record.TotalAttempts, record.MasteredOnDay);
         }).ToList();
-        Islands = IslandExtensions.All.Select(island => new IslandSummary(island, lines.Where(l => l.Island == island).ToList())).ToList();
+        Islands = IslandExtensions.All.Where(island => closedIslands == null || !closedIslands.Contains(island)).Select(island => new IslandSummary(island, lines.Where(l => l.Island == island).ToList())).ToList();
 
         var byId = new Dictionary<string, SkillLine>();
         foreach (var line in lines) byId.TryAdd(line.Id, line);
@@ -95,8 +98,8 @@ public sealed class ProgressReport
             byId.TryGetValue(group.SkillId, out var found) ? found.Status : SkillStatus.Locked)).ToList();
 
         Stars = progress.Stars;
-        StickersEarned = StickerBook.Earned(progress, content).Count;
-        StickersTotal = StickerBook.AllStickers(content).Count;
+        StickersEarned = StickerBook.Earned(progress, content, closedIslands).Count;
+        StickersTotal = StickerBook.AllStickers(content, closedIslands).Count;
         MinutesToday = progress.SecondsPlayed(1, today) / 60;
         MinutesThisWeek = progress.SecondsPlayed(WeekDays, today) / 60;
         DaysPlayedThisWeek = progress.DaysPlayed(WeekDays, today);

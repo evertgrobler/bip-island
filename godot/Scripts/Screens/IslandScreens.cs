@@ -208,7 +208,7 @@ public partial class GameIslandScreen : BaseScreen
         Node2D[] games = _island switch
         {
             Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton()],
-            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton()],
+            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton(), StoriesButton()],
             Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
@@ -216,7 +216,7 @@ public partial class GameIslandScreen : BaseScreen
         var spacing = games.Length switch { > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
         for (var i = 0; i < games.Length; i++)
         {
-            games[i].Position = P((i - (games.Length - 1) / 2.0) * spacing, 80);
+            games[i].Position = P((i - (games.Length - 1) / 2.0) * spacing, 105);
             games[i].ZIndex = 5;
             Stage.AddChild(games[i]);
             _keyNodes.Add(games[i]);
@@ -279,7 +279,7 @@ public partial class GameIslandScreen : BaseScreen
 
     private static Node2D SoundButtonsButton()
     {
-        var buttons = Buttons.Tappable(new Node2D(), "buttons");
+        var buttons = new Node2D();
         foreach (var (i, letter) in Indexed("c", "a", "t"))
         {
             var x = (i - 1) * 130.0;
@@ -288,28 +288,27 @@ public partial class GameIslandScreen : BaseScreen
             text.Position = P(x, 0);
             buttons.AddChild(text);
         }
-        return buttons;
+        return Plate("buttons", 819, buttons, 0.8f, WordsPlate);
     }
 
     private static Node2D BuilderButton()
     {
-        var builder = Buttons.Tappable(new Node2D(), "builder");
+        var builder = new Node2D();
         foreach (var (i, letter) in Indexed("c", "a", "t"))
         {
             var x = (i - 1) * 120.0;
             builder.AddChild(Pen(RoundRect(R(x - 52, -52, 104, 104), 18), (ulong)(815 + i), fill: Palette.Teal, lineWidth: 5));
-            var text = Sketch.Letter(letter, 76, colour: Palette.White, withShadow: false);
+            var text = Sketch.Letter(letter, 76, colour: Palette.Ink, withShadow: false);
             text.Position = P(x, 0);
             builder.AddChild(text);
         }
-        return builder;
+        return Plate("builder", 818, builder, 0.85f, WordsPlate);
     }
 
     /// <summary>Word Rocket: a little rocket standing ready, with a letter in its window.</summary>
     private static Node2D RocketButton()
     {
-        var rocket = Buttons.Tappable(new Node2D(), "rocket");
-        rocket.AddChild(Pen(Ellipse(Vector2.Zero, 130, 130), 830, fill: Palette.Card, lineWidth: 6));
+        var rocket = new Node2D();
         foreach (var (i, side) in Indexed(-1.0, 1.0))
             rocket.AddChild(Pen(Polygon(P(side * 30, -40), P(side * 78, -92), P(side * 78, -40), P(side * 30, 10)), (ulong)(831 + i), fill: Palette.Red, lineWidth: 4));
         rocket.AddChild(Pen(Polygon(P(-22, -70), P(0, -112), P(22, -70)), 833, fill: Palette.Orange, lineWidth: 4));
@@ -319,12 +318,29 @@ public partial class GameIslandScreen : BaseScreen
         var letter = Sketch.Letter("a", 46, shadow: Palette.Sun);
         letter.Position = P(0, 6);
         rocket.AddChild(letter);
-        return rocket;
+        return Plate("rocket", 830, rocket, 1.15f, WordsPlate);
+    }
+
+    /// <summary>Words Island has four games, so its plates are a little smaller than the other islands'.</summary>
+    private const float WordsPlate = 0.85f;
+
+    /// <summary>Bip's Stories: an open story book, a little picture on one page and lines of words on the other.</summary>
+    private static Node2D StoriesButton()
+    {
+        var book = new Node2D();
+        book.AddChild(Pen(Polygon(P(-120, -60), P(0, -80), P(120, -60), P(120, 70), P(0, 50), P(-120, 70)), 871, fill: Palette.Teal, lineWidth: 5));
+        book.AddChild(Pen(Polygon(P(-108, -48), P(-4, -66), P(-4, 54), P(-108, 60)), 872, fill: Palette.White, lineWidth: 4));
+        book.AddChild(Pen(Polygon(P(4, -66), P(108, -48), P(108, 60), P(4, 54)), 873, fill: Palette.White, lineWidth: 4));
+        book.AddChild(Pen(Ellipse(P(-56, 14), 30, 24), 874, fill: Palette.Sun, lineWidth: 3.5, wobble: 1));
+        book.AddChild(Pen(Polygon(P(-96, -36), P(-60, 0), P(-30, -26), P(-16, -40)), 875, fill: Palette.Grass, lineWidth: 3.5, wobble: 1));
+        foreach (var (i, y) in Indexed(28.0, 6.0, -16.0, -38.0))
+            book.AddChild(Pen(Polyline(P(20, y), P(i == 3 ? 66 : 94, y + 2)), (ulong)(876 + i), lineWidth: 4, wobble: 1));
+        return Plate("stories", 870, book, 1.1f, WordsPlate);
     }
 
     private static Node2D OrderButton()
     {
-        var order = Buttons.Tappable(new Node2D(), "order");
+        var order = new Node2D();
         foreach (var (i, number) in Indexed("1", "2", "3"))
         {
             var x = (i - 1) * 130.0;
@@ -333,12 +349,12 @@ public partial class GameIslandScreen : BaseScreen
             text.Position = P(x, 0);
             order.AddChild(text);
         }
-        return order;
+        return Plate("order", 821, order, 0.85f);
     }
 
     private static Node2D PathButton()
     {
-        var path = Buttons.Tappable(new Node2D(), "path");
+        var path = new Node2D();
         foreach (var (i, angle) in Indexed(0.0, Math.PI / 2, 0.0))
         {
             var arrow = Pen(Polygon(P(-30, -11), P(5, -11), P(5, -28), P(35, 0), P(5, 28), P(5, 11), P(-30, 11)),
@@ -347,23 +363,36 @@ public partial class GameIslandScreen : BaseScreen
             arrow.Position = P((i - 1) * 110, 0);
             path.AddChild(arrow);
         }
-        return path;
+        return Plate("path", 828, path, 1.1f);
+    }
+
+    /// <summary>
+    /// A game's button on the Words and Coding islands: its little picture on a big white plate, like the
+    /// Numbers and Art islands, so the whole plate is one obvious thing to tap (not just the letters).
+    /// </summary>
+    private static Node2D Plate(string name, ulong seed, Node2D picture, float scale, float size = 1)
+    {
+        var plate = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 190 * size, 170 * size), seed, fill: Palette.Card, lineWidth: 6)), name);
+        picture.Scale = Vector2.One * scale * size;
+        plate.AddChild(picture);
+        return plate;
     }
 
     /// <summary>Show Me: three little picture cards, the middle one ringed.</summary>
     private static Node2D ShowMeButton()
     {
         var show = Buttons.Tappable(new Node2D(), "showme");
+        show.AddChild(Pen(Ellipse(Vector2.Zero, 175, 150), 850, fill: Palette.Card, lineWidth: 6));
         foreach (var (i, picture) in Indexed("pic_cat", "pic_apple", "pic_sun"))
         {
-            var x = (i - 1) * 125.0;
-            show.AddChild(Pen(RoundRect(R(x - 56, -56, 112, 112), 18), (ulong)(851 + i), fill: Palette.Card, lineWidth: 5));
+            var x = (i - 1) * 100.0;
+            show.AddChild(Pen(RoundRect(R(x - 44, -44, 88, 88), 16), (ulong)(851 + i), fill: Palette.Card, lineWidth: 4));
             var drawn = PictureNode.Make(picture, picture);
-            drawn.Scale = Vector2.One * 0.42f;
+            drawn.Scale = Vector2.One * 0.34f;
             drawn.Position = P(x, 0);
             show.AddChild(drawn);
         }
-        show.AddChild(Pen(RoundRect(R(-70, -70, 140, 140), 24), 854, ink: Palette.Orange, lineWidth: 6));
+        show.AddChild(Pen(RoundRect(R(-56, -56, 112, 112), 20), 854, ink: Palette.Orange, lineWidth: 5));
         return show;
     }
 
@@ -414,6 +443,7 @@ public partial class GameIslandScreen : BaseScreen
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
         "rocket" => WordRocketGame.GameId,
+        "stories" => StoriesGame.GameId,
         "order" => MorningOrderGame.GameId,
         _ => BipsPathGame.GameId,
     };

@@ -47,6 +47,8 @@ public sealed class ContentLoaderTests : IDisposable
         CheckRoundTrip<GamesFile>("curriculum/games.json");
         CheckRoundTrip<GraphemesFile>("phonics/graphemes.json");
         CheckRoundTrip<WordsFile>("words/words.json");
+        CheckRoundTrip<WordsFile>("af/words/words.json");
+        CheckRoundTrip<SkillsFile>("af/curriculum/skills.json");
         CheckRoundTrip<TrickyWordsFile>("words/tricky_words.json");
         CheckRoundTrip<SentencesFile>("words/sentences.json");
         CheckRoundTrip<EndingsFile>("words/endings.json");
@@ -59,6 +61,8 @@ public sealed class ContentLoaderTests : IDisposable
         CheckRoundTrip<ShapesFile>("art/shapes.json");
         CheckRoundTrip<PaintsFile>("art/paints.json");
         CheckRoundTrip<MirrorFile>("art/mirror.json");
+        CheckRoundTrip<StoryScenesFile>("stories/scenes.json");
+        CheckRoundTrip<StoriesFile>("stories/stories.json");
         CheckRoundTrip<AssetManifestFile>("asset_manifest.json");
     }
 

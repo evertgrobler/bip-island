@@ -15,7 +15,7 @@ public sealed class ShowMeGame(ContentLibrary content) : IMiniGame<LanguageWordR
     public IReadOnlyList<GameSkin> Skins { get; } = [new("picture_cards", "Picture cards")];
 
     public LanguageWordRound? MakeRound(Learner learner, GameSession session, IRandomSource rng) =>
-        LanguageWords.MakeRound(content, learner, Math.Max(this.Level(learner).Choices ?? ChoiceCount, 2), session, rng);
+        LanguageWords.MakeRound(content, learner, this.Level(learner), ChoiceCount, session, rng);
 
     public bool IsCorrect(LanguageWord choice, LanguageWordRound round) => choice.Id == round.Target.Id;
 

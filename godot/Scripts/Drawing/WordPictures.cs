@@ -50,7 +50,7 @@ public static class WordPictures
     public static IEnumerable<string> Ids => Pictures.Keys;
 
     /// <summary>An orange arrow pointing at <paramref name="tip"/> from <paramref name="from"/>.</summary>
-    private static Node2D Pointer(Vector2 from, Vector2 tip, ulong seed)
+    internal static Node2D Pointer(Vector2 from, Vector2 tip, ulong seed)
     {
         var n = new Node2D();
         var dir = (tip - from).Normalized();

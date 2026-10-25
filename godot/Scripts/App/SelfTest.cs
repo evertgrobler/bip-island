@@ -111,8 +111,10 @@ public static class SelfTest
     private static bool WriteReport(string path, string? error)
     {
         var contentFiles = CountFiles("res://assets/content", ".json");
-        var clipCount = VoicePlayer.CountClips();
-        var sampleClip = VoicePlayer.HasClip("snd_s") && GD.Load<AudioStream>(VoicePlayer.PathFor("snd_s"))?.GetLength() > 0;
+        // English is in every build, whatever language the last child played in.
+        var clipCount = VoicePlayer.CountClips(BipCore.HomeLanguage.English);
+        var sampleClip = VoicePlayer.HasClip("snd_s", BipCore.HomeLanguage.English)
+                         && GD.Load<AudioStream>(VoicePlayer.PathFor("snd_s", BipCore.HomeLanguage.English))?.GetLength() > 0;
         var musicTracks = BipCore.MusicRules.AllTracks.Count(MusicPlayer.HasTrack);
         var graphemes = ReadsAsJson("res://assets/content/phonics/graphemes.json");
         var game = BipIsland.Game.GameCoordinator.Instance;
@@ -135,6 +137,8 @@ public static class SelfTest
             ["islandsOpen"] = islandsOpen,
             ["graphemesReadable"] = graphemes,
             ["clipCount"] = clipCount,
+            ["clipCountByLanguage"] = Enum.GetValues<BipCore.HomeLanguage>()
+                .ToDictionary(l => BipCore.Languages.Name(l), VoicePlayer.CountClips),
             ["sampleClipPlays"] = sampleClip,
             ["musicTracks"] = musicTracks,
             ["saveMarker"] = FileAccess.FileExists(MarkerPath) ? FileAccess.GetFileAsString(MarkerPath) : null,

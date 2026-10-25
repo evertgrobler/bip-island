@@ -115,9 +115,67 @@ public sealed class LanguageIslandTests
                 Assert.Equal(game.Entry.Levels[level].Choices, round.Choices.Count);
                 Assert.Single(game.CorrectChoices(round));
                 Assert.Equal(round.Choices.Count, round.Choices.Select(c => c.Set).Distinct().Count());
+                // The level's stories only (games.json "storiesUpTo").
+                if (game.Entry.Levels[level].StoriesUpTo is { } upTo)
+                    Assert.All(round.Choices, c => Assert.True(game.Cards.First(x => x.Card == c).Band <= upTo));
             }
             Assert.Equal(session.MaxRounds, rounds);
         }
+    }
+
+    [Theory]
+    [MemberData(nameof(HomeLanguages))]
+    public void BipsDayNeverDealsTwoAnswersThatLookOrSoundRight(HomeLanguage home)
+    {
+        // Stories repeat moments: "Brush your teeth" is in the morning and at bedtime.
+        var game = new BipsDayGame(Home(home), Home(Languages.Learning(home)));
+        var cards = game.Cards.Select(c => c.Card).ToList();
+        Assert.Contains(cards, a => cards.Any(b => a.Set != b.Set && a.LearningText == b.LearningText));
+        for (var seed = 1UL; seed <= 60; seed++)
+        {
+            var rng = new SeededGenerator(seed);
+            var level = (int)(seed % (ulong)game.Entry.Levels!.Count);
+            var session = GameSession.Start(game, En.Games.Session, new HashSet<string>(), rng);
+            while (session.NextRound(game, AtLevel(level), rng) is BipsDayGame.Round round)
+            {
+                Assert.Equal(round.Choices.Count, round.Choices.Select(c => c.LearningText.ToLowerInvariant()).Distinct().Count());
+                Assert.Equal(round.Choices.Count, round.Choices.Select(c => c.HomeText.ToLowerInvariant()).Distinct().Count());
+                Assert.Equal(round.Choices.Count, round.Choices.Select(c => c.Picture).Distinct().Count());
+            }
+        }
+    }
+
+    [Fact]
+    public void LanguageSkillsAreNeverKnownByAge()
+    {
+        // A 7-year-old who has never heard Afrikaans hasn't learnt its first words by growing up.
+        var report = new ProgressReport(En, new ChildProgress(), Band.Stage2, today: 100);
+        var language = report.Islands.Single(i => i.Island == Island.Language);
+        Assert.Equal(3, language.Skills.Count);
+        Assert.All(language.Skills, s => Assert.NotEqual(SkillStatus.KnownByAge, s.Status));
+        Assert.Equal(0, language.DoneCount);
+        Assert.All(En.Skills.Skills.Where(s => s.Island == Island.Language), s => Assert.False(new ChildProgress().IsTreatedAsKnown(s, Band.Stage3)));
+        // Home-language skills below the starting band still are.
+        Assert.Contains(report.Islands.SelectMany(i => i.Skills), s => s.Status == SkillStatus.KnownByAge);
+    }
+
+    [Fact]
+    public void AClosedLanguageIslandStaysOutOfTheReportAndTheStickerBook()
+    {
+        var progress = new ChildProgress();
+        Island[] closed = [Island.Language];
+        var open = new ProgressReport(En, progress, Band.Foundation, today: 100);
+        var hidden = new ProgressReport(En, progress, Band.Foundation, today: 100, closed);
+        Assert.Contains(open.Islands, i => i.Island == Island.Language);
+        Assert.DoesNotContain(hidden.Islands, i => i.Island == Island.Language);
+        Assert.DoesNotContain(hidden.Islands.SelectMany(i => i.Skills), s => s.Island == Island.Language);
+        Assert.Equal(open.Islands.Count - 1, hidden.Islands.Count);
+        Assert.Equal(open.StickersTotal - 3, hidden.StickersTotal);
+
+        Assert.Contains("skill_lang_listen", StickerBook.AllStickers(En));
+        Assert.DoesNotContain(StickerBook.AllStickers(En, closed), s => s.StartsWith("skill_lang_", StringComparison.Ordinal));
+        Assert.DoesNotContain(StickerBook.Missing(progress, En, closed), s => s.StartsWith("skill_lang_", StringComparison.Ordinal));
+        Assert.DoesNotContain(StickerBook.Skills(En, closed), s => s.Island == Island.Language);
     }
 
     [Fact]

@@ -26,6 +26,41 @@ public sealed class VoiceBandTests
     }
 
     [Fact]
+    public void ResolveFallsBackToTheStandInThenPicksTheBand()
+    {
+        var recorded = new HashSet<string> { "num_7", "word_and", "vo_welcome_big", "vo_welcome", "hint_01_big" };
+        // A lead-on clip not recorded yet plays its plain one.
+        Assert.Equal("num_7", VoiceBands.Resolve("num_7_mid", VoiceBand.Big, recorded.Contains));
+        Assert.Equal("word_and", VoiceBands.Resolve(VoiceLine.And, VoiceBand.Little, recorded.Contains));
+        // Bip's own lines in the band's version when it's there.
+        Assert.Equal("vo_welcome_big", VoiceBands.Resolve(VoiceLine.Welcome, VoiceBand.Big, recorded.Contains));
+        Assert.Equal("vo_welcome", VoiceBands.Resolve(VoiceLine.Welcome, VoiceBand.Little, recorded.Contains));
+        Assert.Equal("hint_01_big", VoiceBands.Resolve("hint_01", VoiceBand.Big, recorded.Contains));
+        // A clip with no recording at all stays itself (it plays as a short silence).
+        Assert.Equal("vo_round_done", VoiceBands.Resolve(VoiceLine.RoundDone, VoiceBand.Big, recorded.Contains));
+        // "big" is a word children learn: word_big is never taken for an older line.
+        Assert.Equal("word_big", VoiceBands.Resolve("word_big", VoiceBand.Big, _ => true));
+        Assert.Equal("word_cat", VoiceBands.Resolve("word_cat", VoiceBand.Big, _ => true));
+    }
+
+    [Fact]
+    public void OnlyBipsOwnLinesHaveABigVersion() =>
+        Assert.All(VoiceBands.BigClips, clip => Assert.Matches("^(vo|hint|praise)_", clip));
+
+    /// <summary>Each language's voice script lists exactly the Big lines the game plays, each next to its young row.</summary>
+    [Theory]
+    [InlineData("audio/script.csv")]
+    [InlineData("audio/af/script.csv")]
+    public void EachScriptHasExactlyTheBigLinesTheGamePlays(string script)
+    {
+        var clips = AudioScriptTests.ScriptClips(script).ToHashSet();
+        var big = clips.Where(c => c.EndsWith(VoiceBands.Suffix, StringComparison.Ordinal)).Order().ToList();
+        Assert.Equal(VoiceBands.BigClips.Order(), big);
+        var missingBase = VoiceBands.BigVersions.Where(c => !clips.Contains(c)).ToList();
+        Assert.True(missingBase.Count == 0, $"{script} has no young row for: " + string.Join(", ", missingBase));
+    }
+
+    [Fact]
     public void BigPraiseWaitsUntilThereIsEnoughOfIt()
     {
         var some = VoiceBands.BigPraiseClips.Take(VoiceBands.FewestBigPraise - 1).ToHashSet();

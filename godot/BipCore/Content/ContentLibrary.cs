@@ -23,6 +23,7 @@ public sealed class ContentLibrary
         "coding/sequences.json", "coding/patterns.json", "coding/levels.json",
         "art/shapes.json", "art/paints.json", "art/mirror.json",
         "language/words.json",
+        "stories/scenes.json", "stories/stories.json",
         "asset_manifest.json",
     ];
 
@@ -47,6 +48,8 @@ public sealed class ContentLibrary
     public PaintsFile Paints { get; }
     public MirrorFile Mirror { get; }
     public LanguageWordsFile LanguageWords { get; }
+    public StoryScenesFile StoryScenes { get; }
+    public StoriesFile Stories { get; }
     public AssetManifestFile Manifest { get; }
 
     // Lookups, built once.
@@ -55,6 +58,12 @@ public sealed class ContentLibrary
     private readonly Dictionary<string, Skill> _skillsById;
     private readonly Dictionary<string, GameEntry> _gamesById;
     public IReadOnlySet<string> AudioIds { get; }
+
+    /// <summary>The highest number with a mid-sentence clip (numbers.json spokenNumbers.joinTo; -1 when there are none).</summary>
+    public int MidNumbersTo => Numbers.SpokenNumbers?.JoinTo ?? -1;
+
+    /// <summary>A number in the middle of a sentence, as far as the content has those clips (<see cref="AudioCatalogue.MidNumberClip"/>).</summary>
+    public string MidNumberClip(int n) => AudioCatalogue.MidNumberClip(n, MidNumbersTo);
     public IReadOnlySet<string> PictureIds { get; }
 
     /// <summary>Reads every file from a Content folder.</summary>
@@ -79,18 +88,18 @@ public sealed class ContentLibrary
     public ContentLibrary(Func<string, string> readFile, HomeLanguage language, Func<string, bool> exists)
     {
         Language = language;
-        var read = readFile;
-        readFile = file => read(Languages.ContentPath(language, file, exists));
         T Load<T>(string file)
         {
+            // The file really read: the language's own copy (af/…) or the shared one.
+            var path = Languages.ContentPath(language, file, exists);
             try
             {
-                return BipJson.Decode<T>(readFile(file));
+                return BipJson.Decode<T>(readFile(path));
             }
             catch (Exception error) when (error is not ContentLoadException)
             {
                 // Whatever the reader or the decoder threw, say which file it was.
-                throw new ContentLoadException(file, error);
+                throw new ContentLoadException(path, error);
             }
         }
 
@@ -112,6 +121,8 @@ public sealed class ContentLibrary
         Paints = Load<PaintsFile>("art/paints.json");
         Mirror = Load<MirrorFile>("art/mirror.json");
         LanguageWords = Load<LanguageWordsFile>("language/words.json");
+        StoryScenes = Load<StoryScenesFile>("stories/scenes.json");
+        Stories = Load<StoriesFile>("stories/stories.json");
         Manifest = Load<AssetManifestFile>("asset_manifest.json");
 
         _graphemesById = FirstById(Phonics.Graphemes, g => g.Id);

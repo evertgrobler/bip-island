@@ -1,5 +1,7 @@
 # Bip Island — Curriculum guide
 
+**Ages 5 to 10 in English and Afrikaans, with CAPS beside Cambridge, are planned in `docs/CURRICULUM_5_10.md` (approved 18 October 2026).**
+
 How every Bip Island mini-game lines up with the **Cambridge** curriculum for ages 4–8, and how the content data in `Content/` is organised. Read this, `docs/GAMES.md` and `CLAUDE.md` before building or changing any game.
 
 ## Which Cambridge frameworks, at which ages
@@ -78,6 +80,7 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | Tricky Word Memory | 6–8 | 1Rw.07, 1Ww.06, 2Rw.04, 2Rw.07, 2Ww.09, 3Rw.01, 3Rw.02 |
 | Silly Sentences | 6–8 | 1Rw.05, 1Rw.07 |
 | Word Rocket | 4–8 | 1Rw.01, 1Ww.01, 1Ww.02, 1Ww.05, 1Ww.06, 2Rw.04, 2Ww.08, 2Ww.09 |
+| Bip's Stories | 5–10 | Reading for meaning, Cambridge 0058 Reading codes to map (`ENG.RC.01` literal who/where/what, `ENG.RC.02` why and how a character feels, placeholders until checked against the framework); CAPS Home Language Reading and Viewing, comprehension (`HL.RV.01`, topic to confirm), in English and Afrikaans |
 | Pattern Party | 4–5 | 1Nc.06, 2Sp.01, 3Nc.06 |
 | Morning Order | 4–5 | 1CT.01, 1CT.05, 1CT.06 |
 | Bip's Path | 4–6 | 1CT.03, 1CT.04, 1Gp.01, 1P.02, 1P.03, 1P.05, 2CT.05, 2CT.06, 2Gp.01, 2P.08 |
@@ -125,6 +128,8 @@ All game content is data. Games never hard-code words, numbers or levels. The ga
 | `art/shapes.json` | 12 flat shapes (outline, sides, curved, regular, how often they look the same in a turn) and 14 pictures built from them | Shape Builder |
 | `art/paints.json` | Paint colours, the pots (each with a label picture) and every mix, following real paint | Paint Pots |
 | `art/mirror.json` | 8 x 8 peg pictures, each folding along exactly one mirror line, and the peg board | Mirror Magic |
+| `stories/stories.json` | 20 Bip's Stories, four per level (1-5), each with its sentences scene by scene and its questions (who, where, what, why, feel), each answer a picture or a short word; `Content/af/stories/stories.json` has 20 written in Afrikaans (not translated) on the same scenes | Bip's Stories |
+| `stories/scenes.json` | Shared by both languages: each story's scenes, a drawn background with pictures placed by x, y and scale, plus the people drawn for the stories | Bip's Stories |
 | `asset_manifest.json` | Generated: every voice clip (660, with the text to speak) and picture (256, with a brief) the content needs | Audio and art production |
 
 ## Rules for changing content

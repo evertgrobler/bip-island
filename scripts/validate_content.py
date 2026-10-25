@@ -11,12 +11,13 @@ shared files. When Content/af/ exists the same checks run again for it (--lang a
 Content/af/asset_manifest.json, with Afrikaans number words, audio/af/script.csv and the
 Afrikaans spelling check (af_spelling.py) in place of the South African English one.
 """
-import csv, json, re, subprocess, sys
+import csv, json, re, subprocess, sys, unicodedata
 from collections import deque
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import sa_english, af_spelling
+import sa_english, af_spelling, spoken_numbers
+af_spelling.self_test()
 
 LANG = sys.argv[sys.argv.index("--lang") + 1] if "--lang" in sys.argv else ""
 CONTENT = Path(__file__).resolve().parent.parent / "Content"
@@ -98,6 +99,27 @@ for w in words_doc["words"]:
     if w["picturable"] and not w.get("picture"): err(f"word {w['word']}: picturable but no picture id")
     check_objs(f"word {w['word']}", w["objectives"])
 
+# Words whose letters don't all make their taught sound must say so ("blendable": false), or Sound Buttons
+# and Word Rocket would blend them into another word. Afrikaans (graphemes.json teaches e as /ɛ/ and i as
+# /ə/): an e after the first vowel is a schwa (appel), a single a, e, o or u before one consonant and a
+# vowel is long (hamer, motor), and an i straight after a vowel is a glide (koei).
+def is_vowel(gid): return all(c in "aeiouy" for c in G[gid]["grapheme"])
+def af_unblendable(parts):
+    vowels = [i for i, gid in enumerate(parts) if is_vowel(gid)]
+    for i, gid in enumerate(parts):
+        if gid == "e" and i != vowels[0]: return "its e after the first vowel is a schwa"
+        if gid in ("a", "e", "o", "u") and i + 2 < len(parts) and not is_vowel(parts[i + 1]) and is_vowel(parts[i + 2]):
+            return f"its {gid} in an open syllable is long"
+        if gid == "i" and i > 0 and is_vowel(parts[i - 1]): return "its i after a vowel is a glide"
+    return None
+UNBLENDABLE = {"af": af_unblendable}.get(LANG, lambda parts: None)
+for w in words_doc["words"]:
+    if not isinstance(w.get("blendable", True), bool): err(f"word {w['word']}: blendable must be true or false")
+    if any(p not in G for p in w["graphemes"]): continue
+    why = UNBLENDABLE(w["graphemes"])
+    if why and w.get("blendable", True): err(f"word {w['word']}: {why}, so it needs \"blendable\": false")
+    if not why and w.get("blendable", True) is False: err(f"word {w['word']}: blends sound by sound, so drop \"blendable\": false")
+
 # enough words per group for rounds of 3 options with distinct first sounds
 for grp in range(1, max(g["group"] for g in ph["graphemes"]) + 1):
     pool = [w for w in words_doc["words"] if w["decodableFromGroup"] <= grp and w["picturable"]]
@@ -128,6 +150,9 @@ for hs in homophones:
 SK = {s["id"]: s for s in skills_doc["skills"]}
 for s in SK.values():
     check_objs(f"skill {s['id']}", s["objectives"])
+    if not isinstance(s.get("ageSkip", True), bool): err(f"skill {s['id']}: ageSkip must be true or false")
+    # A second language isn't learnt by growing older: these skills are never known by age.
+    if s["island"] == "language" and s.get("ageSkip", True): err(f"skill {s['id']}: Language Island skills need \"ageSkip\": false")
     for p in s["prerequisites"]:
         if p not in SK: err(f"skill {s['id']}: unknown prerequisite {p}")
 state = {}
@@ -140,9 +165,35 @@ def visit(n, stack=()):
     state[n] = 2
 for n in SK: visit(n)
 
-# --- every phonics group is taught by the skill snd_g<group> (the game links them by this id)
+# --- every phonics group is taught by the skill snd_g<group> (the game links them by this id), in the
+# group's band (the band decides which groups an older child is treated as knowing), and every snd_g
+# skill has a group in this language to master (a language with fewer groups has its own skills.json).
+GROUP_NUMBERS = {grp["group"] for grp in ph["groups"]}
 for grp in ph["groups"]:
-    if f"snd_g{grp['group']}" not in SK: err(f"phonics group {grp['group']}: no skill snd_g{grp['group']} in skills.json")
+    skill = SK.get(f"snd_g{grp['group']}")
+    if skill is None: err(f"phonics group {grp['group']}: no skill snd_g{grp['group']} in skills.json")
+    elif skill["band"] != grp["band"]: err(f"phonics group {grp['group']}: band {grp['band']}, but skill snd_g{grp['group']} is {skill['band']}")
+def phonics_group(skill_id):
+    m = re.fullmatch(r"snd_g(\d+)", skill_id)
+    return int(m.group(1)) if m else None
+for sid in SK:
+    if phonics_group(sid) is not None and phonics_group(sid) not in GROUP_NUMBERS:
+        err(f"skill {sid}: there is no phonics group {phonics_group(sid)} in this language's graphemes.json")
+
+# --- a language's own skills.json is the shared one with its own phonics skills: the same other skills
+# (only their snd_g prerequisites may differ), mastery rules and starting bands, so the two never drift.
+if LANG and (ROOT / "curriculum" / "skills.json").exists():
+    with open(CONTENT / "curriculum" / "skills.json", encoding="utf-8") as f: shared_skills = json.load(f)
+    for key in ("mastery", "masteryRules", "startingBand"):
+        if skills_doc.get(key) != shared_skills.get(key): err(f"{LANG}/curriculum/skills.json: {key} differs from the shared skills.json")
+    shared_sk = {x["id"]: x for x in shared_skills["skills"] if phonics_group(x["id"]) is None}
+    own_sk = {x["id"]: x for x in skills_doc["skills"] if phonics_group(x["id"]) is None}
+    for sid in sorted(set(shared_sk) ^ set(own_sk)): err(f"{LANG}/curriculum/skills.json: skill {sid} is in only one of it and the shared skills.json")
+    for sid in sorted(set(shared_sk) & set(own_sk)):
+        mine, theirs = own_sk[sid], shared_sk[sid]
+        if {k: v for k, v in mine.items() if k != "prerequisites"} != {k: v for k, v in theirs.items() if k != "prerequisites"} or \
+           [x for x in mine["prerequisites"] if phonics_group(x) is None] != [x for x in theirs["prerequisites"] if phonics_group(x) is None]:
+            err(f"{LANG}/curriculum/skills.json: skill {sid} differs from the shared one (only its snd_g prerequisites may)")
 
 # --- mastery rules the game reads (the prose in "mastery" is for people)
 rules = skills_doc.get("masteryRules", {})
@@ -162,7 +213,7 @@ if not isinstance(games_doc.get("session", {}).get("roundsPerSession"), int) or 
 game_ids = [gm["id"] for gm in games]
 if len(game_ids) != len(set(game_ids)): err("games.json: duplicate game id")
 LEVEL_KEYS = {"band", "countTo", "choices", "flashTenths", "bubbles", "speedPercent", "soundCounts", "gridBand", "cards", "spares",
-              "modes", "shapes", "pots", "mirror", "from", "steps", "note"}
+              "modes", "shapes", "pots", "mirror", "from", "steps", "storiesUpTo", "sameThemeFirst", "note"}
 BANDS = ["foundation", "stage1", "stage2", "stage3"]
 for gm in games:
     levels = gm.get("levels", [])
@@ -170,7 +221,8 @@ for gm in games:
         where = f"game {gm['id']} level {i + 1}"
         for k in lv:
             if k not in LEVEL_KEYS: err(f"{where}: unknown key {k}")
-        for k in ("band", "gridBand"):
+        if "sameThemeFirst" in lv and not isinstance(lv["sameThemeFirst"], bool): err(f"{where}: sameThemeFirst must be true or false")
+        for k in ("band", "gridBand", "storiesUpTo"):
             if k in lv and lv[k] not in BANDS: err(f"{where}: unknown {k} {lv[k]}")
         for k in ("countTo", "choices", "flashTenths", "bubbles", "speedPercent", "cards"):
             if k in lv and (not isinstance(lv[k], int) or lv[k] < 1): err(f"{where}: {k} must be a positive whole number")
@@ -178,7 +230,7 @@ for gm in games:
         if "bubbles" in lv and not 3 <= lv["bubbles"] <= 8: err(f"{where}: bubbles must be 3 to 8")
         if "spares" in lv and (not isinstance(lv["spares"], int) or not 0 <= lv["spares"] <= 4): err(f"{where}: spares must be 0 to 4")
         if "cards" in lv and not 2 <= lv["cards"] <= 6: err(f"{where}: cards must be 2 to 6")
-        if "soundCounts" in lv and not any(w["picturable"] and w["soundCount"] in lv["soundCounts"] for w in words_doc["words"]):
+        if "soundCounts" in lv and not any(w["picturable"] and w.get("blendable", True) and w["soundCount"] in lv["soundCounts"] for w in words_doc["words"]):
             err(f"{where}: no picturable words with {lv['soundCounts']} sounds")
     # A level without a band carries on the band before it.
     current, bands = 0, []
@@ -188,7 +240,9 @@ for gm in games:
     if bands != sorted(bands): err(f"game {gm['id']}: level bands must not go backwards")
 for gm in games:
     for s in gm["skills"]:
-        if s not in SK: err(f"game {gm['id']}: unknown skill {s}")
+        # A game lists every phonics group it practises; a language without that group just skips it.
+        if s not in SK and not (phonics_group(s) is not None and phonics_group(s) not in GROUP_NUMBERS):
+            err(f"game {gm['id']}: unknown skill {s}")
     check_objs(f"game {gm['id']}", gm["objectives"])
 
 
@@ -422,8 +476,10 @@ def a(id_, text, notes=""):
 def p(id_, brief):
     pictures.setdefault(id_, {"id": id_, "brief": brief})
 def word_clip(text):
-    """A word's clip, as AudioCatalogue.WordClip names it: yo-yo -> word_yoyo (file names have no hyphens)."""
-    return f"word_{text.lower().replace('-', '')}"
+    """A word's clip, as AudioCatalogue.WordClip names it: yo-yo -> word_yoyo (file names have no hyphens),
+    vlieër -> word_vlieer (file names are plain ASCII: a Mac may write ë decomposed)."""
+    plain = "".join(c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn")
+    return f"word_{plain.lower().replace('-', '')}"
 
 for g in ph["graphemes"]:
     a(g["audio"], g["grapheme"], f"PURE SOUND /{g['ipa']}/ ({g['kind']}). {g['narratorHint']}")
@@ -455,13 +511,8 @@ for n in range(0, 101):
 
 # Numbers said inside a sentence: whole recorded sentences (vo_say_...) and, for bigger numbers,
 # num_<n>_mid clips the game joins to the linking words (numbers.json "spokenNumbers").
-NUMBER_WORDS = {
-    "af": ("nul een twee drie vier vyf ses sewe agt nege tien elf twaalf dertien veertien vyftien sestien "
-           "sewentien agtien negentien twintig"),
-}.get(LANG, "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
-            "fifteen sixteen seventeen eighteen nineteen twenty").split()
-EVEN_ODD = {"af": ("ewe", "onewe")}.get(LANG, ("even", "odd"))
-def number_word(n): return NUMBER_WORDS[n]
+EVEN_ODD = spoken_numbers.EVEN_ODD[LANG]
+def number_word(n): return spoken_numbers.number_word(n, LANG)
 spoken = numbers.get("spokenNumbers") or {}
 join_to = spoken.get("joinTo", 0)
 if not 10 <= join_to <= 20: err("spokenNumbers.joinTo must be 10-20")
@@ -490,6 +541,11 @@ for sen in spoken.get("sentences", []):
         text = re.sub(r"\{([a-z]+)\}", fill, sen.get("text", ""))
         text = text[0].upper() + text[1:]
         a(f"vo_say_{sid}_{x}" + (f"_{y}" if y is not None else ""), text, "One whole sentence, said naturally.")
+# A voice-script clip must never look like a recorded sentence (speak_clips.py finds those by
+# vo_say_<sentence id>_*, and AudioCatalogue.SentenceClip names them the same way).
+for clip in script_clips:
+    for sid in seen_spoken:
+        if clip.startswith(f"vo_say_{sid}_"): err(f"audio/script.csv {clip}: clashes with spoken sentence {sid} (vo_say_{sid}_...)")
 for o in numbers["countingObjects"]:
     p(o["picture"], o["id"])
     plural = o["audioPlural"][len("word_"):]
@@ -512,6 +568,16 @@ for st in seqs:
 THEMES = {t["id"]: t for t in language_doc["themes"]}
 if len(THEMES) != len(language_doc["themes"]): err("language/words.json: two themes share an id")
 if not any(t["fromLevel"] == 0 for t in THEMES.values()): err("language/words.json: no theme opens at level 0")
+# Every theme opens at some level of both word games, so none stays closed for good.
+for gid in ("show_me", "what_is_it"):
+    count = len(next((g.get("levels", []) for g in games if g["id"] == gid), []))
+    for t in THEMES.values():
+        if not isinstance(t["fromLevel"], int) or not 0 <= t["fromLevel"] < max(count, 1):
+            err(f"language theme {t['id']}: fromLevel {t['fromLevel']} is past {gid}'s {count} levels")
+# Picture words for colours are drawn in Paint Pots' paints (art/paints.json).
+for w in language_doc["words"]:
+    if w["picture"].startswith("pic_colour_") and w["picture"][len("pic_colour_"):] not in COLOURS:
+        err(f"language word {w['id']}: {w['picture']} names no colour in art/paints.json")
 seen_ids, seen_pictures = set(), set()
 for w in language_doc["words"]:
     where = f"language word {w['id']}"
@@ -534,17 +600,148 @@ if LANG:
     for st in seqs:
         other = english_sets.get(st["id"])
         if other is None: err(f"sequence {st['id']}: no English story with this id (Bip's Day pairs them)"); continue
-        if [(c["n"], c["picture"]) for c in st["cards"]] != [(c["n"], c["picture"]) for c in other["cards"]]:
-            err(f"sequence {st['id']}: cards differ from the English story (Bip's Day pairs them card by card)")
+        # The same picture and clip name card by card: Bip's Day plays the card's clip from the other language's folder.
+        if [(c["n"], c["picture"], c["audio"]) for c in st["cards"]] != [(c["n"], c["picture"], c["audio"]) for c in other["cards"]]:
+            err(f"sequence {st['id']}: cards differ from the English story (Bip's Day pairs them card by card, picture and clip)")
 
 for sh in SHAPES.values():
-    a(f"word_{sh['name'].replace(' ', '_')}", sh["name"])
+    a(word_clip(sh["name"].replace(" ", "_")), sh["name"])
 for col in COLOURS.values():
     a(f"word_{col['id']}", col["name"])
 for pt in POTS.values():
     p(pt["label"], f"label for the {pt['colour']} paint pot")
 
-manifest = {"note": "Generated by scripts/validate_content.py. Every voice clip uses the official narrator (ElevenLabs 'Bip Island Narrator'). Game instructions (vo_find_the_sound etc.), praise and hints are added by each game, not listed here.",
+# --- Bip's Stories (docs/GAMES.md): 20 stories a language, four per level, on scenes both languages share.
+# Checked last, so an answer can reuse any word clip the rest of the content has (its clip is word_<text>),
+# and story pictures must be pictures the game already draws, or ones drawn for the stories.
+scenes_doc = load("stories/scenes.json")
+stories = load("stories/stories.json")["stories"]
+STORY_LEVELS = {  # scenes, sentences a scene, questions, choices a question, most words in a sentence
+    1: dict(scenes=(2, 2), sentences=(1, 1), questions=1, choices=(2, 2), words=9),
+    2: dict(scenes=(3, 3), sentences=(1, 2), questions=2, choices=(2, 3), words=8),
+    3: dict(scenes=(3, 3), sentences=(1, 3), questions=3, choices=(3, 3), words=12),
+    4: dict(scenes=(4, 4), sentences=(1, 3), questions=3, choices=(3, 3), words=14),
+    5: dict(scenes=(5, 6), sentences=(1, 3), questions=3, choices=(3, 3), words=16),
+}
+STORIES_PER_LEVEL = 4
+QUESTION_KINDS = {"who", "where", "what", "why", "feel"}
+# Level 1 is for early readers: most words decodable at an early phonics group (or tricky words).
+EARLY_GROUPS = {"af": {1: 4}}.get(LANG, {1: 5})
+EARLY_SHARE = {1: 0.75}
+# Hand-drawn or emoji objects with faces; the oldest level (ages 9-10) keeps faces to people and animals.
+FACED_OBJECTS = {"pic_sun", "pic_mouth", "pic_morning_2", "pic_bedtime_1", "pic_biscuits_6", "pic_kiss", "pic_chin"}
+FRAME_W, FRAME_H, PICTURE_HALF = 480, 220, 100  # half the scene frame; half a picture at scale 1
+backgrounds = set(scenes_doc["backgrounds"])
+new_pictures = {np_["id"]: np_["brief"] for np_ in scenes_doc["newPictures"]}
+people_cs = REPO / "godot" / "Scripts" / "Drawing" / "StoryPeople.cs"
+people_src = people_cs.read_text(encoding="utf-8") if people_cs.exists() else ""
+for pid in new_pictures:
+    if f'"{pid}"' not in people_src: err(f"stories: new picture {pid} is not drawn in godot/Scripts/Drawing/StoryPeople.cs")
+    if pid in pictures and not LANG: err(f"stories: new picture {pid} already exists; reuse it instead")
+# The game draws a picture by its id whatever the language, so the English pictures count too.
+english_pictures = set() if not LANG else {pc["id"] for pc in json.loads((CONTENT / "asset_manifest.json").read_text(encoding="utf-8"))["pictures"]}
+drawable = set(pictures) | english_pictures | set(new_pictures)
+SETS = {}
+for ss in scenes_doc["sets"]:
+    if ss["id"] in SETS: err(f"scene set {ss['id']}: duplicate id")
+    SETS[ss["id"]] = ss
+    for i, sc in enumerate(ss["scenes"], 1):
+        where = f"scene set {ss['id']} scene {i}"
+        if sc["background"] not in backgrounds: err(f"{where}: unknown background {sc['background']}")
+        if not sc["pictures"]: err(f"{where}: no pictures")
+        for pl in sc["pictures"]:
+            if pl["picture"] not in drawable: err(f"{where}: picture {pl['picture']} doesn't exist")
+            if not 0.2 <= pl["scale"] <= 1.8: err(f"{where}: {pl['picture']} scale must be 0.2-1.8")
+            half = PICTURE_HALF * pl["scale"]
+            if abs(pl["x"]) + half > FRAME_W or abs(pl["y"]) + half > FRAME_H:
+                err(f"{where}: {pl['picture']} at ({pl['x']}, {pl['y']}) spills out of the frame")
+used_sets, story_ids = {}, set()
+def early_words(story):
+    """(decodable words, all words) in a story's sentences, for the early levels."""
+    known = {t.lower() for t in tricky["stage1"]["words"] + tricky["stage2"]["words"]} | LITTLE_WORDS
+    most = EARLY_GROUPS.get(story["level"], 99)
+    good = total = 0
+    for scene_text in story["text"]:
+        for sentence in scene_text:
+            for tok in sentence.split():
+                t = tok.strip(".,!?\"'").lower() if tok != "'n" else tok
+                if not t: continue
+                total += 1
+                base = t[:-1] if t.endswith("s") and t[:-1] in WORDS else t
+                if (base in WORDS and WORDS[base]["decodableFromGroup"] <= most) or t in known: good += 1
+    return good, total
+for st in stories:
+    sid, lv = st["id"], st["level"]
+    where = f"story {sid}"
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", sid) or sid in story_ids: err(f"{where}: ids are lower case and unique")
+    story_ids.add(sid)
+    rule = STORY_LEVELS.get(lv)
+    if rule is None: err(f"{where}: level must be 1-5"); continue
+    sset = SETS.get(st["scenes"])
+    if sset is None: err(f"{where}: unknown scene set {st['scenes']}"); continue
+    if st["scenes"] in used_sets: err(f"{where}: scene set {st['scenes']} is already used by {used_sets[st['scenes']]}")
+    used_sets[st["scenes"]] = sid
+    count = len(sset["scenes"])
+    if not rule["scenes"][0] <= count <= rule["scenes"][1]: err(f"{where}: level {lv} needs {rule['scenes']} scenes, its set has {count}")
+    if len(st["text"]) != count: err(f"{where}: {len(st['text'])} scenes of text for {count} scenes")
+    n = 0
+    for i, scene_text in enumerate(st["text"], 1):
+        if not rule["sentences"][0] <= len(scene_text) <= rule["sentences"][1]:
+            err(f"{where} scene {i}: level {lv} has {rule['sentences']} sentences a scene")
+        for sentence in scene_text:
+            n += 1
+            if len(sentence.split()) > rule["words"]: err(f"{where}: \"{sentence}\" is too long for level {lv} ({rule['words']} words at most)")
+            a(f"vo_story_{sid}_{n}", sentence, f"Bip's Stories, {st['title']}: read naturally, like a story.")
+    if lv in EARLY_SHARE:
+        good, total = early_words(st)
+        if total and good / total < EARLY_SHARE[lv]:
+            err(f"{where}: only {good} of {total} words are decodable by group {EARLY_GROUPS[lv]} or tricky words (level {lv} needs {EARLY_SHARE[lv]:.0%})")
+    if lv == 5:
+        for sc in sset["scenes"]:
+            for pl in sc["pictures"]:
+                if pl["picture"] in FACED_OBJECTS: err(f"{where}: {pl['picture']} has a face; level 5 keeps faces to people and animals")
+    questions = st["questions"]
+    if len(questions) != rule["questions"]: err(f"{where}: level {lv} asks {rule['questions']} questions")
+    kinds = [qu["kind"] for qu in questions]
+    for k in kinds:
+        if k not in QUESTION_KINDS: err(f"{where}: unknown question kind {k}")
+    if lv <= 3 and any(k in ("why", "feel") for k in kinds): err(f"{where}: levels 1-3 ask literal questions only")
+    if lv == 4 and (kinds.count("why") != 1 or "feel" in kinds): err(f"{where}: level 4 asks exactly one \"why\" question")
+    if lv == 5 and kinds.count("feel") != 1: err(f"{where}: level 5 asks exactly one \"how did they feel\" question")
+    answer_n = 0
+    for j, qu in enumerate(questions, 1):
+        qwhere = f"{where} question {j}"
+        a(f"vo_story_{sid}_q{j}", qu["text"], "Bip's Stories question: ask it clearly, then pause.")
+        if not 1 <= qu["scene"] <= count: err(f"{qwhere}: scene {qu['scene']} isn't in the story")
+        choices = [qu["answer"]] + qu["others"]
+        if not rule["choices"][0] <= len(choices) <= rule["choices"][1]: err(f"{qwhere}: level {lv} has {rule['choices']} choices")
+        if len({c["text"].lower() for c in choices}) != len(choices): err(f"{qwhere}: two choices say the same")
+        if qu["answer"]["text"].lower() in {c["text"].lower() for c in qu["others"]}: err(f"{qwhere}: the answer is among the other choices")
+        pics = [c.get("picture") for c in choices]
+        if any(pics) and not all(pics): err(f"{qwhere}: give every choice a picture, or none")
+        if all(pics) and len(set(pics)) != len(pics): err(f"{qwhere}: two choices share a picture")
+        if lv <= 2 and not all(pics): err(f"{qwhere}: levels 1 and 2 answer with pictures")
+        for c in choices:
+            answer_n += 1
+            if c.get("picture") and c["picture"] not in drawable: err(f"{qwhere}: picture {c['picture']} doesn't exist")
+            clip = word_clip(c["text"])
+            if " " in c["text"] or clip not in audio:
+                a(f"vo_story_{sid}_a{answer_n}", c["text"], "Bip's Stories answer choice: short and clear.")
+for lv in STORY_LEVELS:
+    have = sum(1 for st in stories if st["level"] == lv)
+    if have != STORIES_PER_LEVEL: err(f"stories: level {lv} has {have} stories ({STORIES_PER_LEVEL} needed)")
+if len(stories) != STORIES_PER_LEVEL * len(STORY_LEVELS): err(f"stories: {len(stories)} stories, {STORIES_PER_LEVEL * len(STORY_LEVELS)} needed")
+if set(used_sets) != set(SETS): err(f"stories: scene sets without a story: {sorted(set(SETS) - set(used_sets))}")
+for sc_set in SETS.values():
+    for sc in sc_set["scenes"]:
+        for pl in sc["pictures"]:
+            p(pl["picture"], new_pictures.get(pl["picture"], pl["picture"]))
+
+# Clip and picture ids are file names: plain lower-case ASCII, so every computer spells them the same.
+for id_ in list(audio) + list(pictures):
+    if not re.fullmatch(r"[a-z0-9_]+", id_): err(f"asset id {id_!r}: file names are lower-case ASCII letters, digits and _")
+
+manifest = {"note": "Generated by scripts/validate_content.py. Every voice clip uses the official narrator (CLAUDE.md, 'Art and voice'). Game instructions (vo_find_the_sound etc.), praise and hints are added by each game, not listed here.",
             "audio": sorted(audio.values(), key=lambda x: x["id"]),
             "pictures": sorted(pictures.values(), key=lambda x: x["id"])}
 with open(ROOT / "asset_manifest.json", "w", encoding="utf-8") as f:
@@ -557,13 +754,28 @@ SKIP_KEYS = {"id", "audio", "objectives", "graphemes", "ipa", "rime", "code", "k
              "prerequisites", "content", "island", "skin", "skins", "label", "colour", "shape", "letterName",
              "grapheme", "sequenceRules", "af"}
 
-# --- Voice bands (BipCore.VoiceBands): an older children's line (<clip>_big) has the young one it replaces
-# (praise excepted: the Big praise is its own pool).
-with open(SCRIPT, encoding="utf-8") as f:
-    script_clips = {row["file"].removesuffix(".m4a") for row in csv.DictReader(f)}
-for clip in sorted(script_clips):
-    if clip.endswith("_big") and not clip.startswith("praise_") and clip.removesuffix("_big") not in script_clips:
-        err(f"{SCRIPT.relative_to(REPO)} {clip}: no {clip.removesuffix('_big')} row for it to stand in for")
+# --- Voice bands (BipCore.VoiceBands): the script's older children's lines (<clip>_big) are exactly the
+# ones the game plays, read from VoiceBands.cs so the two can't drift: each Big version of one of Bip's
+# own vo_/hint_ lines has the young row it replaces, plus the Big praise pool (praise_01_big...), and no
+# other clip has a _big row (word_big is a real word, never a Big line).
+def big_clips():
+    core = REPO / "godot" / "BipCore"
+    catalogue = (core / "AudioCatalogue.cs").read_text(encoding="utf-8")
+    bands = (core / "VoiceBands.cs").read_text(encoding="utf-8")
+    lines = dict(re.findall(r'public const string (\w+) = "(\w+)";', catalogue))
+    block = re.search(r"BigVersions =\s*\[(.*?)\];", bands, re.S)
+    hints = int(re.search(r"HintCount = (\d+);", catalogue).group(1))
+    praise = int(re.search(r"BigPraiseCount = (\d+);", bands).group(1))
+    versions = [lines[n] for n in re.findall(r"VoiceLine\.(\w+)", block.group(1))] if block else []
+    if block and "AudioCatalogue.HintClips" in block.group(1): versions += [f"hint_{n:02}" for n in range(1, hints + 1)]
+    return set(versions), {f"{v}_big" for v in versions} | {f"praise_{n:02}_big" for n in range(1, praise + 1)}
+big_versions, expected_big = big_clips()
+if not big_versions: err("validate_content.py couldn't read BipCore.VoiceBands.BigVersions")
+script_name = SCRIPT.relative_to(REPO)
+for clip in sorted(c for c in script_clips if c.endswith("_big") and c not in expected_big):
+    err(f"{script_name} {clip}: the game never plays this _big clip (only VoiceBands' lines have an older version)")
+for clip in sorted(expected_big - script_clips): err(f"{script_name}: no {clip} row (an older children's line VoiceBands plays)")
+for base in sorted(big_versions - script_clips): err(f"{script_name}: no {base} row for {base}_big to stand in for")
 
 sa_waiting = set()
 OTHER_LANGUAGES = {"af"}  # folders in Content/ that hold another language's own files
@@ -574,41 +786,34 @@ def sa_check(where, text):
         if waiting: sa_waiting.add(f"{where}: {problem} (allowed for now: {sa_english.TEMPORARY[waiting]})")
         else: err(f"{where}: {problem}")
 
-def sa_walk(where, node):
-    if isinstance(node, str): sa_check(where, node)
+def af_check(where, text):
+    for problem in af_spelling.problems(text): err(f"{where}: {problem}")
+
+def walk(check, where, node):
+    """Run check over every string a child or parent sees in a content file."""
+    if isinstance(node, str): check(where, node)
     elif isinstance(node, list):
-        for item in node: sa_walk(where, item)
+        for item in node: walk(check, where, item)
     elif isinstance(node, dict):
         for key, value in node.items():
             # Skip ids and notes for people, but never a whole list of records under the same key
             # (graphemes.json's "graphemes", skills.json's "skills", the currency "notes").
             is_ids = isinstance(value, str) or (isinstance(value, list) and all(isinstance(v, str) for v in value))
             if key in SKIP_KEYS and is_ids: continue
-            sa_walk(f"{where} {key}", value)
+            walk(check, f"{where} {key}", value)
 
 if LANG:
     # An other language's own files and voice script get its spelling check (the shared files are English
-    # and were checked on the English run).
-    def lang_check(where, text):
-        for problem in af_spelling.problems(text): err(f"{where}: {problem}")
-    def lang_walk(where, node):
-        if isinstance(node, str): lang_check(where, node)
-        elif isinstance(node, list):
-            for item in node: lang_walk(where, item)
-        elif isinstance(node, dict):
-            for key, value in node.items():
-                is_ids = isinstance(value, str) or (isinstance(value, list) and all(isinstance(v, str) for v in value))
-                if key in SKIP_KEYS and is_ids: continue
-                lang_walk(f"{where} {key}", value)
+    # and were checked on the English run, with the game's on-screen text and the download page).
     for path in sorted(ROOT.rglob("*.json")):
         if path.name == "asset_manifest.json": continue
-        lang_walk(str(path.relative_to(REPO)), load(path.relative_to(ROOT)))
+        walk(af_check, str(path.relative_to(REPO)), load(path.relative_to(ROOT)))
     with open(SCRIPT, encoding="utf-8") as f:
-        for row in csv.DictReader(f): lang_check(f"{SCRIPT.relative_to(REPO)} {row['file']}", row["text"])
+        for row in csv.DictReader(f): af_check(f"{SCRIPT.relative_to(REPO)} {row['file']}", row["text"])
 else:
     for path in sorted(p for p in ROOT.rglob("*.json") if p.relative_to(ROOT).parts[0] not in OTHER_LANGUAGES):
         if path.name == "asset_manifest.json": continue
-        sa_walk(str(path.relative_to(REPO)), load(path.relative_to(ROOT)))
+        walk(sa_check, str(path.relative_to(REPO)), load(path.relative_to(ROOT)))
     with open(REPO / "audio" / "script.csv", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             sa_check(f"audio/script.csv {row['file']}", row["text"])
@@ -616,10 +821,19 @@ else:
         if "Dev" in path.parts: continue
         for text in sa_english.cs_strings(path.read_text(encoding="utf-8")):
             sa_check(str(path.relative_to(REPO)), text)
+    # BipCore's Texts.cs holds the on-screen words in both languages: the English half of each
+    # Pick(language, english, afrikaans) is checked here, the Afrikaans half by af_spelling, and any
+    # other literal in it as English. Checked once, on the English run.
+    texts_cs = REPO / "godot" / "BipCore" / "Texts.cs"
+    pick_pairs, other_texts = sa_english.cs_pick_pairs(texts_cs.read_text(encoding="utf-8"))
+    if not pick_pairs: err(f"{texts_cs.relative_to(REPO)}: no Pick(language, english, afrikaans) calls found to check")
+    for text in [t for english, _ in pick_pairs for t in english] + other_texts:
+        sa_check(f"{texts_cs.relative_to(REPO)} (English)", text)
+    for _, afrikaans in pick_pairs:
+        for text in afrikaans: af_check(f"{texts_cs.relative_to(REPO)} (Afrikaans)", text)
     site = REPO / "site" / "index.html"
     if site.exists(): sa_check("site/index.html", sa_english.html_text(site.read_text(encoding="utf-8")))
 
-music_files = []
 # Background music (checked once, on the English run): Resources/Music/<track>.m4a, one loop for the map and one per island (BipCore.MusicRules).
 MUSIC_TRACKS = {"music_map"} | {f"music_{island}" for island in ISLANDS}
 music_dir = REPO / "Resources" / "Music"
@@ -634,6 +848,19 @@ if not LANG and not (music_dir / "music_map.m4a").exists():
 
 for note in sorted(sa_waiting): print(f"WAITING (South African English): {note}")
 
+# --- Text colours (BipCore.TextContrast checks the named ones in a unit test): a label, letter or
+# parent text never gets a hand-written colour (an alpha, a darker shade, white or a raw hex). Shadows and
+# emoji (whose colour fonts ignore the tint) are fine.
+TEXT_CALL = re.compile(r"(Sketch\.(Label|FittedLabel|Letter)|ParentUi\.Text|\bp\.Text|\)\.Text)\(")
+RAW_COLOUR = re.compile(r"WithAlpha\(|Palette\.White|new Color\(|Darkened\(|Lightened\(|Hex\(")
+SCRIPTS = Path(__file__).resolve().parent.parent / "godot" / "Scripts"
+for path in sorted(SCRIPTS.rglob("*.cs")):
+    if "Dev" in path.parts: continue
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not TEXT_CALL.search(line) or "Fonts.Emoji" in line: continue
+        if RAW_COLOUR.search(re.sub(r"shadow:\s*[^,;]*", "", line)):
+            err(f"{path.relative_to(SCRIPTS.parent.parent)}:{number}: a text colour must be a named Palette colour (SoftInk, QuietInk, AlertOrange…), not written by hand")
+
 if errors:
     print(f"{len(errors)} problem(s):")
     for e in errors: print("  -", e)
@@ -642,8 +869,9 @@ print(f"Content OK{f' ({LANG})' if LANG else ''}: {len(objectives)} objectives, 
       f"{len(levels_doc['levels'])} grid levels, {len(SK)} skills, {len(games)} games. "
       f"Manifest: {len(audio)} voice clips, {len(pictures)} pictures. Music loops: {len(music_files)}.")
 
-# Then each other language with a folder of its own, with the same checks.
+# Then each other language with a folder of its own, with the same checks; every language runs, and
+# the build fails if any of them failed.
 if not LANG:
-    for lang in sorted(OTHER_LANGUAGES):
-        if (CONTENT / lang).is_dir():
-            sys.exit(subprocess.run([sys.executable, __file__, "--lang", lang]).returncode)
+    failed = [lang for lang in sorted(OTHER_LANGUAGES) if (CONTENT / lang).is_dir()
+              and subprocess.run([sys.executable, __file__, "--lang", lang]).returncode != 0]
+    if failed: sys.exit(1)
