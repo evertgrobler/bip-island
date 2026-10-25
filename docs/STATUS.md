@@ -33,7 +33,9 @@
 - **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
   the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
   remain only as a fallback for new words and in the parent area's child menus.
-- **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
+- **Delivery:** once a day (20:52 SAST, only if a game or download-page file changed since the last
+  published build; a manual run of the Godot workflow publishes at once) `main` is built, tested on real
+  Mac and Windows machines, and published:
   installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
   parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
   screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.

@@ -43,17 +43,22 @@ files.sort((a, b) => Number(isFeed(path.basename(a[0]))) - Number(isFeed(path.ba
 // 64 MB parts instead.
 const PART = 64 * 1024 * 1024;
 
-async function upload(file, pathname, options) {
-  const size = fs.statSync(file).size;
+async function upload(file, pathname, size, options) {
   if (size <= PART) return put(pathname, fs.readFileSync(file), options);
   const uploader = await createMultipartUploader(pathname, options);
   const parts = [];
+  const buffer = Buffer.alloc(PART);
   const fd = fs.openSync(file, 'r');
   try {
     for (let offset = 0, n = 1; offset < size; offset += PART, n++) {
-      const chunk = Buffer.alloc(Math.min(PART, size - offset));
-      fs.readSync(fd, chunk, 0, chunk.length, offset);
-      parts.push(await uploader.uploadPart(n, chunk));
+      const length = Math.min(PART, size - offset);
+      // readSync can return fewer bytes than asked for, so read until the part is full.
+      for (let got = 0; got < length; ) {
+        const read = fs.readSync(fd, buffer, got, length - got, offset + got);
+        if (read === 0) throw new Error(`${file} ended early at byte ${offset + got} of ${size}`);
+        got += read;
+      }
+      parts.push(await uploader.uploadPart(n, buffer.subarray(0, length)));
     }
   } finally {
     fs.closeSync(fd);
@@ -65,7 +70,7 @@ const uploaded = new Map();
 for (const [file, pathname] of files) {
   const size = fs.statSync(file).size;
   const name = path.basename(file);
-  const blob = await upload(file, pathname, {
+  const blob = await upload(file, pathname, size, {
     access: 'public',
     token,
     addRandomSuffix: false,

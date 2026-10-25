@@ -58,13 +58,13 @@ jobs:
   # manual runs always go ahead.
   changed:
     name: Anything new on main?
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
       go: ${{ steps.check.outputs.go }}
     steps:
       - name: Check out
-        if: github.event_name == 'schedule'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -75,7 +75,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          if [ "${{ github.event_name }}" != "schedule" ] || [ -z "$VERCEL_TOKEN" ]; then
+          if [ -z "$VERCEL_TOKEN" ]; then
             echo "go=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -86,8 +86,15 @@ jobs:
             echo "go=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          # Only changes that go into the game or the download page (the same paths as pull_request above).
-          game='^(godot/|scripts/godot/|scripts/check_all\.sh$|scripts/validate_content\.py$|scripts/sa_english\.py$|scripts/af_spelling\.py$|scripts/spoken_numbers\.py$|scripts/ci/deploy_site\.sh$|scripts/ci/site_screenshots\.sh$|site/|Content/|Resources/|audio/|\.github/workflows/godot\.yml$)'
+          # Only changes that go into the game or the download page: the pull_request paths above, read from
+          # this file so the two lists can't drift ("dir/**" -> ^dir/, a file -> ^file$).
+          game="^($(yq '.on.pull_request.paths[]' .github/workflows/godot.yml \
+            | sed -e 's/\./\\./g' -e 's#/\*\*$#/#' -e '/\/$/!s/$/$/' | paste -sd'|'))"
+          if [ "$game" = "^()" ]; then
+            echo "::warning::Couldn't read the pull_request paths; building to be safe."
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           files="$(git diff --name-only "$last" HEAD)"
           if printf '%s\n' "$files" | grep -Eq "$game"; then
             echo "go=true" >> "$GITHUB_OUTPUT"
@@ -99,7 +106,8 @@ jobs:
   export:
     name: Test and export (Linux)
     needs: changed
-    if: needs.changed.outputs.go == 'true'
+    # changed runs only on the daily schedule; pull requests and manual runs skip it and go ahead.
+    if: ${{ !cancelled() && (needs.changed.result == 'skipped' || needs.changed.outputs.go == 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     outputs:
@@ -370,6 +378,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           VERSION: ${{ needs.export.outputs.version }}
+          # Each retry is another counted Blob operation (the SDK's default is 10).
+          VERCEL_BLOB_RETRIES: "2"
         run: |
           if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
             echo "::warning::The Vercel secrets aren't set, so the test release wasn't published."
