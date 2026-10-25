@@ -639,7 +639,8 @@
   self-check in the validator), the walk-through fails if the quick-click freeze test is skipped, the visit cap comes
   from the stories' longest question count (the "does it fit" filter is gone), a delayed retry or hint checks its own
   question is still unanswered (`WhileUnanswered(attempt, …)`, every screen), shared pictures keep their English
-  brief in the Afrikaans manifest, and sentence cards have room for two lines again.- **25 Oct (PC session, OpenCode helpers):** first session on the owner's Windows PC (`pc/*` branches, see the
+  brief in the Afrikaans manifest, and sentence cards have room for two lines again.
+- **25 Oct (PC session, OpenCode helpers):** first session on the owner's Windows PC (`pc/*` branches, see the
   handoff note). Added `AGENTS.md`, the short rules sheet OpenCode and other helper models read (points to
   `CLAUDE.md`; South African English, content in JSON, child-safety code off limits, never push or touch `main` /
   `claude/*`). Trial: OpenCode with the free DeepSeek V4.1 Flash wrote one sticker-book test
