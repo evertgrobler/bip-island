@@ -52,6 +52,9 @@ public sealed class StoriesGameTests
         var game = new StoriesGame(content);
         Assert.Equal(game.Levels, game.Entry.Levels!.Count);
         Assert.Equal(game.Levels, game.Stories.Max(s => s.Level));
+        // The visit cap comes from the content: room for two questions, then the longest story.
+        Assert.Equal(game.Stories.Max(s => s.Questions.Count), game.MostQuestions);
+        Assert.Equal(StoriesGame.QuestionsPerVisit - 1 + game.MostQuestions, game.RoundsPerSession);
         foreach (var story in game.Stories)
         {
             var scenes = game.ScenesOf(story).Scenes.Count;

@@ -129,7 +129,7 @@ public partial class StoriesScreen : GameScreen
 
     /// <summary>A sentence on a light card, at least 120 points tall: click it to hear it again.</summary>
     private Node2D SentenceLine(string text, ulong seed, int level) =>
-        Buttons.Tappable(TextCard(text, 1040, 120, 24, 4, 50, level <= 2 ? 50 : text.Length > 60 ? 34 : 40, seed), $"line:{_lines.Count}");
+        Buttons.Tappable(TextCard(text, 1040, 120, 24, 4, 50, 10, level <= 2 ? 50 : text.Length > 60 ? 34 : 40, seed), $"line:{_lines.Count}");
 
     private IReadOnlyList<string> PageClips(int page) => _round is { } round ? StoriesGame.SentenceClips(round.Story)[page] : [];
 
@@ -210,17 +210,19 @@ public partial class StoriesScreen : GameScreen
         SayQuestion();
     }
 
-    private static Node2D WordCard(string text, ulong seed) => TextCard(text, 380, 220, 30, 6, 40, text.Length > 24 ? 36 : 44, seed);
+    private static Node2D WordCard(string text, ulong seed) => TextCard(text, 380, 220, 30, 6, 40, 30, text.Length > 24 ? 36 : 44, seed);
 
     /// <summary>
     /// Words on a light hand-drawn card, wrapped and centred, with the whole card as its click area: a story
     /// sentence and a word answer are both made this way.
     /// </summary>
-    private static Node2D TextCard(string text, float width, float height, float radius, float lineWidth, float margin, int fontSize, ulong seed)
+    private static Node2D TextCard(string text, float width, float height, float radius, float lineWidth, float margin, float marginTall, int fontSize, ulong seed)
     {
         var card = new Node2D();
         card.AddChild(Pen(RoundRect(R(-width / 2, -height / 2, width, height), radius), seed, fill: Palette.Card, lineWidth: lineWidth));
-        var inner = new Vector2(width - margin, height - 20);
+        // The text box is the card less a side margin and a top-and-bottom margin (a sentence card keeps
+        // room for two lines).
+        var inner = new Vector2(width - margin, height - marginTall);
         var label = new Label
         {
             Text = text,

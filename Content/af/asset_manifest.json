@@ -5852,7 +5852,7 @@
     },
     {
       "id": "pic_bin",
-      "brief": "pic_bin"
+      "brief": "bin"
     },
     {
       "id": "pic_bird",
@@ -6408,7 +6408,7 @@
     },
     {
       "id": "pic_jug",
-      "brief": "pic_jug"
+      "brief": "jug"
     },
     {
       "id": "pic_juice",
@@ -6484,7 +6484,7 @@
     },
     {
       "id": "pic_log",
-      "brief": "'n stomp"
+      "brief": "log"
     },
     {
       "id": "pic_lollipop",
@@ -6568,7 +6568,7 @@
     },
     {
       "id": "pic_mug",
-      "brief": "pic_mug"
+      "brief": "mug"
     },
     {
       "id": "pic_mum",
@@ -6732,7 +6732,7 @@
     },
     {
       "id": "pic_rug",
-      "brief": "pic_rug"
+      "brief": "rug"
     },
     {
       "id": "pic_sandcastle_1",
@@ -6776,7 +6776,7 @@
     },
     {
       "id": "pic_saw",
-      "brief": "pic_saw"
+      "brief": "saw (picture for the sound aw)"
     },
     {
       "id": "pic_school_1",

@@ -635,3 +635,8 @@
   levels come from games.json (`StoriesGame.Levels`), one cached Afrikaans library for all tests
   (`TestContent.Library(HomeLanguage)`), one `TextCard` for sentences and word answers, each person's seed in
   their own row, and "Thandi has a bag" (the bag is drawn purple).
+  Third round (#61 review): the reading rule strips quotes and punctuation together ('Stop!' is "stop"; a
+  self-check in the validator), the walk-through fails if the quick-click freeze test is skipped, the visit cap comes
+  from the stories' longest question count (the "does it fit" filter is gone), a delayed retry or hint checks its own
+  question is still unanswered (`WhileUnanswered(attempt, …)`, every screen), shared pictures keep their English
+  brief in the Afrikaans manifest, and sentence cards have room for two lines again.

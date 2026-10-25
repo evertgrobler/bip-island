@@ -728,6 +728,7 @@ public static class WalkTest
             // A quick wrong-then-right double click on the next question: the praise is never cut off by the
             // retry, so the game moves on (another question, a new story or the end of the visit).
             var asked = story.RoundsPlayed;
+            var quickClick = "not reached";
             Check("the next question or story comes after the right answer",
                   await WaitFor(() => Screen() != story || story.RoundsPlayed > asked || story.CurrentPhase == StoriesScreen.Phase.Reading, 10));
             if (Screen() == story)
@@ -735,11 +736,13 @@ public static class WalkTest
                 for (var turn = 0; turn < 8 && story.CurrentPhase == StoriesScreen.Phase.Reading; turn++) await Tap("next");
                 if (await WaitFor(() => story is { CurrentPhase: StoriesScreen.Phase.Asking, RightIndex: >= 0, InputLocked: false }, 3))
                 {
+                    quickClick = "no answer cards to click";
                     var before = story.RoundsPlayed;
                     var right = story.RightIndex;
                     if (story.FindTappable($"answer:{(right == 0 ? 1 : 0)}") is { } miss && Hit.GlobalArea(miss) is { } missArea
                         && story.FindTappable($"answer:{right}") is { } hit && Hit.GlobalArea(hit) is { } hitArea)
                     {
+                        quickClick = "";
                         story.Tap(missArea.GetCenter());
                         await Wait(0.1);
                         story.Tap(hitArea.GetCenter());
@@ -749,7 +752,11 @@ public static class WalkTest
                               $"rounds {before} → {story.RoundsPlayed}, locked {story.InputLocked}");
                     }
                 }
+                else quickClick = $"the next question didn't come ({story.CurrentPhase}, right {story.RightIndex}, locked {story.InputLocked})";
             }
+            else quickClick = "the visit ended before a second question";
+            // The freeze check must really run: skipping it is a failure, not a pass.
+            Check("the quick wrong-then-right click test ran", quickClick.Length == 0, quickClick);
             if (Screen() is not StoriesScreen) await WaitFor(() => Screen() is GameIslandScreen, 12);
             else if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Stories goes back to words island");
             Check("Bip's Stories ends back on words island", Screen() is GameIslandScreen);

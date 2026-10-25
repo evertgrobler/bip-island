@@ -135,9 +135,11 @@ known_tricky = {t.lower() for t in tricky["stage1"]["words"] + tricky["stage2"][
 def reading_words(text):
     """The words of a sentence as a child reads them: lower case, without punctuation or quotes ("'n" stays)."""
     for tok in text.split():
-        t = tok.strip('.,!?"').lower()
-        t = t if t == "'n" else t.strip("'")
+        t = tok.lower()
+        t = t if t == "'n" else t.strip(".,!?\"'")
         if t: yield t
+
+assert list(reading_words("'Stop!' she said. 'Hello,' \"Yes?\" 'n Pop.")) == ["stop", "she", "said", "hello", "yes", "'n", "pop"]
 
 def decodable_group(word):
     """The phonics group a word can be sounded out from (a plural -s counts as its root), or None."""
@@ -663,8 +665,13 @@ for pid in new_pictures:
     if f'"{pid}"' not in people_src: err(f"stories: new picture {pid} is not drawn in godot/Scripts/Drawing/StoryPeople.cs")
     if pid in pictures and not LANG: err(f"stories: new picture {pid} already exists; reuse it instead")
 # The game draws a picture by its id whatever the language, so the English pictures count too.
-english_pictures = set() if not LANG else {pc["id"] for pc in json.loads((CONTENT / "asset_manifest.json").read_text(encoding="utf-8"))["pictures"]}
+english_briefs = {} if not LANG else {pc["id"]: pc["brief"] for pc in json.loads((CONTENT / "asset_manifest.json").read_text(encoding="utf-8"))["pictures"]}
+english_pictures = set(english_briefs)
 drawable = set(pictures) | english_pictures | set(new_pictures)
+
+def story_picture(pid, fallback):
+    """Lists a story picture with the brief it already has (shared pictures keep the English brief in every language)."""
+    p(pid, new_pictures.get(pid) or english_briefs.get(pid) or fallback)
 SETS = {}
 for ss in scenes_doc["sets"]:
     if ss["id"] in SETS: err(f"scene set {ss['id']}: duplicate id")
@@ -747,7 +754,7 @@ for st in stories:
             if c.get("picture"):
                 if c["picture"] not in drawable: err(f"{qwhere}: picture {c['picture']} doesn't exist")
                 if lv == 5 and c["picture"] in FACED_OBJECTS: err(f"{qwhere}: {c['picture']} has a face; level 5 keeps faces to people and animals")
-                p(c["picture"], new_pictures.get(c["picture"], c["text"]))
+                story_picture(c["picture"], c["text"])
             clip = word_clip(c["text"])
             if " " in c["text"] or clip not in audio:
                 a(f"vo_story_{sid}_a{answer_n}", c["text"], "Bip's Stories answer choice: short and clear.")
@@ -762,7 +769,7 @@ if set(used_sets) != set(SETS): err(f"stories: scene sets without a story: {sort
 for sc_set in SETS.values():
     for sc in sc_set["scenes"]:
         for pl in sc["pictures"]:
-            p(pl["picture"], new_pictures.get(pl["picture"], pl["picture"]))
+            story_picture(pl["picture"], pl["picture"])
 
 # Clip and picture ids are file names: plain lower-case ASCII, so every computer spells them the same.
 for id_ in list(audio) + list(pictures):

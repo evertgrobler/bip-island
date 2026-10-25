@@ -26,13 +26,15 @@ public sealed class StoriesGame(ContentLibrary content) : IMiniGame<StoriesGame.
     public string Id => GameId;
     public GameEntry Entry { get; } = content.EntryForGame(GameId);
     public IReadOnlyList<GameSkin> Skins { get; } = [new("story_book", "Story book")];
-    /// <summary>The most questions one story asks.</summary>
-    public const int MostQuestions = 3;
+    /// <summary>The most questions one story asks (from the content).</summary>
+    public int MostQuestions { get; } = content.Stories.Stories.Select(s => s.Questions.Count).DefaultIfEmpty(1).Max();
 
     /// <summary>
-    /// A cap the visit never reaches: <see cref="MakeRound"/> alone ends it, after the story being read when
-    /// <see cref="QuestionsPerVisit"/> questions have been asked. A level-up mid-visit can start a longer
-    /// story after two questions, so the cap leaves room for all of it (2 + 3).
+    /// Room for the longest visit: a new story starts only while fewer than <see cref="QuestionsPerVisit"/>
+    /// questions have been asked, so at most QuestionsPerVisit - 1 have gone before the last story, which then
+    /// asks up to <see cref="MostQuestions"/> (a level-up mid-visit reaches 2 + 3 today). That visit ends through
+    /// <see cref="GameSession.IsFinished"/>; shorter ones end when <see cref="MakeRound"/> has nothing more to ask.
+    /// Either way the story being read is always finished.
     /// </summary>
     public int? RoundsPerSession => QuestionsPerVisit - 1 + MostQuestions;
 
@@ -64,7 +66,7 @@ public sealed class StoriesGame(ContentLibrary content) : IMiniGame<StoriesGame.
         for (var level = StoryLevel(learner.GameLevel); level >= 1; level--)
         {
             var fresh = Stories.Where(s => s.Level == level && !session.UsedItems.Contains(StoryItem(s)) && _sets.ContainsKey(s.Scenes)
-                                           && s.Questions.Count > 0 && session.RoundsPlayed + s.Questions.Count <= session.MaxRounds).ToList();
+                                           && s.Questions.Count > 0).ToList();
             if (rng.Pick(fresh) is Story story) return Ask(story, 1, newStory: true, rng);
         }
         return null;

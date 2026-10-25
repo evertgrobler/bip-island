@@ -128,25 +128,29 @@ public abstract partial class GameScreen : BaseScreen
         Bip.Tilt();
         if (outcome.Kind != AnswerOutcomeKind.Hint)
         {
-            if (onRetry != null) WhileUnanswered(0.4, onRetry);
+            if (onRetry != null) WhileUnanswered(attempt, 0.4, onRetry);
             return;
         }
         if (right != null) ShowHint(right);
         if (onHint != null)
         {
-            WhileUnanswered(0.4, onHint);
+            WhileUnanswered(attempt, 0.4, onHint);
             return;
         }
         IReadOnlyList<string> line = hint ?? [Coordinator.RandomHint(sayWhenRight.Count > 0), .. sayWhenRight];
-        WhileUnanswered(0.4, () => Voice.Play(line));
+        WhileUnanswered(attempt, 0.4, () => Voice.Play(line));
     }
 
-    /// <summary>Runs <paramref name="action"/> after a moment, unless input was locked meanwhile (answered, or the visit ended).</summary>
-    protected void WhileUnanswered(double seconds, Action action)
+    /// <summary>
+    /// Runs <paramref name="action"/> after a moment, only while <paramref name="attempt"/>'s question is still open:
+    /// not once it has been answered (even if the next question is already showing, with input unlocked again),
+    /// and not while input is locked (the praise playing, or the visit ending).
+    /// </summary>
+    protected void WhileUnanswered(QuestionAttempt attempt, double seconds, Action action)
     {
         After(seconds, () =>
         {
-            if (!InputLocked) action();
+            if (!attempt.IsAnswered && !InputLocked) action();
         });
     }
 
