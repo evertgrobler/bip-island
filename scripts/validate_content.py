@@ -218,8 +218,35 @@ if isinstance(rules.get("masteredPercent"), int) and rules["masteredPercent"] > 
 review = rules.get("reviewAfterDays")
 if not (isinstance(review, list) and review and all(isinstance(d, int) and d > 0 for d in review) and review == sorted(set(review))):
     err("masteryRules.reviewAfterDays must be increasing whole numbers of days")
+BANDS = ["foundation", "stage1", "stage2", "stage3", "stage4", "stage5"]
+for s in SK.values():
+    if s["band"] not in BANDS: err(f"skill {s['id']}: unknown band {s['band']}")
 for age, band in skills_doc["startingBand"].items():
-    if band not in ("foundation", "stage1", "stage2", "stage3"): err(f"startingBand {age}: unknown band {band}")
+    if band not in BANDS: err(f"startingBand {age}: unknown band {band}")
+    # A child starting in a band with no skills would have every skill below it counted as known by age
+    # and nothing new to play (stage4 and stage5 wait for their first skills).
+    elif not any(s["band"] == band for s in SK.values()): err(f"startingBand {age}: band {band} has no skills yet")
+
+# --- CAPS references: "CAPS <subject> Gr <grade>: <topic>", from curriculum/caps.json, within a grade of the
+# skill's band. Every skill has at least one, beside its Cambridge codes.
+with open(CONTENT / "curriculum" / "caps.json", encoding="utf-8") as f: caps_doc = json.load(f)
+CAPS_GRADES = ["R", "1", "2", "3", "4", "5", "6", "7"]
+if sorted(caps_doc["gradeForBand"]) != sorted(BANDS): err("caps.json: gradeForBand needs exactly the bands " + ", ".join(BANDS))
+for subject, topics in caps_doc["subjects"].items():
+    if len(topics) != len(set(topics)): err(f"caps.json: {subject} lists a topic twice")
+for s in SK.values():
+    refs = s.get("caps")
+    if not (isinstance(refs, list) and refs): err(f"skill {s['id']}: needs at least one CAPS reference in \"caps\""); continue
+    if len(refs) != len(set(refs)): err(f"skill {s['id']}: a CAPS reference is listed twice")
+    for ref in refs:
+        m = re.fullmatch(r"CAPS (.+) Gr (R|\d): (.+)", ref) if isinstance(ref, str) else None
+        if not m: err(f"skill {s['id']}: CAPS reference '{ref}' isn't written \"CAPS <subject> Gr <grade>: <topic>\""); continue
+        subject, grade, topic = m.groups()
+        if subject not in caps_doc["subjects"]: err(f"skill {s['id']}: unknown CAPS subject '{subject}'"); continue
+        if topic not in caps_doc["subjects"][subject]: err(f"skill {s['id']}: '{topic}' isn't a {subject} topic in caps.json")
+        band_grade = caps_doc["gradeForBand"].get(s["band"])
+        if grade not in CAPS_GRADES or band_grade not in CAPS_GRADES or abs(CAPS_GRADES.index(grade) - CAPS_GRADES.index(band_grade)) > 1:
+            err(f"skill {s['id']}: CAPS Gr {grade} is more than a grade from its band {s['band']} (Gr {band_grade})")
 
 # --- games
 games_doc = load("curriculum/games.json")
@@ -229,7 +256,6 @@ game_ids = [gm["id"] for gm in games]
 if len(game_ids) != len(set(game_ids)): err("games.json: duplicate game id")
 LEVEL_KEYS = {"band", "countTo", "choices", "flashTenths", "bubbles", "speedPercent", "soundCounts", "gridBand", "cards", "spares",
               "modes", "shapes", "pots", "mirror", "from", "steps", "storiesUpTo", "sameThemeFirst", "note"}
-BANDS = ["foundation", "stage1", "stage2", "stage3"]
 for gm in games:
     levels = gm.get("levels", [])
     for i, lv in enumerate(levels):

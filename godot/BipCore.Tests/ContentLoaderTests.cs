@@ -194,6 +194,25 @@ public sealed class ContentLoaderTests : IDisposable
     }
 
     [Fact]
+    public void EveryBandReadsBackFromItsKey()
+    {
+        Assert.Equal(["foundation", "stage1", "stage2", "stage3", "stage4", "stage5"], BandExtensions.All.Select(b => b.Key()));
+        Assert.Equal(BandExtensions.All, BipJson.Decode<List<Band>>("""["foundation","stage1","stage2","stage3","stage4","stage5"]"""));
+        Assert.Equal(BandExtensions.All, BandExtensions.All.Order());
+    }
+
+    [Fact]
+    public void StartingBandsOnlyNameBandsWithSkills()
+    {
+        // Stage 4 and 5 exist for the ages 9 and 10 plan; a child starts there only once the band has skills,
+        // or every skill below it would count as known with nothing new to play.
+        foreach (var content in new[] { TestContent.Library(), TestContent.Library(HomeLanguage.Afrikaans) })
+        {
+            Assert.All(content.Skills.StartingBand.Values, band => Assert.Contains(content.Skills.Skills, s => s.Band == band));
+        }
+    }
+
+    [Fact]
     public void AgeRangesAndGridPositionsDecode()
     {
         var range = BipJson.Decode<List<AgeRange>>("""["4-6"]""")[0];
