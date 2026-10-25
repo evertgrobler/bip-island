@@ -15,7 +15,7 @@
     <ProjectReference Include="BipCore/BipCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <!-- Auto-updates on Mac and Windows from the static feed on Vercel. -->
+    <!-- Auto-updates on Mac and Windows from GitHub Releases in evertgrobler/bip-island-downloads. -->
     <PackageReference Include="Velopack" Version="1.2.161" />
   </ItemGroup>
 </Project>

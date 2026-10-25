@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # On a Mac runner: packs the exported game with Velopack (twice: an older version and this one),
-# installs the older one, lets it update itself from a local feed, and checks the update arrived
-# and saved data survived. Then makes the .dmg download from this version.
+# installs the older one, lets it update itself from this version served as a stand-in GitHub Release
+# (fake_github.py, read by the same Velopack GithubSource the game uses at home), and checks the
+# update arrived and saved data survived. Then makes the .dmg download from this version.
 #
 # Env: EXPORT_ZIP  zip from Godot's macOS export (contains "Bip Island.app")
 #      VERSION     this build's version, e.g. 0.2.57
-#      OUT_DIR     where the release files go (osx/ feed folder + BipIsland-mac.dmg)
+#      OUT_DIR     where the release files go (osx/ release files + BipIsland-mac.dmg)
 #      PACK_ID     Velopack app id (BipIslandTest while testing)
 set -euo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -40,14 +41,14 @@ ditto -x -k "$work/old/$PACK_ID-osx-Portable.zip" "$install_dir"
 installed_app="$(find "$install_dir" -maxdepth 1 -name '*.app' | head -1)"
 codesign --verify --deep --strict --verbose=2 "$installed_app"
 
-# Serve this version as the update feed and let the old one update itself.
-python3 -m http.server 8765 --directory "$OUT_DIR/osx" >"$work/http.log" 2>&1 &
+# Serve this version as a GitHub Release and let the old one update itself.
+python3 "$root/scripts/godot/fake_github.py" "$OUT_DIR/osx" 8765 >"$work/http.log" 2>&1 &
 server=$!
 trap 'kill $server 2>/dev/null || true' EXIT
 sleep 2
 report="$work/report.json"
 rm -f "$report"
-"$installed_app/Contents/MacOS/$exe" --headless -- --bip-update-test "http://127.0.0.1:8765/" "$report" \
+"$installed_app/Contents/MacOS/$exe" --headless -- --bip-update-test "http://127.0.0.1:8765/test/bip-island" "$report" \
   >"$work/old-run.log" 2>&1 || true
 for _ in $(seq 1 90); do
   [ -s "$report" ] && break
@@ -55,7 +56,7 @@ for _ in $(seq 1 90); do
 done
 if [ ! -s "$report" ]; then
   echo "::error::The installed game didn't write its report after updating."
-  cat "$work/old-run.log" || true
+  cat "$work/old-run.log" "$work/http.log" || true
   find "$HOME/Library/Logs" "$install_dir" -maxdepth 3 -iname '*velopack*' -print -exec tail -n 60 {} \; 2>/dev/null || true
   exit 1
 fi

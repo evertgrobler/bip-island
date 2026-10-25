@@ -529,10 +529,10 @@ public partial class ParentArea : VBoxContainer
         var updates = Updater.ReadyVersion == null
             ? ParentUi.Button("Check for updates now", CheckForUpdates)
             : ParentUi.Button("Install the update", InstallUpdate);
-        updates.Disabled = Updater.FeedUrl == null;
+        updates.Disabled = Updater.RepoUrl == null;
         about.AddChild(ParentUi.Row(12, updates, ParentUi.Button("Quit Bip Island", () => Boot.Instance.Quit(), danger: true)));
         about.AddChild(ParentUi.Row(12, ParentUi.Button("Show the setup guide again", () => _layer.ShowSetupGuide())));
-        if (Updater.FeedUrl == null) _versionNote.Text = "Automatic updates aren't switched on in this build.";
+        if (Updater.RepoUrl == null) _versionNote.Text = "Automatic updates aren't switched on in this build.";
         about.AddChild(_versionNote);
     }
 

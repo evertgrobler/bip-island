@@ -3,17 +3,18 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Godot;
 using Velopack;
+using Velopack.Sources;
 
 namespace BipIsland.App;
 
 /// <summary>
-/// Automatic updates (Velopack), the Godot version of the Swift app's Sparkle setup.
-/// The feed address comes from res://assets/update.json, written by CI; local and pull-request
-/// builds have none and never check. A new version is downloaded quietly in the background, but
-/// updates need a grown-up (owner rule, as in the Swift app): it is only installed after the parent
-/// gate, from the "Update ready" button or the parent area's Settings tab.
-/// The feed has one folder per computer (feed/win/ and feed/osx/), because Velopack names its packages
-/// the same on both.
+/// Automatic updates (Velopack). Each version is a GitHub Release in a public downloads repository
+/// (evertgrobler/bip-island-downloads), read with Velopack's GithubSource. The repository address comes
+/// from res://assets/update.json, written by CI on main; local and pull-request builds have none and
+/// never check. A new version is downloaded quietly in the background, but updates need a grown-up
+/// (owner rule): it is only installed after the parent gate, from the "Update ready" button or the
+/// parent area's Settings tab. Each release holds both computers' files (releases.win.json and
+/// releases.osx.json), and the installed game reads the one for its own computer.
 /// </summary>
 public static class Updater
 {
@@ -28,12 +29,24 @@ public static class Updater
     /// <summary>A new version finished downloading (its version number). Raised on the main thread.</summary>
     public static event Action<string>? UpdateReady;
 
-    /// <summary>The feed this build checks, or null for builds that don't update.</summary>
-    public static string? FeedUrl { get; } = ReadFeedUrl();
+    /// <summary>The GitHub repository this build updates from, or null for builds that don't update.</summary>
+    public static string? RepoUrl { get; } = ReadRepoUrl();
 
-    /// <summary>This computer's folder in the feed.</summary>
-    public static string? PlatformFeedUrl =>
-        FeedUrl == null ? null : FeedUrl.TrimEnd('/') + (OS.GetName() == "Windows" ? "/win/" : "/osx/");
+    /// <summary>Releases in <paramref name="repoUrl"/>, read without a token (the repository is public).</summary>
+    private static UpdateManager Manager(string repoUrl) => new(new ReleaseSource(repoUrl));
+
+    /// <summary>
+    /// Velopack's GithubSource. A non-GitHub address such as http://127.0.0.1:8765/test/bip-island is
+    /// read through its /api/v3/ path (how the CI install test serves a local copy); Velopack drops the
+    /// port there, so this keeps it.
+    /// </summary>
+    private sealed class ReleaseSource(string repoUrl) : GithubSource(repoUrl, null, false)
+    {
+        protected override Uri GetApiBaseUrl(Uri repoUrl) =>
+            repoUrl.Host.EndsWith("github.com", StringComparison.OrdinalIgnoreCase)
+                ? base.GetApiBaseUrl(repoUrl)
+                : new Uri(repoUrl.GetLeftPart(UriPartial.Authority) + "/api/v3/");
+    }
 
     /// <summary>The installed version, or null when the game isn't installed (the editor, a test run).</summary>
     public static string? InstalledVersion
@@ -42,7 +55,7 @@ public static class Updater
         {
             try
             {
-                var manager = new UpdateManager(PlatformFeedUrl ?? "https://updates.invalid/");
+                var manager = Manager(RepoUrl ?? "https://github.com/invalid/invalid");
                 return manager.IsInstalled ? manager.CurrentVersion?.ToString() : null;
             }
             catch (Exception e)
@@ -53,14 +66,14 @@ public static class Updater
         }
     }
 
-    private static string? ReadFeedUrl()
+    private static string? ReadRepoUrl()
     {
         if (!FileAccess.FileExists(ConfigPath)) return null;
         try
         {
             using var doc = JsonDocument.Parse(FileAccess.GetFileAsString(ConfigPath));
-            var feed = doc.RootElement.GetProperty("feed").GetString();
-            return string.IsNullOrWhiteSpace(feed) ? null : feed;
+            var repo = doc.RootElement.GetProperty("github").GetString();
+            return string.IsNullOrWhiteSpace(repo) ? null : repo;
         }
         catch (Exception e)
         {
@@ -70,15 +83,15 @@ public static class Updater
     }
 
     /// <summary>
-    /// Checks the feed and downloads a newer version, if there is one. Never throws; returns a short
+    /// Checks the releases and downloads a newer version, if there is one. Never throws; returns a short
     /// sentence for the parent area's Settings tab.
     /// </summary>
     public static async Task<string> CheckAndDownloadInBackground()
     {
-        if (PlatformFeedUrl is not { } feed) return "Automatic updates aren't switched on in this build.";
+        if (RepoUrl is not { } repo) return "Automatic updates aren't switched on in this build.";
         try
         {
-            var manager = new UpdateManager(feed);
+            var manager = Manager(repo);
             if (!manager.IsInstalled) return "This copy isn't installed, so it can't update itself.";
             if (ReadyVersion is { } waiting) return $"Version {waiting} is ready to install.";
             var update = await manager.CheckForUpdatesAsync();
@@ -93,7 +106,7 @@ public static class Updater
         }
         catch (Exception e)
         {
-            // No internet, or the feed is down: try again next launch. Children never see this.
+            // No internet, or GitHub is down: try again next launch. Children never see this.
             GD.Print($"Bip Island: update check failed: {e.Message}");
             return "Couldn't check for updates (no internet?). It tries again next time the game opens.";
         }
@@ -120,18 +133,19 @@ public static class Updater
     }
 
     /// <summary>
-    /// For the CI install-and-update test: check <paramref name="feed"/>, download the newer version,
+    /// For the CI install-and-update test: check the releases in <paramref name="repoUrl"/> (a local copy
+    /// served by scripts/godot/fake_github.py), download the newer version,
     /// then quit, install it and restart with <paramref name="restartArgs"/>. Returns an error message
     /// if it couldn't (on success the process exits and never returns).
     /// </summary>
-    public static async Task<string> UpdateNowAndRestart(string feed, string[] restartArgs)
+    public static async Task<string> UpdateNowAndRestart(string repoUrl, string[] restartArgs)
     {
         try
         {
-            var manager = new UpdateManager(feed);
+            var manager = Manager(repoUrl);
             if (!manager.IsInstalled) return "the game isn't installed, so it can't update";
             var update = await manager.CheckForUpdatesAsync();
-            if (update == null) return $"no newer version than {manager.CurrentVersion} in {feed}";
+            if (update == null) return $"no newer version than {manager.CurrentVersion} in {repoUrl}";
             await manager.DownloadUpdatesAsync(update);
             manager.ApplyUpdatesAndRestart(update.TargetFullRelease, restartArgs);
             return "ApplyUpdatesAndRestart returned without restarting";

@@ -9,9 +9,10 @@
   <meta name="description" content="Bip Island: a learning game for children aged 4 to 8, for Mac and Windows.">
   <link rel="icon" type="image/png" href="favicon.png">
   <!--
-    The download page. godot.yml's publish job (scripts/ci/deploy_site.sh) fills in VERSION, DATE,
-    MAC_URL and WIN_URL in double curly braces, and adds the screenshots CI took of the real game
-    (scripts/ci/site_screenshots.sh) in screenshots/.
+    The download page, on GitHub Pages (evertgrobler/bip-island-downloads). godot.yml's publish job
+    (scripts/ci/deploy_site.sh) fills in VERSION, DATE, MAC_URL and WIN_URL in double curly braces
+    (the links are GitHub's "latest release" downloads), and adds the screenshots CI took of the real
+    game (scripts/ci/site_screenshots.sh) in screenshots/.
     Everything is local: the font is bundled in fonts/, no trackers, no external requests.
   -->
   <style>
@@ -305,7 +306,7 @@
       <h2>Download</h2>
       <p>For a Mac with macOS 14 Sonoma or newer, or a Windows 10 or 11 PC. It's free, with nothing to buy and no sign-up.</p>
       <!-- One card per computer. godot.yml's publish job fills in the double-brace placeholders
-           (scripts/ci/deploy_site.sh) with the version, date and the Blob store links it just uploaded. -->
+           (scripts/ci/deploy_site.sh) with the version, date and the latest release's download links. -->
       <div class="downloads">
         <div class="card download-card" id="download-mac">
           <h3>Bip Island for Mac</h3>

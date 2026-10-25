@@ -1,9 +1,10 @@
 # On a Windows runner: installs the older test version with its Setup.exe (as a person would),
-# lets it update itself from a local feed holding this version, and checks the update arrived and
-# saved data survived. Both versions are packed on Linux by the export job.
+# lets it update itself from this version served as a stand-in GitHub Release (fake_github.py, read
+# by the same Velopack GithubSource the game uses at home), and checks the update arrived and saved
+# data survived. Both versions are packed on Linux by the export job.
 param(
     [Parameter(Mandatory)] [string] $OldDir,   # older version: <PackId>-win-Setup.exe
-    [Parameter(Mandatory)] [string] $NewDir,   # this version: the win/ feed folder
+    [Parameter(Mandatory)] [string] $NewDir,   # this version: its win release files
     [Parameter(Mandatory)] [string] $Version,
     [Parameter(Mandatory)] [string] $PackId
 )
@@ -25,12 +26,12 @@ if (-not (Test-Path $exe)) {
     throw "The game isn't installed at $exe"
 }
 
-$server = Start-Process -FilePath python -ArgumentList '-m', 'http.server', '8765', '--directory', $NewDir -PassThru -WindowStyle Hidden
+$server = Start-Process -FilePath python -ArgumentList "`"$root/scripts/godot/fake_github.py`"", "`"$NewDir`"", '8765' -PassThru -WindowStyle Hidden
 Start-Sleep -Seconds 3
 $report = Join-Path $work 'report.json'
 Remove-Item $report -ErrorAction SilentlyContinue
 try {
-    Start-Process -FilePath $exe -ArgumentList '--headless', '--', '--bip-update-test', 'http://127.0.0.1:8765/', "`"$report`""
+    Start-Process -FilePath $exe -ArgumentList '--headless', '--', '--bip-update-test', 'http://127.0.0.1:8765/test/bip-island', "`"$report`""
     $deadline = (Get-Date).AddMinutes(3)
     while ((Get-Date) -lt $deadline) {
         if ((Test-Path $report) -and ((Get-Item $report).Length -gt 0)) { break }

@@ -98,6 +98,7 @@ export_both() {
     test -s godot/build/macos/BipIsland.zip
 }
 step "Export for Mac and Windows" export_both
+step "Download page builds" env VERSION=0.0.1 scripts/ci/deploy_site.sh --build-only
 step "Pack the Windows installer" vpk "[win]" pack -x --packId BipIslandCheck --packVersion 0.0.1 \
   --packDir godot/build/windows --mainExe "Bip Island.exe" --packTitle "Bip Island" --skipVeloAppCheck --icon godot/icons/app-icon.ico \
   --outputDir "$out/windows-package"
@@ -112,7 +113,7 @@ diff_hygiene() {
     return 1
   fi
   # Patterns match real-looking secrets only (so this line doesn't match itself).
-  if git diff "$base" | grep -E '^\+.*(vercel_blob_rw_[A-Za-z0-9]{8,}_|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{36})'; then
+  if git diff "$base" | grep -E '^\+.*(github_pat_[A-Za-z0-9_]{22,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{36})'; then
     echo "Something that looks like a secret is in the diff."
     return 1
   fi

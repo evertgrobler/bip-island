@@ -27,7 +27,7 @@ The owner's own family first, to test how it plays. Not for sale yet, no App Sto
 
 - The owner drives everything through **Claude Code cloud sessions**. They will not build locally.
 - Cloud sessions run on Linux. They can build, test, screenshot and export the Godot game (`scripts/check_all.sh`; setup in `docs/STATUS.md`), but not run it on a real Mac or Windows PC. GitHub Actions does that: the `godot.yml` Mac and Windows jobs install an older build, update it and check the kid lock.
-- The app **updates itself** on the family's Mac and Windows PC via **Velopack**. Every merge to `main` produces a new versioned build, published to the Vercel Blob store, that installed copies pick up (a grown-up confirms the install).
+- The app **updates itself** on the family's Mac and Windows PC via **Velopack**. Every merge to `main` produces a new versioned build, published as a GitHub Release in the public repository `evertgrobler/bip-island-downloads`, that installed copies pick up (a grown-up confirms the install).
 - Keep explanations to the owner short and non-technical; they run a digital agency and are comfortable with web tech.
 - **Time zone: South African time (SAST, UTC+2), always (owner rule, 4 October 2026).** Every time told to the owner, written in docs, PR bodies and STATUS, or used for check-ins is SAST, written like "19:40 SAST". Cloud sessions run on UTC: `.claude/settings.json` sets `TZ=Africa/Johannesburg` so `date` shows SAST; when a tool reports UTC (GitHub, scheduled check-ins), add 2 hours before telling the owner.
 
@@ -41,13 +41,13 @@ The owner's own family first, to test how it plays. Not for sale yet, no App Sto
 | Parent area | Godot controls (`godot/Scripts/Parent/`) |
 | Audio | `.m4a` clips in `Resources/Audio/` (the source), converted to `.ogg` at build time by `scripts/godot/prepare_assets.py` |
 | Persistence | One JSON save file per computer (`BipCore.SaveStore`), local only, up to 4 child profiles |
-| Updates | Velopack: feeds `win/` and `osx/` in the public Vercel Blob store; downloaded quietly, installed only after the parent gate |
-| CI/CD | GitHub Actions (`.github/workflows/godot.yml`): Linux builds, tests, screenshots and exports both platforms; Mac and Windows runners install, update and check the kid lock; main publishes |
-| Download page | `site/`, deployed to Vercel by `godot.yml`'s publish job (`scripts/ci/deploy_site.sh`) |
+| Updates | Velopack: one GitHub Release per version in the public `evertgrobler/bip-island-downloads` repository (both computers' files; the newest 5 kept), read with Velopack's GithubSource (`godot/Scripts/App/Updater.cs`); downloaded quietly, installed only after the parent gate |
+| CI/CD | GitHub Actions (`.github/workflows/godot.yml`): Linux builds, tests, screenshots and exports both platforms; Mac and Windows runners install an older build, update it from a stand-in GitHub Release on the runner (`scripts/godot/fake_github.py`) and check the kid lock; main publishes to `bip-island-downloads` |
+| Download page | `site/`, on GitHub Pages at https://evertgrobler.github.io/bip-island-downloads/, pushed to that repository's `main` branch by `godot.yml`'s publish job (`scripts/ci/deploy_site.sh`); its buttons link to the latest release's `BipIsland-mac.dmg` and `BipIsland-win-Setup.exe`. Only the built page goes there: never code, content or keys |
 | Signing | No paid Apple or Windows certificate: the Mac app is ad-hoc signed (first launch: System Settings → Privacy & Security → Open Anyway; right-click → Open only works up to macOS 14), Windows shows "More info → Run anyway" once. Updates are checked by Velopack either way. Keep it possible to add real signing later through secrets. |
 
 Required GitHub Actions secrets (the owner adds these; see `docs/SETUP.md`):
-- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` — the download page and the Blob store.
+- `DOWNLOADS_TOKEN` — a fine-grained GitHub token with contents read/write on `evertgrobler/bip-island-downloads` only: the releases and the download page. (The old `VERCEL_*` secrets are no longer used.)
 
 Versioning: `0.MINOR.PATCH`, with the patch number from the GitHub run, so every build is newer than the last (`scripts/godot/set_version.sh`).
 
@@ -56,7 +56,7 @@ Versioning: `0.MINOR.PATCH`, with the patch number from the GitHub run, so every
 - App opens straight into full screen with a kid lock (`godot/Scripts/App/KidLock.cs`, rules in `BipCore.KidLockRules`). Mac: Dock and menu bar hidden, no Cmd-Tab, Force Quit, Cmd-H or Cmd-Q; never block logging out or shutting down. Windows: exclusive full screen, the Windows key, Alt-Tab, Alt/Ctrl-Esc and Alt-F4 blocked while the game is in front (Ctrl-Alt-Del always works). Holding Option (Mac) or Alt (Windows) at launch opens parent mode: a normal window, no lock.
 - First run: a setup guide for grown-ups (`BipCore.SetupGuide`, `ParentLayer.Setup.cs`) has them practise the Esc hold, then set the passcode, children and play time; opens by itself until finished or skipped (`SaveStore.SetupDone`), and again from Settings; when it opens by itself the practice step cannot be skipped, so the parent controls stay behind the gate.
 - Parent gate to exit or open settings: hold Esc 3 seconds, then answer an adult maths question, or enter the parent passcode if a parent has set one (4–8 digits, stored only as a salted hash; after 3 wrong tries it falls back to maths).
-- No network access except the update check. No ads, analytics, accounts or data collection.
+- No network access except the update check (GitHub, for the downloads repository's releases). No ads, analytics, accounts or data collection.
 - No time pressure inside games: no countdown timers, lives or "game over". Wrong answer → soft sound, retry, then a spoken hint after 2 misses.
 - Click targets at least 120 pt. Design for a mouse, not a trackpad. Any key = "play that sound again".
 - **Play-time breaks:** after 20 minutes of play, Bip's battery runs low; the child finishes the current game, then Bip "charges" for a 20-minute break during which games stay closed. Each child has their own play clock, break and daily total (owner decision, 3 October 2026); while one child rests, another can play, but switching away from a resting child to one who would then play needs the parent gate (a child who only tapped a resting sibling's picture can go back to their own freely; straight after the game opens, a sibling with play time left can start without the gate, owner decision 4 October 2026). Track time with the wall clock in persisted storage so quitting and reopening the app cannot skip a break. Parents set play length, break length and an optional daily maximum (shared by all children) behind the parent gate, and can end the playing child's break early.

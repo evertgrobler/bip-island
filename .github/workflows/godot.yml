@@ -1,5 +1,6 @@
 # Builds and tests the Godot version of the game (Mac + Windows). See docs/GODOT_MIGRATION.md.
-# Every main build is tested on real Mac and Windows machines, then published with the download page (site/).
+# Every main build is tested on real Mac and Windows machines, then published to the public downloads
+# repository: a GitHub Release (installers and update files) and the download page (site/) on GitHub Pages.
 name: Godot
 
 # Docs-only changes run nothing. Pull requests run the Linux job only; the Mac and Windows
@@ -56,6 +57,9 @@ env:
   VPK_VERSION: 1.2.161
   # The Godot test build's Velopack id, so it installs next to anything else.
   PACK_ID: BipIslandTest
+  # The public repository the game updates from: one GitHub Release per version, and the download
+  # page on GitHub Pages. CI writes to it with the DOWNLOADS_TOKEN secret (docs/SETUP.md).
+  DOWNLOADS_REPO: evertgrobler/bip-island-downloads
   DOTNET_NOLOGO: "1"
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
 
@@ -115,22 +119,12 @@ jobs:
       - name: Copy fonts, content and voice clips into the Godot project
         run: python3 scripts/godot/prepare_assets.py
 
-      - name: Update feed address (main only)
+      # Installed copies check the GitHub Releases of the public downloads repository (Updater.cs).
+      - name: Update source (main only)
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "::warning::The Vercel secrets aren't set, so this build won't check for updates."
-            exit 0
-          fi
-          store="$(scripts/godot/blob_store.sh)"
-          echo "::add-mask::$(printf '%s\n' "$store" | sed -n 1p)"
-          base="$(printf '%s\n' "$store" | sed -n 2p)"
-          printf '{"feed": "%s/godot-test/"}\n' "$base" > godot/assets/update.json
-          echo "Update feed: $base/godot-test/"
+          printf '{"github": "https://github.com/%s"}\n' "$DOWNLOADS_REPO" > godot/assets/update.json
+          echo "Updates from: https://github.com/$DOWNLOADS_REPO/releases"
 
       - name: Cache Godot
         uses: actions/cache@v4
@@ -304,14 +298,23 @@ jobs:
           compression-level: 0
 
   publish:
-    name: Publish the test release (Vercel Blob)
+    name: Publish the release (GitHub, bip-island-downloads)
     needs: [export, windows, macos]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Check out
         uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install Velopack
+        timeout-minutes: 5
+        run: dotnet tool install -g vpk --version "$VPK_VERSION"
 
       - name: Get the Windows release
         uses: actions/download-artifact@v4
@@ -325,16 +328,18 @@ jobs:
           name: godot-macos-${{ needs.export.outputs.version }}
           path: release/macos
 
-      - name: Upload to Vercel Blob
-        id: upload
+      # One GitHub Release per version holds both computers' update files (releases.win.json,
+      # releases.osx.json and their packages) and the two downloads. It stays a draft, hidden from
+      # installed games, until the Mac files are in; then it's published, marked latest, and all but
+      # the newest 5 releases are deleted.
+      - name: Publish the release
+        id: release
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOWNLOADS_TOKEN: ${{ secrets.DOWNLOADS_TOKEN }}
           VERSION: ${{ needs.export.outputs.version }}
         run: |
-          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "::warning::The Vercel secrets aren't set, so the test release wasn't published."
+          if [ -z "$DOWNLOADS_TOKEN" ]; then
+            echo "::warning::The DOWNLOADS_TOKEN secret isn't set, so this version wasn't published."
             exit 0
           fi
           # Never let an older run overwrite a newer one.
@@ -343,61 +348,53 @@ jobs:
             echo "::notice::main has moved on, so this older build isn't published."
             exit 0
           fi
-          store="$(scripts/godot/blob_store.sh)"
-          token="$(printf '%s\n' "$store" | sed -n 1p)"
-          echo "::add-mask::$token"
-          tools="$RUNNER_TEMP/blob-tools"
-          mkdir -p "$tools"
-          (cd "$tools" && npm init -y > /dev/null && npm install --silent @vercel/blob@2)
-          cp scripts/godot/publish_blob.mjs "$tools/"
-          BLOB_READ_WRITE_TOKEN="$token" node "$tools/publish_blob.mjs" release/windows release/macos godot-test/
-          base="$(printf '%s\n' "$store" | sed -n 2p)"
-          # The feeds are overwritten in place and cached for 60 seconds (publish_blob.mjs), so
-          # the old feed can still be served just after the upload: give the cache up to 3 minutes.
-          for os in win osx; do
-            listed=false
-            for _ in $(seq 1 12); do
-              if curl -fsS "$base/godot-test/$os/releases.$os.json" | grep -q "$VERSION"; then
-                listed=true
-                break
-              fi
-              sleep 15
+          release() { python3 scripts/godot/github_release.py "$@"; }
+          upload() { # upload <channel> <folder> [more vpk options]
+            vpk "[$1]" upload github --channel "$1" --outputDir "$2" \
+              --repoUrl "https://github.com/$DOWNLOADS_REPO" --token "$DOWNLOADS_TOKEN" \
+              --releaseName "Bip Island $VERSION" --tag "$VERSION" "${@:3}"
+          }
+          release trim release/windows win
+          release trim release/macos/osx osx
+          release clear "$VERSION"
+          upload win release/windows
+          release attach "$VERSION" release/macos/BipIsland-mac.dmg
+          upload osx release/macos/osx --merge --publish
+          release finish "$VERSION" --keep 5
+          # The download page's links: fetch the first byte of each.
+          for file in BipIsland-mac.dmg BipIsland-win-Setup.exe; do
+            url="https://github.com/$DOWNLOADS_REPO/releases/latest/download/$file"
+            for attempt in 1 2 3 4 5 6; do
+              curl -fsSL -r 0-0 -o /dev/null "$url" && break
+              [ "$attempt" = 6 ] && { echo "::error::The download link $url doesn't work."; exit 1; }
+              sleep 10
             done
-            $listed || {
-              echo "::error::The $os update feed still doesn't list $VERSION after 3 minutes."
-              exit 1
-            }
           done
+          echo "published=true" >> "$GITHUB_OUTPUT"
 
       - name: Get the download page screenshots
-        if: always() && steps.upload.outputs.mac_url != ''
+        if: steps.release.outputs.published == 'true'
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: site-screenshots
           path: build/site-screenshots
 
-      # The download page (site/) with this version's links. Runs once the builds are uploaded,
-      # even if the feed check above is slow to see the new version.
-      - name: Publish the download page
-        if: always() && steps.upload.outputs.mac_url != ''
+      - name: Publish the download page (GitHub Pages)
+        if: steps.release.outputs.published == 'true'
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          UPDATE_FEED_URL: ${{ vars.UPDATE_FEED_URL }}
+          DOWNLOADS_TOKEN: ${{ secrets.DOWNLOADS_TOKEN }}
           VERSION: ${{ needs.export.outputs.version }}
-          MAC_URL: ${{ steps.upload.outputs.mac_url }}
-          WIN_URL: ${{ steps.upload.outputs.win_url }}
         run: scripts/ci/deploy_site.sh
 
       - name: Summary
-        if: always() && steps.upload.outputs.mac_url != ''
+        if: always() && steps.release.outputs.published == 'true'
         run: |
+          owner="${DOWNLOADS_REPO%%/*}"
           {
-            echo "### Godot test build ${{ needs.export.outputs.version }} published"
-            echo "- Mac: ${{ steps.upload.outputs.mac_url }}"
-            echo "- Windows: ${{ steps.upload.outputs.win_url }}"
+            echo "### Bip Island ${{ needs.export.outputs.version }} published"
+            echo "- Download page: https://$owner.github.io/${DOWNLOADS_REPO#*/}/"
+            echo "- Release: https://github.com/$DOWNLOADS_REPO/releases/tag/${{ needs.export.outputs.version }}"
             echo
-            echo "Installed test copies download this version quietly; a grown-up approves the install."
+            echo "Installed copies download this version quietly; a grown-up approves the install."
           } >> "$GITHUB_STEP_SUMMARY"

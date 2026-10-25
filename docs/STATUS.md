@@ -33,10 +33,15 @@
 - **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
   the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
   remain only as a fallback for new words and in the parent area's child menus.
-- **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
-  installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
-  parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
-  screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
+- **Delivery (moved off Vercel on 25 Oct):** every `main` merge is built, tested on real Mac and Windows
+  machines, and published to the public repository `evertgrobler/bip-island-downloads`: one GitHub Release
+  per version (installers + both computers' Velopack files, the newest 5 kept; `scripts/godot/github_release.py`
+  + `vpk upload github`), and the download page (`site/`: islands, parents section with the kid lock card,
+  two download cards with the Option/Alt tip, Godot screenshots from `scripts/ci/site_screenshots.sh`) on
+  GitHub Pages at https://evertgrobler.github.io/bip-island-downloads/ via `scripts/ci/deploy_site.sh`. The game
+  updates from those releases (Velopack GithubSource, `Updater.cs`). Secret: `DOWNLOADS_TOKEN`. Copies installed
+  before 25 Oct point at the paused Vercel feed: the family reinstalls once from the new page. Before making
+  `bip-island` private, follow "Going private" in `docs/SETUP.md`.
 - **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
   review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
 - **Bip's Stories (24 Oct):** reading for meaning on Words Island, ages 5–10, 5 levels, 20 stories per language.
@@ -87,10 +92,11 @@
   blocked by the proxy), then `scripts/godot/install_godot.sh` prints the Godot binary path.
   `cd godot && dotnet build`, then `$GODOT --headless --path . --import`.
 - Self-tests run the real game: `-- --bip-report out.json`, `-- --bip-screenshot out.png` (needs
-  `xvfb-run` + `--rendering-driver opengl3`), `-- --bip-update-test <feed> <report>`.
+  `xvfb-run` + `--rendering-driver opengl3`), `-- --bip-update-test <repo url> <report>`.
 - CI: `.github/workflows/godot.yml`. Linux exports both platforms and packs the Windows `Setup.exe`
-  (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from a local feed.
-  Main builds go to a public Vercel Blob store (`godot-test/`); the Swift app's feed is untouched.
+  (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from this build served
+  as a stand-in GitHub Release on the runner (`scripts/godot/fake_github.py`, read by the game's own
+  GithubSource). Main builds are published as GitHub Releases in `evertgrobler/bip-island-downloads`.
 - Drawing is y-down in Godot: when porting a Swift drawing, negate y values and angles.
 - Drawing kit ported (Phase 2, part): `Buttons`, `PictureNode` (+ `PictureCard`), `EmojiPictures`
   (Noto via `Fonts.Emoji`), `StepPictures`, `Avatars`, `Sketch.StarPoints`. Ports keep the Swift numbers
@@ -647,3 +653,21 @@
   (`EarnedAndMissingStickersSplitTheWholeBook`, earned + missing = the whole book, a closed Language Island adds
   no stickers) from a precise brief; the lead session reviewed it and added one line. This PC has no .NET or `gh`
   yet, so CI is the first run of the test.
+- **25 Oct, 12:30 SAST (downloads move from Vercel to GitHub):** Vercel paused the whole team after the free
+  plan's "Blob Advanced Operations" limit (2.9K of 2K), taking down the download page, the update feed and the
+  owner's other site. Everything now goes to the public repository `evertgrobler/bip-island-downloads`, which
+  stays public when `bip-island` goes private. The publish job makes one GitHub Release per version with
+  `vpk upload github` (Windows files into a draft, the `.dmg` attached, then the Mac files with `--merge
+  --publish`, so installed games never see half a release), marks it latest and keeps the newest 5
+  (`scripts/godot/github_release.py`: `trim` drops the Portable zips and names the installer
+  `BipIsland-win-Setup.exe`, `clear` removes leftovers so a re-run works, `finish` checks the four required
+  files). The download page is pushed to that repository's `main` (one commit each time, README kept) for GitHub
+  Pages; its buttons use `releases/latest/download/BipIsland-mac.dmg` and `.../BipIsland-win-Setup.exe`. The
+  game's `update.json` now holds `{"github": "<repo url>"}` and `Updater` reads it with Velopack's GithubSource
+  (a subclass keeps the port for local addresses). The Mac and Windows CI jobs update from a stand-in GitHub
+  Release on the runner (`fake_github.py`), so they test the same code path. Removed: `publish_blob.mjs`,
+  `blob_store.sh`, `resolve_feed_url.sh`, `setup-updates.yml`, `site/vercel.json`, `site/placeholder.html`
+  and every `VERCEL_*` secret use. `check_all.sh` builds the page (`deploy_site.sh --build-only`) and looks
+  for fine-grained GitHub tokens in the diff. Docs: CLAUDE.md, `docs/SETUP.md` (new setup, moving from Vercel,
+  "Going private" checklist). Not verifiable from a cloud session: the real upload (needs `DOWNLOADS_TOKEN`)
+  and the Mac/Windows jobs, which run on the first main build.
