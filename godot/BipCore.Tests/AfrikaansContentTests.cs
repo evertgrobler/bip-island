@@ -11,11 +11,7 @@ namespace BipCore.Tests;
 /// </summary>
 public sealed class AfrikaansContentTests
 {
-    private static readonly Lazy<ContentLibrary> Cached = new(() =>
-        new ContentLibrary(file => File.ReadAllText(Path.Combine(TestContent.Directory, file)), HomeLanguage.Afrikaans,
-                           file => File.Exists(Path.Combine(TestContent.Directory, file))));
-
-    private static ContentLibrary Af => Cached.Value;
+    private static ContentLibrary Af => TestContent.Library(HomeLanguage.Afrikaans);
 
     [Fact]
     public void TheAfrikaansContentLoadsItsOwnWords()
