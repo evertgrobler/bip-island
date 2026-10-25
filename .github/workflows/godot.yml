@@ -49,13 +49,12 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
 
 jobs:
-  # The daily build only goes ahead when main has changed since the last daily or manual build
-  # that published, so a quiet day costs nothing. Pull requests and manual runs always go ahead.
   # The daily build only goes ahead when a file that goes into the game or the download page has
-  # changed since the commit the store says it was last published from (published.json, written last
-  # by publish_blob.mjs), so a quiet or docs-only day costs no Blob operations, and a build that
-  # didn't publish (main moved on, or an upload that broke off) is tried again. Pull requests and
-  # manual runs always go ahead.
+  # changed since the commit the store says it was last published from (published.json, written by
+  # mark_published.mjs as the publish job's last step), so a quiet or docs-only day costs no Blob
+  # operations. Each commit is tried once a night at most: one that failed (or didn't publish because
+  # main moved on) isn't rebuilt nightly; a manual run or the next change tries again. Pull requests
+  # and manual runs always go ahead.
   changed:
     name: Anything new on main?
     if: github.event_name == 'schedule'
@@ -67,20 +66,42 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
         with:
+          # The whole history for git diff, but no file contents from the past (audio clips are big).
           fetch-depth: 0
+          filter: blob:none
+
+      # A commit is tried once: if its build or test fails, it isn't rebuilt every night (a manual
+      # run or the next change to main tries again).
+      - name: Was this commit tried already?
+        id: tried
+        uses: actions/cache/restore@v4
+        with:
+          path: .daily-tried
+          key: daily-tried-${{ github.sha }}
+          lookup-only: true
 
       - id: check
         env:
+          TRIED: ${{ steps.tried.outputs.cache-hit }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        # Anything that can't be worked out builds anyway ("go=true"); only a clear "nothing new" skips.
         run: |
+          if [ "$TRIED" = "true" ]; then
+            echo "This commit (${GITHUB_SHA:0:7}) was built on an earlier night; nothing to do."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if [ -z "$VERCEL_TOKEN" ]; then
             echo "go=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          base="$(scripts/godot/blob_store.sh | sed -n 2p)"
-          last="$(curl -fsS "$base/godot-test/published.json" 2>/dev/null | jq -r '.sha // empty' || true)"
+          base="$(BLOB_STORE_NO_CREATE=1 scripts/godot/blob_store.sh | sed -n 2p)" || base=""
+          last=""
+          if [ -n "$base" ]; then
+            last="$(curl -fsS "$base/godot-test/published.json" 2>/dev/null | jq -r '.sha // empty' 2>/dev/null)" || last=""
+          fi
           if [ -z "$last" ] || ! git cat-file -e "$last^{commit}" 2>/dev/null; then
             echo "No published commit found (${last:-none}); building."
             echo "go=true" >> "$GITHUB_OUTPUT"
@@ -88,20 +109,31 @@ jobs:
           fi
           # Only changes that go into the game or the download page: the pull_request paths above, read from
           # this file so the two lists can't drift ("dir/**" -> ^dir/, a file -> ^file$).
-          game="^($(yq '.on.pull_request.paths[]' .github/workflows/godot.yml \
-            | sed -e 's/\./\\./g' -e 's#/\*\*$#/#' -e '/\/$/!s/$/$/' | paste -sd'|'))"
+          paths="$(yq -r '.on.pull_request.paths[]' .github/workflows/godot.yml)" || paths=""
+          game="^($(printf '%s\n' "$paths" | sed -e '/^$/d' -e 's/\./\\./g' -e 's#/\*\*$#/#' -e '/\/$/!s/$/$/' | paste -sd'|'))"
           if [ "$game" = "^()" ]; then
             echo "::warning::Couldn't read the pull_request paths; building to be safe."
             echo "go=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          files="$(git diff --name-only "$last" HEAD)"
-          if printf '%s\n' "$files" | grep -Eq "$game"; then
+          files="$(git diff --name-only "$last" HEAD)" || files="?"
+          if [ "$files" = "?" ] || printf '%s\n' "$files" | grep -Eq "$game"; then
             echo "go=true" >> "$GITHUB_OUTPUT"
           else
             echo "Nothing that goes into the game changed since the published build (${last:0:7}); nothing to do."
             echo "go=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Remember this commit was tried
+        if: steps.check.outputs.go == 'true'
+        run: mkdir -p .daily-tried && echo "$GITHUB_SHA" > .daily-tried/sha
+
+      - name: Save that
+        if: steps.check.outputs.go == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .daily-tried
+          key: daily-tried-${{ github.sha }}
 
   export:
     name: Test and export (Linux)
@@ -283,7 +315,9 @@ jobs:
   windows:
     name: Install and update test (Windows)
     needs: export
-    if: github.event_name != 'pull_request'
+    # !cancelled() and the result check stand in for success(), which would also look at the skipped
+    # "changed" job on manual runs and skip this one too (actions/runner#491).
+    if: ${{ !cancelled() && needs.export.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
@@ -313,7 +347,7 @@ jobs:
   macos:
     name: Package, install and update test (Mac)
     needs: export
-    if: github.event_name != 'pull_request'
+    if: ${{ !cancelled() && needs.export.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -352,7 +386,9 @@ jobs:
   publish:
     name: Publish the test release (Vercel Blob)
     needs: [export, windows, macos]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: >-
+      ${{ !cancelled() && needs.export.result == 'success' && needs.windows.result == 'success'
+      && needs.macos.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -399,6 +435,9 @@ jobs:
           (cd "$tools" && npm init -y > /dev/null && npm install --silent @vercel/blob@2)
           cp scripts/godot/publish_blob.mjs "$tools/"
           BLOB_READ_WRITE_TOKEN="$token" node "$tools/publish_blob.mjs" release/windows release/macos godot-test/
+          # For the last step, which notes this commit as published.
+          cp scripts/godot/mark_published.mjs "$tools/"
+          (umask 077 && printf '%s' "$token" > "$RUNNER_TEMP/blob-token")
           base="$(printf '%s\n' "$store" | sed -n 2p)"
           # The feeds are overwritten in place and cached for 60 seconds (publish_blob.mjs), so
           # the old feed can still be served just after the upload: give the cache up to 3 minutes.
@@ -438,6 +477,14 @@ jobs:
           MAC_URL: ${{ steps.upload.outputs.mac_url }}
           WIN_URL: ${{ steps.upload.outputs.win_url }}
         run: scripts/ci/deploy_site.sh
+
+      # Last, and only when every step above worked (the uploads, the feed check and the download
+      # page): the note the daily "changed" job reads to skip days when nothing new went into the game.
+      - name: Note this commit as published
+        env:
+          VERSION: ${{ needs.export.outputs.version }}
+          VERCEL_BLOB_RETRIES: "2"
+        run: BLOB_READ_WRITE_TOKEN="$(cat "$RUNNER_TEMP/blob-token")" node "$RUNNER_TEMP/blob-tools/mark_published.mjs" godot-test/
 
       - name: Summary
         if: always() && steps.upload.outputs.mac_url != ''

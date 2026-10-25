@@ -2,7 +2,8 @@
 # Makes sure the public Vercel Blob store for the Godot downloads exists, connected to the Vercel
 # project that hosts the download page (it uses the existing VERCEL_* secrets; nothing new to set up).
 # Prints the store's read-write token on line 1 and its public web address on line 2.
-# Env: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID, optional BLOB_STORE_NAME
+# Env: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID, optional BLOB_STORE_NAME, optional BLOB_STORE_NO_CREATE
+# (set: fail instead of making the store, for read-only checks)
 set -euo pipefail
 store_name="${BLOB_STORE_NAME:-bip-island-downloads}"
 work="$(mktemp -d)"
@@ -19,6 +20,10 @@ pull_token() {
 }
 
 token="$(pull_token)"
+if [ -z "$token" ] && [ -n "${BLOB_STORE_NO_CREATE:-}" ]; then
+  echo "::warning::Couldn't read the Vercel Blob store (not making one: BLOB_STORE_NO_CREATE)." >&2
+  exit 1
+fi
 if [ -z "$token" ]; then
   echo "Making the Blob store $store_name…" >&2
   vercel blob create-store "$store_name" --access public --environment production --yes >&2

@@ -83,21 +83,9 @@ for (const [file, pathname] of files) {
   console.log(`Uploaded ${pathname} (${(size / 1e6).toFixed(1)} MB)`);
 }
 
-// Last, a note of which commit this release was built from: the daily build reads it to skip a day
-// when nothing that goes into the game has changed since (godot.yml, the "changed" job). It goes up
-// only after everything else, so a release that didn't finish uploading is published again.
-if (process.env.GITHUB_SHA) {
-  const note = `${prefix}published.json`;
-  await put(note, JSON.stringify({ sha: process.env.GITHUB_SHA, version: process.env.VERSION ?? '' }), {
-    access: 'public',
-    token,
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: 'application/json',
-    cacheControlMaxAge: 60,
-  });
-  uploaded.set(note, '');
-}
+// The note of which commit was published last (mark_published.mjs, written after the download page)
+// stays: the daily build reads it.
+uploaded.set(`${prefix}published.json`, '');
 
 // Remove anything under the prefix that isn't part of this release.
 const stale = [];
