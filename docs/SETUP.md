@@ -8,7 +8,7 @@ won't need Xcode, Visual Studio or a terminal.
 
 ```
 Claude Code ──► GitHub (bip-island, public)
-                 │  every merge to main
+                 │  once a day, if main changed (or a manual run)
                  ▼
          GitHub Actions (Linux, Mac and Windows machines in the cloud)
          builds, tests, installs, updates and checks the child lock

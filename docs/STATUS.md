@@ -33,7 +33,9 @@
 - **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
   the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
   remain only as a fallback for new words and in the parent area's child menus.
-- **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
+- **Delivery:** once a day (20:52 SAST, only if a game or download-page file changed since the last
+  published build; a manual run of the Godot workflow publishes at once) `main` is built, tested on real
+  Mac and Windows machines, and published:
   installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
   parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
   screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
@@ -647,3 +649,4 @@
   (`EarnedAndMissingStickersSplitTheWholeBook`, earned + missing = the whole book, a closed Language Island adds
   no stickers) from a precise brief; the lead session reviewed it and added one line. This PC has no .NET or `gh`
   yet, so CI is the first run of the test.
+- **25 Oct, 13:30 SAST: daily publishing.** The Vercel team was paused on 25 Oct: "Blob Advanced Operations" reached 2.9K of the free 2K a month, which also took down the owner's other site. Each upload call counts, and `put()`'s multipart sends 8 MB parts, so one release cost well over 100 operations; about 15 merges in two days used up the month. The owner chose to wait for the limit to reset (about 5 days) and to merge less. Since then: `main` builds, tests and publishes once a day at 20:52 SAST (`schedule`), and only when a file that goes into the game or the download page changed since the commit the store was last published from (`godot-test/published.json`, written by `mark_published.mjs` as the publish job's very last step, after the feed check and the download page, and read by the `changed` job with `git diff`). Each commit is built by the daily run once at most (an Actions cache key `daily-tried-<sha>`): a commit whose build, test or publish failed isn't rebuilt every night; a manual run or the next change to `main` tries again. Anything the check can't work out (Vercel unreachable, no note yet) builds anyway. A manual run still publishes at once, and pull requests are unchanged. `publish_blob.mjs` sends files over 64 MB in 64 MB parts (about 4 operations for a 150 MB installer instead of about 20). Keep merges to `main` few and batched. A move to GitHub Releases plus GitHub Pages was built (PR #65, branch `claude/downloads-github`) and closed unmerged; it is ready if the repository goes private or Vercel becomes a problem again.

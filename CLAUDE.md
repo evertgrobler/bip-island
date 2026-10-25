@@ -27,7 +27,7 @@ The owner's own family first, to test how it plays. Not for sale yet, no App Sto
 
 - The owner drives everything through **Claude Code cloud sessions**. They will not build locally.
 - Cloud sessions run on Linux. They can build, test, screenshot and export the Godot game (`scripts/check_all.sh`; setup in `docs/STATUS.md`), but not run it on a real Mac or Windows PC. GitHub Actions does that: the `godot.yml` Mac and Windows jobs install an older build, update it and check the kid lock.
-- The app **updates itself** on the family's Mac and Windows PC via **Velopack**. Every merge to `main` produces a new versioned build, published to the Vercel Blob store, that installed copies pick up (a grown-up confirms the install).
+- The app **updates itself** on the family's Mac and Windows PC via **Velopack**. Once a day (20:52 SAST, only if `main` changed) a new versioned build is made from `main`, tested on Mac and Windows and published to the Vercel Blob store, and installed copies pick it up (a grown-up confirms the install). A manual run of the Godot workflow publishes straight away. **Keep merges to `main` few and batched** (owner decision, 25 October 2026): the Vercel free plan allows 2,000 Blob operations a month, and going over pauses the whole Vercel team, including the owner's other sites.
 - Keep explanations to the owner short and non-technical; they run a digital agency and are comfortable with web tech.
 - **Time zone: South African time (SAST, UTC+2), always (owner rule, 4 October 2026).** Every time told to the owner, written in docs, PR bodies and STATUS, or used for check-ins is SAST, written like "19:40 SAST". Cloud sessions run on UTC: `.claude/settings.json` sets `TZ=Africa/Johannesburg` so `date` shows SAST; when a tool reports UTC (GitHub, scheduled check-ins), add 2 hours before telling the owner.
 
@@ -42,7 +42,7 @@ The owner's own family first, to test how it plays. Not for sale yet, no App Sto
 | Audio | `.m4a` clips in `Resources/Audio/` (the source), converted to `.ogg` at build time by `scripts/godot/prepare_assets.py` |
 | Persistence | One JSON save file per computer (`BipCore.SaveStore`), local only, up to 4 child profiles |
 | Updates | Velopack: feeds `win/` and `osx/` in the public Vercel Blob store; downloaded quietly, installed only after the parent gate |
-| CI/CD | GitHub Actions (`.github/workflows/godot.yml`): Linux builds, tests, screenshots and exports both platforms; Mac and Windows runners install, update and check the kid lock; main publishes |
+| CI/CD | GitHub Actions (`.github/workflows/godot.yml`): Linux builds, tests, screenshots and exports both platforms; Mac and Windows runners install, update and check the kid lock; the daily `main` build (or a manual run) publishes |
 | Download page | `site/`, deployed to Vercel by `godot.yml`'s publish job (`scripts/ci/deploy_site.sh`) |
 | Signing | No paid Apple or Windows certificate: the Mac app is ad-hoc signed (first launch: System Settings → Privacy & Security → Open Anyway; right-click → Open only works up to macOS 14), Windows shows "More info → Run anyway" once. Updates are checked by Velopack either way. Keep it possible to add real signing later through secrets. |
 
