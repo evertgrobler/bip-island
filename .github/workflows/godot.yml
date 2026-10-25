@@ -1,5 +1,6 @@
 # Builds and tests the Godot version of the game (Mac + Windows). See docs/GODOT_MIGRATION.md.
-# Every main build is tested on real Mac and Windows machines, then published with the download page (site/).
+# Once a day (and on a manual run), main is tested on real Mac and Windows machines, then published with the
+# download page (site/).
 name: Godot
 
 # Docs-only changes run nothing. Pull requests run the Linux job only; the Mac and Windows
@@ -45,6 +46,8 @@ env:
   VPK_VERSION: 1.2.161
   # The Godot test build's Velopack id, so it installs next to anything else.
   PACK_ID: BipIslandTest
+  # Where in the Blob store the test release lives (the update feeds, installers and published.json).
+  BLOB_PREFIX: godot-test/
   DOTNET_NOLOGO: "1"
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
 
@@ -52,7 +55,7 @@ jobs:
   # The daily build only goes ahead when a file that goes into the game or the download page has
   # changed since the commit the store says it was last published from (published.json, written by
   # mark_published.mjs as the publish job's last step), so a quiet or docs-only day costs no Blob
-  # operations. Each commit is tried once a night at most: one that failed (or didn't publish because
+  # operations. The daily run tries each commit once: one that failed (or didn't publish because
   # main moved on) isn't rebuilt nightly; a manual run or the next change tries again. Pull requests
   # and manual runs always go ahead.
   changed:
@@ -100,7 +103,7 @@ jobs:
           base="$(BLOB_STORE_NO_CREATE=1 scripts/godot/blob_store.sh | sed -n 2p)" || base=""
           last=""
           if [ -n "$base" ]; then
-            last="$(curl -fsS "$base/godot-test/published.json" 2>/dev/null | jq -r '.sha // empty' 2>/dev/null)" || last=""
+            last="$(curl -fsS "$base/${BLOB_PREFIX}published.json" 2>/dev/null | jq -r '.sha // empty' 2>/dev/null)" || last=""
           fi
           if [ -z "$last" ] || ! git cat-file -e "$last^{commit}" 2>/dev/null; then
             echo "No published commit found (${last:-none}); building."
@@ -109,7 +112,13 @@ jobs:
           fi
           # Only changes that go into the game or the download page: the pull_request paths above, read from
           # this file so the two lists can't drift ("dir/**" -> ^dir/, a file -> ^file$).
+          # Only "dir/**" and plain file names are understood; anything else (*, ?, [, !) builds to be safe.
           paths="$(yq -r '.on.pull_request.paths[]' .github/workflows/godot.yml)" || paths=""
+          if printf '%s\n' "$paths" | sed -e '/^$/d' -e 's#/\*\*$##' | grep -q '[][*?!"]'; then
+            echo "::warning::A pull_request path isn't \"dir/**\" or a plain file name; building to be safe."
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           game="^($(printf '%s\n' "$paths" | sed -e '/^$/d' -e 's/\./\\./g' -e 's#/\*\*$#/#' -e '/\/$/!s/$/$/' | paste -sd'|'))"
           if [ "$game" = "^()" ]; then
             echo "::warning::Couldn't read the pull_request paths; building to be safe."
@@ -207,8 +216,8 @@ jobs:
           store="$(scripts/godot/blob_store.sh)"
           echo "::add-mask::$(printf '%s\n' "$store" | sed -n 1p)"
           base="$(printf '%s\n' "$store" | sed -n 2p)"
-          printf '{"feed": "%s/godot-test/"}\n' "$base" > godot/assets/update.json
-          echo "Update feed: $base/godot-test/"
+          printf '{"feed": "%s/%s"}\n' "$base" "$BLOB_PREFIX" > godot/assets/update.json
+          echo "Update feed: $base/$BLOB_PREFIX"
 
       - name: Cache Godot
         uses: actions/cache@v4
@@ -414,8 +423,9 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           VERSION: ${{ needs.export.outputs.version }}
-          # Each retry is another counted Blob operation (the SDK's default is 10).
-          VERCEL_BLOB_RETRIES: "2"
+          # Each retry is another counted Blob operation (the SDK's default is 10), but a part that
+          # fails for good costs a whole new upload (about 25 operations), so allow a few.
+          VERCEL_BLOB_RETRIES: "4"
         run: |
           if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
             echo "::warning::The Vercel secrets aren't set, so the test release wasn't published."
@@ -434,7 +444,7 @@ jobs:
           mkdir -p "$tools"
           (cd "$tools" && npm init -y > /dev/null && npm install --silent @vercel/blob@2)
           cp scripts/godot/publish_blob.mjs "$tools/"
-          BLOB_READ_WRITE_TOKEN="$token" node "$tools/publish_blob.mjs" release/windows release/macos godot-test/
+          BLOB_READ_WRITE_TOKEN="$token" node "$tools/publish_blob.mjs" release/windows release/macos "$BLOB_PREFIX"
           # For the last step, which notes this commit as published.
           cp scripts/godot/mark_published.mjs "$tools/"
           (umask 077 && printf '%s' "$token" > "$RUNNER_TEMP/blob-token")
@@ -444,7 +454,7 @@ jobs:
           for os in win osx; do
             listed=false
             for _ in $(seq 1 12); do
-              if curl -fsS "$base/godot-test/$os/releases.$os.json" | grep -q "$VERSION"; then
+              if curl -fsS "$base/${BLOB_PREFIX}$os/releases.$os.json" | grep -q "$VERSION"; then
                 listed=true
                 break
               fi
@@ -483,8 +493,8 @@ jobs:
       - name: Note this commit as published
         env:
           VERSION: ${{ needs.export.outputs.version }}
-          VERCEL_BLOB_RETRIES: "2"
-        run: BLOB_READ_WRITE_TOKEN="$(cat "$RUNNER_TEMP/blob-token")" node "$RUNNER_TEMP/blob-tools/mark_published.mjs" godot-test/
+          VERCEL_BLOB_RETRIES: "4"
+        run: BLOB_READ_WRITE_TOKEN="$(cat "$RUNNER_TEMP/blob-token")" node "$RUNNER_TEMP/blob-tools/mark_published.mjs" "$BLOB_PREFIX"
 
       - name: Summary
         if: always() && steps.upload.outputs.mac_url != ''
