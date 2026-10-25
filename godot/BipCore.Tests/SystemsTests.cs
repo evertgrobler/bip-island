@@ -276,6 +276,37 @@ public sealed class SystemsTests
     }
 
     [Fact]
+    public void EarnedAndMissingStickersSplitTheWholeBook()
+    {
+        var content = Library();
+        var progress = new ChildProgress();
+        Island[] closed = [Island.Language];
+
+        void AssertBookAddsUp()
+        {
+            var earned = StickerBook.Earned(progress, content, closed);
+            var missing = StickerBook.Missing(progress, content, closed);
+            Assert.Empty(earned.Intersect(missing));
+            Assert.Equal(StickerBook.AllStickers(content, closed).OrderBy(s => s), earned.Concat(missing).OrderBy(s => s));
+        }
+
+        AssertBookAddsUp();
+        Assert.Contains("skill_count_10", StickerBook.Missing(progress, content, closed));
+        Master(progress, "count_10", [0, 1]);
+        AssertBookAddsUp();
+        Assert.Contains("skill_count_10", StickerBook.Earned(progress, content, closed));
+        Assert.DoesNotContain("skill_count_10", StickerBook.Missing(progress, content, closed));
+
+        // A closed Language Island has no skill stickers at all.
+        foreach (var sticker in StickerBook.AllStickers(content, closed).Where(s => s.StartsWith("skill_", StringComparison.Ordinal)))
+        {
+            var skill = content.Skill(sticker["skill_".Length..]);
+            Assert.NotNull(skill);
+            Assert.NotEqual(Island.Language, skill!.Island);
+        }
+    }
+
+    [Fact]
     public void EveryTenStarsWinAPictureStickerForTheSoundJustPractised()
     {
         var content = Library();
