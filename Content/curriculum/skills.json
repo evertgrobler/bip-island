@@ -1,5 +1,5 @@
 {
-  "note": "The game's skill map. Each skill links to Cambridge objective codes and unlocks after its prerequisites. Bands: foundation = age 4-5 (Cambridge Early Years, working towards Stage 1), stage1 = 5-6, stage2 = 6-7, stage3 = 7-8. A skill below a child's starting band counts as known by age, unless it has \"ageSkip\": false (the Language Island's second language, which a child's age says nothing about).",
+  "note": "The game's skill map. Each skill links to Cambridge objective codes and unlocks after its prerequisites. Bands: foundation = age 4-5 (Cambridge Early Years, working towards Stage 1), stage1 = 5-6, stage2 = 6-7, stage3 = 7-8; stage4 (age 9, Grade 4) and stage5 (age 10) are for the ages 9 and 10 plan (docs/CURRICULUM_5_10.md), and startingBand names them only once they have skills. Each skill also has \"caps\": its CAPS references, from curriculum/caps.json. A skill below a child's starting band counts as known by age, unless it has \"ageSkip\": false (the Language Island's second language, which a child's age says nothing about).",
   "mastery": {
     "moveUp": "3 correct in a row at the current level",
     "dropBack": "2 misses in a row",
@@ -35,6 +35,9 @@
         "1Rw.01",
         "1Ww.01"
       ],
+      "caps": [
+        "CAPS Home Language Gr R: Phonics"
+      ],
       "prerequisites": []
     },
     {
@@ -45,6 +48,9 @@
       "objectives": [
         "1Rw.01",
         "1Ww.01"
+      ],
+      "caps": [
+        "CAPS Home Language Gr R: Phonics"
       ],
       "prerequisites": [
         "snd_g1"
@@ -60,6 +66,9 @@
         "1Rw.02",
         "1Ww.01"
       ],
+      "caps": [
+        "CAPS Home Language Gr R: Phonics"
+      ],
       "prerequisites": [
         "snd_g2"
       ]
@@ -72,6 +81,9 @@
       "objectives": [
         "1Rw.01",
         "1Rw.02"
+      ],
+      "caps": [
+        "CAPS Home Language Gr R: Phonics"
       ],
       "prerequisites": [
         "snd_g3"
@@ -86,6 +98,9 @@
         "1Rw.01",
         "1Rw.02"
       ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
+      ],
       "prerequisites": [
         "snd_g4"
       ]
@@ -99,6 +114,9 @@
         "1Rw.02",
         "1Ww.02"
       ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
+      ],
       "prerequisites": [
         "snd_g5"
       ]
@@ -111,6 +129,9 @@
       "objectives": [
         "1Rw.02"
       ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
+      ],
       "prerequisites": [
         "snd_g6"
       ]
@@ -122,6 +143,9 @@
       "name": "Vowel digraphs ar or ur ow oi er",
       "objectives": [
         "1Rw.02"
+      ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
       ],
       "prerequisites": [
         "snd_g7"
@@ -138,6 +162,9 @@
         "2Ww.01",
         "2Ww.02"
       ],
+      "caps": [
+        "CAPS Home Language Gr 2: Phonics"
+      ],
       "prerequisites": [
         "snd_g8"
       ]
@@ -149,6 +176,9 @@
       "name": "Letter names",
       "objectives": [
         "1Rw.01"
+      ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
       ],
       "prerequisites": [
         "snd_g5"
@@ -162,6 +192,9 @@
       "objectives": [
         "1Ww.01"
       ],
+      "caps": [
+        "CAPS Home Language Gr R: Handwriting"
+      ],
       "prerequisites": []
     },
     {
@@ -172,6 +205,9 @@
       "objectives": [
         "1Rw.05",
         "1Rw.06"
+      ],
+      "caps": [
+        "CAPS Home Language Gr R: Phonics"
       ],
       "prerequisites": [
         "snd_g1"
@@ -186,6 +222,9 @@
         "1Rw.03",
         "1Rw.05"
       ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
+      ],
       "prerequisites": [
         "blend_cvc",
         "snd_g4"
@@ -199,6 +238,9 @@
       "objectives": [
         "1Ww.05"
       ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
+      ],
       "prerequisites": [
         "blend_cvc"
       ]
@@ -211,6 +253,9 @@
       "objectives": [
         "1Ww.02",
         "1Ww.05"
+      ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
       ],
       "prerequisites": [
         "spell_cvc",
@@ -226,6 +271,9 @@
         "1Ww.03",
         "2Ww.03"
       ],
+      "caps": [
+        "CAPS Home Language Gr R: Phonemic awareness"
+      ],
       "prerequisites": []
     },
     {
@@ -237,6 +285,9 @@
         "1Rw.04",
         "1Ww.04",
         "2Ww.05"
+      ],
+      "caps": [
+        "CAPS Home Language Gr 1: Language structure and use"
       ],
       "prerequisites": [
         "blend_ccvc"
@@ -251,6 +302,9 @@
         "2Rw.05",
         "2Rw.06"
       ],
+      "caps": [
+        "CAPS Home Language Gr 2: Phonics"
+      ],
       "prerequisites": [
         "blend_ccvc",
         "snd_g8"
@@ -264,6 +318,9 @@
       "objectives": [
         "3Ww.04"
       ],
+      "caps": [
+        "CAPS Home Language Gr 3: Language structure and use"
+      ],
       "prerequisites": [
         "tricky_s2"
       ]
@@ -275,6 +332,9 @@
       "name": "Short forms: can't, don't",
       "objectives": [
         "3Rw.02"
+      ],
+      "caps": [
+        "CAPS Home Language Gr 3: Language structure and use"
       ],
       "prerequisites": [
         "tricky_s1"
@@ -288,6 +348,9 @@
       "objectives": [
         "1Rw.07",
         "1Ww.06"
+      ],
+      "caps": [
+        "CAPS Home Language Gr 1: Phonics"
       ],
       "prerequisites": [
         "blend_cvc"
@@ -304,6 +367,9 @@
         "2Ww.09",
         "3Rw.01"
       ],
+      "caps": [
+        "CAPS Home Language Gr 2: Phonics"
+      ],
       "prerequisites": [
         "tricky_s1"
       ]
@@ -316,6 +382,9 @@
       "objectives": [
         "1Rw.05",
         "1Rw.07"
+      ],
+      "caps": [
+        "CAPS Home Language Gr 1: Shared reading"
       ],
       "prerequisites": [
         "blend_cvc",
@@ -331,6 +400,9 @@
         "1Ww.06",
         "2Ww.08"
       ],
+      "caps": [
+        "CAPS Home Language Gr 2: Phonics"
+      ],
       "prerequisites": [
         "spell_digraph"
       ]
@@ -345,6 +417,10 @@
         "1Ni.01",
         "1Np.01"
       ],
+      "caps": [
+        "CAPS Mathematics Gr R: Count objects",
+        "CAPS Mathematics Gr R: Number symbols and number names"
+      ],
       "prerequisites": []
     },
     {
@@ -354,6 +430,9 @@
       "name": "Estimating, then checking",
       "objectives": [
         "1Nc.03"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Count objects"
       ],
       "prerequisites": [
         "count_20"
@@ -368,6 +447,9 @@
         "2Ni.02",
         "2Ni.04"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 2: Addition and subtraction"
+      ],
       "prerequisites": [
         "add_sub_20",
         "count_100"
@@ -381,6 +463,9 @@
       "objectives": [
         "3Nc.04"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 3: Addition and subtraction"
+      ],
       "prerequisites": [
         "add_sub_20"
       ]
@@ -393,6 +478,9 @@
       "objectives": [
         "1Nc.02"
       ],
+      "caps": [
+        "CAPS Mathematics Gr R: Count objects"
+      ],
       "prerequisites": []
     },
     {
@@ -403,6 +491,10 @@
       "objectives": [
         "1Nc.01",
         "1Ni.01"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Count objects",
+        "CAPS Mathematics Gr 1: Number symbols and number names"
       ],
       "prerequisites": [
         "count_10"
@@ -417,6 +509,9 @@
         "1Nc.02",
         "2Nc.02"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Count objects"
+      ],
       "prerequisites": [
         "subitise_5"
       ]
@@ -429,6 +524,9 @@
       "objectives": [
         "1Np.03",
         "1Nc.04"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Describe, compare and order numbers"
       ],
       "prerequisites": [
         "count_10"
@@ -443,6 +541,9 @@
         "1Np.04",
         "2Np.04"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Describe, compare and order numbers"
+      ],
       "prerequisites": [
         "order_20"
       ]
@@ -456,6 +557,9 @@
         "1Np.03",
         "1Ss.03"
       ],
+      "caps": [
+        "CAPS Mathematics Gr R: Describe, compare and order numbers"
+      ],
       "prerequisites": [
         "count_10"
       ]
@@ -468,6 +572,9 @@
       "objectives": [
         "1Ni.04",
         "1Np.02"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Addition and subtraction"
       ],
       "prerequisites": [
         "count_10"
@@ -483,6 +590,9 @@
         "1Ni.03",
         "1Ni.05"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Addition and subtraction"
+      ],
       "prerequisites": [
         "bonds_10"
       ]
@@ -494,6 +604,9 @@
       "name": "Doubles to 10",
       "objectives": [
         "1Ni.06"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Addition and subtraction"
       ],
       "prerequisites": [
         "count_20"
@@ -509,6 +622,9 @@
         "2Nc.04",
         "2Ni.07"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 2: Count forwards and backwards"
+      ],
       "prerequisites": [
         "count_20"
       ]
@@ -521,6 +637,9 @@
       "objectives": [
         "1Nc.05",
         "2Nc.05"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 2: Number patterns"
       ],
       "prerequisites": [
         "count_20"
@@ -538,6 +657,10 @@
         "2Np.02",
         "2Np.03"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 2: Number symbols and number names",
+        "CAPS Mathematics Gr 2: Place value"
+      ],
       "prerequisites": [
         "count_20"
       ]
@@ -549,6 +672,9 @@
       "name": "Pairs that make 20",
       "objectives": [
         "2Ni.03"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 2: Addition and subtraction"
       ],
       "prerequisites": [
         "bonds_10"
@@ -563,6 +689,9 @@
         "2Nc.06",
         "3Nc.05"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 2: Number patterns"
+      ],
       "prerequisites": [
         "count_steps"
       ]
@@ -574,6 +703,9 @@
       "name": "Knowing our coins",
       "objectives": [
         "1Nm.01"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 1: Money"
       ],
       "prerequisites": [
         "count_10"
@@ -587,6 +719,9 @@
       "objectives": [
         "2Nm.01",
         "2Nm.02"
+      ],
+      "caps": [
+        "CAPS Mathematics Gr 2: Money"
       ],
       "prerequisites": [
         "money_1",
@@ -602,6 +737,9 @@
         "3Nm.01",
         "3Nm.02"
       ],
+      "caps": [
+        "CAPS Mathematics Gr 3: Money"
+      ],
       "prerequisites": [
         "money_2"
       ]
@@ -615,6 +753,9 @@
         "1Nc.06",
         "2Sp.01"
       ],
+      "caps": [
+        "CAPS Coding and Robotics Gr R: Pattern recognition and problem solving"
+      ],
       "prerequisites": []
     },
     {
@@ -624,6 +765,10 @@
       "name": "Growing patterns",
       "objectives": [
         "3Nc.06"
+      ],
+      "caps": [
+        "CAPS Coding and Robotics Gr 3: Pattern recognition and problem solving",
+        "CAPS Mathematics Gr 3: Number patterns"
       ],
       "prerequisites": [
         "patterns"
@@ -639,6 +784,9 @@
         "1CT.05",
         "1CT.06"
       ],
+      "caps": [
+        "CAPS Coding and Robotics Gr R: Algorithms and coding"
+      ],
       "prerequisites": []
     },
     {
@@ -649,6 +797,9 @@
       "objectives": [
         "1CT.03",
         "1Gp.01"
+      ],
+      "caps": [
+        "CAPS Coding and Robotics Gr R: Algorithms and coding"
       ],
       "prerequisites": []
     },
@@ -665,6 +816,9 @@
         "2CT.05",
         "2CT.06"
       ],
+      "caps": [
+        "CAPS Coding and Robotics Gr 1: Algorithms and coding"
+      ],
       "prerequisites": [
         "directions",
         "sequencing"
@@ -679,6 +833,9 @@
         "1CT.03",
         "2P.08",
         "2Gp.01"
+      ],
+      "caps": [
+        "CAPS Coding and Robotics Gr 2: Algorithms and coding"
       ],
       "prerequisites": [
         "programs"
@@ -698,6 +855,9 @@
         "2P.07",
         "3P.09"
       ],
+      "caps": [
+        "CAPS Coding and Robotics Gr 1: Algorithms and coding"
+      ],
       "prerequisites": [
         "programs"
       ]
@@ -713,6 +873,9 @@
         "3CT.03",
         "3P.01"
       ],
+      "caps": [
+        "CAPS Coding and Robotics Gr 2: Algorithms and coding"
+      ],
       "prerequisites": [
         "programs"
       ]
@@ -726,6 +889,9 @@
         "3CT.07",
         "3CT.08",
         "3CT.05"
+      ],
+      "caps": [
+        "CAPS Coding and Robotics Gr 3: Algorithms and coding"
       ],
       "prerequisites": [
         "loops"
@@ -742,6 +908,9 @@
         "3P.03",
         "3P.04"
       ],
+      "caps": [
+        "CAPS Coding and Robotics Gr 1: Algorithms and coding"
+      ],
       "prerequisites": [
         "programs"
       ]
@@ -754,6 +923,10 @@
       "objectives": [
         "1Gg.01"
       ],
+      "caps": [
+        "CAPS Life Skills Gr R: Creative arts: visual art",
+        "CAPS Mathematics Gr R: 2-D shapes"
+      ],
       "prerequisites": []
     },
     {
@@ -763,6 +936,10 @@
       "name": "Sides: how many, straight or curved",
       "objectives": [
         "1Gg.01"
+      ],
+      "caps": [
+        "CAPS Life Skills Gr 1: Creative arts: visual art",
+        "CAPS Mathematics Gr 1: 2-D shapes"
       ],
       "prerequisites": [
         "shapes_2d"
@@ -775,6 +952,10 @@
       "name": "Pentagons, hexagons and turned shapes",
       "objectives": [
         "2Gg.01"
+      ],
+      "caps": [
+        "CAPS Life Skills Gr 2: Creative arts: visual art",
+        "CAPS Mathematics Gr 2: 2-D shapes"
       ],
       "prerequisites": [
         "shape_sides"
@@ -789,6 +970,10 @@
         "1Gg.07",
         "2Gg.10"
       ],
+      "caps": [
+        "CAPS Life Skills Gr 2: Creative arts: visual art",
+        "CAPS Mathematics Gr 2: Symmetry"
+      ],
       "prerequisites": [
         "shape_names"
       ]
@@ -800,6 +985,10 @@
       "name": "Regular and irregular shapes",
       "objectives": [
         "3Gg.01"
+      ],
+      "caps": [
+        "CAPS Life Skills Gr 3: Creative arts: visual art",
+        "CAPS Mathematics Gr 3: 2-D shapes"
       ],
       "prerequisites": [
         "shape_names"
@@ -813,6 +1002,9 @@
       "objectives": [
         "AD1.colour"
       ],
+      "caps": [
+        "CAPS Life Skills Gr R: Creative arts: visual art"
+      ],
       "prerequisites": []
     },
     {
@@ -822,6 +1014,9 @@
       "name": "Lighter with white, darker with black",
       "objectives": [
         "AD2.colour"
+      ],
+      "caps": [
+        "CAPS Life Skills Gr 1: Creative arts: visual art"
       ],
       "prerequisites": [
         "colour_mixing"
@@ -835,6 +1030,10 @@
       "objectives": [
         "1Nf.01"
       ],
+      "caps": [
+        "CAPS Life Skills Gr R: Creative arts: visual art",
+        "CAPS Mathematics Gr R: Symmetry"
+      ],
       "prerequisites": []
     },
     {
@@ -845,6 +1044,10 @@
       "objectives": [
         "1Nf.01",
         "2Gg.09"
+      ],
+      "caps": [
+        "CAPS Life Skills Gr 1: Creative arts: visual art",
+        "CAPS Mathematics Gr 1: Symmetry"
       ],
       "prerequisites": [
         "symmetry_halves"
@@ -859,6 +1062,10 @@
         "2Gg.09",
         "3Gg.09"
       ],
+      "caps": [
+        "CAPS Life Skills Gr 2: Creative arts: visual art",
+        "CAPS Mathematics Gr 2: Symmetry"
+      ],
       "prerequisites": [
         "symmetry_finish"
       ]
@@ -872,6 +1079,9 @@
         "FAL.LS.01",
         "FAL.LS.02"
       ],
+      "caps": [
+        "CAPS First Additional Language Gr 1: Listening and speaking"
+      ],
       "prerequisites": [],
       "ageSkip": false
     },
@@ -883,6 +1093,9 @@
       "objectives": [
         "FAL.LS.01",
         "FAL.LS.02"
+      ],
+      "caps": [
+        "CAPS First Additional Language Gr 1: Listening and speaking"
       ],
       "prerequisites": [],
       "ageSkip": false
@@ -896,6 +1109,9 @@
         "FAL.LS.01",
         "FAL.LS.03"
       ],
+      "caps": [
+        "CAPS First Additional Language Gr 1: Listening and speaking"
+      ],
       "prerequisites": [],
       "ageSkip": false
     },
@@ -908,6 +1124,9 @@
         "ENG.RC.01",
         "HL.RV.01"
       ],
+      "caps": [
+        "CAPS Home Language Gr R: Shared reading"
+      ],
       "prerequisites": []
     },
     {
@@ -918,6 +1137,9 @@
       "objectives": [
         "ENG.RC.02",
         "HL.RV.01"
+      ],
+      "caps": [
+        "CAPS Home Language Gr 3: Group guided reading"
       ],
       "prerequisites": [
         "story_literal"

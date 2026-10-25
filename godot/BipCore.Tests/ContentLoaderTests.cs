@@ -43,6 +43,7 @@ public sealed class ContentLoaderTests : IDisposable
     public void EveryFileDecodesWithoutLosingAnyKey()
     {
         CheckRoundTrip<ObjectivesFile>("curriculum/objectives.json");
+        CheckRoundTrip<CapsFile>("curriculum/caps.json");
         CheckRoundTrip<SkillsFile>("curriculum/skills.json");
         CheckRoundTrip<GamesFile>("curriculum/games.json");
         CheckRoundTrip<GraphemesFile>("phonics/graphemes.json");

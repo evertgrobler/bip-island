@@ -132,7 +132,7 @@ are recorded in the "clear and friendly" style, read at a natural pace. One narr
 
 | Step | What | New content | Rough clips (EN + AF) |
 | --- | --- | --- | --- |
-| 1 | Two new bands (`stage4`, `stage5`), age 9–10 starting points, CAPS references beside the Cambridge codes | skills and objectives | none |
+| 1 | Two new bands (`stage4`, `stage5`), age 9–10 starting points, CAPS references beside the Cambridge codes. **Done 25 Oct 2026:** the bands exist; ages 9 and 10 move into them with the first stage4/stage5 skills (the validator refuses a starting band with no skills); every skill has `caps` references from `Content/curriculum/caps.json`, topic names still to check against the CAPS documents | skills and objectives | none |
 | 2 | Bip's Stories: reader, questions, 20 stories per language over five levels (ages 5–10) | stories, questions | ~1,200 |
 | 3 | Numbers for 9–10: Times Table Garden, Clock Shop, Measure It, Fraction Pizza | tables, times, measures | ~350 |
 | 4 | Afrikaans grammar games (Klein Maak, Meer Maak, verlede tyd) and English Sentence Builder, Word Detective | word lists, sentences | ~500 |

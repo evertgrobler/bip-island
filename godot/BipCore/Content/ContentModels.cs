@@ -71,6 +71,18 @@ public sealed record Objective
     public required string Source { get; init; }
 }
 
+// MARK: - curriculum/caps.json
+
+/// <summary>The CAPS subjects and topics a skill's "caps" references may use (checked by the validator).</summary>
+public sealed record CapsFile
+{
+    public string? Note { get; init; }
+    /// <summary>The CAPS grade ("R", "1") that matches each band.</summary>
+    public required Dictionary<Band, string> GradeForBand { get; init; }
+    /// <summary>Subject ("Mathematics") to its topics, as the CAPS documents name them.</summary>
+    public required Dictionary<string, List<string>> Subjects { get; init; }
+}
+
 // MARK: - curriculum/skills.json
 
 public sealed record SkillsFile

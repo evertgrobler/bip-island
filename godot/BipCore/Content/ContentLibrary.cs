@@ -15,7 +15,7 @@ public sealed class ContentLibrary
     /// <summary>Every file the loader reads, relative to the Content folder.</summary>
     public static readonly IReadOnlyList<string> Files =
     [
-        "curriculum/objectives.json", "curriculum/skills.json", "curriculum/games.json",
+        "curriculum/objectives.json", "curriculum/caps.json", "curriculum/skills.json", "curriculum/games.json",
         "phonics/graphemes.json",
         "words/words.json", "words/tricky_words.json", "words/sentences.json", "words/endings.json",
         "words/homophones.json", "words/contractions.json",
@@ -31,6 +31,7 @@ public sealed class ContentLibrary
     public HomeLanguage Language { get; }
 
     public ObjectivesFile Objectives { get; }
+    public CapsFile Caps { get; }
     public SkillsFile Skills { get; }
     public GamesFile Games { get; }
     public GraphemesFile Phonics { get; }
@@ -104,6 +105,7 @@ public sealed class ContentLibrary
         }
 
         Objectives = Load<ObjectivesFile>("curriculum/objectives.json");
+        Caps = Load<CapsFile>("curriculum/caps.json");
         Skills = Load<SkillsFile>("curriculum/skills.json");
         Games = Load<GamesFile>("curriculum/games.json");
         Phonics = Load<GraphemesFile>("phonics/graphemes.json");

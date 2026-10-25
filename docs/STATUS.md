@@ -639,4 +639,16 @@
   self-check in the validator), the walk-through fails if the quick-click freeze test is skipped, the visit cap comes
   from the stories' longest question count (the "does it fit" filter is gone), a delayed retry or hint checks its own
   question is still unanswered (`WhileUnanswered(attempt, …)`, every screen), shared pictures keep their English
-  brief in the Afrikaans manifest, and sentence cards have room for two lines again.
+  brief in the Afrikaans manifest, and sentence cards have room for two lines again.- **25 Oct (PC session, ages 5–10 step 1):** the two new bands and CAPS references (`pc/ages-5-10-step1`).
+  `Band` now runs `foundation` to `stage5` (`stage4` = age 9 / Grade 4, `stage5` = age 10). No child starts in
+  them yet: a starting band with no skills would count everything below as known with nothing new to play, so
+  `startingBand` keeps 9 and 10 on `stage3` until the first stage4/stage5 skills land (validator rule + a test).
+  New `Content/curriculum/caps.json` (loaded by the game, round-trip tested) lists the CAPS subjects (Mathematics,
+  Home Language, First Additional Language, Life Skills, Coding and Robotics) and their Foundation Phase topics;
+  every skill in both languages now has `"caps"`, written "CAPS Mathematics Gr 1: Addition and subtraction",
+  checked by the validator (known subject and topic, within a grade of the band). Home Language and First
+  Additional Language are named without the language, since the af skills must equal the shared ones. The
+  references were mapped by two OpenCode helpers (free DeepSeek and GLM, 65 of 70 the same), then settled here.
+  **Still to do:** check the topic names in `caps.json` against the CAPS documents (written from memory), and add
+  Grade 4 topics with the first stage4 skills. When step 3 adds stage4 levels, `numbers.json` `bands` needs
+  stage4/stage5 entries too (Count & Tap and Quick Look fall back to 10 and 5 without one).
