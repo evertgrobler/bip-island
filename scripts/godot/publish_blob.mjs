@@ -4,7 +4,7 @@
 //
 // Usage: node publish_blob.mjs <windows release dir> <mac release dir> <prefix, e.g. godot-test/>
 // Env:   BLOB_READ_WRITE_TOKEN
-import { del, list, put } from '@vercel/blob';
+import { createMultipartUploader, del, list, put } from '@vercel/blob';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -38,11 +38,34 @@ files.push([path.join(macDir, 'BipIsland-mac.dmg'), `${prefix}BipIsland-mac.dmg`
 // Packages and installers first, feeds last.
 files.sort((a, b) => Number(isFeed(path.basename(a[0]))) - Number(isFeed(path.basename(b[0]))));
 
+// Every upload call is a Blob "advanced operation", and the free plan allows 2,000 a month. put()'s own
+// multipart sends 8 MB parts, each counted (about 20 for one 150 MB installer), so big files go up in
+// 64 MB parts instead.
+const PART = 64 * 1024 * 1024;
+
+async function upload(file, pathname, options) {
+  const size = fs.statSync(file).size;
+  if (size <= PART) return put(pathname, fs.readFileSync(file), options);
+  const uploader = await createMultipartUploader(pathname, options);
+  const parts = [];
+  const fd = fs.openSync(file, 'r');
+  try {
+    for (let offset = 0, n = 1; offset < size; offset += PART, n++) {
+      const chunk = Buffer.alloc(Math.min(PART, size - offset));
+      fs.readSync(fd, chunk, 0, chunk.length, offset);
+      parts.push(await uploader.uploadPart(n, chunk));
+    }
+  } finally {
+    fs.closeSync(fd);
+  }
+  return uploader.complete(parts);
+}
+
 const uploaded = new Map();
 for (const [file, pathname] of files) {
   const size = fs.statSync(file).size;
   const name = path.basename(file);
-  const blob = await put(pathname, fs.createReadStream(file), {
+  const blob = await upload(file, pathname, {
     access: 'public',
     token,
     addRandomSuffix: false,
@@ -50,7 +73,6 @@ for (const [file, pathname] of files) {
     contentType: contentType(name),
     // Feeds and the fixed-name installers change every release; versioned packages never do.
     cacheControlMaxAge: name.endsWith('.nupkg') ? 60 * 60 * 24 * 30 : 60,
-    multipart: size > 50 * 1024 * 1024,
   });
   uploaded.set(pathname, blob.url);
   console.log(`Uploaded ${pathname} (${(size / 1e6).toFixed(1)} MB)`);
