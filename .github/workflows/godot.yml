@@ -31,7 +31,6 @@ on:
 
 permissions:
   contents: read
-  actions: read
 
 defaults:
   run:
@@ -52,39 +51,49 @@ env:
 jobs:
   # The daily build only goes ahead when main has changed since the last daily or manual build
   # that published, so a quiet day costs nothing. Pull requests and manual runs always go ahead.
+  # The daily build only goes ahead when a file that goes into the game or the download page has
+  # changed since the commit the store says it was last published from (published.json, written last
+  # by publish_blob.mjs), so a quiet or docs-only day costs no Blob operations, and a build that
+  # didn't publish (main moved on, or an upload that broke off) is tried again. Pull requests and
+  # manual runs always go ahead.
   changed:
     name: Anything new on main?
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     outputs:
       go: ${{ steps.check.outputs.go }}
     steps:
+      - name: Check out
+        if: github.event_name == 'schedule'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - id: check
         env:
-          GH_TOKEN: ${{ github.token }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          if [ "${{ github.event_name }}" != "schedule" ]; then
+          if [ "${{ github.event_name }}" != "schedule" ] || [ -z "$VERCEL_TOKEN" ]; then
             echo "go=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          last="$(gh api "repos/${{ github.repository }}/actions/workflows/godot.yml/runs?branch=main&status=success&per_page=20" \
-            --jq '[.workflow_runs[] | select(.event == "schedule" or .event == "workflow_dispatch")][0].head_sha // ""')"
-          if [ "$last" = "${{ github.sha }}" ]; then
-            echo "main hasn't changed since the last published build ($last); nothing to do."
-            echo "go=false" >> "$GITHUB_OUTPUT"
+          base="$(scripts/godot/blob_store.sh | sed -n 2p)"
+          last="$(curl -fsS "$base/godot-test/published.json" 2>/dev/null | jq -r '.sha // empty' || true)"
+          if [ -z "$last" ] || ! git cat-file -e "$last^{commit}" 2>/dev/null; then
+            echo "No published commit found (${last:-none}); building."
+            echo "go=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # Only changes that go into the game or the download page (the same paths as pull_request above).
           game='^(godot/|scripts/godot/|scripts/check_all\.sh$|scripts/validate_content\.py$|scripts/sa_english\.py$|scripts/af_spelling\.py$|scripts/spoken_numbers\.py$|scripts/ci/deploy_site\.sh$|scripts/ci/site_screenshots\.sh$|site/|Content/|Resources/|audio/|\.github/workflows/godot\.yml$)'
-          files=""
-          if [ -n "$last" ]; then
-            files="$(gh api "repos/${{ github.repository }}/compare/$last...${{ github.sha }}" --paginate --jq '.files[].filename')"
-          fi
-          if [ -n "$last" ] && ! printf '%s\n' "$files" | grep -Eq "$game"; then
-            echo "Only docs changed since the last published build ($last); nothing to do."
-            echo "go=false" >> "$GITHUB_OUTPUT"
-          else
+          files="$(git diff --name-only "$last" HEAD)"
+          if printf '%s\n' "$files" | grep -Eq "$game"; then
             echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nothing that goes into the game changed since the published build (${last:0:7}); nothing to do."
+            echo "go=false" >> "$GITHUB_OUTPUT"
           fi
 
   export:
