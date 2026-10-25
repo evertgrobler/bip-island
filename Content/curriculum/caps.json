@@ -1,0 +1,70 @@
+{
+  "note": "The CAPS subjects and topics a skill's \"caps\" references may use, written \"CAPS <subject> Gr <grade>: <topic>\" (for example \"CAPS Mathematics Gr 1: Addition and subtraction\"). CAPS has no short codes like Cambridge's, so the references name the subject, grade and topic as the CAPS documents do. Home Language and First Additional Language follow the same CAPS structure in English and Afrikaans, so one name serves both. Topics are the Foundation Phase ones (Grade R to 3, CAPS 2011; Coding and Robotics from the Grade R to 3 draft); Grade 4 topics are added with the first stage4 skills. Every topic here still has to be checked against the CAPS documents (docs/CURRICULUM_5_10.md, decision 6). gradeForBand is the grade that matches each band; a reference may be one grade either side of it.",
+  "gradeForBand": {
+    "foundation": "R",
+    "stage1": "1",
+    "stage2": "2",
+    "stage3": "3",
+    "stage4": "4",
+    "stage5": "5"
+  },
+  "subjects": {
+    "Mathematics": [
+      "Count objects",
+      "Count forwards and backwards",
+      "Number symbols and number names",
+      "Describe, compare and order numbers",
+      "Place value",
+      "Problem-solving in context",
+      "Addition and subtraction",
+      "Repeated addition leading to multiplication",
+      "Grouping and sharing leading to division",
+      "Sharing leading to fractions",
+      "Fractions",
+      "Money",
+      "Mental mathematics",
+      "Geometric patterns",
+      "Number patterns",
+      "Position, orientation and views",
+      "3-D objects",
+      "2-D shapes",
+      "Symmetry",
+      "Time",
+      "Length",
+      "Mass",
+      "Capacity and volume",
+      "Collect and organise data",
+      "Represent data",
+      "Analyse and interpret data"
+    ],
+    "Home Language": [
+      "Listening and speaking",
+      "Phonemic awareness",
+      "Phonics",
+      "Shared reading",
+      "Group guided reading",
+      "Independent reading",
+      "Handwriting",
+      "Writing",
+      "Language structure and use"
+    ],
+    "First Additional Language": [
+      "Listening and speaking",
+      "Reading and phonics",
+      "Writing",
+      "Language structure and use"
+    ],
+    "Life Skills": [
+      "Beginning knowledge",
+      "Personal and social well-being",
+      "Creative arts: visual art",
+      "Physical education"
+    ],
+    "Coding and Robotics": [
+      "Pattern recognition and problem solving",
+      "Algorithms and coding",
+      "Robotic skills",
+      "Application skills"
+    ]
+  }
+}

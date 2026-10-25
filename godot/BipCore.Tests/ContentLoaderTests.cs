@@ -43,6 +43,7 @@ public sealed class ContentLoaderTests : IDisposable
     public void EveryFileDecodesWithoutLosingAnyKey()
     {
         CheckRoundTrip<ObjectivesFile>("curriculum/objectives.json");
+        CheckRoundTrip<CapsFile>("curriculum/caps.json");
         CheckRoundTrip<SkillsFile>("curriculum/skills.json");
         CheckRoundTrip<GamesFile>("curriculum/games.json");
         CheckRoundTrip<GraphemesFile>("phonics/graphemes.json");
@@ -191,6 +192,25 @@ public sealed class ContentLoaderTests : IDisposable
         Assert.Equal(Band.Stage2, content.StartingBand(7));
         Assert.Equal(Band.Stage3, content.StartingBand(8));
         Assert.Equal(Band.Stage3, content.StartingBand(11));
+    }
+
+    [Fact]
+    public void EveryBandReadsBackFromItsKey()
+    {
+        Assert.Equal(["foundation", "stage1", "stage2", "stage3", "stage4", "stage5"], BandExtensions.All.Select(b => b.Key()));
+        Assert.Equal(BandExtensions.All, BipJson.Decode<List<Band>>("""["foundation","stage1","stage2","stage3","stage4","stage5"]"""));
+        Assert.Equal(BandExtensions.All, BandExtensions.All.Order());
+    }
+
+    [Fact]
+    public void StartingBandsOnlyNameBandsWithSkills()
+    {
+        // Stage 4 and 5 exist for the ages 9 and 10 plan; a child starts there only once the band has skills,
+        // or every skill below it would count as known with nothing new to play.
+        foreach (var content in new[] { TestContent.Library(), TestContent.Library(HomeLanguage.Afrikaans) })
+        {
+            Assert.All(content.Skills.StartingBand.Values, band => Assert.Contains(content.Skills.Skills, s => s.Band == band));
+        }
     }
 
     [Fact]

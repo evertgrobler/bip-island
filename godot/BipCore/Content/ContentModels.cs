@@ -9,15 +9,19 @@ namespace BipCore;
 
 // MARK: - Shared
 
-/// <summary>The four child bands, youngest first.</summary>
-public enum Band { Foundation, Stage1, Stage2, Stage3 }
+/// <summary>
+/// The child bands, youngest first: foundation (Grade R) to stage5 (Grade 4 to 5, age 10). Stage 4 and 5
+/// are for the ages 9 and 10 plan (docs/CURRICULUM_5_10.md); children start in them only once
+/// skills.json's startingBand says so, which waits for their first skills.
+/// </summary>
+public enum Band { Foundation, Stage1, Stage2, Stage3, Stage4, Stage5 }
 
 /// <summary>The islands; Language is the second-language island (docs/LANGUAGES.md).</summary>
 public enum Island { Letters, Numbers, Words, Coding, Art, Language }
 
 public static class BandExtensions
 {
-    public static readonly IReadOnlyList<Band> All = [Band.Foundation, Band.Stage1, Band.Stage2, Band.Stage3];
+    public static readonly IReadOnlyList<Band> All = [Band.Foundation, Band.Stage1, Band.Stage2, Band.Stage3, Band.Stage4, Band.Stage5];
 
     /// <summary>The band as the content writes it ("foundation", "stage1").</summary>
     public static string Key(this Band band) => band switch
@@ -25,7 +29,9 @@ public static class BandExtensions
         Band.Foundation => "foundation",
         Band.Stage1 => "stage1",
         Band.Stage2 => "stage2",
-        _ => "stage3",
+        Band.Stage3 => "stage3",
+        Band.Stage4 => "stage4",
+        _ => "stage5",
     };
 }
 
@@ -63,6 +69,18 @@ public sealed record Objective
     public required string Strand { get; init; }
     public required string Summary { get; init; }
     public required string Source { get; init; }
+}
+
+// MARK: - curriculum/caps.json
+
+/// <summary>The CAPS subjects and topics a skill's "caps" references may use (checked by the validator).</summary>
+public sealed record CapsFile
+{
+    public string? Note { get; init; }
+    /// <summary>The CAPS grade ("R", "1") that matches each band.</summary>
+    public required Dictionary<Band, string> GradeForBand { get; init; }
+    /// <summary>Subject ("Mathematics") to its topics, as the CAPS documents name them.</summary>
+    public required Dictionary<string, List<string>> Subjects { get; init; }
 }
 
 // MARK: - curriculum/skills.json
@@ -118,6 +136,11 @@ public sealed record Skill
     /// never count as known just because they sit below the child's starting band.
     /// </summary>
     public bool? AgeSkip { get; init; }
+    /// <summary>
+    /// CAPS references beside the Cambridge codes, written "CAPS Mathematics Gr 1: Addition and subtraction".
+    /// The subjects and topics come from curriculum/caps.json; the validator checks them.
+    /// </summary>
+    public List<string>? Caps { get; init; }
 
     /// <summary>Counts as known for a child whose starting band is above it (true unless <c>ageSkip: false</c>).</summary>
     [JsonIgnore]
