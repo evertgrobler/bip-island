@@ -11,3 +11,10 @@ af/vo_bips_day
 af/vo_in_our_language
 # The Afrikaans older-children lines (section 10).
 af/*_big
+# The Afrikaans Bip's Stories lines (owner's check first; the story sums above them are signed off).
+af/vo_bips_stories
+af/vo_story_questions
+af/vo_story_look_again
+af/vo_story_*_[0-9]*
+af/vo_story_*_q[0-9]*
+af/vo_story_*_a[0-9]*

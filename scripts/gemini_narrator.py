@@ -146,7 +146,8 @@ def group(key):
     clip = split(key)[1]
     if clip.startswith("snd_"):
         return "phonics"
-    if clip.endswith("_big"):
+    # Older children's lines are only ever vo_/hint_/praise_ (BipCore.VoiceBands): a word_big is a word.
+    if clip.endswith("_big") and clip.startswith(("vo_", "hint_", "praise_")):
         return "big"
     if clip.startswith(("word_", "num_", "money_", "name_", "learn_")) and not clip.endswith("_mid"):
         return "words"
@@ -158,9 +159,12 @@ def group(key):
 def priority(key):
     """Most-heard first (docs/VOICE_PLAN.md, section 7): Bip's own lines, instructions, the older lines,
     small numbers, letter sounds, words, stories and reading sentences, Language Island words, and the
-    number sentences last (the game joins those from pieces meanwhile)."""
-    clip = split(key)[1]
+    number sentences last (the game joins those from pieces meanwhile). The English Bip's Stories lines
+    come before everything (owner, 25 October 2026): the game has no other recording of them."""
+    lang, clip = split(key)
     style = group(key)
+    if lang == "en" and (clip.startswith("vo_story_") or clip == "vo_bips_stories"):
+        return 0
     if style == "sparkle":
         return 1
     if clip.startswith("vo_say_"):
@@ -360,17 +364,23 @@ def main():
     todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if group(c) and state["done"].get(c) != all_texts[c]
             and state["failed"].get(c, 0) < GIVE_UP and not is_held(c, hold)]
     # Fresh clips first in big batches, most-heard first, then retries in small ones; English and
-    # Afrikaans take turns. Each batch is one style.
+    # Afrikaans take turns, except that step 0 (the stories) goes before any turn-taking. Each batch is
+    # one style.
     queues = {lang: [] for lang in LANGS}
+    first = []
     for retry in (False, True):
-        for step in range(1, 10):
+        for step in range(0, 10):
             for style in ("sparkle", "clear", "big", "words", "phonics"):
                 for lang in LANGS:
                     these = [c for c in todo if split(c)[0] == lang and group(c) == style and priority(c) == step
                              and bool(state["failed"].get(c)) == retry]
                     size = batch_size(style, retry)
-                    queues[lang] += [(lang, style, these[i:i + size]) for i in range(0, len(these), size)]
-    batches = [b for turn in itertools.zip_longest(*queues.values()) for b in turn if b]
+                    chunks = [(lang, style, these[i:i + size]) for i in range(0, len(these), size)]
+                    if step == 0:
+                        first += chunks
+                    else:
+                        queues[lang] += chunks
+    batches = first + [b for turn in itertools.zip_longest(*queues.values()) for b in turn if b]
     listener = Listener()
     requests = 0
     with tempfile.TemporaryDirectory() as tmp:
