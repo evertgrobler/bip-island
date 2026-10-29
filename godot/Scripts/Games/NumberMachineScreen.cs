@@ -181,13 +181,13 @@ public partial class NumberMachineScreen : GameScreen
         return ball;
     }
 
-    /// <summary>The rule level: what went in and came out, twice, on a sign above the machine ("3 → 12").</summary>
+    /// <summary>The rule level: what went in and came out, twice, on signs left of the machine under the ball ("3 → 12").</summary>
     private void DrawExamples(NumberMachineGame.Round round)
     {
         var inputs = round.Inputs ?? [round.In];
         for (var i = 0; i < inputs.Count; i++)
         {
-            var sign = Add(new Node2D { Name = $"Example{i}" }, P(-240 + i * 480, 380), 6);
+            var sign = Add(new Node2D { Name = $"Example{i}", Scale = Vector2.One * 0.85f }, P(-500, 80 - i * 125), 6);
             sign.AddChild(Pen(RoundRect(R(-170, -50, 340, 100), 26), Seed(10 + i), fill: Palette.Card, ink: Palette.Teal, lineWidth: 5));
             sign.AddChild(Sketch.Letter($"{inputs[i]} → {inputs[i] * round.Rule}", 70, shadow: Palette.LightTeal));
             _scene.Add(sign);
