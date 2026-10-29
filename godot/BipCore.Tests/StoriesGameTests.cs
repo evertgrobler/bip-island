@@ -10,13 +10,9 @@ namespace BipCore.Tests;
 /// </summary>
 public sealed class StoriesGameTests
 {
-    private static readonly Lazy<ContentLibrary> CachedAf = new(() =>
-        new ContentLibrary(file => File.ReadAllText(Path.Combine(TestContent.Directory, file)), HomeLanguage.Afrikaans,
-                           file => File.Exists(Path.Combine(TestContent.Directory, file))));
-
     public static TheoryData<HomeLanguage> HomeLanguages => new() { HomeLanguage.English, HomeLanguage.Afrikaans };
 
-    private static ContentLibrary Content(HomeLanguage language) => language == HomeLanguage.Afrikaans ? CachedAf.Value : TestContent.Library();
+    private static ContentLibrary Content(HomeLanguage language) => TestContent.Library(language);
 
     private static Learner AtLevel(int level) => new(Band.Stage2, 1, new HashSet<string>(), null, GameLevel: level);
 
@@ -26,7 +22,9 @@ public sealed class StoriesGameTests
     {
         var stories = Content(language).Stories.Stories;
         Assert.Equal(20, stories.Count);
-        for (var level = 1; level <= StoriesGame.Levels; level++) Assert.Equal(4, stories.Count(s => s.Level == level));
+        var levels = new StoriesGame(Content(language)).Levels;
+        Assert.Equal(5, levels);
+        for (var level = 1; level <= levels; level++) Assert.Equal(4, stories.Count(s => s.Level == level));
         Assert.Equal(stories.Count, stories.Select(s => s.Id).Distinct().Count());
         Assert.Equal(stories.Count, stories.Select(s => s.Scenes).Distinct().Count());
     }
@@ -52,7 +50,11 @@ public sealed class StoriesGameTests
     {
         var content = Content(language);
         var game = new StoriesGame(content);
-        Assert.Equal(StoriesGame.Levels, game.Entry.Levels!.Count);
+        Assert.Equal(game.Levels, game.Entry.Levels!.Count);
+        Assert.Equal(game.Levels, game.Stories.Max(s => s.Level));
+        // The visit cap comes from the content: room for two questions, then the longest story.
+        Assert.Equal(game.Stories.Max(s => s.Questions.Count), game.MostQuestions);
+        Assert.Equal(StoriesGame.QuestionsPerVisit - 1 + game.MostQuestions, game.RoundsPerSession);
         foreach (var story in game.Stories)
         {
             var scenes = game.ScenesOf(story).Scenes.Count;
@@ -97,7 +99,7 @@ public sealed class StoriesGameTests
     {
         var content = Content(language);
         var game = new StoriesGame(content);
-        for (var level = 0; level < StoriesGame.Levels; level++)
+        for (var level = 0; level < game.Levels; level++)
         {
             var asked = new HashSet<string>();
             var rng = new SeededGenerator((ulong)(level + 7));
@@ -111,7 +113,7 @@ public sealed class StoriesGameTests
                 foreach (var round in rounds)
                 {
                     asked.Add(round.Story.Id);
-                    Assert.Equal(StoriesGame.StoryLevel(level), round.Story.Level);
+                    Assert.Equal(game.StoryLevel(level), round.Story.Level);
                     Assert.Single(game.CorrectChoices(round));
                     Assert.Equal(round.Choices.Count, round.Choices.Select(c => c.Text.ToLowerInvariant()).Distinct().Count());
                     var pictures = round.Choices.Select(c => c.Picture).Where(p => p != null).ToList();
@@ -126,7 +128,7 @@ public sealed class StoriesGameTests
                 }
             }
             // Every story at the level comes up.
-            Assert.Equal(game.Stories.Where(s => s.Level == StoriesGame.StoryLevel(level)).Select(s => s.Id).ToHashSet(), asked);
+            Assert.Equal(game.Stories.Where(s => s.Level == game.StoryLevel(level)).Select(s => s.Id).ToHashSet(), asked);
         }
     }
 
@@ -148,10 +150,33 @@ public sealed class StoriesGameTests
     private static GameSession SessionWith(StoriesGame game, IEnumerable<string> used)
     {
         var session = new GameSession(StoriesGame.GameId, game.Skins[0], 20);
-        var items = (HashSet<string>)typeof(GameSession).GetField("_usedItems", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
-            .GetValue(session)!;
-        items.UnionWith(used);
+        session.MarkUsed(used);
         return session;
+    }
+
+    /// <summary>
+    /// A game level-up in the middle of a visit (two level-2 questions right, then the child is on game
+    /// level 2): the next story is a level-3 story, and the visit asks all three of its questions.
+    /// </summary>
+    [Fact]
+    public void ALevelUpMidVisitStillFinishesTheLongerStory()
+    {
+        var content = Content(HomeLanguage.English);
+        var game = new StoriesGame(content);
+        for (ulong seed = 1; seed <= 20; seed++)
+        {
+            var rng = new SeededGenerator(seed);
+            var session = GameSession.Start(game, content.Games.Session, new HashSet<string>(), rng);
+            var first = session.NextRound(game, AtLevel(1), rng)!;
+            var second = session.NextRound(game, AtLevel(1), rng)!;
+            Assert.Equal(2, first.Story.Level);
+            Assert.Same(first.Story, second.Story);
+            var rest = new List<StoriesGame.Round>();
+            while (session.NextRound(game, AtLevel(2), rng) is StoriesGame.Round round) rest.Add(round);
+            Assert.Equal(3, rest.Count);
+            Assert.All(rest, r => Assert.Equal(3, r.Story.Level));
+            Assert.Equal([1, 2, 3], rest.Select(r => r.Number));
+        }
     }
 
     [Theory]

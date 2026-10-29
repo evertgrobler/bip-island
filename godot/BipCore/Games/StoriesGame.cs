@@ -6,13 +6,12 @@ namespace BipCore;
 /// The stories (Content/stories/stories.json, each language its own) sit on scenes both languages
 /// share (Content/stories/scenes.json). Game level n deals stories of level n + 1; a level with nothing
 /// fresh left deals an easier story. A round is one question; a visit reads stories until it has asked
-/// <see cref="QuestionsPerVisit"/> questions (three little level-1 stories, two level-2 stories, or one longer one).
+/// <see cref="QuestionsPerVisit"/> questions, always finishing the story it is on (three little level-1 stories, two level-2 stories, or one longer one).
 /// </summary>
 public sealed class StoriesGame(ContentLibrary content) : IMiniGame<StoriesGame.Round, StoryAnswer>
 {
     public const string GameId = "bips_stories";
     public const int QuestionsPerVisit = 3;
-    public const int Levels = 5;
 
     /// <param name="Number">The question's number in its story, from 1.</param>
     /// <param name="NewStory">True for a story's first question: the screen reads the story before asking.</param>
@@ -27,16 +26,28 @@ public sealed class StoriesGame(ContentLibrary content) : IMiniGame<StoriesGame.
     public string Id => GameId;
     public GameEntry Entry { get; } = content.EntryForGame(GameId);
     public IReadOnlyList<GameSkin> Skins { get; } = [new("story_book", "Story book")];
-    /// <summary>A level-1 visit reads three little stories (one question each), a level-2 visit two.</summary>
-    public int? RoundsPerSession => QuestionsPerVisit + 1;
+    /// <summary>The most questions one story asks (from the content).</summary>
+    public int MostQuestions { get; } = content.Stories.Stories.Select(s => s.Questions.Count).DefaultIfEmpty(1).Max();
+
+    /// <summary>
+    /// Room for the longest visit: a new story starts only while fewer than <see cref="QuestionsPerVisit"/>
+    /// questions have been asked, so at most QuestionsPerVisit - 1 have gone before the last story, which then
+    /// asks up to <see cref="MostQuestions"/> (a level-up mid-visit reaches 2 + 3 today). That visit ends through
+    /// <see cref="GameSession.IsFinished"/>; shorter ones end when <see cref="MakeRound"/> has nothing more to ask.
+    /// Either way the story being read is always finished.
+    /// </summary>
+    public int? RoundsPerSession => QuestionsPerVisit - 1 + MostQuestions;
 
     public IReadOnlyList<Story> Stories => content.Stories.Stories;
 
     public static string StoryItem(Story story) => $"story:{story.Id}";
     public static string QuestionItem(Story story, int number) => $"story:{story.Id}:q{number}";
 
+    /// <summary>Story levels: one for each of the game's levels in games.json (the validator keeps them in step).</summary>
+    public int Levels => Entry.LevelSteps.Count;
+
     /// <summary>The story level a game level deals (game levels count from 0, stories from 1).</summary>
-    public static int StoryLevel(int gameLevel) => Math.Clamp(gameLevel + 1, 1, Levels);
+    public int StoryLevel(int gameLevel) => Math.Clamp(gameLevel + 1, 1, Levels);
 
     public StorySceneSet ScenesOf(Story story) => _sets[story.Scenes];
 
@@ -54,8 +65,8 @@ public sealed class StoriesGame(ContentLibrary content) : IMiniGame<StoriesGame.
         // A fresh story at the child's level, else the nearest easier level with one left.
         for (var level = StoryLevel(learner.GameLevel); level >= 1; level--)
         {
-            var fresh = Stories.Where(s => s.Level == level && !session.UsedItems.Contains(StoryItem(s))
-                                           && _sets.ContainsKey(s.Scenes) && s.Questions.Count > 0).ToList();
+            var fresh = Stories.Where(s => s.Level == level && !session.UsedItems.Contains(StoryItem(s)) && _sets.ContainsKey(s.Scenes)
+                                           && s.Questions.Count > 0).ToList();
             if (rng.Pick(fresh) is Story story) return Ask(story, 1, newStory: true, rng);
         }
         return null;

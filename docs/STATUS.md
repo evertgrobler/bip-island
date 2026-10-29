@@ -33,7 +33,9 @@
 - **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
   the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
   remain only as a fallback for new words and in the parent area's child menus.
-- **Delivery:** every `main` merge is built, tested on real Mac and Windows machines, and published:
+- **Delivery:** once a day (20:52 SAST, only if a game or download-page file changed since the last
+  published build; a manual run of the Godot workflow publishes at once) `main` is built, tested on real
+  Mac and Windows machines, and published:
   installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
   parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
   screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
@@ -622,3 +624,29 @@
   Words Island (plates a little smaller), previews `Scenes/Games/bips_stories*.tscn`, and the walk-through reads a
   story and answers with a hint. Cambridge Reading codes are placeholders (`ENG.RC.01/02`, to map); CAPS
   `HL.RV.01` topic to confirm. Not recorded yet: 3 new lines and every story clip in both languages.
+- **24 Oct, 23:05 SAST (PR #60 review fixes, Bip's Stories):** #60 was merged before its review, so these come in
+  their own PR. A quick wrong-then-right click no longer freezes the story: the answers go through the shared
+  `GameScreen.AnswerChoice` (new `onHint` action for the scene hint), so a retry or hint never cuts off the praise.
+  Clicking a sentence still ends with the arrow glowing, and the intro counts as heard only once it has played.
+  The hint scene sits between the question (still shown) and the cards, once. A level-up mid-visit finishes the
+  longer story it deals (`StoriesGame` alone ends the visit; test added). The validator checks backgrounds against
+  `StoryScenes.Backgrounds`, puts answer pictures in the manifest and the level-5 face rule, and Silly Sentences
+  and story level 1 share one reading rule. `GameSession.MarkUsed` (internal) replaces reflection in the tests.
+  The walk-through now checks the arrow after a clicked sentence and a quick wrong-then-right click.
+  Second review round (same PR): pictures fit a 220 box in the frame check (three scenes moved in), the story
+  levels come from games.json (`StoriesGame.Levels`), one cached Afrikaans library for all tests
+  (`TestContent.Library(HomeLanguage)`), one `TextCard` for sentences and word answers, each person's seed in
+  their own row, and "Thandi has a bag" (the bag is drawn purple).
+  Third round (#61 review): the reading rule strips quotes and punctuation together ('Stop!' is "stop"; a
+  self-check in the validator), the walk-through fails if the quick-click freeze test is skipped, the visit cap comes
+  from the stories' longest question count (the "does it fit" filter is gone), a delayed retry or hint checks its own
+  question is still unanswered (`WhileUnanswered(attempt, …)`, every screen), shared pictures keep their English
+  brief in the Afrikaans manifest, and sentence cards have room for two lines again.
+- **25 Oct (PC session, OpenCode helpers):** first session on the owner's Windows PC (`pc/*` branches, see the
+  handoff note). Added `AGENTS.md`, the short rules sheet OpenCode and other helper models read (points to
+  `CLAUDE.md`; South African English, content in JSON, child-safety code off limits, never push or touch `main` /
+  `claude/*`). Trial: OpenCode with the free DeepSeek V4.1 Flash wrote one sticker-book test
+  (`EarnedAndMissingStickersSplitTheWholeBook`, earned + missing = the whole book, a closed Language Island adds
+  no stickers) from a precise brief; the lead session reviewed it and added one line. This PC has no .NET or `gh`
+  yet, so CI is the first run of the test.
+- **25 Oct, 13:30 SAST: daily publishing.** The Vercel team was paused on 25 Oct: "Blob Advanced Operations" reached 2.9K of the free 2K a month, which also took down the owner's other site. Each upload call counts, and `put()`'s multipart sends 8 MB parts, so one release cost well over 100 operations; about 15 merges in two days used up the month. The owner chose to wait for the limit to reset (about 5 days) and to merge less. Since then: `main` builds, tests and publishes once a day at 20:52 SAST (`schedule`), and only when a file that goes into the game or the download page changed since the commit the store was last published from (`godot-test/published.json`, written by `mark_published.mjs` as the publish job's very last step, after the feed check and the download page, and read by the `changed` job with `git diff`). Each commit is built by the daily run once at most (an Actions cache key `daily-tried-<sha>`): a commit whose build, test or publish failed isn't rebuilt every night; a manual run or the next change to `main` tries again. Anything the check can't work out (Vercel unreachable, no note yet) builds anyway. A manual run still publishes at once, and pull requests are unchanged. `publish_blob.mjs` sends files over 64 MB in 64 MB parts (about 4 operations for a 150 MB installer instead of about 20). Keep merges to `main` few and batched. A move to GitHub Releases plus GitHub Pages was built (PR #65, branch `claude/downloads-github`) and closed unmerged; it is ready if the repository goes private or Vercel becomes a problem again.
