@@ -900,6 +900,13 @@ public static class WalkTest
                 await Wait(0.5);
                 Check("dragging the right food to the monster is saved", game.Store.Progress(game.ChildId, game.Language).Skills.ContainsKey("snd_g1"));
                 Check("the next food comes", await WaitFor(() => monster is { InputLocked: false }, 8));
+                // A trackpad: a click on a food feeds it, without holding the button down.
+                monster.ClickFoodForTest((monster.RightIndex + 1) % 3);
+                await Wait(0.5);
+                Check("clicking a wrong food sends it back", monster is { InputLocked: false });
+                monster.ClickFoodForTest(monster.RightIndex);
+                Check("clicking the right food feeds it", await WaitFor(() => monster is { InputLocked: true }, 1));
+                Check("then the next food comes", await WaitFor(() => monster is { InputLocked: false }, 8));
             }
             if (await Tap("home")) await Expect<LettersIslandScreen>("home from Feed the Monster goes back to letters island");
         }

@@ -10,7 +10,7 @@ using static BipIsland.Drawing.Up;
 namespace BipIsland.Games;
 
 /// <summary>
-/// Feed the Monster: drag only the foods that start with the sound into a hungry monster. The food
+/// Feed the Monster: drag (or click, on a trackpad) only the foods that start with the sound into a hungry monster. The food
 /// never repeats in a visit. Wrong → soft boop, the food goes back and the sound is said again; two
 /// misses → spoken hint and the right food wiggles. From the keyboard, Enter feeds the glowing food.
 /// </summary>
@@ -30,6 +30,7 @@ public partial class FeedMonsterScreen : GameScreen
     private readonly List<Vector2> _homes = [];
     private PictureCard? _dragged;
     private Vector2 _dragOffset;
+    private Vector2 _pressPoint;
 
     public FeedMonsterScreen(FeedMonsterGame game, PhonicsSound focus)
     {
@@ -120,7 +121,8 @@ public partial class FeedMonsterScreen : GameScreen
                 when !InputLocked && _dragged == null && FoodAt(press.GlobalPosition) is { } card:
                 GetViewport().SetInputAsHandled();
                 _dragged = card;
-                _dragOffset = card.Position - Stage.ToLocal(press.GlobalPosition);
+                _pressPoint = Stage.ToLocal(press.GlobalPosition);
+                _dragOffset = card.Position - _pressPoint;
                 card.ZIndex = 20;
                 if (card == HintedNode) StopHint();
                 return;
@@ -135,10 +137,13 @@ public partial class FeedMonsterScreen : GameScreen
                 GetViewport().SetInputAsHandled();
                 if (!InputLocked) _dragged.Position = Stage.ToLocal(motion.GlobalPosition) + _dragOffset;
                 return;
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } when _dragged is { } dropped:
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } release when _dragged is { } dropped:
                 GetViewport().SetInputAsHandled();
                 _dragged = null;
-                if (!InputLocked && dropped.Position.DistanceTo(MonsterMouth) < EatDistance) Feed(_cards.IndexOf(dropped));
+                // A click (press and release without moving much, as on a trackpad, where holding the
+                // button down is hard for small hands) feeds the food, the same as a drag to the mouth.
+                var click = Stage.ToLocal(release.GlobalPosition).DistanceTo(_pressPoint) <= TracePen.TapSlop;
+                if (!InputLocked && (click || dropped.Position.DistanceTo(MonsterMouth) < EatDistance)) Feed(_cards.IndexOf(dropped));
                 else SendHome(dropped);
                 return;
         }
@@ -147,6 +152,15 @@ public partial class FeedMonsterScreen : GameScreen
 
     private PictureCard? FoodAt(Vector2 global) =>
         _cards.LastOrDefault(c => Hit.IsShown(c) && Hit.GlobalArea(c) is { } area && area.HasPoint(global));
+
+    /// <summary>Clicks a food through the real mouse handling, as on a trackpad (for the walk-through test).</summary>
+    public void ClickFoodForTest(int index)
+    {
+        if (index < 0 || index >= _cards.Count) return;
+        var at = Stage.ToGlobal(_cards[index].Position);
+        _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, GlobalPosition = at, Position = at });
+        _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = at, Position = at });
+    }
 
     /// <summary>Drags a food to the monster through the real mouse handling (for the walk-through test).</summary>
     public void DragToMonsterForTest(int index)
@@ -211,7 +225,8 @@ public partial class FeedMonsterScreen : GameScreen
             SayPrompt();
             return;
         }
-        // Mouse presses on food belong to dragging; this is the keyboard's Enter on the glowing food.
+        // Mouse presses on food belong to dragging (a click there feeds it too); this is the keyboard's
+        // Enter on the glowing food.
         if (name.StartsWith("food:") && int.TryParse(name["food:".Length..], out var index)) Feed(index);
     }
 
