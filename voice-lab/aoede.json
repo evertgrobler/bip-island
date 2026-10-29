@@ -401,7 +401,6 @@
   "vo_story_snake_on_the_path_q1": "Why did Dad stop on the path?",
   "vo_story_snake_on_the_path_q2": "How did the children feel when they saw the snake?",
   "vo_story_snake_on_the_path_q3": "What did they eat at the top?",
-  "vo_story_thandis_bag_1": "Thandi has a red bag.",
   "vo_story_thandis_bag_2": "The bag has a doll and a cup.",
   "vo_story_thandis_bag_a2": "ball",
   "vo_story_thandis_bag_q1": "What is in the bag with the doll?",
@@ -534,5 +533,6 @@
   "vo_story_priyas_birthday_a6": 3,
   "vo_welcome": 1,
   "vo_words_island": 1
- }
+ },
+ "failed_text": {}
 }

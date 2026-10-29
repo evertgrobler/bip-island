@@ -25,7 +25,7 @@ to the line rather than identical.
   python3 scripts/gemini_narrator.py                # record what's left, up to MAX_REQUESTS requests
   python3 scripts/gemini_narrator.py --status       # how many clips are done, failed and left
 """
-import argparse, base64, csv, difflib, fnmatch, itertools, json, os, re, subprocess, sys, tempfile, urllib.error, urllib.request
+import argparse, base64, csv, difflib, fnmatch, itertools, json, os, re, subprocess, sys, tempfile, time, urllib.error, urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -34,7 +34,7 @@ from speak_clips import AUDIO, ROOT, TARGET_LUFS, ffmpeg, loudness, words  # noq
 MODEL = "gemini-3.8-flash-tts"
 VOICE = "Aoede"
 STATE = ROOT / "voice-lab" / "aoede.json"
-MAX_REQUESTS = int(os.environ.get("MAX_REQUESTS", "40"))
+MAX_REQUESTS = int(os.environ.get("MAX_REQUESTS") or 40)
 # Trim the ends of each piece: Gemini's quiet has a soft noise floor, so -40 dB counts as silence.
 TRIM = ("silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.05,areverse,"
         "silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.08,areverse")
@@ -90,9 +90,9 @@ PHONICS_AF = ("You are a calm, clear Afrikaans phonics teacher (klanke). Each li
 # Each language: where its words come from and where its clips go.
 LANGS = {
     "en": {"content": ROOT / "Content", "script": ROOT / "audio" / "script.csv", "audio": AUDIO,
-           "phonics": PHONICS_DIR, "styles": {"sparkle": SPARKLE, "big": BIG, "clear": CLEAR, "words": WORDS, "phonics": PHONICS}},
+           "phonics": PHONICS_DIR, "styles": {"sparkle": SPARKLE, "big": BIG, "clear": CLEAR, "words": WORDS, "names": WORDS, "phonics": PHONICS}},
     "af": {"content": ROOT / "Content" / "af", "script": ROOT / "audio" / "af" / "script.csv", "audio": AUDIO / "af",
-           "phonics": PHONICS_DIR / "af", "styles": {"sparkle": SPARKLE_AF, "big": BIG_AF, "clear": CLEAR_AF, "words": WORDS_AF, "phonics": PHONICS_AF}},
+           "phonics": PHONICS_DIR / "af", "styles": {"sparkle": SPARKLE_AF, "big": BIG_AF, "clear": CLEAR_AF, "words": WORDS_AF, "names": WORDS_AF, "phonics": PHONICS_AF}},
 }
 AF_NUMBERS = ("nul een twee drie vier vyf ses sewe agt nege tien elf twaalf dertien veertien vyftien sestien "
               "sewentien agtien negentien twintig").split()
@@ -154,7 +154,10 @@ def group(key):
     # Older children's lines are only ever vo_/hint_/praise_ (BipCore.VoiceBands): a word_big is a word.
     if clip.endswith("_big") and clip.startswith(("vo_", "hint_", "praise_")):
         return "big"
-    if clip.startswith(("word_", "num_", "money_", "name_", "learn_")) and not clip.endswith("_mid"):
+    # Letter names ("ay", "bee") have their own batches, cut at the pauses: Whisper writes them as letters.
+    if clip.startswith("name_"):
+        return "names"
+    if clip.startswith(("word_", "num_", "money_", "learn_")) and not clip.endswith("_mid"):
         return "words"
     if clip.startswith(("praise_", "hint_")) or clip in OWN_LINES:
         return "sparkle"
@@ -202,7 +205,7 @@ def is_held(key, patterns):
 
 
 def batch_size(style, retry):
-    if style == "phonics":
+    if style in ("phonics", "names"):
         return 3 if retry else 8
     if retry:
         return 4
@@ -220,9 +223,25 @@ def finish(style):
 
 
 def load_state():
-    if STATE.exists():
-        return json.loads(STATE.read_text())
-    return {"done": {}, "failed": {}}
+    state = json.loads(STATE.read_text()) if STATE.exists() else {"done": {}, "failed": {}}
+    state.setdefault("failed_text", {})
+    return state
+
+
+def fails(state, clip, text):
+    """Failed takes of a clip's current text: a clip whose text has changed since starts again at 0."""
+    return state["failed"].get(clip, 0) if state["failed_text"].get(clip, text) == text else 0
+
+
+def failed_take(state, clip, text):
+    state["failed"][clip] = fails(state, clip, text) + 1
+    state["failed_text"][clip] = text
+
+
+def took(state, clip, text):
+    state["done"][clip] = text
+    state["failed"].pop(clip, None)
+    state["failed_text"].pop(clip, None)
 
 
 def save_state(state):
@@ -231,6 +250,10 @@ def save_state(state):
 
 class DailyLimit(Exception):
     pass
+
+
+class BatchFailed(Exception):
+    """Gemini couldn't make this batch (a server error, a timeout, a reply with no audio): try the next one."""
 
 
 def sounds(lang):
@@ -261,14 +284,23 @@ def speak(key, lang, style, lines, hints=()):
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
         data=json.dumps(body).encode(), headers={"x-goog-api-key": key, "Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=300) as r:
-            data = json.load(r)
-    except urllib.error.HTTPError as e:
-        if e.code == 429:
-            raise DailyLimit(e.read()[:300])
-        raise SystemExit(f"Gemini said {e.code}: {e.read()[:500]!r}")
-    return base64.b64decode(data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req, timeout=300) as r:
+                data = json.load(r)
+            return base64.b64decode(data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
+        except urllib.error.HTTPError as e:
+            text = e.read().decode("utf-8", "replace")
+            if e.code != 429:
+                raise BatchFailed(f"Gemini said {e.code}: {text[:300]!r}")
+            # The free tier has a per-minute limit as well as the daily one: wait out a per-minute 429.
+            wait = re.search(r'"retryDelay":\s*"(\d+)(?:\.\d+)?s"', text)
+            if "PerDay" in text or attempt == 3 or not ("PerMinute" in text or wait):
+                raise DailyLimit(text[:300])
+            time.sleep(min(int(wait.group(1)) if wait else 30, 90) + 2)
+        except (urllib.error.URLError, TimeoutError, OSError, KeyError, IndexError, ValueError) as e:
+            raise BatchFailed(f"{type(e).__name__}: {e}")
+    raise DailyLimit("still limited after waiting")
 
 
 def silence_cut(wav, count):
@@ -296,21 +328,54 @@ def names(text):
     return " ".join(found) or None
 
 
-def same_english(heard, text):
+# The people in the game's lines (Sipho, Thandi, Mrs Dlamini): set from the English texts as a run starts.
+KNOWN_NAMES = set()
+
+
+def known_names(all_texts):
     """
-    Whether Whisper heard the English line: the same words in the same order, where a word may differ only
-    in spelling (EN_WORD_CLOSE) and a name only as Whisper spells it (EN_NAME_CLOSE). Nothing missing or extra.
+    Words written with a capital in the middle of a sentence somewhere in the English lines: the names.
+    (A capital at the start of a sentence says nothing, so "Find" is never a name.)
+    """
+    found = set()
+    for key, text in all_texts.items():
+        if split(key)[0] != "en":
+            continue
+        for m in re.finditer(r"\b[A-Z][a-z']+\b", text):
+            before = text[:m.start()].rstrip()
+            if before and before[-1] not in ".!?:\"\u201c":
+                found.add(m.group().lower())
+    return found - {"i"}
+
+
+def same_english(heard, text, names_=None):
+    """
+    Whether Whisper heard the English line: the same words in the same order, where a name may differ as
+    Whisper spells it (EN_NAME_CLOSE) and a longer word only in spelling (EN_WORD_CLOSE, "practices" for
+    "practises"; never a short word, and never an added or dropped s). Nothing missing or extra, though
+    spaces may differ ("all together" for "altogether", "takeaway" for "take away").
     """
     got, want = words(heard), words(text)
-    proper = {w.lower() for w in re.findall(r"\b[A-Z][a-z']+\b", text)}
+    if "".join(got) == "".join(want):
+        return True
+    people = KNOWN_NAMES if names_ is None else names_
     for op, a1, a2, b1, b2 in difflib.SequenceMatcher(a=want, b=got, autojunk=False).get_opcodes():
         if op == "equal":
             continue
-        if op != "replace" or a2 - a1 != b2 - b1:
+        if op != "replace":
             return False
+        if a2 - a1 != b2 - b1:
+            # Split or joined differently ("all together" for "altogether"): the letters must match closely.
+            joined_w, joined_g = "".join(want[a1:a2]), "".join(got[b1:b2])
+            if len(joined_w) < 8 or difflib.SequenceMatcher(a=joined_w, b=joined_g, autojunk=False).ratio() < 0.9:
+                return False
+            continue
         for w, g in zip(want[a1:a2], got[b1:b2]):
-            close = EN_NAME_CLOSE if w in proper else EN_WORD_CLOSE
-            if difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio() < close:
+            ratio = difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio()
+            if w in people and len(w) >= 4:
+                if ratio < EN_NAME_CLOSE:
+                    return False
+            elif len(w) < 5 or len(g) < 5 or w + "s" == g or g + "s" == w or ratio < EN_WORD_CLOSE:
                 return False
     return True
 
@@ -383,7 +448,7 @@ class Listener:
 def status(state, all_texts):
     wanted = {c: t for c, t in all_texts.items() if group(c)}
     done = sum(1 for c, t in wanted.items() if state["done"].get(c) == t)
-    stuck = [c for c, n in state["failed"].items() if n >= GIVE_UP]
+    stuck = [c for c in state["failed"] if c in all_texts and fails(state, c, all_texts[c]) >= GIVE_UP]
     hold = held()
     waiting = sum(1 for c, t in wanted.items() if state["done"].get(c) != t and is_held(c, hold))
     return len(wanted), done, stuck, waiting
@@ -394,6 +459,7 @@ def main():
     ap.add_argument("--status", action="store_true")
     a = ap.parse_args()
     state, all_texts = load_state(), texts()
+    KNOWN_NAMES.update(known_names(all_texts))
     total, done, stuck, waiting = status(state, all_texts)
     print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
     if a.status:
@@ -404,7 +470,7 @@ def main():
 
     hold = held()
     todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if group(c) and state["done"].get(c) != all_texts[c]
-            and state["failed"].get(c, 0) < GIVE_UP and not is_held(c, hold)]
+            and fails(state, c, all_texts[c]) < GIVE_UP and not is_held(c, hold)]
     # Fresh clips first in big batches, most-heard first, then retries in small ones; English and
     # Afrikaans take turns, except that step 0 (the stories) goes before any turn-taking. Each batch is
     # one style.
@@ -412,10 +478,10 @@ def main():
     first = []
     for retry in (False, True):
         for step in range(0, 10):
-            for style in ("sparkle", "clear", "big", "words", "phonics"):
+            for style in ("sparkle", "clear", "big", "words", "names", "phonics"):
                 for lang in LANGS:
                     these = [c for c in todo if split(c)[0] == lang and group(c) == style and priority(c) == step
-                             and bool(state["failed"].get(c)) == retry]
+                             and bool(fails(state, c, all_texts[c])) == retry]
                     size = batch_size(style, retry)
                     chunks = [(lang, style, these[i:i + size]) for i in range(0, len(these), size)]
                     if step == 0:
@@ -424,7 +490,7 @@ def main():
                         queues[lang] += chunks
     batches = first + [b for turn in itertools.zip_longest(*queues.values()) for b in turn if b]
     listener = Listener()
-    requests = 0
+    requests = errors = 0
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         for lang, style, clips in batches:
@@ -442,18 +508,27 @@ def main():
             except DailyLimit as e:
                 print(f"Gemini's daily limit is used up ({e}); the next run carries on.", flush=True)
                 break
+            except BatchFailed as e:
+                # Not the clips' fault: no failed takes counted. Three in a row and the run stops for today.
+                requests += 1
+                errors += 1
+                print(f"Request {requests} failed ({e}); {'stopping' if errors >= 3 else 'going on'}.", flush=True)
+                if errors >= 3:
+                    break
+                continue
+            errors = 0
             requests += 1
             raw = tmp / "batch.wav"
             (tmp / "batch.pcm").write_bytes(pcm)
             ffmpeg("-f", "s16le", "-ar", "24000", "-ac", "1", "-i", str(tmp / "batch.pcm"), str(raw))
-            if style == "phonics":
+            if style in ("phonics", "names"):
                 pieces = silence_cut(raw, len(clips)) or [None] * len(clips)
             else:
                 pieces = listener.cut(raw, lines, lang)
             good = 0
             for clip, span in zip(clips, pieces):
                 if span is None:
-                    state["failed"][clip] = state["failed"].get(clip, 0) + 1
+                    failed_take(state, clip, all_texts[clip])
                     print(f"  {clip}: not heard in the batch", flush=True)
                     continue
                 start, end = span
@@ -468,17 +543,15 @@ def main():
                     # No machine check for a pure sound: it waits for the owner's ear.
                     LANGS[lang]["phonics"].mkdir(parents=True, exist_ok=True)
                     out.replace(LANGS[lang]["phonics"] / f"{name}.m4a")
-                    state["done"][clip] = all_texts[clip]
-                    state["failed"].pop(clip, None)
+                    took(state, clip, all_texts[clip])
                     good += 1
                 elif listener.ok(clip, out, all_texts[clip]):
                     LANGS[lang]["audio"].mkdir(parents=True, exist_ok=True)
                     out.replace(LANGS[lang]["audio"] / f"{name}.m4a")
-                    state["done"][clip] = all_texts[clip]
-                    state["failed"].pop(clip, None)
+                    took(state, clip, all_texts[clip])
                     good += 1
                 else:
-                    state["failed"][clip] = state["failed"].get(clip, 0) + 1
+                    failed_take(state, clip, all_texts[clip])
                     print(f"  {clip}: heard {listener.heard(out, lang, all_texts[clip])!r}, wanted {all_texts[clip]!r}", flush=True)
             save_state(state)
             print(f"Request {requests}: {good} of {len(clips)} {lang} {style} clips kept.", flush=True)

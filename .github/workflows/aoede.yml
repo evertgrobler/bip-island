@@ -20,6 +20,9 @@ concurrency:
 
 jobs:
   speak:
+    # Only ever on claude/ branches, even when started by hand (the Actions tab picks main by default):
+    # clips reach main through a reviewed pull request.
+    if: startsWith(github.ref, 'refs/heads/claude/')
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
@@ -37,7 +40,9 @@ jobs:
         run: |
           python3 scripts/validate_content.py > /dev/null
           MAX_REQUESTS=$(head -1 voice-lab/aoede-run.txt | tr -dc 0-9) python3 scripts/gemini_narrator.py
+      # Even when recording stopped with an error: the clips already checked are kept.
       - name: Commit the clips
+        if: ${{ !cancelled() }}
         run: |
           git config user.name "aoede-narrator"
           git config user.email "aoede-narrator@users.noreply.github.com"
