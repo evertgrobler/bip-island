@@ -490,6 +490,31 @@ public static class WalkTest
             }
             else Check("Picnic Plates level 4 is sharing", false, Screen() is PicnicPlatesScreen other ? $"{other.Round?.Mode}" : "no screen");
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Picnic Plates (sharing) goes back to numbers island");
+
+            // Number Machine: what comes out of the × machine (its groups show), a wrong card then the right one;
+            // then the rule level, with rule cards.
+            if (await Tap("machine")) await Expect<NumberMachineScreen>("Number Machine opens from the island");
+            Check("Number Machine shows a number going in and three cards",
+                  await WaitFor(() => Screen() is NumberMachineScreen { RightIndex: >= 0, InputLocked: false }, 3));
+            if (Screen() is NumberMachineScreen machine && machine.Round is { } run)
+            {
+                Check("the times machine shows its groups", await WaitFor(() => machine.GroupsShown == run.In, 2), $"{machine.GroupsShown} of {run.In}");
+                await Tap($"choice:{(machine.RightIndex + 1) % 3}");
+                Check("a wrong card stays on the same number", machine.Round == run && !machine.InputLocked);
+                await Tap($"choice:{machine.RightIndex}");
+                Check("the right card counts for the tables", await WaitFor(() => game.Progress.Skill("count_steps").TotalAttempts > 0, 6));
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Number Machine goes back to numbers island");
+            game.Progress.GameLevels[NumberMachineGame.GameId] = new SkillMastery(6);
+            if (await Tap("machine")) await Expect<NumberMachineScreen>("Number Machine opens again, at what's the rule");
+            Check("the rule level shows rule cards",
+                  await WaitFor(() => Screen() is NumberMachineScreen { RightIndex: >= 0, Round.Mode: NumberMachineGame.Mode.Rule }, 3));
+            if (Screen() is NumberMachineScreen rules)
+            {
+                await Tap($"choice:{rules.RightIndex}");
+                Check("the right rule card counts for times and divide", await WaitFor(() => game.Progress.Skill("times_divide").TotalAttempts > 0, 6));
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Number Machine (rules) goes back to numbers island");
             if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
         }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.

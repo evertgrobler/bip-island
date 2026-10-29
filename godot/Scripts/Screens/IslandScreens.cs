@@ -207,19 +207,19 @@ public partial class GameIslandScreen : BaseScreen
 
         Node2D[] games = _island switch
         {
-            Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton(), PicnicButton()],
+            Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton(), PicnicButton(), MachineButton()],
             Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton(), StoriesButton()],
             Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
         _leftGame = GameFor(Buttons.TapName(games[0])!);
-        var spacing = games.Length switch { > 4 => 300.0, > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
+        var spacing = games.Length switch { > 5 => 250.0, > 4 => 300.0, > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
         for (var i = 0; i < games.Length; i++)
         {
-            // Five games only fit the island a little smaller: a holder shrinks each, so its own
-            // scale stays free for the pulse and the press.
+            // Five or six games only fit the island a little smaller: a holder shrinks each, so its
+            // own scale stays free for the pulse and the press.
             var holder = new Node2D { Position = P((i - (games.Length - 1) / 2.0) * spacing, 105), ZIndex = 5 };
-            if (games.Length > 4) holder.Scale = Vector2.One * 0.82f;
+            if (games.Length > 4) holder.Scale = Vector2.One * (games.Length > 5 ? 0.7f : 0.82f);
             holder.AddChild(games[i]);
             Stage.AddChild(holder);
             _keyNodes.Add(games[i]);
@@ -293,6 +293,20 @@ public partial class GameIslandScreen : BaseScreen
             picnic.AddChild(food);
         }
         return picnic;
+    }
+
+    /// <summary>Number Machine: a little teal machine with "× 2" on the front and a red-knobbed handle.</summary>
+    private static Node2D MachineButton()
+    {
+        var machine = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 160, 150), 849, fill: Palette.Card, lineWidth: 6)), "machine");
+        machine.AddChild(Pen(RoundRect(R(-90, -70, 180, 130), 22), 850, fill: Palette.Teal, lineWidth: 5));
+        machine.AddChild(Pen(Polygon(P(-80, 90), P(-30, 90), P(-40, 60), P(-70, 60)), 851, fill: Palette.Sun, lineWidth: 4));
+        machine.AddChild(Pen(Polyline(P(90, 10), P(120, 40)), 852, ink: Palette.Ink, lineWidth: 6));
+        machine.AddChild(Pen(Ellipse(P(120, 40), 12, 12), 853, fill: Palette.Red, lineWidth: 3));
+        var rule = Sketch.Letter("× 2", 54, shadow: Palette.Purple);
+        rule.Position = P(0, -5);
+        machine.AddChild(rule);
+        return machine;
     }
 
     private static Node2D SoundButtonsButton()
@@ -459,6 +473,7 @@ public partial class GameIslandScreen : BaseScreen
         "blocks" => BlockTowersGame.GameId,
         "balance" => BipsBalanceGame.GameId,
         "picnic" => PicnicPlatesGame.GameId,
+        "machine" => NumberMachineGame.GameId,
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
         "rocket" => WordRocketGame.GameId,

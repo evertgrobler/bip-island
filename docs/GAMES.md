@@ -154,7 +154,7 @@ After 2 misses Bip deals the food out slowly, one to each plate in turn, countin
 
 As built: the food is sandwiches, biscuits, naartjies and strawberries (`numbers.json` "picnic", with at most 5 plates, 10 on a plate and 30 on the blanket), and each level's tables are its `steps` in `games.json` (2, 5 and 10 at stage 2). Making groups, sharing and grouping start with the basket: each click puts one piece on every plate (making groups and sharing, round and round) or packs one punnet (grouping); then three number cards ask the question. Level 1 shows the plates already filled (tapping each plate to count comes later), and arrays ask "how many on the tray?" only. The two-miss hint counts in steps of the table ("Let's count in steps of 5: 5, 10, 15"), the rounds of a share ("one to each plate, round and round: 1, 2, 3"), or the punnets, while each plate, row or punnet bobs; it doesn't deal the food out again. Levels 6 and 7 (turn the tray, bigger shares with tens) are still to come.
 
-### New game: Number Machine
+### New game: Number Machine (built 29 October 2026, levels 1–7)
 
 Bip's hand-drawn machine with a rule card on the front (× 2, × 5, × 4…). A number rolls in, the handle turns, and while it runs the machine shows the groups (4 goes into the × 5 machine: 4 hands of 5 fingers) and counts in steps out loud. The child picks what comes out from three cards. After 2 misses the hint runs the machine again slowly, counting each group. Thinking like a machine (input, rule, output) links to Coding Island.
 
@@ -169,6 +169,8 @@ Bip's hand-drawn machine with a rule card on the front (× 2, × 5, × 4…). A 
 | 7 | stage3 | What's the rule? | 3 → 12, 5 → 20, 2 → 8: pick the rule card (× 4) |
 
 Skins: Bip's workshop, a sweet factory, a juice press.
+
+As built: the rules are each level's `steps` in `games.json`, and what goes in is 2 to 10. The machine shows its groups (In towers of Rule cubes) while the × machine runs; for what went in, the ÷ machine and the rule, they show only in the hint, so the child does the thinking first. Level 5 is the × 8 table counted in eights, not yet three × 2 machines in a row (doubling three times comes later). The rule level shows two "in → out" signs and three rule cards. The two-miss hint counts in steps of the rule up to what the × machine makes, while each group bobs.
 
 ### New levels in planned and existing games
 
@@ -355,7 +357,7 @@ The plug-in template and Bip's planner come first, so every later game is quick 
 | 2b. Second wave | Number Train, More or Less, Missing Letter, Rhyme Time, Pattern Party, Fix-It | Skins (3 per game), golden rounds |
 | 3. Polish | Letter Fishing, Sound Detective, Ten-Frame Garden, Tricky Word Memory, Silly Sentences, Repeat Robot, Bip's Dance Party | Island grows, creature collection, decorations |
 | 4. Older children | Corner Shop, Word Rocket (built 4 Oct 2026, for ages 4–8, all three skins), Puddle Rules | Special days |
-| Maths plan (planned 10 Oct; Bip's Balance and Picnic Plates built) | Bip's Balance, Picnic Plates, Number Machine, plus new levels for Number Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers (order in the maths plan above) | Story sums |
+| Maths plan (planned 10 Oct; Bip's Balance, Picnic Plates and Number Machine built) | Bip's Balance, Picnic Plates, Number Machine, plus new levels for Number Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers (order in the maths plan above) | Story sums |
 | Ongoing | A new game, skin or word list with each update | “New!” flag on the map |
 
 ## Decisions
