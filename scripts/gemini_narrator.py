@@ -252,10 +252,14 @@ class DailyLimit(Exception):
     pass
 
 
+class SetupError(Exception):
+    """The key, the model or the request is wrong (401, 403, 404, a bad API key): no batch can work until a person fixes it."""
+
+
 class BatchFailed(Exception):
     """
     Gemini couldn't make this batch: try the next one. <lines_fault> is True when the reply itself was the
-    problem (a 4xx, a reply with no audio), so the clips count a failed take and move on to small retry
+    problem (a 400 about the content, a reply with no audio), so the clips count a failed take and move on to small retry
     batches, then GIVE_UP; a network error or a 5xx is no one's fault and counts nothing.
     """
     def __init__(self, message, lines_fault=False):
@@ -298,6 +302,8 @@ def speak(key, lang, style, lines, hints=()):
             return base64.b64decode(data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
         except urllib.error.HTTPError as e:
             text = e.read().decode("utf-8", "replace")
+            if e.code in (401, 403, 404) or "API_KEY" in text or "API key" in text:
+                raise SetupError(f"Gemini said {e.code}: {text[:300]!r}")
             if e.code != 429:
                 raise BatchFailed(f"Gemini said {e.code}: {text[:300]!r}", lines_fault=e.code < 500)
             # The free tier has a per-minute limit as well as the daily one: wait out a per-minute 429.
@@ -359,7 +365,15 @@ def known_names(all_texts):
                 found.add(m.group().lower())
         # A word also written in lower case somewhere ("letters", "blue", "go") is an ordinary word.
         lower.update(re.findall(r"\b[a-z][a-z']*\b", text))
-    return found - lower - {"i", "english", "afrikaans"}
+    return {w for w in found - lower if re.sub(r"'s$", "", w) not in NOT_NAMES}
+
+
+# Words written with a capital that aren't a person's name: a different day, month or family word must
+# never pass as a name ("Sunday" for "Saturday", "Grand" for "Gran").
+NOT_NAMES = {"i", "english", "afrikaans", "grade", "mr", "mrs", "ms", "mum", "dad", "gran", "granny", "gogo",
+             "grandpa", "grandma", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+             "january", "february", "march", "april", "may", "june", "july", "august", "september", "october",
+             "november", "december"}
 
 
 # How Whisper (which spells the American way) may write a South African word: practices for practises,
@@ -520,6 +534,8 @@ def main():
     KNOWN_NAMES.update(known_names(all_texts))
     total, done, stuck, waiting = status(state, all_texts)
     print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
+    if setup_error:
+        sys.exit(1)
     if a.status:
         return
     key = os.environ.get("GEMINI_API_KEY")
@@ -549,6 +565,7 @@ def main():
     batches = first + [b for turn in itertools.zip_longest(*queues.values()) for b in turn if b]
     listener = Listener()
     requests = errors = 0
+    setup_error = False
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         for lang, style, clips in batches:
@@ -565,6 +582,11 @@ def main():
                 pcm = speak(key, lang, style, lines, hints)
             except DailyLimit as e:
                 print(f"Gemini's daily limit is used up ({e}); the next run carries on.", flush=True)
+                break
+            except SetupError as e:
+                # Not the lines' fault: no failed takes, and the run fails so a person sees it.
+                print(f"Stopping: the key or the model needs a person ({e}).", flush=True)
+                setup_error = True
                 break
             except BatchFailed as e:
                 # A reply that was the lines' fault counts a failed take for each, so they move to small
@@ -621,6 +643,8 @@ def main():
             print(f"Request {requests}: {good} of {len(clips)} {lang} {style} clips kept.", flush=True)
     total, done, stuck, waiting = status(state, all_texts)
     print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
+    if setup_error:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
