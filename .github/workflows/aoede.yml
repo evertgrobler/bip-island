@@ -7,7 +7,8 @@ name: Aoede narrator
 on:
   workflow_dispatch:
   push:
-    branches: ["claude/**"]
+    # The recorder's own branch only: other claude/ branches carry this file in after merging main.
+    branches: ["claude/aoede-narrator"]
     paths:
       - "voice-lab/aoede-run.txt"
 

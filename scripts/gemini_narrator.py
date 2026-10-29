@@ -337,15 +337,19 @@ def known_names(all_texts):
     Words written with a capital in the middle of a sentence somewhere in the English lines: the names.
     (A capital at the start of a sentence says nothing, so "Find" is never a name.)
     """
-    found = set()
+    found, lower = set(), set()
     for key, text in all_texts.items():
         if split(key)[0] != "en":
             continue
         for m in re.finditer(r"\b[A-Z][a-z']+\b", text):
             before = text[:m.start()].rstrip()
-            if before and before[-1] not in ".!?:\"\u201c":
+            after = text[m.end():]
+            # "Numbers Island", "Language Island": an island's name, not a person's.
+            if before and before[-1] not in ".!?:\"\u201c" and not re.match(r"\s+Island\b", after):
                 found.add(m.group().lower())
-    return found - {"i"}
+        # A word also written in lower case somewhere ("letters", "blue", "go") is an ordinary word.
+        lower.update(re.findall(r"\b[a-z][a-z']*\b", text))
+    return found - lower - {"i", "english", "afrikaans"}
 
 
 def same_english(heard, text, names_=None):
@@ -376,6 +380,37 @@ def same_english(heard, text, names_=None):
                 if ratio < EN_NAME_CLOSE:
                     return False
             elif len(w) < 5 or len(g) < 5 or w + "s" == g or g + "s" == w or ratio < EN_WORD_CLOSE:
+                return False
+    return True
+
+
+AF_NUMBER_WORDS = set(AF_NUMBERS)
+
+
+def same_afrikaans(heard, text):
+    """
+    Whether Whisper heard the Afrikaans line, word by word: the same words in the same order, each close
+    enough in spelling (AF_CLOSE; Whisper's Afrikaans is rough), except that numbers must match exactly
+    and nothing may be missing or extra. Words split or joined differently pass when their letters do.
+    """
+    got, want = af_words(heard), af_words(text)
+    if "".join(got) == "".join(want):
+        return True
+    for op, a1, a2, b1, b2 in difflib.SequenceMatcher(a=want, b=got, autojunk=False).get_opcodes():
+        if op == "equal":
+            continue
+        if op != "replace":
+            return False
+        if a2 - a1 != b2 - b1:
+            joined_w, joined_g = "".join(want[a1:a2]), "".join(got[b1:b2])
+            if (len(joined_w) < 8 or any(w in AF_NUMBER_WORDS for w in want[a1:a2] + got[b1:b2])
+                    or difflib.SequenceMatcher(a=joined_w, b=joined_g, autojunk=False).ratio() < 0.9):
+                return False
+            continue
+        for w, g in zip(want[a1:a2], got[b1:b2]):
+            if w in AF_NUMBER_WORDS or g in AF_NUMBER_WORDS or w.isdigit() or g.isdigit():
+                return False
+            if difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio() < AF_CLOSE:
                 return False
     return True
 
@@ -441,8 +476,7 @@ class Listener:
         heard = self.heard(path, lang, text)
         if lang == "en":
             return same_english(heard, text)
-        got, want = "".join(line_words(lang, heard)), "".join(line_words(lang, text))
-        return difflib.SequenceMatcher(a=got, b=want, autojunk=False).ratio() >= AF_CLOSE
+        return same_afrikaans(heard, text)
 
 
 def status(state, all_texts):
