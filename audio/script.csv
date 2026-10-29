@@ -139,3 +139,9 @@ vo_how_many_on_tray.m4a,How many on the tray?,"Picnic Plates, a tray in rows. Cu
 vo_one_each.m4a,"Let's give one to each plate, round and round.","Picnic Plates hint for sharing, followed by numbers counting the rounds. Encouraging.","One each, round and round."
 vo_count_in_steps.m4a,Let's count in steps of,"Hint (Picnic Plates, later Number Machine and Count & Tap): leads on into a number (""…of five: five, ten, fifteen""). Encouraging.",Let's count in steps of
 vo_count_groups.m4a,Let's count the groups.,"Picnic Plates hint for grouping, followed by numbers. Encouraging.",Let's count the groups.
+vo_number_machine.m4a,"This is Bip's number machine! A number goes in, and the machine changes it.","Number Machine, said once as a visit starts. Bright, a little bit of wonder.",Bip's number machine!
+vo_times.m4a,times,"Number Machine: ""six… times… two"". Mid-sentence, voice carries on.",times
+vo_divided_by.m4a,divided by,"Number Machine: ""twenty… divided by… four"". Mid-sentence, voice carries on.",divided by
+vo_machine_out.m4a,What comes out of the machine?,"Number Machine, after the number and the rule. Curious, inviting.",What comes out?
+vo_machine_in.m4a,What went into the machine?,"Number Machine, when the number that came out is shown. Curious, inviting.",What went in?
+vo_machine_rule.m4a,What does the machine do? Find its card.,"Number Machine, two numbers went in and came out. Curious, a little puzzle.",Find the machine's card.

@@ -91,6 +91,13 @@ public static class VoiceLine
     public const string CountInSteps = "vo_count_in_steps";
     public const string ClickTheBasket = "vo_click_the_basket";
     public const string CountGroups = "vo_count_groups";
+    // Number Machine (Numbers Island)
+    public const string NumberMachine = "vo_number_machine";
+    public const string Times = "vo_times";
+    public const string DividedBy = "vo_divided_by";
+    public const string MachineOut = "vo_machine_out";
+    public const string MachineIn = "vo_machine_in";
+    public const string MachineRule = "vo_machine_rule";
     // Language Island
     public const string LanguageIsland = "vo_language_island";
     public const string ShowMe = "vo_show_me";
@@ -118,6 +125,7 @@ public static class VoiceLine
         StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow, And,
         Picnic, Put, OnEachPlate, SharePlates, HowManyEach, GroupsOf, HowManyGroups, HowManyOnTray, OneEach, CountInSteps,
         ClickTheBasket, CountGroups,
+        NumberMachine, Times, DividedBy, MachineOut, MachineIn, MachineRule,
         LanguageIsland, ShowMe, WhatIsIt, BipsDay, InOurLanguage,
         BipsStories, StoryQuestions, StoryLookAgain,
     ];

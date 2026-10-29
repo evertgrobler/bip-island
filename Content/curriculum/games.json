@@ -627,6 +627,112 @@
       ]
     },
     {
+      "id": "number_machine",
+      "island": "numbers",
+      "name": "Number Machine",
+      "ages": "6-8",
+      "skills": [
+        "count_steps",
+        "share_group",
+        "tables_3_4_8",
+        "times_divide"
+      ],
+      "objectives": [
+        "2Ni.05",
+        "2Ni.06",
+        "2Ni.07",
+        "3Ni.03",
+        "3Ni.05",
+        "3Ni.06",
+        "3Ni.07"
+      ],
+      "content": "curriculum/games.json (levels: the machine rules are each level's steps)",
+      "buildPhase": 3,
+      "levels": [
+        {
+          "band": "stage2",
+          "modes": [
+            "out"
+          ],
+          "steps": [
+            2,
+            10
+          ],
+          "note": "x 2 and x 10: 6 goes into the x 2 machine, what comes out?"
+        },
+        {
+          "modes": [
+            "out"
+          ],
+          "steps": [
+            2,
+            5,
+            10
+          ],
+          "note": "x 5, mixed with x 2 and x 10"
+        },
+        {
+          "modes": [
+            "in"
+          ],
+          "steps": [
+            2,
+            5,
+            10
+          ],
+          "note": "What went in? 30 came out of the x 10 machine"
+        },
+        {
+          "band": "stage3",
+          "modes": [
+            "out"
+          ],
+          "steps": [
+            3,
+            4
+          ],
+          "note": "x 3 and x 4"
+        },
+        {
+          "modes": [
+            "out"
+          ],
+          "steps": [
+            8
+          ],
+          "note": "x 8"
+        },
+        {
+          "modes": [
+            "divide"
+          ],
+          "steps": [
+            2,
+            3,
+            4,
+            5,
+            8,
+            10
+          ],
+          "note": "The divide machine undoes the times machine: 20 goes into the / 4 machine"
+        },
+        {
+          "modes": [
+            "rule"
+          ],
+          "steps": [
+            2,
+            3,
+            4,
+            5,
+            8,
+            10
+          ],
+          "note": "What's the rule? 3 -> 12, 5 -> 20: find the x 4 card"
+        }
+      ]
+    },
+    {
       "id": "corner_shop",
       "island": "numbers",
       "name": "Corner Shop",

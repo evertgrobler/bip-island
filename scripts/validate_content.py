@@ -319,7 +319,8 @@ GAME_MODES = {"shape_builder": {"find", "fill", "sides", "turn", "count", "regul
               "word_rocket": {"letter", "cvc", "longer", "tricky"},
               "block_towers": {"build", "which", "join", "takeaway", "maketen", "doubles", "oddeven", "tensones", "pattern"},
               "bips_balance": {"add", "takeaway", "past10", "missing", "factfamily"},
-              "picnic_plates": {"groups", "make", "arrays", "sharing", "grouping"}}
+              "picnic_plates": {"groups", "make", "arrays", "sharing", "grouping"},
+              "number_machine": {"out", "in", "divide", "rule"}}
 SHAPES = {sh["id"]: sh for sh in shapes_doc["shapes"]}
 COLOURS = {c["id"]: c for c in paints_doc["colours"]}
 POTS = {pt["colour"]: pt for pt in paints_doc["pots"]}
@@ -438,6 +439,19 @@ for gm in games:
                 err(f"{where}: steps (the times tables) must be whole numbers from 2 to 10")
             skills_needed = {"share_group" if m in ("sharing", "grouping") else "equal_groups" for m in lv["modes"]}
             for sid in skills_needed - set(gm["skills"]): err(f"{where}: skill {sid} is not in its skills list")
+        elif gm["id"] == "number_machine":
+            rules = lv.get("steps", [])
+            if not rules or any(not isinstance(t, int) or not 2 <= t <= 10 for t in rules):
+                err(f"{where}: steps (the machine's rules) must be whole numbers from 2 to 10")
+            if "rule" in lv["modes"] and len(set(rules)) < 3: err(f"{where}: rule rounds need at least 3 different rules for the cards")
+            band = BANDS.index(next((l["band"] for l in reversed(gm["levels"][:i + 1]) if "band" in l), "stage2"))
+            needed = set()
+            for m in lv["modes"]:
+                if m == "out": needed |= {"count_steps" if t in (2, 5, 10) else "tables_3_4_8" for t in rules}
+                else: needed.add("share_group" if m == "in" else "times_divide")
+            for sid in needed:
+                if sid not in gm["skills"]: err(f"{where}: skill {sid} is not in its skills list")
+                elif sid in SK and BANDS.index(SK[sid]["band"]) > band: err(f"{where}: band {BANDS[band]} is before {sid}'s band {SK[sid]['band']}")
         elif gm["id"] == "mirror_magic":
             if lv["modes"] != ["line"] and lv.get("mirror", "vertical") not in ("vertical", "horizontal"): err(f"{where}: mirror is vertical or horizontal")
             if "finish" in lv["modes"] and sum(p["mirror"] == lv.get("mirror", "vertical") for p in mirror_doc["pictures"]) < 3:
