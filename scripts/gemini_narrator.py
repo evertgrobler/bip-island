@@ -97,6 +97,11 @@ LANGS = {
 AF_NUMBERS = ("nul een twee drie vier vyf ses sewe agt nege tien elf twaalf dertien veertien vyftien sestien "
               "sewentien agtien negentien twintig").split()
 AF_CLOSE = 0.75  # how close (0 to 1) what Whisper heard must be to an Afrikaans line
+# English: a heard word counts as the expected one when it is this close (0 to 1): spellings Whisper writes
+# its own way ("practices" for "practises"), but never another word ("bull" for "ball").
+EN_WORD_CLOSE = 0.85
+# ...and a name (Sipho, Thandi, Dlamini), which Whisper often spells as it hears it ("Sipo", "Tandi").
+EN_NAME_CLOSE = 0.5
 
 
 def split(key):
@@ -275,6 +280,31 @@ def duration(wav):
     return float(out or 0)
 
 
+def names(text):
+    """The capitalised words of a line (names such as Sipho or Dlamini), as Whisper hotwords; None if there are none."""
+    found = list(dict.fromkeys(re.findall(r"\b[A-Z][a-z']+\b", text)))
+    return " ".join(found) or None
+
+
+def same_english(heard, text):
+    """
+    Whether Whisper heard the English line: the same words in the same order, where a word may differ only
+    in spelling (EN_WORD_CLOSE) and a name only as Whisper spells it (EN_NAME_CLOSE). Nothing missing or extra.
+    """
+    got, want = words(heard), words(text)
+    proper = {w.lower() for w in re.findall(r"\b[A-Z][a-z']+\b", text)}
+    for op, a1, a2, b1, b2 in difflib.SequenceMatcher(a=want, b=got, autojunk=False).get_opcodes():
+        if op == "equal":
+            continue
+        if op != "replace" or a2 - a1 != b2 - b1:
+            return False
+        for w, g in zip(want[a1:a2], got[b1:b2]):
+            close = EN_NAME_CLOSE if w in proper else EN_WORD_CLOSE
+            if difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio() < close:
+                return False
+    return True
+
+
 class Listener:
     """Whisper: small.en for English, the multilingual small model for Afrikaans (loaded when first needed)."""
     def __init__(self):
@@ -286,8 +316,8 @@ class Listener:
             self.models[lang] = WhisperModel("small.en" if lang == "en" else "small", device="cpu", compute_type="int8")
         return self.models[lang]
 
-    def heard(self, path, lang="en"):
-        segments, _ = self.model(lang).transcribe(str(path), language=lang, beam_size=5)
+    def heard(self, path, lang="en", text=""):
+        segments, _ = self.model(lang).transcribe(str(path), language=lang, beam_size=5, hotwords=names(text))
         return " ".join(seg.text for seg in segments).strip()
 
     def cut(self, wav, lines, lang="en"):
@@ -298,7 +328,8 @@ class Listener:
         words weren't heard is None (it goes back in the queue). Afrikaans words Whisper heard nearly
         right count as the word they are closest to.
         """
-        segments, _ = self.model(lang).transcribe(str(wav), language=lang, beam_size=5, word_timestamps=True)
+        segments, _ = self.model(lang).transcribe(str(wav), language=lang, beam_size=5, word_timestamps=True,
+                                                  hotwords=names(" ".join(lines)))
         expected = [(n, i) for i, line in enumerate(lines) for n in line_words(lang, line)]
         vocabulary = sorted({n for n, _ in expected})
         heard = []  # (word, start, end), one per normalised word
@@ -332,9 +363,10 @@ class Listener:
         if clip.startswith("name_"):
             # Letter names ("ay", "bee"): Whisper writes them as letters, so only check one short sound came out.
             return 0.2 < duration(path) < 1.6
-        got, want = "".join(line_words(lang, self.heard(path, lang))), "".join(line_words(lang, text))
+        heard = self.heard(path, lang, text)
         if lang == "en":
-            return got == want
+            return same_english(heard, text)
+        got, want = "".join(line_words(lang, heard)), "".join(line_words(lang, text))
         return difflib.SequenceMatcher(a=got, b=want, autojunk=False).ratio() >= AF_CLOSE
 
 
@@ -437,7 +469,7 @@ def main():
                     good += 1
                 else:
                     state["failed"][clip] = state["failed"].get(clip, 0) + 1
-                    print(f"  {clip}: heard {listener.heard(out, lang)!r}, wanted {all_texts[clip]!r}", flush=True)
+                    print(f"  {clip}: heard {listener.heard(out, lang, all_texts[clip])!r}, wanted {all_texts[clip]!r}", flush=True)
             save_state(state)
             print(f"Request {requests}: {good} of {len(clips)} {lang} {style} clips kept.", flush=True)
     total, done, stuck, waiting = status(state, all_texts)
