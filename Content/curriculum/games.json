@@ -552,6 +552,81 @@
       ]
     },
     {
+      "id": "picnic_plates",
+      "island": "numbers",
+      "name": "Picnic Plates",
+      "ages": "6-8",
+      "skills": [
+        "equal_groups",
+        "share_group"
+      ],
+      "objectives": [
+        "2Nc.04",
+        "2Ni.05",
+        "2Ni.06"
+      ],
+      "content": "numbers/numbers.json (picnic), curriculum/games.json (levels)",
+      "buildPhase": 3,
+      "levels": [
+        {
+          "band": "stage2",
+          "modes": [
+            "groups"
+          ],
+          "steps": [
+            2,
+            5,
+            10
+          ],
+          "note": "Equal groups: 3 plates with 2 each, how many altogether?"
+        },
+        {
+          "modes": [
+            "make"
+          ],
+          "steps": [
+            2,
+            5,
+            10
+          ],
+          "note": "Make equal groups: put 5 on each plate, then how many altogether?"
+        },
+        {
+          "modes": [
+            "arrays"
+          ],
+          "steps": [
+            2,
+            5,
+            10
+          ],
+          "note": "Arrays: a muffin tray with 3 rows of 5, how many?"
+        },
+        {
+          "modes": [
+            "sharing"
+          ],
+          "steps": [
+            2,
+            5,
+            10
+          ],
+          "note": "Sharing: deal 12 sandwiches round 2 plates, how many on each?"
+        },
+        {
+          "modes": [
+            "grouping"
+          ],
+          "steps": [
+            2,
+            5,
+            10
+          ],
+          "note": "Grouping: 15 strawberries, 5 to a punnet, how many punnets?"
+        }
+      ]
+    },
+    {
       "id": "corner_shop",
       "island": "numbers",
       "name": "Corner Shop",

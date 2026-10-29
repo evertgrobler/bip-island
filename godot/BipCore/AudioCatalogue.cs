@@ -78,6 +78,19 @@ public static class VoiceLine
     public const string StoryHowManyNow = "vo_story_how_many_now";
     /// <summary>"and" in the middle of a sum ("three and two"), not the reading word word_and.</summary>
     public const string And = "vo_and";
+    // Picnic Plates (Numbers Island)
+    public const string Picnic = "vo_picnic";
+    public const string Put = "vo_put";
+    public const string OnEachPlate = "vo_on_each_plate";
+    public const string SharePlates = "vo_share_plates";
+    public const string HowManyEach = "vo_how_many_each";
+    public const string GroupsOf = "vo_groups_of";
+    public const string HowManyGroups = "vo_how_many_groups";
+    public const string HowManyOnTray = "vo_how_many_on_tray";
+    public const string OneEach = "vo_one_each";
+    public const string CountInSteps = "vo_count_in_steps";
+    public const string ClickTheBasket = "vo_click_the_basket";
+    public const string CountGroups = "vo_count_groups";
     // Language Island
     public const string LanguageIsland = "vo_language_island";
     public const string ShowMe = "vo_show_me";
@@ -103,6 +116,8 @@ public static class VoiceLine
         Double, HowMany, OddOrEven, Odd, BuildNumber, WhatComesNext,
         Balance, Plus, EqualsWord, WhatNumber, WhichNumber, BalanceHelps, CountOnTogether, CountBackTogether,
         StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow, And,
+        Picnic, Put, OnEachPlate, SharePlates, HowManyEach, GroupsOf, HowManyGroups, HowManyOnTray, OneEach, CountInSteps,
+        ClickTheBasket, CountGroups,
         LanguageIsland, ShowMe, WhatIsIt, BipsDay, InOurLanguage,
         BipsStories, StoryQuestions, StoryLookAgain,
     ];

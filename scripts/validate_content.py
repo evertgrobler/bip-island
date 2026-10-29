@@ -278,6 +278,19 @@ for st in numbers_json.get("storySums", []):
         if thing not in known_things: err(f"{where}: unknown counting object {thing}")
     if not st["things"]: err(f"{where}: needs at least one counting object")
 
+# --- Picnic Plates: the food has pictures, and the blanket holds a fair round
+picnic = numbers_json.get("picnic")
+if any(gm["id"] == "picnic_plates" for gm in games):
+    if not picnic: err("numbers.json: Picnic Plates needs a picnic section")
+    else:
+        food_ids = [fd["id"] for fd in picnic["food"]]
+        if len(food_ids) != len(set(food_ids)) or not food_ids: err("picnic: food ids must be unique, and there must be some")
+        for fd in picnic["food"]:
+            if fd["picture"] != f"pic_{fd['id']}": err(f"picnic food {fd['id']}: picture must be pic_{fd['id']}")
+        for k in ("mostPlates", "mostEach", "mostFood"):
+            if not isinstance(picnic.get(k), int) or picnic[k] < 2: err(f"picnic: {k} must be a whole number of at least 2")
+        if picnic.get("mostFood", 0) < 2 * 10: err("picnic: mostFood must fit 2 plates of 10 (the 10 table)")
+
 # --- Bip's Balance: each level starts no earlier than the skill it records (a stage 3 skill isn't
 # offered to a stage 2 child as their first level)
 BALANCE_SKILL = {"add": "add_sub_20", "takeaway": "add_sub_20", "past10": "add_sub_20", "factfamily": "add_sub_20",
@@ -305,7 +318,8 @@ GAME_MODES = {"shape_builder": {"find", "fill", "sides", "turn", "count", "regul
               "paint_pots": {"make", "predict"}, "mirror_magic": {"same", "finish", "pegs", "line"},
               "word_rocket": {"letter", "cvc", "longer", "tricky"},
               "block_towers": {"build", "which", "join", "takeaway", "maketen", "doubles", "oddeven", "tensones", "pattern"},
-              "bips_balance": {"add", "takeaway", "past10", "missing", "factfamily"}}
+              "bips_balance": {"add", "takeaway", "past10", "missing", "factfamily"},
+              "picnic_plates": {"groups", "make", "arrays", "sharing", "grouping"}}
 SHAPES = {sh["id"]: sh for sh in shapes_doc["shapes"]}
 COLOURS = {c["id"]: c for c in paints_doc["colours"]}
 POTS = {pt["colour"]: pt for pt in paints_doc["pots"]}
@@ -418,6 +432,12 @@ for gm in games:
             up = lv.get("countTo", 0)
             if not 5 <= up <= 20: err(f"{where}: countTo must be 5 to 20")
             if "past10" in lv["modes"] and up < 12: err(f"{where}: going past 10 needs numbers up to at least 12")
+        elif gm["id"] == "picnic_plates":
+            tables = lv.get("steps", [])
+            if not tables or any(not isinstance(t, int) or not 2 <= t <= 10 for t in tables):
+                err(f"{where}: steps (the times tables) must be whole numbers from 2 to 10")
+            skills_needed = {"share_group" if m in ("sharing", "grouping") else "equal_groups" for m in lv["modes"]}
+            for sid in skills_needed - set(gm["skills"]): err(f"{where}: skill {sid} is not in its skills list")
         elif gm["id"] == "mirror_magic":
             if lv["modes"] != ["line"] and lv.get("mirror", "vertical") not in ("vertical", "horizontal"): err(f"{where}: mirror is vertical or horizontal")
             if "finish" in lv["modes"] and sum(p["mirror"] == lv.get("mirror", "vertical") for p in mirror_doc["pictures"]) < 3:
@@ -566,6 +586,8 @@ for o in numbers["countingObjects"]:
     plural = o["audioPlural"][len("word_"):]
     if not o["audioPlural"].startswith("word_"): err(f"counting object {o['id']}: plural clip must be word_<plural>")
     a(o["audioPlural"], plural.replace("_", " "))
+for fd in numbers.get("picnic", {}).get("food", []):
+    p(fd["picture"], f"{fd['id']} on a picnic plate")
 cur = numbers["currency"]
 for c in cur["coins"] + cur["notes"]:
     p(f"pic_money_{c['id']}", f"South African {c['label']} {'coin' if c in cur['coins'] else 'note'}, in the game's own hand-drawn style")

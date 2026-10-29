@@ -491,6 +491,30 @@
       ]
     },
     {
+      "id": "equal_groups",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Equal groups and arrays",
+      "objectives": [
+        "2Ni.05"
+      ],
+      "prerequisites": [
+        "count_steps"
+      ]
+    },
+    {
+      "id": "share_group",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Sharing and grouping",
+      "objectives": [
+        "2Ni.06"
+      ],
+      "prerequisites": [
+        "equal_groups"
+      ]
+    },
+    {
       "id": "even_odd",
       "island": "numbers",
       "band": "stage1",

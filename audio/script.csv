@@ -127,3 +127,15 @@ vo_island_sleeping_big.m4a,That island isn't ready yet. Try Letters Island!,"Big
 vo_who_is_playing_big.m4a,Who's playing? Click your picture.,"Big band (ages 7-10): upbeat but relaxed, never babyish.",
 vo_bip_charging_big.m4a,"Bip's battery is low, so he's recharging. Time for a break. We'll play again when he's full.","Big band (ages 7-10): upbeat but relaxed, never babyish.",
 vo_day_done_big.m4a,That's it for today. Good work. See you tomorrow!,"Big band (ages 7-10): upbeat but relaxed, never babyish.",
+vo_picnic.m4a,Bip is having a picnic! Help him put the food on the plates.,"Picnic Plates, said once as a visit starts. Bright and happy.",Picnic time!
+vo_put.m4a,Put,"Picnic Plates: ""Put… five… on each plate."" Leads on into a number, voice up.",Put
+vo_on_each_plate.m4a,on each plate.,"Picnic Plates: after ""Put… five…"". Finishes the sentence.",on each plate.
+vo_click_the_basket.m4a,Click the basket.,"Picnic Plates: after the instruction, each click of the basket deals the food. Friendly.",Click the basket.
+vo_share_plates.m4a,Share the food so every plate gets the same.,"Picnic Plates, sharing. Warm and clear.",Share the food!
+vo_how_many_each.m4a,How many on each plate?,"Picnic Plates, after sharing. Curious, inviting.",How many on each plate?
+vo_groups_of.m4a,Pack the food in groups of,"Picnic Plates, grouping: leads on into a number (""…of five.""), voice up.",Pack in groups of
+vo_how_many_groups.m4a,How many groups?,"Picnic Plates, after packing. Curious, inviting.",How many groups?
+vo_how_many_on_tray.m4a,How many on the tray?,"Picnic Plates, a tray in rows. Curious, inviting.",How many on the tray?
+vo_one_each.m4a,"Let's give one to each plate, round and round.","Picnic Plates hint for sharing, followed by numbers counting the rounds. Encouraging.","One each, round and round."
+vo_count_in_steps.m4a,Let's count in steps of,"Hint (Picnic Plates, later Number Machine and Count & Tap): leads on into a number (""…of five: five, ten, fifteen""). Encouraging.",Let's count in steps of
+vo_count_groups.m4a,Let's count the groups.,"Picnic Plates hint for grouping, followed by numbers. Encouraging.",Let's count the groups.
