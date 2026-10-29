@@ -127,6 +127,8 @@ public partial class FeedMonsterScreen : GameScreen
                 _hand.Press(Numeric(Stage.ToLocal(press.GlobalPosition)), onPiece: false);
                 _held = null;
                 PutDown(carried);
+                // Home and Bip always work, even with a food in hand (the food has just gone down).
+                if (AlwaysOnAt(press.GlobalPosition) is { } button) TapOn(button);
                 return;
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } press
                 when !InputLocked && _held == null && FoodAt(press.GlobalPosition) is { } card:
@@ -167,6 +169,11 @@ public partial class FeedMonsterScreen : GameScreen
         base._UnhandledInput(@event);
     }
 
+    /// <summary>Home or Bip under a point, if either is there (the carried food may be on top of them).</summary>
+    private Node2D? AlwaysOnAt(Vector2 global) =>
+        new[] { "home", "bip" }.Select(FindTappable)
+            .FirstOrDefault(n => n != null && Hit.IsShown(n) && Hit.GlobalArea(n) is { } area && area.HasPoint(global));
+
     /// <summary>A food put down by the mouth is eaten (right or wrong); anywhere else it goes back.</summary>
     private void PutDown(PictureCard card)
     {
@@ -190,6 +197,12 @@ public partial class FeedMonsterScreen : GameScreen
     {
         if (index < 0 || index >= _cards.Count) return;
         ClickAt(Stage.ToGlobal(_cards[index].Position));
+    }
+
+    /// <summary>Moves the pointer (button up) to the home button and clicks, through the real mouse handling (for the walk-through test).</summary>
+    public void ClickHomeForTest()
+    {
+        if (FindTappable("home") is { } home && Hit.GlobalArea(home) is { } area) ClickAt(area.GetCenter());
     }
 
     /// <summary>Moves the pointer (button up) to the monster's mouth, or far from it, and clicks (for the walk-through test).</summary>

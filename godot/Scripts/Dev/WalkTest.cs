@@ -918,8 +918,14 @@ public static class WalkTest
                 monster.ClickForTest(atMouth: true);
                 Check("the right food clicked to the mouth is eaten", await WaitFor(() => monster is { InputLocked: true }, 1));
                 Check("then the next food comes", await WaitFor(() => monster is { InputLocked: false }, 8));
+                // Home always works, even with a food in hand.
+                monster.ClickFoodForTest(monster.RightIndex);
+                Check("a clicked food is in hand", monster.Carrying);
+                monster.ClickHomeForTest();
+                await Wait(0.8);
+                await Expect<LettersIslandScreen>("home works with a food in hand, and goes back to letters island");
             }
-            if (await Tap("home")) await Expect<LettersIslandScreen>("home from Feed the Monster goes back to letters island");
+            else if (await Tap("home")) await Expect<LettersIslandScreen>("home from Feed the Monster goes back to letters island");
         }
 
         async Task PlayCoding()
