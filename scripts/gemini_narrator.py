@@ -209,6 +209,16 @@ def batch_size(style, retry):
     return 36 if style == "words" else 18
 
 
+def finish(style):
+    """
+    The last filters on every clip. Gemini's audio carries a hiss above about 8 kHz (static to the owner's
+    ear, 29 Oct 2026), which the volume raise makes louder: narration is cut above 8 kHz (a voice needs
+    little there), letter sounds only above 11 kHz so "s", "f" and "th" keep their hiss. Then a gentle limit.
+    """
+    top = 11000 if style == "phonics" else 8000
+    return f"lowpass=f={top}:poles=2,lowpass=f={top}:poles=2,highpass=f=70,alimiter=limit=0.85:attack=5:release=60:level=disabled"
+
+
 def load_state():
     if STATE.exists():
         return json.loads(STATE.read_text())
@@ -452,8 +462,8 @@ def main():
                 ffmpeg("-i", str(raw), "-ss", f"{start:.3f}", "-to", f"{end:.3f}", str(piece))
                 ffmpeg("-i", str(piece), "-af", TRIM, "-ar", "44100", "-ac", "1", str(trimmed))
                 gain = TARGET_LUFS - loudness(trimmed)
-                ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,alimiter=limit=0.9", "-ar", "44100", "-ac", "1",
-                       "-c:a", "aac", "-b:a", "96k", str(out))
+                ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,{finish(style)}", "-ar", "44100", "-ac", "1",
+                       "-c:a", "aac", "-b:a", "128k", str(out))
                 if style == "phonics":
                     # No machine check for a pure sound: it waits for the owner's ear.
                     LANGS[lang]["phonics"].mkdir(parents=True, exist_ok=True)
