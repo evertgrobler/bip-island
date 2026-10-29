@@ -207,18 +207,21 @@ public partial class GameIslandScreen : BaseScreen
 
         Node2D[] games = _island switch
         {
-            Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton()],
+            Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton(), PicnicButton()],
             Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton(), StoriesButton()],
             Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
         _leftGame = GameFor(Buttons.TapName(games[0])!);
-        var spacing = games.Length switch { > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
+        var spacing = games.Length switch { > 4 => 300.0, > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
         for (var i = 0; i < games.Length; i++)
         {
-            games[i].Position = P((i - (games.Length - 1) / 2.0) * spacing, 105);
-            games[i].ZIndex = 5;
-            Stage.AddChild(games[i]);
+            // Five games only fit the island a little smaller: a holder shrinks each, so its own
+            // scale stays free for the pulse and the press.
+            var holder = new Node2D { Position = P((i - (games.Length - 1) / 2.0) * spacing, 105), ZIndex = 5 };
+            if (games.Length > 4) holder.Scale = Vector2.One * 0.82f;
+            holder.AddChild(games[i]);
+            Stage.AddChild(holder);
             _keyNodes.Add(games[i]);
         }
         Buttons.Pulse(games[0]);
@@ -275,6 +278,21 @@ public partial class GameIslandScreen : BaseScreen
         equals.Position = P(0, 50);
         balance.AddChild(equals);
         return balance;
+    }
+
+    /// <summary>Picnic Plates: a plate with a sandwich, a biscuit and a strawberry on it.</summary>
+    private static Node2D PicnicButton()
+    {
+        var picnic = Buttons.Tappable(Group(Pen(Ellipse(Vector2.Zero, 160, 150), 846, fill: Palette.Card, lineWidth: 6)), "picnic");
+        picnic.AddChild(Pen(Ellipse(P(0, -10), 120, 90), 847, fill: Palette.White, ink: Palette.Teal, lineWidth: 5));
+        foreach (var (i, (picture, x, y)) in Indexed(("pic_sandwich", -50.0, 10.0), ("pic_biscuit", 50.0, 10.0), ("pic_strawberry", 0.0, -40.0)))
+        {
+            var food = PictureNode.Make(picture, picture[4..]);
+            food.Scale = Vector2.One * 0.42f;
+            food.Position = P(x, y);
+            picnic.AddChild(food);
+        }
+        return picnic;
     }
 
     private static Node2D SoundButtonsButton()
@@ -440,6 +458,7 @@ public partial class GameIslandScreen : BaseScreen
         "quick" => QuickLookGame.GameId,
         "blocks" => BlockTowersGame.GameId,
         "balance" => BipsBalanceGame.GameId,
+        "picnic" => PicnicPlatesGame.GameId,
         "buttons" => SoundButtonsGame.GameId,
         "builder" => WordBuilderGame.GameId,
         "rocket" => WordRocketGame.GameId,

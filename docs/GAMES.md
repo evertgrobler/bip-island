@@ -136,7 +136,7 @@ As built, the two-miss hint counts the short way instead of always showing cubes
 
 Skins: see-saw at the park, fruit scale at the market, kitchen scale.
 
-### New game: Picnic Plates
+### New game: Picnic Plates (built 29 October 2026, levels 1–5)
 
 Bip's picnic on a blanket, with a row of plates for friends (the child's own creatures sit at them once collected). Food is sandwiches, naartjies, strawberries and biscuits. Every share comes out even: no leftovers.
 
@@ -151,6 +151,8 @@ Bip's picnic on a blanket, with a row of plates for friends (the child's own cre
 | 7 | stage3 | Bigger shares, with tens | Share 48 naartjies between 4 plates, packed in bags of ten and loose ones |
 
 After 2 misses Bip deals the food out slowly, one to each plate in turn, counting as he goes. Skins: picnic blanket, school lunch boxes, fruit stall crates.
+
+As built: the food is sandwiches, biscuits, naartjies and strawberries (`numbers.json` "picnic", with at most 5 plates, 10 on a plate and 30 on the blanket), and each level's tables are its `steps` in `games.json` (2, 5 and 10 at stage 2). Making groups, sharing and grouping start with the basket: each click puts one piece on every plate (making groups and sharing, round and round) or packs one punnet (grouping); then three number cards ask the question. Level 1 shows the plates already filled (tapping each plate to count comes later), and arrays ask "how many on the tray?" only. The two-miss hint counts in steps of the table ("Let's count in steps of 5: 5, 10, 15"), the rounds of a share ("one to each plate, round and round: 1, 2, 3"), or the punnets, while each plate, row or punnet bobs; it doesn't deal the food out again. Levels 6 and 7 (turn the tray, bigger shares with tens) are still to come.
 
 ### New game: Number Machine
 
@@ -353,7 +355,7 @@ The plug-in template and Bip's planner come first, so every later game is quick 
 | 2b. Second wave | Number Train, More or Less, Missing Letter, Rhyme Time, Pattern Party, Fix-It | Skins (3 per game), golden rounds |
 | 3. Polish | Letter Fishing, Sound Detective, Ten-Frame Garden, Tricky Word Memory, Silly Sentences, Repeat Robot, Bip's Dance Party | Island grows, creature collection, decorations |
 | 4. Older children | Corner Shop, Word Rocket (built 4 Oct 2026, for ages 4–8, all three skins), Puddle Rules | Special days |
-| Maths plan (planned 10 Oct; Bip's Balance first) | Bip's Balance, Picnic Plates, Number Machine, plus new levels for Number Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers (order in the maths plan above) | Story sums |
+| Maths plan (planned 10 Oct; Bip's Balance and Picnic Plates built) | Bip's Balance, Picnic Plates, Number Machine, plus new levels for Number Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers (order in the maths plan above) | Story sums |
 | Ongoing | A new game, skin or word list with each update | “New!” flag on the map |
 
 ## Decisions

@@ -464,6 +464,32 @@ public static class WalkTest
                 Check("the right card first time earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6), $"stars {stars} → {game.Progress.Stars}");
             }
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Balance goes back to numbers island");
+
+            // Picnic Plates: plates of food, a wrong card then the right one; then sharing, dealt with the basket.
+            if (await Tap("picnic")) await Expect<PicnicPlatesScreen>("Picnic Plates opens from the island");
+            Check("Picnic Plates shows plates and three cards", await WaitFor(() => Screen() is PicnicPlatesScreen { RightIndex: >= 0, InputLocked: false }, 3));
+            if (Screen() is PicnicPlatesScreen picnic && picnic.Round is { } plates)
+            {
+                await Tap($"choice:{(picnic.RightIndex + 1) % 3}");
+                Check("a wrong card stays on the same plates", picnic.Round == plates && !picnic.InputLocked);
+                await Tap($"choice:{picnic.RightIndex}");
+                Check("the right card counts for equal groups", await WaitFor(() => game.Progress.Skill("equal_groups").TotalAttempts > 0, 6));
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Picnic Plates goes back to numbers island");
+            game.Progress.GameLevels[PicnicPlatesGame.GameId] = new SkillMastery(3);
+            if (await Tap("picnic")) await Expect<PicnicPlatesScreen>("Picnic Plates opens again, at sharing");
+            Check("sharing starts with the basket, no cards yet",
+                  await WaitFor(() => Screen() is PicnicPlatesScreen { DealsLeft: > 0, RightIndex: -1, InputLocked: false }, 3));
+            if (Screen() is PicnicPlatesScreen share && share.Round is { Mode: PicnicPlatesGame.Mode.Sharing } shareRound)
+            {
+                for (var i = 0; i < shareRound.Deals; i++) await Tap("basket");
+                Check("each click of the basket deals a round; then the cards come", await WaitFor(() => share is { DealsLeft: 0, RightIndex: >= 0 }, 3),
+                      $"{share.DealsLeft} deals left");
+                await Tap($"choice:{share.RightIndex}");
+                Check("the right share counts for sharing", await WaitFor(() => game.Progress.Skill("share_group").TotalAttempts > 0, 6));
+            }
+            else Check("Picnic Plates level 4 is sharing", false, Screen() is PicnicPlatesScreen other ? $"{other.Round?.Mode}" : "no screen");
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Picnic Plates (sharing) goes back to numbers island");
             if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
         }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.
