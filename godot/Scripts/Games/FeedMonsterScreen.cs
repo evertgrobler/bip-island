@@ -10,9 +10,10 @@ using static BipIsland.Drawing.Up;
 namespace BipIsland.Games;
 
 /// <summary>
-/// Feed the Monster: drag (or click, on a trackpad) only the foods that start with the sound into a hungry monster. The food
-/// never repeats in a visit. Wrong → soft boop, the food goes back and the sound is said again; two
-/// misses → spoken hint and the right food wiggles. From the keyboard, Enter feeds the glowing food.
+/// Feed the Monster: drag only the foods that start with the sound into a hungry monster (on a trackpad, click a
+/// food to pick it up and click again by the mouth). The food never repeats in a visit. Wrong → soft boop, the
+/// food goes back and the sound is said again; two misses → spoken hint and the right food wiggles. From the
+/// keyboard, Enter feeds the glowing food.
 /// </summary>
 public partial class FeedMonsterScreen : GameScreen
 {
@@ -28,9 +29,10 @@ public partial class FeedMonsterScreen : GameScreen
     private QuestionAttempt _attempt = new();
     private readonly List<PictureCard> _cards = [];
     private readonly List<Vector2> _homes = [];
-    private PictureCard? _dragged;
-    private Vector2 _dragOffset;
-    private Vector2 _pressPoint;
+    /// <summary>Drag a food, or click it and click again to put it down (a trackpad): the rule is BipCore's.</summary>
+    private readonly CarryHand _hand = new();
+    private PictureCard? _held;
+    private Vector2 _heldOffset;
 
     public FeedMonsterScreen(FeedMonsterGame game, PhonicsSound focus)
     {
@@ -84,7 +86,8 @@ public partial class FeedMonsterScreen : GameScreen
         foreach (var card in _cards) card.QueueFree();
         _cards.Clear();
         _homes.Clear();
-        _dragged = null;
+        _held = null;
+        _hand.Cancel();
         _attempt = new QuestionAttempt();
         ResetKeys();
         _round = next;
@@ -111,55 +114,104 @@ public partial class FeedMonsterScreen : GameScreen
         Bip.Hop();
     }
 
-    // Dragging
+    // Moving food: drag it to the mouth, or click it to pick it up and click again by the mouth.
 
     public override void _UnhandledInput(InputEvent @event)
     {
         switch (@event)
         {
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } press
-                when !InputLocked && _dragged == null && FoodAt(press.GlobalPosition) is { } card:
+            // A carried food goes down at the next click, wherever it is: by the mouth it is eaten,
+            // anywhere else it goes back, with no miss.
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } press when _hand.Mode == CarryMode.Carrying && _held is { } carried:
                 GetViewport().SetInputAsHandled();
-                _dragged = card;
-                _pressPoint = Stage.ToLocal(press.GlobalPosition);
-                _dragOffset = card.Position - _pressPoint;
+                _hand.Press(Numeric(Stage.ToLocal(press.GlobalPosition)), onPiece: false);
+                _held = null;
+                PutDown(carried);
+                return;
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } press
+                when !InputLocked && _held == null && FoodAt(press.GlobalPosition) is { } card:
+                GetViewport().SetInputAsHandled();
+                var at = Stage.ToLocal(press.GlobalPosition);
+                _hand.Press(Numeric(at), onPiece: true);
+                _held = card;
+                _heldOffset = card.Position - at;
                 card.ZIndex = 20;
                 if (card == HintedNode) StopHint();
                 return;
-            // The button was let go where we couldn't see it (outside the window, or behind the
-            // parent gate): the food goes back.
-            case InputEventMouseMotion motion when _dragged is { } held && !motion.ButtonMask.HasFlag(MouseButtonMask.Left):
+            case InputEventMouseMotion motion when _held is { } moving:
                 GetViewport().SetInputAsHandled();
-                _dragged = null;
-                SendHome(held);
+                var point = Stage.ToLocal(motion.GlobalPosition);
+                switch (_hand.Move(Numeric(point), motion.ButtonMask.HasFlag(MouseButtonMask.Left)))
+                {
+                    case CarryMove.Follow:
+                        if (!InputLocked) moving.Position = point + _heldOffset;
+                        break;
+                    // The button was let go where we couldn't see it (outside the window, or behind the
+                    // parent gate) after a drag: the food goes back.
+                    case CarryMove.LostDrop:
+                        _held = null;
+                        SendHome(moving);
+                        break;
+                }
                 return;
-            case InputEventMouseMotion motion when _dragged != null:
+            // A drag ends where it is let go; a click picks the food up and it follows the pointer.
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } release when _held is { } dropped:
                 GetViewport().SetInputAsHandled();
-                if (!InputLocked) _dragged.Position = Stage.ToLocal(motion.GlobalPosition) + _dragOffset;
-                return;
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } release when _dragged is { } dropped:
-                GetViewport().SetInputAsHandled();
-                _dragged = null;
-                // A click (press and release without moving much, as on a trackpad, where holding the
-                // button down is hard for small hands) feeds the food, the same as a drag to the mouth.
-                var click = Stage.ToLocal(release.GlobalPosition).DistanceTo(_pressPoint) <= TracePen.TapSlop;
-                if (!InputLocked && (click || dropped.Position.DistanceTo(MonsterMouth) < EatDistance)) Feed(_cards.IndexOf(dropped));
-                else SendHome(dropped);
+                if (_hand.Release(Numeric(Stage.ToLocal(release.GlobalPosition))) == CarryAction.Drop)
+                {
+                    _held = null;
+                    PutDown(dropped);
+                }
                 return;
         }
         base._UnhandledInput(@event);
     }
 
+    /// <summary>A food put down by the mouth is eaten (right or wrong); anywhere else it goes back.</summary>
+    private void PutDown(PictureCard card)
+    {
+        if (!InputLocked && card.Position.DistanceTo(MonsterMouth) < EatDistance) Feed(_cards.IndexOf(card));
+        else SendHome(card);
+    }
+
+    private static System.Numerics.Vector2 Numeric(Vector2 point) => new(point.X, point.Y);
+
     private PictureCard? FoodAt(Vector2 global) =>
         _cards.LastOrDefault(c => Hit.IsShown(c) && Hit.GlobalArea(c) is { } area && area.HasPoint(global));
+
+    /// <summary>True while a clicked food follows the pointer (for the walk-through test).</summary>
+    public bool Carrying => _hand.Mode == CarryMode.Carrying;
+
+    /// <summary>Wrong answers on this question so far (for the walk-through test).</summary>
+    public int Misses => _attempt.Misses;
 
     /// <summary>Clicks a food through the real mouse handling, as on a trackpad (for the walk-through test).</summary>
     public void ClickFoodForTest(int index)
     {
         if (index < 0 || index >= _cards.Count) return;
-        var at = Stage.ToGlobal(_cards[index].Position);
+        ClickAt(Stage.ToGlobal(_cards[index].Position));
+    }
+
+    /// <summary>Moves the pointer (button up) to the monster's mouth, or far from it, and clicks (for the walk-through test).</summary>
+    public void ClickForTest(bool atMouth) => ClickAt(Stage.ToGlobal(atMouth ? MonsterMouth : P(-200, -330)));
+
+    private void ClickAt(Vector2 at)
+    {
+        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = at, Position = at });
         _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, GlobalPosition = at, Position = at });
         _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = at, Position = at });
+    }
+
+    /// <summary>Picks a food up, carries it away and puts it back on its spot (for the walk-through test).</summary>
+    public void DragAwayAndBackForTest(int index)
+    {
+        if (index < 0 || index >= _cards.Count) return;
+        var from = Stage.ToGlobal(_cards[index].Position);
+        var away = from + new Vector2(200, 0);
+        _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, GlobalPosition = from, Position = from });
+        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = away, Position = away, ButtonMask = MouseButtonMask.Left });
+        _UnhandledInput(new InputEventMouseMotion { GlobalPosition = from, Position = from, ButtonMask = MouseButtonMask.Left });
+        _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, GlobalPosition = from, Position = from });
     }
 
     /// <summary>Drags a food to the monster through the real mouse handling (for the walk-through test).</summary>
@@ -225,7 +277,7 @@ public partial class FeedMonsterScreen : GameScreen
             SayPrompt();
             return;
         }
-        // Mouse presses on food belong to dragging (a click there feeds it too); this is the keyboard's
+        // Mouse presses on food belong to the hand (drag, or click to pick up); this is the keyboard's
         // Enter on the glowing food.
         if (name.StartsWith("food:") && int.TryParse(name["food:".Length..], out var index)) Feed(index);
     }
