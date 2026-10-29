@@ -206,8 +206,8 @@ public partial class NumberMachineScreen : GameScreen
     private void ShowGroups(NumberMachineGame.Round round)
     {
         if (_window == null || _groups.Count > 0) return;
-        var size = Math.Min(28, (WindowHeight - 10) / round.Rule);
-        var spacing = Math.Min(size + 16, WindowWidth / round.In);
+        var size = Math.Min(Math.Min(46, (WindowHeight - 14) / round.Rule), WindowWidth / round.In - 8);
+        var spacing = Math.Min(size + 18, WindowWidth / round.In);
         for (var i = 0; i < round.In; i++)
         {
             var tower = BlockDrawing.Tower(round.Rule, i % 2 == 0 ? _colour : BlockDrawing.Lighter(_colour), size, Seed(100 + i));

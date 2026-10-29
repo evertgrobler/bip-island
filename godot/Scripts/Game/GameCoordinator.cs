@@ -768,6 +768,9 @@ public partial class GameCoordinator : Node
         return _newStickers;
     }
 
+    /// <summary>Picture stickers won but not shown yet (for the walk-through test).</summary>
+    public int StickersWaiting => PendingStickers().Count;
+
     /// <summary>The picture stickers won since the last were shown; they count as shown from now on.</summary>
     public List<string> TakeNewStickers()
     {

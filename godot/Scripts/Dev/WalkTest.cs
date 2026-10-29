@@ -159,11 +159,15 @@ public static class WalkTest
         var mysteryStickersBefore = game.Progress.PictureStickers.Count;
         var mysteryMakesTen = (starsBefore + BipCore.ChildProgress.MysteryBonusStars) / BipCore.ChildProgress.StarsPerSticker
                               > game.Progress.StarStickersGiven;
+        // A sticker won just before Home waits, and pops out of the box too (it's already in the book).
+        var stickerWaiting = game.StickersWaiting > 0;
         if (mysteryShown && await Tap("mystery"))
         {
             await Wait(1.0);
-            Check(mysteryMakesTen ? "the mystery box's stars make up 10, and the sticker pops out" : "the mystery box's stars don't make up 10: no sticker",
-                  mysteryMakesTen == (Screen()?.FindChild("NewSticker", true, false) != null)
+            Check(mysteryMakesTen ? "the mystery box's stars make up 10, and the sticker pops out"
+                  : stickerWaiting ? "the mystery box's stars don't make up 10, but the sticker that was waiting pops out"
+                  : "the mystery box's stars don't make up 10: no sticker",
+                  (mysteryMakesTen || stickerWaiting) == (Screen()?.FindChild("NewSticker", true, false) != null)
                   && game.Progress.PictureStickers.Count == mysteryStickersBefore + (mysteryMakesTen ? 1 : 0),
                   $"stars {starsBefore} + {BipCore.ChildProgress.MysteryBonusStars}, stickers {mysteryStickersBefore} → {game.Progress.PictureStickers.Count}");
             await Wait(2.5);

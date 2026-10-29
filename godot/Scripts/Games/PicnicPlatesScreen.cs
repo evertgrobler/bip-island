@@ -22,8 +22,8 @@ namespace BipIsland.Games;
 public partial class PicnicPlatesScreen : GameScreen
 {
     private static readonly Vector2[] ChoiceAt = [P(-350, -330), P(0, -330), P(350, -330)];
-    private static readonly Vector2 BasketAt = P(-560, 110);
-    private const float FoodOnPlate = 0.2f;
+    private static readonly Vector2 BasketAt = P(-555, 110);
+    private const float FoodOnPlate = 0.26f;
     private const double PlateY = 120;
 
     private readonly PicnicPlatesGame _game;
@@ -164,25 +164,42 @@ public partial class PicnicPlatesScreen : GameScreen
     /// <summary>Where the plates go: across the blanket, or right of the basket when there is one.</summary>
     private static List<Vector2> PlateSpots(int count, bool withBasket)
     {
-        var (left, right) = withBasket ? (-330.0, 600.0) : (-560.0, 560.0);
+        var (left, right) = withBasket ? (-330.0, 560.0) : (-520.0, 520.0);
         var spacing = Math.Min(260, (right - left) / Math.Max(1, count - 1));
         var middle = (left + right) / 2;
         return Enumerable.Range(0, count).Select(i => P(middle + (i - (count - 1) / 2.0) * spacing, PlateY)).ToList();
     }
 
-    /// <summary>Where the n-th piece of food sits on a plate (or in a punnet): two rows of five.</summary>
-    private static Vector2 OnPlate(int n, double spread = 36) => P((n % 5 - 2) * spread, n < 5 ? 22 : -22);
+    /// <summary>How big the plates are drawn: full size when they fit, smaller when five share the blanket with the basket.</summary>
+    private static float PlateScale(int count, bool withBasket)
+    {
+        var (left, right) = withBasket ? (-330.0, 560.0) : (-520.0, 520.0);
+        var spacing = count > 1 ? (right - left) / (count - 1) : 260;
+        return (float)Math.Min(1.0, spacing / 236);
+    }
+
+    /// <summary>
+    /// Where the n-th of <paramref name="count"/> pieces of food sits on a plate (or in a punnet): one row
+    /// up to five, centred, then two rows of five.
+    /// </summary>
+    private static Vector2 OnPlate(int n, int count, double spread = 40)
+    {
+        var row = n / 5;
+        var rowCount = count <= 5 ? count : row == 0 ? 5 : count - 5;
+        var x = (n % 5 - (rowCount - 1) / 2.0) * spread;
+        return P(x, count <= 5 ? 0 : row == 0 ? 24 : -24);
+    }
 
     private void DrawPlates(PicnicPlatesGame.Round round, bool filled, bool withBasket)
     {
         var spots = PlateSpots(round.Groups, withBasket);
         for (var i = 0; i < round.Groups; i++)
         {
-            var plate = Add(new Node2D { Name = $"Plate{i}" }, spots[i], 2);
+            var plate = Add(new Node2D { Name = $"Plate{i}", Scale = Vector2.One * PlateScale(round.Groups, withBasket) }, spots[i], 2);
             plate.AddChild(Pen(Ellipse(Vector2.Zero, 108, 84), Seed(i), fill: Palette.White, ink: Palette.Teal, lineWidth: 6));
             plate.AddChild(Pen(Ellipse(Vector2.Zero, 80, 60), Seed(10 + i), ink: Palette.LightTeal, lineWidth: 3));
             if (filled)
-                for (var n = 0; n < round.Each; n++) Add(Food(round.Food, FoodOnPlate), OnPlate(n), 1, plate);
+                for (var n = 0; n < round.Each; n++) Add(Food(round.Food, FoodOnPlate), OnPlate(n, round.Each), 1, plate);
             _scene.Add(plate);
             _groups.Add(plate);
         }
@@ -271,8 +288,8 @@ public partial class PicnicPlatesScreen : GameScreen
                 food.GetParent().RemoveChild(food);
                 punnet.AddChild(food);
                 food.GlobalPosition = at;
-                food.CreateTween().TweenProperty(food, "position", OnPlate(n, 30), 0.3).SetDelay(n * 0.03);
-                food.CreateTween().TweenProperty(food, "scale", Vector2.One * 0.17f, 0.3);
+                food.CreateTween().TweenProperty(food, "position", OnPlate(n, round.Each, 30), 0.3).SetDelay(n * 0.03);
+                food.CreateTween().TweenProperty(food, "scale", Vector2.One * 0.22f, 0.3);
             }
         }
         else
@@ -281,7 +298,7 @@ public partial class PicnicPlatesScreen : GameScreen
             {
                 var plate = _groups[i];
                 var food = Add(Food(round.Food, 0.3f), plate.ToLocal(_basket.GlobalPosition), 1, plate);
-                food.CreateTween().TweenProperty(food, "position", OnPlate(deal), 0.3).SetDelay(i * 0.06);
+                food.CreateTween().TweenProperty(food, "position", OnPlate(deal, round.Each), 0.3).SetDelay(i * 0.06);
                 food.CreateTween().TweenProperty(food, "scale", Vector2.One * FoodOnPlate, 0.3).SetDelay(i * 0.06);
             }
         }
