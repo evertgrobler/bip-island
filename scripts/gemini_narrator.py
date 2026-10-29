@@ -35,6 +35,9 @@ MODEL = "gemini-3.8-flash-tts"
 VOICE = "Aoede"
 STATE = ROOT / "voice-lab" / "aoede.json"
 MAX_REQUESTS = int(os.environ.get("MAX_REQUESTS") or 40)
+# No new batch starts after this many minutes, so the run always ends (and commits) inside the
+# workflow's 180-minute limit.
+MAX_MINUTES = 150
 # Trim the ends of each piece: Gemini's quiet has a soft noise floor, so -40 dB counts as silence.
 TRIM = ("silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.05,areverse,"
         "silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.08,areverse")
@@ -97,11 +100,12 @@ LANGS = {
 AF_NUMBERS = ("nul een twee drie vier vyf ses sewe agt nege tien elf twaalf dertien veertien vyftien sestien "
               "sewentien agtien negentien twintig").split()
 AF_CLOSE = 0.75  # how close (0 to 1) what Whisper heard must be to an Afrikaans line
-# English: a heard word counts as the expected one when it is this close (0 to 1): spellings Whisper writes
-# its own way ("practices" for "practises"), but never another word ("bull" for "ball").
-EN_WORD_CLOSE = 0.85
-# ...and a name (Sipho, Thandi, Dlamini), which Whisper often spells as it hears it ("Sipo", "Tandi").
+# English: a person's name (Sipho, Thandi, Dlamini) counts when it is this close (0 to 1), as Whisper often
+# spells it as it hears it ("Sipo", "Tandi"). Every other word must match, apart from SPELLINGS.
 EN_NAME_CLOSE = 0.5
+# How far before or after a line's first or last heard word its piece is cut when the line next to it
+# wasn't found in the batch (so the piece never takes in that line's audio).
+EDGE = 0.4
 
 
 def split(key):
@@ -147,7 +151,7 @@ HOLD = ROOT / "voice-lab" / "aoede-hold.txt"
 
 
 def group(key):
-    """Which style a clip is spoken in, or None if it isn't recorded here."""
+    """Which style a clip is spoken in (every clip in texts() has one)."""
     clip = split(key)[1]
     if clip.startswith("snd_"):
         return "phonics"
@@ -397,10 +401,10 @@ def letters(text):
 
 def same_english(heard, text, names_=None):
     """
-    Whether Whisper heard the English line: the same words in the same order, where a name may differ as
-    Whisper spells it (EN_NAME_CLOSE) and a longer word only in spelling (EN_WORD_CLOSE, "practices" for
-    "practises"; never a short word, and never an added or dropped s). Nothing missing or extra, though
-    spaces may differ ("all together" for "altogether", "takeaway" for "take away").
+    Whether Whisper heard the English line: the same words in the same order, where a person's name of 4
+    letters or more may differ as Whisper spells it (EN_NAME_CLOSE) and any other word only by one of
+    Whisper's American spellings (SPELLINGS: "practices" for "practises", "color" for "colour"). Nothing
+    missing or extra, though spaces may differ when the letters match ("all together" for "altogether").
     """
     got, want = words(heard), words(text)
     if "".join(got) == "".join(want):
@@ -475,7 +479,8 @@ class Listener:
         """
         Where each line is in a batch recording: Whisper hears the batch with word timings, the heard
         words are lined up with the expected ones, and each line runs from halfway through the gap
-        before it to halfway through the gap after it. [(start, end) or None per line]; a line whose
+        before it to halfway through the gap after it (or EDGE seconds past its own words, when the line
+        next to it wasn't found). [(start, end) or None per line]; a line whose
         words weren't heard is None (it goes back in the queue). Afrikaans words Whisper heard nearly
         right count as the word they are closest to.
         """
@@ -504,21 +509,23 @@ class Listener:
             if i not in first:
                 spans.append(None)
                 continue
-            before = max((last[j] for j in range(i) if j in last), default=0.0)
-            after = min((first[j] for j in range(i + 1, len(lines)) if j in first), default=total)
-            spans.append(((before + first[i]) / 2 if before else 0.0, (last[i] + after) / 2 if after < total else total))
+            before = [last[j] for j in range(i) if j in last]
+            after = [first[j] for j in range(i + 1, len(lines)) if j in first]
+            # The line next to it wasn't heard: stop EDGE short of it rather than take its audio in.
+            start = (before[-1] + first[i]) / 2 if before else 0.0 if i == 0 else max(0.0, first[i] - EDGE)
+            end = (last[i] + after[0]) / 2 if after else total if i == len(lines) - 1 else min(total, last[i] + EDGE)
+            spans.append((start, end))
         return spans
 
     def ok(self, key, path, text):
-        lang, clip = split(key)
         """(whether Whisper heard the line, what it heard)."""
-        lang, clip = split(key)
+        lang = split(key)[0]
         heard = self.heard(path, lang, text)
         return (same_english(heard, text) if lang == "en" else same_afrikaans(heard, text)), heard
 
 
 def status(state, all_texts):
-    wanted = {c: t for c, t in all_texts.items() if group(c)}
+    wanted = all_texts
     done = sum(1 for c, t in wanted.items() if state["done"].get(c) == t)
     stuck = [c for c in state["failed"] if c in all_texts and fails(state, c, all_texts[c]) >= GIVE_UP]
     hold = held()
@@ -543,7 +550,7 @@ def main():
         sys.exit("No GEMINI_API_KEY secret.")
 
     hold = held()
-    todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if group(c) and state["done"].get(c) != all_texts[c]
+    todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if state["done"].get(c) != all_texts[c]
             and fails(state, c, all_texts[c]) < GIVE_UP and not is_held(c, hold)]
     # Fresh clips first in big batches, most-heard first, then retries in small ones; English and
     # Afrikaans take turns, except that step 0 (the stories) goes before any turn-taking. Each batch is
@@ -566,11 +573,15 @@ def main():
     listener = Listener()
     requests = errors = 0
     setup_error = False
+    started = time.monotonic()
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         for lang, style, clips in batches:
             if requests >= MAX_REQUESTS:
                 print(f"Stopping after {requests} requests (MAX_REQUESTS).", flush=True)
+                break
+            if time.monotonic() - started > MAX_MINUTES * 60:
+                print(f"Stopping after {MAX_MINUTES} minutes, so the clips are committed in time.", flush=True)
                 break
             if style == "phonics":
                 known = sounds(lang)

@@ -34,16 +34,22 @@ jobs:
       - name: Install ffmpeg and Whisper (CPU)
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
-          pip install faster-whisper
+          pip install faster-whisper==1.2.1
+      # Whisper's models (small.en and small, about 1 GB) are kept between runs.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: whisper-small-faster-whisper-1.2.1
       - name: Record a day's batches
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python3 scripts/validate_content.py > /dev/null
           MAX_REQUESTS=$(head -1 voice-lab/aoede-run.txt | tr -dc 0-9) python3 scripts/gemini_narrator.py
-      # Even when recording stopped with an error: the clips already checked are kept.
+      # Even when recording stopped with an error or the job ran out of time: the clips already checked
+      # are kept. (The recorder stops starting batches after 150 minutes, well inside the limit.)
       - name: Commit the clips
-        if: ${{ !cancelled() }}
+        if: ${{ always() }}
         run: |
           git config user.name "aoede-narrator"
           git config user.email "aoede-narrator@users.noreply.github.com"
