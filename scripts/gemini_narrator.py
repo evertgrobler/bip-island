@@ -218,7 +218,7 @@ def finish(style):
     ear, 29 Oct 2026), which the volume raise makes louder: narration is cut above 8 kHz (a voice needs
     little there), letter sounds only above 11 kHz so "s", "f" and "th" keep their hiss. Then a gentle limit.
     """
-    top = 11000 if style == "phonics" else 8000
+    top = 11000 if style in ("phonics", "words", "names") else 8000
     return f"lowpass=f={top}:poles=2,lowpass=f={top}:poles=2,highpass=f=70,alimiter=limit=0.85:attack=5:release=60:level=disabled"
 
 
@@ -253,7 +253,14 @@ class DailyLimit(Exception):
 
 
 class BatchFailed(Exception):
-    """Gemini couldn't make this batch (a server error, a timeout, a reply with no audio): try the next one."""
+    """
+    Gemini couldn't make this batch: try the next one. <lines_fault> is True when the reply itself was the
+    problem (a 4xx, a reply with no audio), so the clips count a failed take and move on to small retry
+    batches, then GIVE_UP; a network error or a 5xx is no one's fault and counts nothing.
+    """
+    def __init__(self, message, lines_fault=False):
+        super().__init__(message)
+        self.lines_fault = lines_fault
 
 
 def sounds(lang):
@@ -292,13 +299,15 @@ def speak(key, lang, style, lines, hints=()):
         except urllib.error.HTTPError as e:
             text = e.read().decode("utf-8", "replace")
             if e.code != 429:
-                raise BatchFailed(f"Gemini said {e.code}: {text[:300]!r}")
+                raise BatchFailed(f"Gemini said {e.code}: {text[:300]!r}", lines_fault=e.code < 500)
             # The free tier has a per-minute limit as well as the daily one: wait out a per-minute 429.
             wait = re.search(r'"retryDelay":\s*"(\d+)(?:\.\d+)?s"', text)
             if "PerDay" in text or attempt == 3 or not ("PerMinute" in text or wait):
                 raise DailyLimit(text[:300])
             time.sleep(min(int(wait.group(1)) if wait else 30, 90) + 2)
-        except (urllib.error.URLError, TimeoutError, OSError, KeyError, IndexError, ValueError) as e:
+        except (KeyError, IndexError, ValueError) as e:
+            raise BatchFailed(f"no audio in the reply ({type(e).__name__}: {e})", lines_fault=True)
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
             raise BatchFailed(f"{type(e).__name__}: {e}")
     raise DailyLimit("still limited after waiting")
 
@@ -323,8 +332,9 @@ def duration(wav):
 
 
 def names(text):
-    """The capitalised words of a line (names such as Sipho or Dlamini), as Whisper hotwords; None if there are none."""
-    found = list(dict.fromkeys(re.findall(r"\b[A-Z][a-z']+\b", text)))
+    """The people's names in a line (Sipho, Dlamini; KNOWN_NAMES), as Whisper hotwords; None if there are none.
+    Only names, never a line's other words, so the check isn't nudged towards hearing what it expects."""
+    found = [w for w in dict.fromkeys(re.findall(r"\b[A-Z][a-z']+\b", text)) if w.lower() in KNOWN_NAMES]
     return " ".join(found) or None
 
 
@@ -352,6 +362,25 @@ def known_names(all_texts):
     return found - lower - {"i", "english", "afrikaans"}
 
 
+# How Whisper (which spells the American way) may write a South African word: practices for practises,
+# realize for realise, color for colour, center for centre, gray for grey. Nothing else counts as a spelling.
+SPELLINGS = [(r"^practic", "practis"), (r"^licenc", "licens"), (r"iz(e|ed|es|ing|ation|ations)$", r"is\1"),
+             (r"yz(e|ed|es|ing)$", r"ys\1"), (r"(?<=[a-z]{3})(?<!o)or(s|ed|ing|ful|ite|ites)?$", r"our\1"), (r"ter(s)?$", r"tre\1"),
+             (r"^gray", "grey")]
+
+
+def spelling(word):
+    """A word with Whisper's American spellings made South African, so only spelling differences match."""
+    for pattern, sa in SPELLINGS:
+        word = re.sub(pattern, sa, word)
+    return word
+
+
+def letters(text):
+    """The letters of joined words with doubled letters made single: "all together" and "altogether" match."""
+    return re.sub(r"(.)\1+", r"\1", text)
+
+
 def same_english(heard, text, names_=None):
     """
     Whether Whisper heard the English line: the same words in the same order, where a name may differ as
@@ -370,16 +399,14 @@ def same_english(heard, text, names_=None):
             return False
         if a2 - a1 != b2 - b1:
             # Split or joined differently ("all together" for "altogether"): the letters must match closely.
-            joined_w, joined_g = "".join(want[a1:a2]), "".join(got[b1:b2])
-            if len(joined_w) < 8 or difflib.SequenceMatcher(a=joined_w, b=joined_g, autojunk=False).ratio() < 0.9:
+            if letters("".join(want[a1:a2])) != letters("".join(got[b1:b2])):
                 return False
             continue
         for w, g in zip(want[a1:a2], got[b1:b2]):
-            ratio = difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio()
             if w in people and len(w) >= 4:
-                if ratio < EN_NAME_CLOSE:
+                if difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio() < EN_NAME_CLOSE:
                     return False
-            elif len(w) < 5 or len(g) < 5 or w + "s" == g or g + "s" == w or ratio < EN_WORD_CLOSE:
+            elif spelling(w) != spelling(g):
                 return False
     return True
 
@@ -470,13 +497,10 @@ class Listener:
 
     def ok(self, key, path, text):
         lang, clip = split(key)
-        if clip.startswith("name_"):
-            # Letter names ("ay", "bee"): Whisper writes them as letters, so only check one short sound came out.
-            return 0.2 < duration(path) < 1.6
+        """(whether Whisper heard the line, what it heard)."""
+        lang, clip = split(key)
         heard = self.heard(path, lang, text)
-        if lang == "en":
-            return same_english(heard, text)
-        return same_afrikaans(heard, text)
+        return (same_english(heard, text) if lang == "en" else same_afrikaans(heard, text)), heard
 
 
 def status(state, all_texts):
@@ -543,7 +567,13 @@ def main():
                 print(f"Gemini's daily limit is used up ({e}); the next run carries on.", flush=True)
                 break
             except BatchFailed as e:
-                # Not the clips' fault: no failed takes counted. Three in a row and the run stops for today.
+                # A reply that was the lines' fault counts a failed take for each, so they move to small
+                # retry batches and then GIVE_UP; a network or server error counts nothing. Three in a row
+                # and the run stops for today.
+                if e.lines_fault:
+                    for clip in clips:
+                        failed_take(state, clip, all_texts[clip])
+                    save_state(state)
                 requests += 1
                 errors += 1
                 print(f"Request {requests} failed ({e}); {'stopping' if errors >= 3 else 'going on'}.", flush=True)
@@ -573,20 +603,20 @@ def main():
                 gain = TARGET_LUFS - loudness(trimmed)
                 ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,{finish(style)}", "-ar", "44100", "-ac", "1",
                        "-c:a", "aac", "-b:a", "128k", str(out))
-                if style == "phonics":
-                    # No machine check for a pure sound: it waits for the owner's ear.
+                if style in ("phonics", "names"):
+                    # No machine check for a pure sound or a letter name: it waits for the owner's ear.
                     LANGS[lang]["phonics"].mkdir(parents=True, exist_ok=True)
                     out.replace(LANGS[lang]["phonics"] / f"{name}.m4a")
                     took(state, clip, all_texts[clip])
                     good += 1
-                elif listener.ok(clip, out, all_texts[clip]):
+                elif (check := listener.ok(clip, out, all_texts[clip]))[0]:
                     LANGS[lang]["audio"].mkdir(parents=True, exist_ok=True)
                     out.replace(LANGS[lang]["audio"] / f"{name}.m4a")
                     took(state, clip, all_texts[clip])
                     good += 1
                 else:
                     failed_take(state, clip, all_texts[clip])
-                    print(f"  {clip}: heard {listener.heard(out, lang, all_texts[clip])!r}, wanted {all_texts[clip]!r}", flush=True)
+                    print(f"  {clip}: heard {check[1]!r}, wanted {all_texts[clip]!r}", flush=True)
             save_state(state)
             print(f"Request {requests}: {good} of {len(clips)} {lang} {style} clips kept.", flush=True)
     total, done, stuck, waiting = status(state, all_texts)

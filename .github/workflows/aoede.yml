@@ -50,4 +50,11 @@ jobs:
           mkdir -p voice-lab/aoede_phonics
           git add Resources/Audio voice-lab/aoede.json voice-lab/aoede_phonics
           git commit -m "Narrator clips from Gemini Aoede, checked by Whisper [skip ci]" || exit 0
-          git pull --rebase origin "${GITHUB_REF_NAME}" && git push
+          # If someone pushed to the branch meanwhile and the rebase can't be done, the clips go to a side
+          # branch instead of being lost (merge it by hand).
+          if ! { git pull --rebase origin "${GITHUB_REF_NAME}" && git push; }; then
+            git rebase --abort 2>/dev/null || true
+            git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-rescue-${GITHUB_RUN_ID}"
+            echo "::error::The clips are on ${GITHUB_REF_NAME}-rescue-${GITHUB_RUN_ID}: merge them into ${GITHUB_REF_NAME} by hand."
+            exit 1
+          fi
