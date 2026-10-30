@@ -202,16 +202,25 @@ public partial class NumberMachineScreen : GameScreen
         spin.TweenProperty(_handle, "rotation", _handle.Rotation + Mathf.Tau, 0.7).SetDelay(0.5);
     }
 
-    /// <summary>The groups in the window: In towers of Rule cubes (6 × 2: six towers of two).</summary>
+    /// <summary>
+    /// The groups in the window: In towers of Rule cubes (6 × 2: six towers of two), or In rows of Rule
+    /// cubes when rows give bigger cubes (2 × 10: two rows of ten), so the cubes are always big enough to count.
+    /// </summary>
     private void ShowGroups(NumberMachineGame.Round round)
     {
         if (_window == null || _groups.Count > 0) return;
-        var size = Math.Min(Math.Min(46, (WindowHeight - 14) / round.Rule), WindowWidth / round.In - 8);
-        var spacing = Math.Min(size + 18, WindowWidth / round.In);
+        var towerSize = Math.Min(Math.Min(46, (WindowHeight - 14) / round.Rule), WindowWidth / round.In - 8);
+        var rowSize = Math.Min(Math.Min(46, (WindowWidth - 14) / round.Rule), WindowHeight / round.In - 6);
+        var rows = rowSize > towerSize;
+        var size = rows ? rowSize : towerSize;
+        var spacing = rows ? Math.Min(size + 12, WindowHeight / round.In) : Math.Min(size + 18, WindowWidth / round.In);
         for (var i = 0; i < round.In; i++)
         {
             var tower = BlockDrawing.Tower(round.Rule, i % 2 == 0 ? _colour : BlockDrawing.Lighter(_colour), size, Seed(100 + i));
-            Add(tower, P((i - (round.In - 1) / 2.0) * spacing, -WindowHeight / 2 + 4), 1, _window);
+            // A row is a tower turned to lie on its side, growing to the right from its left end.
+            if (rows) tower.Rotation = Mathf.Pi / 2;
+            Add(tower, rows ? P(-round.Rule * size / 2, ((round.In - 1) / 2.0 - i) * spacing)
+                            : P((i - (round.In - 1) / 2.0) * spacing, -WindowHeight / 2 + 4), 1, _window);
             tower.Scale = Vector2.One * 0.01f;
             tower.CreateTween().TweenProperty(tower, "scale", Vector2.One, 0.2).SetDelay(i * 0.06);
             _groups.Add(tower);
