@@ -541,8 +541,6 @@ def main():
     KNOWN_NAMES.update(known_names(all_texts))
     total, done, stuck, waiting = status(state, all_texts)
     print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
-    if setup_error:
-        sys.exit(1)
     if a.status:
         return
     key = os.environ.get("GEMINI_API_KEY")
