@@ -99,7 +99,14 @@ LANGS = {
 }
 AF_NUMBERS = ("nul een twee drie vier vyf ses sewe agt nege tien elf twaalf dertien veertien vyftien sestien "
               "sewentien agtien negentien twintig").split()
-AF_CLOSE = 0.75  # how close (0 to 1) what Whisper heard must be to an Afrikaans line
+# Afrikaans: Whisper's small model hears Afrikaans as half Dutch ("Precies raag" for "Presies reg"), so a
+# line passes when, after DUTCH spellings are made Afrikaans, the whole line is this close (0 to 1)...
+AF_LINE_CLOSE = 0.65
+# ...and each changed stretch of words is this close; numbers and "nie" (DUTCH_NOT) must match exactly.
+AF_WORD_CLOSE = 0.5
+DUTCH = [("sch", "sk"), ("ij", "y"), ("ch", "g"), ("ae", "e"), ("c", "k"), ("z", "s"), ("uu", "u"), ("oo", "o"),
+         ("aa", "a"), ("ee", "e"), ("\u00eb", "e"), ("\u00ef", "i")]
+DUTCH_NOT = {"nie", "geen", "nooit", "niks", "niemand"}
 # English: a person's name (Sipho, Thandi, Dlamini) counts when it is this close (0 to 1), as Whisper often
 # spells it as it hears it ("Sipo", "Tandi"). Every other word must match, apart from SPELLINGS.
 EN_NAME_CLOSE = 0.5
@@ -432,31 +439,37 @@ def same_english(heard, text, names_=None):
 AF_NUMBER_WORDS = set(AF_NUMBERS)
 
 
+def af_sound(word):
+    """An Afrikaans word as it sounds, so Whisper's Dutch spellings match it: "rachtig" and "regtig" both
+    become "ragtig"/"regtig", "jij" becomes "jy", doubled letters count once."""
+    for dutch, af in DUTCH:
+        word = word.replace(dutch, af)
+    return re.sub(r"(.)\1+", r"\1", word)
+
+
 def same_afrikaans(heard, text):
     """
-    Whether Whisper heard the Afrikaans line, word by word: the same words in the same order, each close
-    enough in spelling (AF_CLOSE; Whisper's Afrikaans is rough), except that numbers must match exactly
-    and nothing may be missing or extra. Words split or joined differently pass when their letters do.
+    Whether Whisper heard the Afrikaans line. Whisper's Afrikaans is rough, so the words are compared as they
+    sound (af_sound) and loosely: the whole line must be AF_LINE_CLOSE alike and each changed stretch of
+    words AF_WORD_CLOSE alike ("Klik op die hond" for "kat" fails), while the numbers and the words for
+    "not" must be exactly the same ("drie" for "vier", or an extra "nie", fails). Only a word of one or two
+    letters ("'n", "en") may be missing or extra.
     """
-    got, want = af_words(heard), af_words(text)
-    if "".join(got) == "".join(want):
-        return True
+    got, want = [af_sound(w) for w in af_words(heard)], [af_sound(w) for w in af_words(text)]
+    numbers = {af_sound(w) for w in AF_NUMBER_WORDS}
+    if [w for w in got if w in numbers or w.isdigit()] != [w for w in want if w in numbers or w.isdigit()]:
+        return False
+    if [w for w in got if w in DUTCH_NOT] != [w for w in want if w in DUTCH_NOT]:
+        return False
+    alike = lambda a, b: difflib.SequenceMatcher(a=a, b=b, autojunk=False).ratio()
+    if alike("".join(got), "".join(want)) < AF_LINE_CLOSE:
+        return False
     for op, a1, a2, b1, b2 in difflib.SequenceMatcher(a=want, b=got, autojunk=False).get_opcodes():
-        if op == "equal":
-            continue
-        if op != "replace":
+        if op in ("delete", "insert"):
+            if max(len(w) for w in (want[a1:a2] if op == "delete" else got[b1:b2])) > 2:
+                return False
+        elif op == "replace" and alike("".join(want[a1:a2]), "".join(got[b1:b2])) < AF_WORD_CLOSE:
             return False
-        if a2 - a1 != b2 - b1:
-            joined_w, joined_g = "".join(want[a1:a2]), "".join(got[b1:b2])
-            if (len(joined_w) < 8 or any(w in AF_NUMBER_WORDS for w in want[a1:a2] + got[b1:b2])
-                    or difflib.SequenceMatcher(a=joined_w, b=joined_g, autojunk=False).ratio() < 0.9):
-                return False
-            continue
-        for w, g in zip(want[a1:a2], got[b1:b2]):
-            if w in AF_NUMBER_WORDS or g in AF_NUMBER_WORDS or w.isdigit() or g.isdigit():
-                return False
-            if difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio() < AF_CLOSE:
-                return False
     return True
 
 
