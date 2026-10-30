@@ -72,18 +72,9 @@ public sealed class NumberMachineGame(ContentLibrary content) : IMiniGame<Number
             var unused = options.Where(o => !session.UsedItems.Contains($"{mode}:{o.n}x{o.rule}")).ToList();
             if (!rng.TryPick(unused, out var pick) && !rng.TryPick(options, out pick)) continue;
             var answer = mode == Mode.Out ? pick.n * pick.rule : pick.n;
-            return new Round(mode, pick.n, pick.rule, Choices(answer, mode == Mode.Out ? pick.rule : 1, rng));
+            return new Round(mode, pick.n, pick.rule, NearChoices.Make(answer, mode == Mode.Out ? pick.rule : 1, rng));
         }
         return null;
-    }
-
-    /// <summary>Three cards: the answer and two near it (a step of the table away, or one), none below 1.</summary>
-    private static List<int> Choices(int answer, int step, IRandomSource rng)
-    {
-        var near = (step > 1 ? new[] { answer - step, answer + step, answer - 1, answer + 1 }
-                             : [answer - 2, answer - 1, answer + 1, answer + 2])
-            .Where(n => n >= 1 && n != answer).Distinct();
-        return rng.Shuffled(rng.Shuffled(near).Take(2).Prepend(answer));
     }
 
     public bool IsCorrect(int choice, Round round) => round.Mode switch
@@ -102,14 +93,29 @@ public sealed class NumberMachineGame(ContentLibrary content) : IMiniGame<Number
 
     // What Bip says. Plain lists of clips, so the tests can check each one has a recording.
 
-    /// <summary>The question: "Six times two. What comes out of the machine?", or what went in, or which rule.</summary>
+    /// <summary>
+    /// The question, with every number on the screen said, so a child who can't read them yet can play:
+    /// "Six times two. What comes out of the machine?"; "It's a times ten machine. Seventy came out. What
+    /// went into the machine?"; "Three went in, twelve came out. Four went in, sixteen came out. What does
+    /// the machine do? Find its card. Times two, times four, or times eight?" (the cards in their order).
+    /// </summary>
     public List<string> Prompt(Round round) => round.Mode switch
     {
         Mode.Out => [content.MidNumberClip(round.In), VoiceLine.Times, AudioCatalogue.NumberClip(round.Rule), VoiceLine.MachineOut],
-        Mode.In => [VoiceLine.MachineIn],
+        Mode.In => [VoiceLine.ItsA, VoiceLine.Times, content.MidNumberClip(round.Rule), VoiceLine.MachineEnd,
+                    content.MidNumberClip(round.Product), VoiceLine.CameOut, VoiceLine.MachineIn],
         Mode.Divide => [content.MidNumberClip(round.Product), VoiceLine.DividedBy, AudioCatalogue.NumberClip(round.Rule), VoiceLine.MachineOut],
-        _ => [VoiceLine.MachineRule],
+        _ => [.. (round.Inputs ?? [round.In]).SelectMany(n => new[]
+                 { content.MidNumberClip(n), VoiceLine.WentIn, content.MidNumberClip(n * round.Rule), VoiceLine.CameOut }),
+              VoiceLine.MachineRule, .. RuleCards(round.Choices)],
     };
+
+    /// <summary>The rule cards read out in order: "times two, times four, or times eight".</summary>
+    private List<string> RuleCards(IReadOnlyList<int> cards) =>
+    [
+        .. cards.SkipLast(1).SelectMany(c => new[] { VoiceLine.Times, content.MidNumberClip(c) }),
+        VoiceLine.Or, VoiceLine.Times, AudioCatalogue.NumberClip(cards[^1]),
+    ];
 
     /// <summary>After a right answer, the whole sentence: "six times two equals twelve", "twenty divided by four equals five", "times four".</summary>
     public List<string> SayWhenRight(Round round) => round.Mode switch

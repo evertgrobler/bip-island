@@ -72,7 +72,7 @@ public sealed class PicnicPlatesGame(ContentLibrary content) : IMiniGame<PicnicP
             if (!rng.TryPick(_picnic.Food, out var food)) return null;
             var answer = mode switch { Mode.Sharing => pick.Each, Mode.Grouping => pick.Groups, _ => pick.Groups * pick.Each };
             var step = mode is Mode.Groups or Mode.Make or Mode.Arrays ? pick.Each : 1;
-            return new Round(mode, pick.Groups, pick.Each, food, Choices(answer, step, rng));
+            return new Round(mode, pick.Groups, pick.Each, food, NearChoices.Make(answer, step, rng));
         }
         return null;
     }
@@ -88,18 +88,6 @@ public sealed class PicnicPlatesGame(ContentLibrary content) : IMiniGame<PicnicP
                 select (groups, each)).ToList();
     }
 
-    /// <summary>
-    /// Three cards: the answer and two near it, none below 1. Times answers are near by one step of
-    /// the table (6, 8, 10 counting in 2s), or by one; shares and groups by one or two.
-    /// </summary>
-    private static List<int> Choices(int answer, int step, IRandomSource rng)
-    {
-        var near = (step > 1 ? new[] { answer - step, answer + step, answer - 1, answer + 1 }
-                             : [answer - 2, answer - 1, answer + 1, answer + 2])
-            .Where(n => n >= 1 && n != answer).Distinct();
-        return rng.Shuffled(rng.Shuffled(near).Take(2).Prepend(answer));
-    }
-
     public bool IsCorrect(int choice, Round round) => round.Mode switch
     {
         Mode.Sharing => choice * round.Groups == round.Total,
@@ -111,11 +99,15 @@ public sealed class PicnicPlatesGame(ContentLibrary content) : IMiniGame<PicnicP
 
     // What Bip says. Plain lists of clips, so the tests can check each one has a recording.
 
-    /// <summary>What to do first: deal or pack with the basket. Nothing for a kind of question with no dealing.</summary>
+    /// <summary>
+    /// What to do first: deal or pack with the basket ("Share twelve between two plates. Click the
+    /// basket."). Nothing for a kind of question with no dealing.
+    /// </summary>
     public List<string> Instruction(Round round) => round.Mode switch
     {
         Mode.Make => [VoiceLine.Put, content.MidNumberClip(round.Each), VoiceLine.OnEachPlate, VoiceLine.ClickTheBasket],
-        Mode.Sharing => [VoiceLine.SharePlates, VoiceLine.ClickTheBasket],
+        Mode.Sharing => [VoiceLine.Share, content.MidNumberClip(round.Total), VoiceLine.Between, content.MidNumberClip(round.Groups),
+                         VoiceLine.Plates, VoiceLine.ClickTheBasket],
         Mode.Grouping => [VoiceLine.GroupsOf, AudioCatalogue.NumberClip(round.Each), VoiceLine.ClickTheBasket],
         _ => [],
     };

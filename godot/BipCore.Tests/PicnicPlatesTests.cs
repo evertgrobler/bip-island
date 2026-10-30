@@ -100,6 +100,34 @@ public sealed class PicnicPlatesTests
     }
 
     [Fact]
+    public void SharingSaysWhatIsShared()
+    {
+        // "Share twelve between two plates. Click the basket."
+        var food = _content.Numbers.Picnic!.Food[0];
+        Assert.Equal([VoiceLine.Share, _content.MidNumberClip(12), VoiceLine.Between, _content.MidNumberClip(2), VoiceLine.Plates,
+                      VoiceLine.ClickTheBasket], _game.Instruction(new PicnicPlatesGame.Round(Mode.Sharing, 2, 6, food, [6, 5, 7])));
+    }
+
+    [Fact]
+    public void AfrikaansRoundsHaveTheirClips()
+    {
+        var af = TestContent.Library(HomeLanguage.Afrikaans);
+        var game = new PicnicPlatesGame(af);
+        var rng = new SeededGenerator(71);
+        for (var level = 0; level < game.Entry.LevelSteps.Count; level++)
+        {
+            var learner = new Learner(Band.Stage2, 1, new HashSet<string>(), GameLevel: level);
+            for (var visit = 0; visit < 40; visit++)
+            {
+                var session = GameSession.Start(game, af.Games.Session, new HashSet<string>(), rng);
+                while (session.NextRound(game, learner, rng) is { } round)
+                    foreach (var clips in new[] { game.Instruction(round), game.Question(round), game.Hint(round), game.SayWhenRight(round) })
+                        Assert.All(clips, clip => Assert.True(af.AudioIds.Contains(clip) || VoiceLine.All.Contains(clip), $"af level {level + 1}: {clip}"));
+            }
+        }
+    }
+
+    [Fact]
     public void DealingTakesOneTapARoundOrAPunnet()
     {
         var food = _content.Numbers.Picnic!.Food[0];

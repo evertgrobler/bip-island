@@ -189,7 +189,15 @@ public partial class NumberMachineScreen : GameScreen
         {
             var sign = Add(new Node2D { Name = $"Example{i}", Scale = Vector2.One * 0.85f }, P(-500, 80 - i * 125), 6);
             sign.AddChild(Pen(RoundRect(R(-170, -50, 340, 100), 26), Seed(10 + i), fill: Palette.Card, ink: Palette.Teal, lineWidth: 5));
-            sign.AddChild(Sketch.Letter($"{inputs[i]} → {inputs[i] * round.Rule}", 70, shadow: Palette.LightTeal));
+            // In, a drawn arrow, out: the font has no arrow, and every letter is Atkinson Hyperlegible.
+            var into = Sketch.Letter($"{inputs[i]}", 70, shadow: Palette.LightTeal);
+            into.Position = P(-105, 0);
+            sign.AddChild(into);
+            sign.AddChild(Pen(Polyline(P(-55, 0), P(15, 0)), Seed(20 + i), ink: Palette.Ink, lineWidth: 7));
+            sign.AddChild(Pen(Polyline(P(-3, 16), P(17, 0), P(-3, -16)), Seed(30 + i), ink: Palette.Ink, lineWidth: 7));
+            var outOf = Sketch.Letter($"{inputs[i] * round.Rule}", 70, shadow: Palette.LightTeal);
+            outOf.Position = P(85, 0);
+            sign.AddChild(outOf);
             _scene.Add(sign);
         }
         // The balls show the first example, so the same numbers are on the machine.

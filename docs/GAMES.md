@@ -170,7 +170,7 @@ Bip's hand-drawn machine with a rule card on the front (× 2, × 5, × 4…). A 
 
 Skins: Bip's workshop, a sweet factory, a juice press.
 
-As built: the rules are each level's `steps` in `games.json`, and what goes in is 2 to 10. The machine shows its groups (In towers of Rule cubes) while the × machine runs; for what went in, the ÷ machine and the rule, they show only in the hint, so the child does the thinking first. Level 5 is the × 8 table counted in eights, not yet three × 2 machines in a row (doubling three times comes later). The rule level shows two "in → out" signs and three rule cards. The two-miss hint counts in steps of the rule up to what the × machine makes, while each group bobs.
+As built: the rules are each level's `steps` in `games.json`, and what goes in is 2 to 10. The machine shows its groups (In towers of Rule cubes) while the × machine runs; for what went in, the ÷ machine and the rule, they show only in the hint, so the child does the thinking first. Level 5 is the × 8 table counted in eights, not yet three × 2 machines in a row (doubling three times comes later). The rule level shows two signs, each a number, a drawn arrow and what came out (the font has no arrow), and three rule cards. Every number on the screen is also said, so a child who can't read them yet can play: what went in says the machine's rule and what came out, and the rule level says both examples and reads out the three cards. The two-miss hint counts in steps of the rule up to what the × machine makes, while each group bobs.
 
 ### New levels in planned and existing games
 
@@ -210,7 +210,7 @@ Numbers 0 to 100 (`num_0` … `num_100`) are already recorded, and Block Towers 
 | `vo_picnic.m4a` | Bip is having a picnic! Help him put the food on the plates. | Picnic Plates start |
 | `vo_put.m4a` | Put | "Put" + number + "on each plate." |
 | `vo_on_each_plate.m4a` | on each plate. | Picnic Plates |
-| `vo_share_plates.m4a` | Share them out so every plate gets the same. | Picnic Plates, sharing |
+| `vo_share.m4a`, `vo_between.m4a`, `vo_plates.m4a` | Share / between / plates. | "Share" + 12 + "between" + 2 + "plates.", Picnic Plates sharing (the food to share lies on the blanket) |
 | `vo_how_many_each.m4a` | How many on each plate? | Picnic Plates, sharing |
 | `vo_groups_of.m4a` | Pack them in groups of | + number, Picnic Plates grouping |
 | `vo_how_many_groups.m4a` | How many groups? | Picnic Plates grouping |
@@ -220,7 +220,9 @@ Numbers 0 to 100 (`num_0` … `num_100`) are already recorded, and Block Towers 
 | `vo_one_each.m4a` | Let's give one to each plate, round and round. | Picnic Plates hint |
 | `vo_machine_out.m4a` | What comes out of the machine? | Number Machine |
 | `vo_machine_in.m4a` | What went into the machine? | Number Machine |
-| `vo_machine_rule.m4a` | What does the machine do? Find its card. | Number Machine level 7 |
+| `vo_machine_rule.m4a` | What does the machine do? Find its card. | Number Machine level 7, then the cards read out: "times 2, times 4, or times 8" |
+| `vo_its_a.m4a`, `vo_machine_end.m4a` | It's a / machine. | "It's a times 10 machine.", Number Machine "what went in" |
+| `vo_went_in.m4a`, `vo_came_out.m4a`, `vo_or.m4a` | went in, / came out. / or | "70 came out."; the rule level's examples "3 went in, 12 came out." |
 | `vo_count_in_steps.m4a` | Let's count in steps of | + number, hint (Number Machine, Count & Tap, Number Train) |
 | `vo_start_at.m4a` | Start at | Number Train hops |
 | `vo_go_forward.m4a` | go forward | Number Train hops |

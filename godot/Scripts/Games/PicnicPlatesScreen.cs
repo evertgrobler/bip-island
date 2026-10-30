@@ -34,7 +34,7 @@ public partial class PicnicPlatesScreen : GameScreen
     private readonly List<Node2D> _scene = [];
     /// <summary>The plates, tray rows or punnets, in order: the hint bobs them as Bip counts.</summary>
     private readonly List<Node2D> _groups = [];
-    /// <summary>Grouping: the loose food on the blanket, packed from the end.</summary>
+    /// <summary>Grouping and sharing: the loose food on the blanket, packed or shared from the end.</summary>
     private readonly List<Node2D> _loose = [];
     private Node2D? _basket;
     private Tween? _pulse;
@@ -133,8 +133,12 @@ public partial class PicnicPlatesScreen : GameScreen
             case Mode.Groups:
                 DrawPlates(next, filled: true, withBasket: false);
                 break;
-            case Mode.Make or Mode.Sharing:
+            case Mode.Make:
                 DrawPlates(next, filled: false, withBasket: true);
+                break;
+            case Mode.Sharing:
+                DrawPlates(next, filled: false, withBasket: true);
+                DrawSharePile(next);
                 break;
             case Mode.Arrays:
                 DrawTray(next);
@@ -212,8 +216,10 @@ public partial class PicnicPlatesScreen : GameScreen
         var basket = Buttons.Tappable(new Node2D { Name = "Basket" }, "basket");
         basket.AddChild(Pen(Polyline(Enumerable.Range(0, 13).Select(i => P(-90 * Math.Cos(Math.PI * i / 12), 30 + 110 * Math.Sin(Math.PI * i / 12)))),
                             Seed(20), ink: Palette.Brown, lineWidth: 9));
-        foreach (var (i, x) in Indexed(-46.0, 0.0, 46.0))
-            Add(Food(round.Food, 0.3f), P(x, 40 + (i == 1 ? 18 : 0)), 0, basket);
+        // Sharing deals out the food on the blanket, so its basket is empty.
+        if (round.Mode != Mode.Sharing)
+            foreach (var (i, x) in Indexed(-46.0, 0.0, 46.0))
+                Add(Food(round.Food, 0.3f), P(x, 40 + (i == 1 ? 18 : 0)), 0, basket);
         basket.AddChild(Pen(Polygon(P(-120, 40), P(120, 40), P(96, -80), P(-96, -80)), Seed(21), fill: Palette.LightBrown, ink: Palette.Brown, lineWidth: 6));
         foreach (var y in new[] { 0.0, -40.0 })
             basket.AddChild(Pen(Polyline(P(-108, y), P(108, y)), Seed(22 + (int)y), ink: Palette.Brown, lineWidth: 3));
@@ -237,6 +243,22 @@ public partial class PicnicPlatesScreen : GameScreen
             for (var c = 0; c < round.Each; c++)
                 Add(Food(round.Food, 0.28f), P((c - (round.Each - 1) / 2.0) * gap, 0), 0, row);
             _groups.Add(row);
+        }
+    }
+
+    /// <summary>
+    /// Sharing: all the food to share, in rows of ten on the blanket below the plates ("Share twelve
+    /// between two plates"), so the child sees the whole amount go, one to each plate a click.
+    /// </summary>
+    private void DrawSharePile(PicnicPlatesGame.Round round)
+    {
+        const double gap = 54;
+        for (var n = 0; n < round.Total; n++)
+        {
+            var inRow = Math.Min(10, round.Total - n / 10 * 10);
+            var food = Add(Food(round.Food, 0.24f), P(115 + (n % 10 - (inRow - 1) / 2.0) * gap, -55 - n / 10 * gap), 3);
+            _scene.Add(food);
+            _loose.Add(food);
         }
     }
 
@@ -290,6 +312,23 @@ public partial class PicnicPlatesScreen : GameScreen
                 food.GlobalPosition = at;
                 food.CreateTween().TweenProperty(food, "position", OnPlate(n, round.Each, 30), 0.3).SetDelay(n * 0.03);
                 food.CreateTween().TweenProperty(food, "scale", Vector2.One * 0.22f, 0.3);
+            }
+        }
+        else if (round.Mode == Mode.Sharing)
+        {
+            // One from the pile onto every plate, round and round.
+            for (var i = 0; i < _groups.Count && _loose.Count > 0; i++)
+            {
+                var plate = _groups[i];
+                var food = _loose[^1];
+                _loose.RemoveAt(_loose.Count - 1);
+                var at = food.GlobalPosition;
+                food.GetParent().RemoveChild(food);
+                plate.AddChild(food);
+                food.GlobalPosition = at;
+                food.ZIndex = 1;
+                food.CreateTween().TweenProperty(food, "position", OnPlate(deal, round.Each), 0.3).SetDelay(i * 0.06);
+                food.CreateTween().TweenProperty(food, "scale", Vector2.One * FoodOnPlate, 0.3).SetDelay(i * 0.06);
             }
         }
         else

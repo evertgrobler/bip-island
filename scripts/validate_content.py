@@ -290,6 +290,8 @@ if any(gm["id"] == "picnic_plates" for gm in games):
         for k in ("mostPlates", "mostEach", "mostFood"):
             if not isinstance(picnic.get(k), int) or picnic[k] < 2: err(f"picnic: {k} must be a whole number of at least 2")
         if picnic.get("mostFood", 0) < 2 * 10: err("picnic: mostFood must fit 2 plates of 10 (the 10 table)")
+        # The blanket is laid out for five plates beside the basket (PicnicPlatesScreen.PlateSpots).
+        if picnic.get("mostPlates", 0) > 5: err("picnic: mostPlates can be at most 5 (the blanket has room for five plates)")
 
 # --- Bip's Balance: each level starts no earlier than the skill it records (a stage 3 skill isn't
 # offered to a stage 2 child as their first level)
@@ -438,6 +440,14 @@ for gm in games:
             if not tables or any(not isinstance(t, int) or not 2 <= t <= 10 for t in tables):
                 err(f"{where}: steps (the times tables) must be whole numbers from 2 to 10")
             skills_needed = {"share_group" if m in ("sharing", "grouping") else "equal_groups" for m in lv["modes"]}
+            # Every kind of question needs a shape that fits the blanket (as PicnicPlatesGame.Shapes), or the
+            # visit would end on its first question.
+            if picnic and tables:
+                for m in lv["modes"]:
+                    most_groups = picnic["mostPlates"] + (1 if m == "grouping" else 0)
+                    fits = [(g, e) for g in range(2, most_groups + 1) for e in range(2, picnic["mostEach"] + 1)
+                            if g * e <= picnic["mostFood"] and (g in tables or e in tables if m == "sharing" else e in tables)]
+                    if not fits: err(f"{where}: no {m} question fits the blanket with tables {tables} (mostEach {picnic['mostEach']}, mostPlates {picnic['mostPlates']}, mostFood {picnic['mostFood']})")
             for sid in skills_needed - set(gm["skills"]): err(f"{where}: skill {sid} is not in its skills list")
         elif gm["id"] == "number_machine":
             rules = lv.get("steps", [])

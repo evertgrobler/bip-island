@@ -213,13 +213,19 @@ public partial class GameIslandScreen : BaseScreen
             _ => [OrderButton(), PathButton()],
         };
         _leftGame = GameFor(Buttons.TapName(games[0])!);
-        var spacing = games.Length switch { > 5 => 250.0, > 4 => 300.0, > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
+        // Up to five games in a row across the island; six in two rows of three, with Bip in the corner
+        // (as on a game screen) so the rows have room and every button keeps a clear gap round it.
+        var twoRows = games.Length > 5;
+        var perRow = twoRows ? 3 : games.Length;
+        var spacing = twoRows ? 380.0 : games.Length switch { > 4 => 300.0, > 3 => 370.0, > 2 => 480.0, _ => 700.0 };
         for (var i = 0; i < games.Length; i++)
         {
-            // Five or six games only fit the island a little smaller: a holder shrinks each, so its
+            // Five or more games only fit the island a little smaller: a holder shrinks each, so its
             // own scale stays free for the pulse and the press.
-            var holder = new Node2D { Position = P((i - (games.Length - 1) / 2.0) * spacing, 105), ZIndex = 5 };
-            if (games.Length > 4) holder.Scale = Vector2.One * (games.Length > 5 ? 0.7f : 0.82f);
+            var (row, column) = (i / perRow, i % perRow);
+            var y = twoRows ? (row == 0 ? 200 : -110) : 105;
+            var holder = new Node2D { Position = P((column - (perRow - 1) / 2.0) * spacing, y), ZIndex = 5 };
+            if (games.Length > 4) holder.Scale = Vector2.One * 0.82f;
             holder.AddChild(games[i]);
             Stage.AddChild(holder);
             _keyNodes.Add(games[i]);
@@ -227,7 +233,8 @@ public partial class GameIslandScreen : BaseScreen
         Buttons.Pulse(games[0]);
 
         AddHomeButton();
-        AddBip(P(0, -360), 0.85f);
+        if (twoRows) AddBip(P(-640, -370), 0.7f);
+        else AddBip(P(0, -360), 0.85f);
         if (_greet) After(0.5, ReplayPrompt);
     }
 

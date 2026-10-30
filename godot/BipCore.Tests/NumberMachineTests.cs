@@ -73,6 +73,41 @@ public sealed class NumberMachineTests
     }
 
     [Fact]
+    public void EveryNumberOnTheScreenIsSaid()
+    {
+        // "It's a times ten machine. Seventy came out. What went into the machine?"
+        var into = _game.Prompt(new NumberMachineGame.Round(Mode.In, 7, 10, [7, 6, 8]));
+        Assert.Equal([VoiceLine.ItsA, VoiceLine.Times, _content.MidNumberClip(10), VoiceLine.MachineEnd,
+                      _content.MidNumberClip(70), VoiceLine.CameOut, VoiceLine.MachineIn], into);
+        // "Three went in, twelve came out. Five went in, twenty came out. What does the machine do? Find its
+        // card. Times two, times four, or times five?", the cards in the order they are on the screen.
+        var rule = _game.Prompt(new NumberMachineGame.Round(Mode.Rule, 3, 4, [2, 4, 5], [3, 5]));
+        Assert.Equal([_content.MidNumberClip(3), VoiceLine.WentIn, _content.MidNumberClip(12), VoiceLine.CameOut,
+                      _content.MidNumberClip(5), VoiceLine.WentIn, _content.MidNumberClip(20), VoiceLine.CameOut,
+                      VoiceLine.MachineRule, VoiceLine.Times, _content.MidNumberClip(2), VoiceLine.Times, _content.MidNumberClip(4),
+                      VoiceLine.Or, VoiceLine.Times, "num_5"], rule);
+    }
+
+    [Fact]
+    public void AfrikaansRoundsHaveTheirClips()
+    {
+        var af = TestContent.Library(HomeLanguage.Afrikaans);
+        var game = new NumberMachineGame(af);
+        var rng = new SeededGenerator(61);
+        for (var level = 0; level < game.Entry.LevelSteps.Count; level++)
+        {
+            var learner = new Learner(Band.Stage2, 1, new HashSet<string>(), GameLevel: level);
+            for (var visit = 0; visit < 40; visit++)
+            {
+                var session = GameSession.Start(game, af.Games.Session, new HashSet<string>(), rng);
+                while (session.NextRound(game, learner, rng) is { } round)
+                    foreach (var clips in new[] { game.Prompt(round), game.Hint(round), game.SayWhenRight(round) })
+                        Assert.All(clips, clip => Assert.True(af.AudioIds.Contains(clip) || VoiceLine.All.Contains(clip), $"af level {level + 1}: {clip}"));
+            }
+        }
+    }
+
+    [Fact]
     public void TheAnswerIsWhatTheMachineIsAsked()
     {
         Assert.Equal(12, new NumberMachineGame.Round(Mode.Out, 6, 2, [12, 10, 14]).Answer);

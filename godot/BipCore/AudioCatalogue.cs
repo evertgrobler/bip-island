@@ -82,7 +82,10 @@ public static class VoiceLine
     public const string Picnic = "vo_picnic";
     public const string Put = "vo_put";
     public const string OnEachPlate = "vo_on_each_plate";
-    public const string SharePlates = "vo_share_plates";
+    /// <summary>"Share… twelve… between… two… plates."</summary>
+    public const string Share = "vo_share";
+    public const string Between = "vo_between";
+    public const string Plates = "vo_plates";
     public const string HowManyEach = "vo_how_many_each";
     public const string GroupsOf = "vo_groups_of";
     public const string HowManyGroups = "vo_how_many_groups";
@@ -98,6 +101,14 @@ public static class VoiceLine
     public const string MachineOut = "vo_machine_out";
     public const string MachineIn = "vo_machine_in";
     public const string MachineRule = "vo_machine_rule";
+    /// <summary>"It's a… times… ten… machine.": the rule, said for a child who can't read the card yet.</summary>
+    public const string ItsA = "vo_its_a";
+    public const string MachineEnd = "vo_machine_end";
+    /// <summary>"Three… went in, twelve… came out."</summary>
+    public const string WentIn = "vo_went_in";
+    public const string CameOut = "vo_came_out";
+    /// <summary>"…times four, or… times eight?": before the last of the cards read out.</summary>
+    public const string Or = "vo_or";
     // Language Island
     public const string LanguageIsland = "vo_language_island";
     public const string ShowMe = "vo_show_me";
@@ -123,9 +134,9 @@ public static class VoiceLine
         Double, HowMany, OddOrEven, Odd, BuildNumber, WhatComesNext,
         Balance, Plus, EqualsWord, WhatNumber, WhichNumber, BalanceHelps, CountOnTogether, CountBackTogether,
         StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow, And,
-        Picnic, Put, OnEachPlate, SharePlates, HowManyEach, GroupsOf, HowManyGroups, HowManyOnTray, OneEach, CountInSteps,
+        Picnic, Put, OnEachPlate, Share, Between, Plates, HowManyEach, GroupsOf, HowManyGroups, HowManyOnTray, OneEach, CountInSteps,
         ClickTheBasket, CountGroups,
-        NumberMachine, Times, DividedBy, MachineOut, MachineIn, MachineRule,
+        NumberMachine, Times, DividedBy, MachineOut, MachineIn, MachineRule, ItsA, MachineEnd, WentIn, CameOut, Or,
         LanguageIsland, ShowMe, WhatIsIt, BipsDay, InOurLanguage,
         BipsStories, StoryQuestions, StoryLookAgain,
     ];

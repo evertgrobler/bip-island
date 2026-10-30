@@ -131,7 +131,9 @@ vo_picnic.m4a,Bip is having a picnic! Help him put the food on the plates.,"Picn
 vo_put.m4a,Put,"Picnic Plates: ""Put… five… on each plate."" Leads on into a number, voice up.",Put
 vo_on_each_plate.m4a,on each plate.,"Picnic Plates: after ""Put… five…"". Finishes the sentence.",on each plate.
 vo_click_the_basket.m4a,Click the basket.,"Picnic Plates: after the instruction, each click of the basket deals the food. Friendly.",Click the basket.
-vo_share_plates.m4a,Share the food so every plate gets the same.,"Picnic Plates, sharing. Warm and clear.",Share the food!
+vo_share.m4a,Share,"Picnic Plates, sharing: ""Share… twelve… between… two… plates."" Leads on into a number, voice up.",Share
+vo_between.m4a,between,"Picnic Plates, sharing: ""…twelve… between… two…"". Mid-sentence, voice carries on.",between
+vo_plates.m4a,plates.,"Picnic Plates, sharing: ends ""…between two plates."" Finishes the sentence.",plates.
 vo_how_many_each.m4a,How many on each plate?,"Picnic Plates, after sharing. Curious, inviting.",How many on each plate?
 vo_groups_of.m4a,Pack the food in groups of,"Picnic Plates, grouping: leads on into a number (""…of five.""), voice up.",Pack in groups of
 vo_how_many_groups.m4a,How many groups?,"Picnic Plates, after packing. Curious, inviting.",How many groups?
@@ -145,3 +147,8 @@ vo_divided_by.m4a,divided by,"Number Machine: ""twenty… divided by… four"". 
 vo_machine_out.m4a,What comes out of the machine?,"Number Machine, after the number and the rule. Curious, inviting.",What comes out?
 vo_machine_in.m4a,What went into the machine?,"Number Machine, when the number that came out is shown. Curious, inviting.",What went in?
 vo_machine_rule.m4a,What does the machine do? Find its card.,"Number Machine, two numbers went in and came out. Curious, a little puzzle.",Find the machine's card.
+vo_its_a.m4a,It's a,"Number Machine: ""It's a… times… ten… machine."" Leads on, voice up.",It's a
+vo_machine_end.m4a,machine.,"Number Machine: ends ""It's a times ten machine."" Finishes the sentence.",machine.
+vo_went_in.m4a,"went in,","Number Machine: ""Three… went in, twelve… came out."" Mid-sentence, voice carries on.",went in
+vo_came_out.m4a,came out.,"Number Machine: ""…twelve… came out."" Finishes the sentence.",came out.
+vo_or.m4a,or,"Number Machine: ""…times four, or… times eight?"" Just the one word, leading on.",or
