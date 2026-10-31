@@ -81,8 +81,8 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
   recording for every age. One narrator for boys and girls; no gender setting.
 
 - **English:** being re-voiced with Aoede (owner decision, 18 October 2026). The recorder,
-  `scripts/gemini_narrator.py` (daily free runs), is on branch `claude/aoede-narrator` and reaches `main`
-  through its own pull request. Until a clip is re-recorded, the current clip plays (Chatterbox, and
+  `scripts/gemini_narrator.py` (daily free runs), is on `main`; its daily runs record on branch
+  `claude/aoede-narrator`, and the clips reach `main` through that branch's pull requests. Until a clip is re-recorded, the current clip plays (Chatterbox, and
   ElevenLabs for the letter sounds); CLAUDE.md says the same.
 - **Afrikaans:** the same recorder with an Afrikaans style line and an Afrikaans speech check
   (Whisper's multilingual model, which knows Afrikaans), on the same free daily runs.
@@ -95,7 +95,7 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 
 ## Build order (each step is its own pull request, reviewed and green before the next)
 
-1. **English with Aoede** (running now on branch `claude/aoede-narrator`, its own pull request): every
+1. **English with Aoede** (recorder on `main` since #67; daily runs record on `claude/aoede-narrator`): every
    English clip, letter sounds included.
 2. **Language plumbing:** home language per child (save file, setup guide, Children tab), content
    and audio folders per language, the game loading by language, on-screen text in both languages
