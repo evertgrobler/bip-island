@@ -13,6 +13,9 @@ namespace BipIsland.App;
 ///   about to power off.
 /// - Windows: exclusive full screen, plus a keyboard hook that swallows the Windows key, Alt-Tab,
 ///   Alt-Esc and Ctrl-Esc while the game is in front. Ctrl-Alt-Del always works.
+/// - Both: the mouse stays inside the game's window, so on a computer with a second screen a child can't
+///   move it over there and click another program (which would also take the game out of the front,
+///   where the Windows keyboard hook stops blocking).
 /// - Hold Option (Mac) or Alt (Windows) while the game opens for parent mode: a normal window, no lock.
 /// Cmd-Q, Alt-F4 and the close button are handled in <see cref="Boot"/> (only the parent area quits).
 /// Every operating-system call is guarded: if one fails, the game logs it and plays unlocked.
@@ -45,6 +48,7 @@ public static class KidLock
             if (IsMac) Mac.Lock();
             else Windows.Lock();
             Status = IsMac ? "mac" : "windows";
+            KeepMouseIn();
         }
         catch (Exception error)
         {
@@ -55,18 +59,31 @@ public static class KidLock
         }
     }
 
-    /// <summary>The game came back to the front: put the Mac options back (macOS can drop them).</summary>
+    /// <summary>The game came back to the front: put the Mac options and the mouse limit back (the system can drop them).</summary>
     public static void Reapply()
     {
+        if (!IsOn) return;
+        KeepMouseIn();
         if (Status != "mac") return;
         try { Mac.ApplyOptions(); }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock: {error.Message}"); }
+    }
+
+    /// <summary>Whether the mouse is kept inside the game's window (for the self-test report).</summary>
+    public static bool MouseKeptIn => Input.MouseMode == Input.MouseModeEnum.Confined;
+
+    /// <summary>Keeps the mouse inside the game's window, so it can't reach a second screen.</summary>
+    private static void KeepMouseIn()
+    {
+        try { Input.MouseMode = Input.MouseModeEnum.Confined; }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock (mouse): {error.Message}"); }
     }
 
     /// <summary>Lifts the lock before the game quits or restarts for an update.</summary>
     public static void Release()
     {
         if (!IsOn) return;
+        Input.MouseMode = Input.MouseModeEnum.Visible;
         try
         {
             if (Status == "mac") Mac.Unlock();

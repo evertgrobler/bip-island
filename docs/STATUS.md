@@ -23,8 +23,8 @@
   setup guide for grown-ups opens at launch until finished or skipped: practise the Esc hold for real
   (required when it opens by itself), passcode, children, play time, a 3-card tour.
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
-  keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
-  aren't covered yet.
+  keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. The mouse stays
+  inside the game's window (1 Nov), so a second screen can't be reached.
 - **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
 - **Text contrast (18 Oct):** every text colour meets WCAG (4.5:1, 3:1 for big glyphs). Use `Palette.Ink`,
   `SoftInk`, `QuietInk`, `AlertOrange`, `WrongRed`, `ProblemRed` or `GoodGreen` for text, and the named fills
@@ -52,7 +52,7 @@
   its own `curriculum/skills.json`), signed off by the owner on 18 October 2026 and checked by
   `validate_content.py --lang af` and `af_spelling.py`. It stays hidden from children until
   `Content/af/language.json` lands (with the Afrikaans voice and the download page change, `docs/LANGUAGES.md` step 8).
-- **Known open items:** cover second screens in the kid lock; more games (waves 2b/3/4); paid signing only if shared beyond the family.
+- **Known open items:** more games (waves 2b/3/4); paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
 
@@ -124,8 +124,10 @@
   exclusive full screen with a keyboard hook (Windows). Off when headless, with `--bip-windowed`, on
   Linux, or with Option/Alt held at launch (parent mode). Quitting or updating lifts it first. It
   can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
-  Known gap vs Swift: second screens aren't covered with paper windows yet (a click there could reach
-  another app). Fine on a one-screen Mac; add cover windows if the family Mac gets a second display.
+  Second screens: the mouse is kept inside the game's window while locked (`Input.MouseMode` Confined,
+  put back when the game comes to the front), so a click can't reach another app on a second display;
+  the lock check reports `mouseKeptIn` and counts it. The second screen itself still shows the desktop
+  (no paper cover windows like the Swift app had).
 
 ## Gotchas learned the hard way
 
@@ -650,3 +652,4 @@
   no stickers) from a precise brief; the lead session reviewed it and added one line. This PC has no .NET or `gh`
   yet, so CI is the first run of the test.
 - **25 Oct, 13:30 SAST: daily publishing.** The Vercel team was paused on 25 Oct: "Blob Advanced Operations" reached 2.9K of the free 2K a month, which also took down the owner's other site. Each upload call counts, and `put()`'s multipart sends 8 MB parts, so one release cost well over 100 operations; about 15 merges in two days used up the month. The owner chose to wait for the limit to reset (about 5 days) and to merge less. Since then: `main` builds, tests and publishes once a day at 20:52 SAST (`schedule`), and only when a file that goes into the game or the download page changed since the commit the store was last published from (`godot-test/published.json`, written by `mark_published.mjs` as the publish job's very last step, after the feed check and the download page, and read by the `changed` job with `git diff`). Each commit is built by the daily run once at most (an Actions cache key `daily-tried-<sha>`): a commit whose build, test or publish failed isn't rebuilt every night; a manual run or the next change to `main` tries again. Anything the check can't work out (Vercel unreachable, no note yet) builds anyway. A manual run still publishes at once, and pull requests are unchanged. `publish_blob.mjs` sends files over 64 MB in 64 MB parts (about 4 operations for a 150 MB installer instead of about 20). Keep merges to `main` few and batched. A move to GitHub Releases plus GitHub Pages was built (PR #65, branch `claude/downloads-github`) and closed unmerged; it is ready if the repository goes private or Vercel becomes a problem again.
+- **1 Nov, 01:00 SAST: child lock, second screens.** While the lock is on, the mouse is kept inside the game's window (Mac and Windows), and put back whenever the game comes to the front, so on a computer with two screens a child can't move it over and click another program (which on Windows would also stop the key blocking, as the hook only works while the game is in front). The Mac and Windows lock check now also reports `mouseKeptIn` and needs it. The lock lifts it again for the parent area's quit and for updates.
