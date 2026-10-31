@@ -126,7 +126,7 @@
   can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
   Second screens: the mouse is kept inside the game's window while locked (`Input.MouseMode` Confined,
   put back when the game comes to the front), so a click can't reach another app on a second display;
-  the lock check reports `mouseKeptIn` and counts it. The second screen itself still shows the desktop
+  the lock check reports `mouseKeptIn` and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a Mac it can only report Godot's own setting). Setting it again goes through Visible first, as Godot skips a mode it thinks is already set. The CI install jobs only warn when `locked` is false. The second screen itself still shows the desktop
   (no paper cover windows like the Swift app had).
 
 ## Gotchas learned the hard way
