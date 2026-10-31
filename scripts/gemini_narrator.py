@@ -29,7 +29,7 @@ import argparse, base64, csv, difflib, fnmatch, itertools, json, os, re, subproc
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from speak_clips import AUDIO, ROOT, TARGET_LUFS, ffmpeg, loudness, words  # noqa: E402
+from speak_clips import AUDIO, NUMBER_WORDS, ROOT, TARGET_LUFS, ffmpeg, loudness, words  # noqa: E402
 
 MODEL = "gemini-3.8-flash-tts"
 VOICE = "Aoede"
@@ -504,6 +504,32 @@ def same_afrikaans(heard, text):
     return True
 
 
+# Words Whisper adds round a single word ("an egg", Dutch "een" for Afrikaans "'n"): ignored there.
+LONE_WORD_EXTRAS = {"a", "an", "the", "n", "een", "die", "de", "het"}
+
+
+def one_word_alike(lang, heard, text):
+    """
+    Whether Whisper heard a one-word line (a word, a Language Island word, a story answer). On a word on its
+    own Whisper often picks a near word ("and" for "ant", "call" for "car", "bowl" for "ball", "B" for
+    "bee"), while Gemini, asked for one word, says that word: so the word may differ as a near sound
+    (half its letters alike, as it sounds), or be heard as its first letter. Numbers must still match
+    exactly, and there must be exactly one word.
+    """
+    want = line_words(lang, text)
+    got = [w for w in line_words(lang, heard) if w not in LONE_WORD_EXTRAS]
+    if len(want) != 1 or len(got) != 1:
+        return False
+    sound = af_sound if lang == "af" else spelling
+    w, g = sound(want[0]), sound(got[0])
+    numbers = {sound(n) for n in (AF_NUMBER_WORDS if lang == "af" else NUMBER_WORDS)}
+    if w in numbers or g in numbers or w.isdigit() or g.isdigit():
+        return w == g
+    if len(g) == 1:
+        return w.startswith(g) and len(w) <= 3
+    return len(g) <= len(w) + 3 and difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio() >= 0.5
+
+
 class Listener:
     """Whisper: small.en for English, the multilingual small model for Afrikaans (loaded when first needed)."""
     def __init__(self):
@@ -565,7 +591,8 @@ class Listener:
         """(whether Whisper heard the line, what it heard)."""
         lang = split(key)[0]
         heard = self.heard(path, lang, text)
-        return (same_english(heard, text) if lang == "en" else same_afrikaans(heard, text)), heard
+        same = same_english(heard, text) if lang == "en" else same_afrikaans(heard, text)
+        return same or one_word_alike(lang, heard, text), heard
 
 
 def status(state, all_texts):
@@ -664,6 +691,10 @@ def main():
             ffmpeg("-f", "s16le", "-ar", "24000", "-ac", "1", "-i", str(tmp / "batch.pcm"), str(raw))
             if style in ("phonics", "names"):
                 pieces = silence_cut(raw, len(clips)) or [None] * len(clips)
+            elif style == "words":
+                # Words are said one to a line with a pause between: cut at the pauses, as Whisper places a
+                # word on its own badly; when the pauses don't fit, fall back to Whisper's word timings.
+                pieces = silence_cut(raw, len(clips)) or listener.cut(raw, lines, lang)
             else:
                 pieces = listener.cut(raw, lines, lang)
             good = 0
