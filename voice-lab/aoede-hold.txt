@@ -1,12 +1,6 @@
 # Clips the daily Aoede run doesn't record yet: lines still waiting for the owner's check.
 # One pattern per line (* matches anything); Afrikaans clips start with af/. Remove a line once it's approved.
-# The Afrikaans Bip's Stories lines (owner's check first; the story sums above them are signed off).
-af/vo_bips_stories
-af/vo_story_questions
-af/vo_story_look_again
-af/vo_story_*_[0-9]*
-af/vo_story_*_q[0-9]*
-af/vo_story_*_a[0-9]*
+# The Afrikaans Bip's Stories lines: approved by the owner on the Afrikaans Stories Check page (1 Nov 2026).
 # Bip's Afrikaans lines for the new maths games, Picnic Plates and Number Machine (Afrikaans Stories Check page).
 af/vo_picnic
 af/vo_put
