@@ -156,6 +156,8 @@ public sealed class AfrikaansContentTests
         Play(new ShapeBuilderGame(content));
         Play(new PaintPotsGame(content));
         Play(new MirrorMagicGame(content));
+        Play(new PicnicPlatesGame(content));
+        Play(new NumberMachineGame(content));
         return problems;
     }
 }

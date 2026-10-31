@@ -78,6 +78,37 @@ public static class VoiceLine
     public const string StoryHowManyNow = "vo_story_how_many_now";
     /// <summary>"and" in the middle of a sum ("three and two"), not the reading word word_and.</summary>
     public const string And = "vo_and";
+    // Picnic Plates (Numbers Island)
+    public const string Picnic = "vo_picnic";
+    public const string Put = "vo_put";
+    public const string OnEachPlate = "vo_on_each_plate";
+    /// <summary>"Share… twelve… between… two… plates."</summary>
+    public const string Share = "vo_share";
+    public const string Between = "vo_between";
+    public const string Plates = "vo_plates";
+    public const string HowManyEach = "vo_how_many_each";
+    public const string GroupsOf = "vo_groups_of";
+    public const string HowManyGroups = "vo_how_many_groups";
+    public const string HowManyOnTray = "vo_how_many_on_tray";
+    public const string OneEach = "vo_one_each";
+    public const string CountInSteps = "vo_count_in_steps";
+    public const string ClickTheBasket = "vo_click_the_basket";
+    public const string CountGroups = "vo_count_groups";
+    // Number Machine (Numbers Island)
+    public const string NumberMachine = "vo_number_machine";
+    public const string Times = "vo_times";
+    public const string DividedBy = "vo_divided_by";
+    public const string MachineOut = "vo_machine_out";
+    public const string MachineIn = "vo_machine_in";
+    public const string MachineRule = "vo_machine_rule";
+    /// <summary>"It's a… times… ten… machine.": the rule, said for a child who can't read the card yet.</summary>
+    public const string ItsA = "vo_its_a";
+    public const string MachineEnd = "vo_machine_end";
+    /// <summary>"Three… went in, twelve… came out."</summary>
+    public const string WentIn = "vo_went_in";
+    public const string CameOut = "vo_came_out";
+    /// <summary>"…times four, or… times eight?": before the last of the cards read out.</summary>
+    public const string Or = "vo_or";
     // Language Island
     public const string LanguageIsland = "vo_language_island";
     public const string ShowMe = "vo_show_me";
@@ -103,6 +134,9 @@ public static class VoiceLine
         Double, HowMany, OddOrEven, Odd, BuildNumber, WhatComesNext,
         Balance, Plus, EqualsWord, WhatNumber, WhichNumber, BalanceHelps, CountOnTogether, CountBackTogether,
         StoryThereAre, StoryComeAlong, StoryGoAway, StoryHowManyNow, And,
+        Picnic, Put, OnEachPlate, Share, Between, Plates, HowManyEach, GroupsOf, HowManyGroups, HowManyOnTray, OneEach, CountInSteps,
+        ClickTheBasket, CountGroups,
+        NumberMachine, Times, DividedBy, MachineOut, MachineIn, MachineRule, ItsA, MachineEnd, WentIn, CameOut, Or,
         LanguageIsland, ShowMe, WhatIsIt, BipsDay, InOurLanguage,
         BipsStories, StoryQuestions, StoryLookAgain,
     ];

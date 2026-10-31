@@ -215,7 +215,7 @@ public partial class GameCoordinator : Node
             _ = new LetterTraceGame(Content, Course);
             _monster = new FeedMonsterGame(Content, Course);
         });
-        NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); _ = new BlockTowersGame(Content); _ = new BipsBalanceGame(Content); });
+        NumbersOpen = Try("Numbers", () => { _ = new CountTapGame(Content); _ = new QuickLookGame(Content); _ = new BlockTowersGame(Content); _ = new BipsBalanceGame(Content); _ = new PicnicPlatesGame(Content); _ = new NumberMachineGame(Content); });
         WordsOpen = Try("Words", () =>
         {
             var course = new PhonicsCourse(Content);
@@ -608,6 +608,8 @@ public partial class GameCoordinator : Node
             QuickLookGame.GameId when NumbersOpen => new QuickLookScreen(new QuickLookGame(Content)),
             BlockTowersGame.GameId when NumbersOpen => new BlockTowersScreen(new BlockTowersGame(Content)),
             BipsBalanceGame.GameId when NumbersOpen => new BipsBalanceScreen(new BipsBalanceGame(Content)),
+            PicnicPlatesGame.GameId when NumbersOpen => new PicnicPlatesScreen(new PicnicPlatesGame(Content)),
+            NumberMachineGame.GameId when NumbersOpen => new NumberMachineScreen(new NumberMachineGame(Content)),
             SoundButtonsGame.GameId when WordsOpen => new SoundButtonsScreen(new SoundButtonsGame(Content, Course ?? new PhonicsCourse(Content)),
                                                                               Course ?? new PhonicsCourse(Content)),
             WordBuilderGame.GameId when WordsOpen => new WordBuilderScreen(new WordBuilderGame(Content)),
@@ -765,6 +767,9 @@ public partial class GameCoordinator : Node
         }
         return _newStickers;
     }
+
+    /// <summary>Picture stickers won but not shown yet (for the walk-through test).</summary>
+    public int StickersWaiting => PendingStickers().Count;
 
     /// <summary>The picture stickers won since the last were shown; they count as shown from now on.</summary>
     public List<string> TakeNewStickers()

@@ -6575,6 +6575,10 @@
       "brief": "Mum"
     },
     {
+      "id": "pic_naartjie",
+      "brief": "naartjie on a picnic plate"
+    },
+    {
       "id": "pic_neck",
       "brief": "nek"
     },
@@ -6756,7 +6760,7 @@
     },
     {
       "id": "pic_sandwich",
-      "brief": "sandwich"
+      "brief": "sandwich on a picnic plate"
     },
     {
       "id": "pic_sandwich_1",
@@ -7013,6 +7017,10 @@
     {
       "id": "pic_storm",
       "brief": "storm"
+    },
+    {
+      "id": "pic_strawberry",
+      "brief": "strawberry on a picnic plate"
     },
     {
       "id": "pic_sun",

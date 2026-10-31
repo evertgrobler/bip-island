@@ -474,6 +474,22 @@
       "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
     },
     {
+      "code": "2Ni.05",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Integers and powers",
+      "summary": "Understand multiplication as repeated adding and as an array",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "2Ni.06",
+      "framework": "mathematics",
+      "stage": 2,
+      "strand": "Integers and powers",
+      "summary": "Understand division as sharing and as grouping",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
       "code": "2Ni.07",
       "framework": "mathematics",
       "stage": 2,
@@ -583,6 +599,46 @@
       "stage": 3,
       "strand": "Money",
       "summary": "Add and subtract amounts of money and work out change",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Ni.03",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Integers and powers",
+      "summary": "Understand how multiplication and division undo each other",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Ni.05",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Integers and powers",
+      "summary": "Know the 1, 2, 3, 4, 5, 8 and 10 times tables",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Ni.06",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Integers and powers",
+      "summary": "Multiply numbers up to 100 by 2, 3, 4 and 5",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Ni.07",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Integers and powers",
+      "summary": "Divide numbers up to 100 by 2, 3, 4 and 5",
+      "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
+    },
+    {
+      "code": "3Ni.08",
+      "framework": "mathematics",
+      "stage": 3,
+      "strand": "Integers and powers",
+      "summary": "Recognise multiples of 2, 5 and 10",
       "source": "Cambridge Primary Mathematics curriculum framework (0096), 2020"
     },
     {

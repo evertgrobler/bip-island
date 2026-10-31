@@ -71,8 +71,8 @@ Each grapheme carries its sound (IPA), its kind (`stretchy`, `bouncy`, `vowel` o
 | More or Less | 4–7 | 1Ni.02, 1Ni.03, 1Ni.05, 1Np.03, 1Ss.03, 2Ni.02, 2Ni.04 |
 | Ten-Frame Garden | 6–8 | 1Ni.04, 1Ni.06, 1Np.02, 2Ni.03 |
 | Corner Shop | 6–8 | 1Nm.01, 2Nm.01, 2Nm.02, 3Nm.01, 3Nm.02 |
-| Picnic Plates (planned) | 6–8 | 2Nc.04, 2Ni.05, 2Ni.06, 2Np.02, 3Ni.04, 3Ni.07 |
-| Number Machine (planned) | 6–8 | 2Ni.05, 2Ni.06, 2Ni.07, 3Ni.03, 3Ni.04, 3Ni.05, 3Ni.06, 3Ni.07 |
+| Picnic Plates | 6–8 | 2Nc.04, 2Ni.05, 2Ni.06 (levels 1–5; 2Np.02, 3Ni.04 and 3Ni.07 come with levels 6–7) |
+| Number Machine | 6–8 | 2Ni.05, 2Ni.06, 2Ni.07, 3Ni.03, 3Ni.05, 3Ni.06, 3Ni.07 (3Ni.04 comes with doubling three times) |
 | Sound Buttons | 4–6 | 1Rw.03, 1Rw.05, 1Rw.06, 2Rw.05, 2Rw.06 |
 | Word Builder | 5–7 | 1Rw.04, 1Ww.02, 1Ww.04, 1Ww.05, 2Ww.05 |
 | Missing Letter | 5–7 | 1Ww.02, 1Ww.05 |
@@ -176,7 +176,7 @@ The games are described in `docs/GAMES.md`, "Maths plan". Nothing below is in th
 
 ### Objective codes to add
 
-These Mathematics 0096 codes are not in `objectives.json` yet. The summaries are our own short paraphrases. **To confirm:** they were written from summaries of the 2020 framework, not the document itself. Check each code against the framework PDF before it goes into the JSON.
+These Mathematics 0096 codes are not in `objectives.json` yet (2Ni.05 and 2Ni.06 went in with Picnic Plates, and 3Ni.03 and 3Ni.05 to 3Ni.08 with Number Machine, 29 October 2026, still to be checked against the framework PDF). The summaries are our own short paraphrases. **To confirm:** they were written from summaries of the 2020 framework, not the document itself. Check each code against the framework PDF before it goes into the JSON.
 
 | Code | Our summary |
 | --- | --- |

@@ -102,7 +102,7 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
         if (!rng.TryPick(fresh, out var pick) && !rng.TryPick(options, out pick)) return null;
         var (sentence, hidden) = pick;
         var answer = sentence[hidden];
-        var choices = Choices(answer, rng);
+        var choices = NearChoices.Make(answer, 1, rng);
         if (mode == Mode.FactFamily)
         {
             // The finished sum it comes from: a + b = c helps with c − b, c − a and b + a.
@@ -162,13 +162,6 @@ public sealed class BipsBalanceGame(ContentLibrary content) : IMiniGame<BipsBala
                     .Concat(s.Left != s.Right ? [new Sentence(s.Right, Op.Plus, s.Left, s.Result)] : []))
                 .Distinct().Select(s => (s, Slot.Result)).ToList(),
         };
-    }
-
-    /// <summary>Three cards: the answer and two near it, none below 1.</summary>
-    private static List<int> Choices(int answer, IRandomSource rng)
-    {
-        var near = new[] { answer - 2, answer - 1, answer + 1, answer + 2 }.Where(n => n >= 1);
-        return rng.Shuffled(rng.Shuffled(near).Take(2).Prepend(answer));
     }
 
     /// <summary>Right when the number in the box makes both sides balance.</summary>

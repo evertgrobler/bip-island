@@ -108,6 +108,8 @@ public partial class ScreenPreview : Node
             BipIsland.Games.StoriesScreen.PreviewQuestions = Typed > 0;
         }
         if (Screen == BipsBalanceGame.GameId && Level >= 0) game.Progress.GameLevels[BipsBalanceGame.GameId] = new SkillMastery(Level);
+        if (Screen == PicnicPlatesGame.GameId && Level >= 0) game.Progress.GameLevels[PicnicPlatesGame.GameId] = new SkillMastery(Level);
+        if (Screen == NumberMachineGame.GameId && Level >= 0) game.Progress.GameLevels[NumberMachineGame.GameId] = new SkillMastery(Level);
         if (Screen is "language" or "map_language" or ShowMeGame.GameId or WhatIsItGame.GameId or BipsDayGame.GameId) game.PreviewLanguageIsland();
         // A game opens the way an island opens it, with its first question straight away.
         BipIsland.Games.GameScreen.StartDelay = 0;

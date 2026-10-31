@@ -19,6 +19,8 @@ public static partial class ArtPictures
         ["pic_bike"] = Bike,
         ["pic_bin"] = Bin,
         ["pic_biscuit"] = Biscuit,
+        ["pic_naartjie"] = Naartjie,
+        ["pic_strawberry"] = Strawberry,
         ["pic_boat"] = Boat,
         ["pic_bowl"] = Bowl,
         ["pic_bug"] = Bug,
@@ -199,6 +201,30 @@ public static partial class ArtPictures
                new Color("d9a35a"), 5);
         foreach (var (x, y) in new[] { (-34.0, 30.0), (20.0, 46.0), (40.0, -6.0), (-10.0, -30.0), (-46.0, -20.0), (14.0, 8.0), (30.0, -46.0) })
             p.Fill(Ellipse(P(x, y), 9, 7), Palette.Brown.Darkened(0.3f), 2);
+        return p.Node;
+    }
+
+    // A naartjie: a squat orange with a dimpled peel, its stalk and a leaf (Picnic Plates).
+    private static Node2D Naartjie()
+    {
+        var p = new Pic(3995);
+        p.Fill(Ellipse(P(0, -6), 88, 76), Palette.Orange, 5);
+        foreach (var (x, y) in new[] { (-40.0, 20.0), (10.0, 34.0), (44.0, 6.0), (-18.0, -24.0), (26.0, -36.0), (-52.0, -16.0), (2.0, -2.0) })
+            p.Fill(Ellipse(P(x, y), 4, 3), Palette.Orange.Darkened(0.2f), 1);
+        p.Line(Polyline(P(0, 64), P(4, 82)), Palette.Brown, 6);
+        p.Fill(Polygon(P(6, 76), P(40, 98), P(66, 84), P(34, 70)), Palette.Leaf, 4);
+        return p.Node;
+    }
+
+    // A strawberry: red, with seeds and a green top (Picnic Plates).
+    private static Node2D Strawberry()
+    {
+        var p = new Pic(3996);
+        p.Fill(Polygon(P(-80, 46), P(-56, 70), P(0, 62), P(56, 70), P(80, 46), P(74, 4), P(48, -44), P(0, -96), P(-48, -44), P(-74, 4)),
+               Palette.Red, 5);
+        foreach (var (x, y) in new[] { (-44.0, 34.0), (0.0, 38.0), (44.0, 34.0), (-26.0, 2.0), (24.0, 2.0), (-40.0, -22.0), (40.0, -22.0), (0.0, -20.0), (-14.0, -52.0), (14.0, -52.0) })
+            p.Fill(Ellipse(P(x, y), 4, 6), Palette.Sun, 1);
+        p.Fill(Polygon(P(-60, 64), P(-30, 92), P(-10, 70), P(0, 100), P(10, 70), P(30, 92), P(60, 64), P(0, 58)), Palette.Leaf, 4);
         return p.Node;
     }
 
