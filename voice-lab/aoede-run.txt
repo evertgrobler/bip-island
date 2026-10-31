@@ -1,2 +1,2 @@
-40
-Daily run (started 31 October 2026 10:45 SAST): up to 40 requests, stopping early when Gemini's free daily limit is reached.
+50
+Paid run (started 31 October 2026 23:57 SAST, prepaid $5 credit, auto-reload off): up to 50 requests.
