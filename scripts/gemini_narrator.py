@@ -598,8 +598,8 @@ def main():
     first = []
     sorted_todo = {}
     for c in todo:
-        key = (bool(fails(state, c, all_texts[c])), priority(c), group(c), split(c)[0])
-        sorted_todo.setdefault(key, []).append(c)
+        bucket = (bool(fails(state, c, all_texts[c])), priority(c), group(c), split(c)[0])
+        sorted_todo.setdefault(bucket, []).append(c)
     for retry in (False, True):
         for step in range(0, 10):
             for style in ("sparkle", "clear", "big", "words", "names", "phonics"):
