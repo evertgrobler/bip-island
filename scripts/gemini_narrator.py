@@ -37,7 +37,9 @@ STATE = ROOT / "voice-lab" / "aoede.json"
 MAX_REQUESTS = int(os.environ.get("MAX_REQUESTS") or 40)
 # No new batch starts after this many minutes, so the run always ends (and commits) inside the
 # workflow's 180-minute limit.
-MAX_MINUTES = 150
+# Counted from the script's start, after a few minutes of setup; one batch can then take up to about 30
+# minutes (four tries of a slow reply plus per-minute waits, and Whisper on CPU), so 120 leaves room.
+MAX_MINUTES = 120
 # Trim the ends of each piece: Gemini's quiet has a soft noise floor, so -40 dB counts as silence.
 TRIM = ("silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.05,areverse,"
         "silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.08,areverse")
@@ -264,13 +266,13 @@ class DailyLimit(Exception):
 
 
 class SetupError(Exception):
-    """The key, the model or the request is wrong (401, 403, 404, a bad API key): no batch can work until a person fixes it."""
+    """The key, the model or the request is wrong (any 4xx but 429): no batch can work until a person fixes it."""
 
 
 class BatchFailed(Exception):
     """
     Gemini couldn't make this batch: try the next one. <lines_fault> is True when the reply itself was the
-    problem (a 400 about the content, a reply with no audio), so the clips count a failed take and move on to small retry
+    problem (a reply with no audio), so the clips count a failed take and move on to small retry
     batches, then GIVE_UP; a network error or a 5xx is no one's fault and counts nothing.
     """
     def __init__(self, message, lines_fault=False):
@@ -313,12 +315,15 @@ def speak(key, lang, style, lines, hints=()):
             return base64.b64decode(data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"])
         except urllib.error.HTTPError as e:
             text = e.read().decode("utf-8", "replace")
-            if e.code in (401, 403, 404) or "API_KEY" in text or "API key" in text:
+            # Any other 4xx is the request's fault (a key, a model, a request body or a region), never the
+            # lines': it stops the run for a person rather than counting failed takes against good lines.
+            if 400 <= e.code < 500 and e.code != 429:
                 raise SetupError(f"Gemini said {e.code}: {text[:300]!r}")
             if e.code != 429:
-                raise BatchFailed(f"Gemini said {e.code}: {text[:300]!r}", lines_fault=e.code < 500)
+                raise BatchFailed(f"Gemini said {e.code}: {text[:300]!r}")
             # The free tier has a per-minute limit as well as the daily one: wait out a per-minute 429.
             wait = re.search(r'"retryDelay":\s*"(\d+)(?:\.\d+)?s"', text)
+            # The last try never waits: a fourth per-minute 429 in a row ends the day's run.
             if "PerDay" in text or attempt == 3 or not ("PerMinute" in text or wait):
                 raise DailyLimit(text[:300])
             time.sleep(min(int(wait.group(1)) if wait else 30, 90) + 2)
@@ -326,7 +331,7 @@ def speak(key, lang, style, lines, hints=()):
             raise BatchFailed(f"no audio in the reply ({type(e).__name__}: {e})", lines_fault=True)
         except (urllib.error.URLError, TimeoutError, OSError) as e:
             raise BatchFailed(f"{type(e).__name__}: {e}")
-    raise DailyLimit("still limited after waiting")
+    raise AssertionError("unreachable: the last try returns or raises")
 
 
 def silence_cut(wav, count):
@@ -346,6 +351,23 @@ def duration(wav):
     out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(wav)],
                          capture_output=True, text=True).stdout
     return float(out or 0)
+
+
+# The most a piece is turned up: a quiet take is better left a little quiet than pushed into the limiter.
+MAX_GAIN = 20.0
+
+
+def gain_for(wav):
+    """
+    How many dB to turn a piece up or down to TARGET_LUFS. The loudness meter needs 0.4 s of sound, and
+    reads a shorter piece (a stop sound like "b", about 0.3 s) as silence (-70 LUFS, so +55 dB): a short
+    piece is measured looped end to end, and no piece goes up more than MAX_GAIN.
+    """
+    measured = wav
+    if duration(wav) < 0.45:
+        measured = wav.with_name("looped.wav")
+        ffmpeg("-stream_loop", "4", "-i", str(wav), str(measured))
+    return min(TARGET_LUFS - loudness(measured), MAX_GAIN)
 
 
 def names(text):
@@ -441,7 +463,10 @@ AF_NUMBER_WORDS = set(AF_NUMBERS)
 
 def af_sound(word):
     """An Afrikaans word as it sounds, so Whisper's Dutch spellings match it: "rachtig" and "regtig" both
-    become "ragtig"/"regtig", "jij" becomes "jy", doubled letters count once."""
+    become "ragtig"/"regtig", "jij" becomes "jy", doubled letters count once. "een" (one) stays whole, so
+    it never sounds like "en" (and)."""
+    if word == "een":
+        return word
     for dutch, af in DUTCH:
         word = word.replace(dutch, af)
     return re.sub(r"(.)\1+", r"\1", word)
@@ -453,13 +478,17 @@ def same_afrikaans(heard, text):
     sound (af_sound) and loosely: the whole line must be AF_LINE_CLOSE alike and each changed stretch of
     words AF_WORD_CLOSE alike ("Klik op die hond" for "kat" fails), while the numbers and the words for
     "not" must be exactly the same ("drie" for "vier", or an extra "nie", fails). Only a word of one or two
-    letters ("'n", "en") may be missing or extra.
+    letters ("'n", "en") may be missing or extra. Whisper writes Afrikaans "'n" (a) as Dutch "een", so a
+    heard "een" may stand for an "'n", but every "een" (one) in the line must be heard.
     """
     got, want = [af_sound(w) for w in af_words(heard)], [af_sound(w) for w in af_words(text)]
-    numbers = {af_sound(w) for w in AF_NUMBER_WORDS}
+    numbers = {af_sound(w) for w in AF_NUMBER_WORDS} - {"een"}
     if [w for w in got if w in numbers or w.isdigit()] != [w for w in want if w in numbers or w.isdigit()]:
         return False
-    if [w for w in got if w in DUTCH_NOT] != [w for w in want if w in DUTCH_NOT]:
+    if not want.count("een") <= got.count("een") <= want.count("een") + want.count("n"):
+        return False
+    nots = {af_sound(w) for w in DUTCH_NOT}
+    if [w for w in got if w in nots] != [w for w in want if w in nots]:
         return False
     alike = lambda a, b: difflib.SequenceMatcher(a=a, b=b, autojunk=False).ratio()
     if alike("".join(got), "".join(want)) < AF_LINE_CLOSE:
@@ -522,11 +551,11 @@ class Listener:
             if i not in first:
                 spans.append(None)
                 continue
-            before = [last[j] for j in range(i) if j in last]
-            after = [first[j] for j in range(i + 1, len(lines)) if j in first]
-            # The line next to it wasn't heard: stop EDGE short of it rather than take its audio in.
-            start = (before[-1] + first[i]) / 2 if before else 0.0 if i == 0 else max(0.0, first[i] - EDGE)
-            end = (last[i] + after[0]) / 2 if after else total if i == len(lines) - 1 else min(total, last[i] + EDGE)
+            # Halfway into the gap to the line right next to it; if that line wasn't heard, EDGE past this
+            # line's own words, so its piece never takes in the unheard line's audio.
+            start = 0.0 if i == 0 else (last[i - 1] + first[i]) / 2 if i - 1 in last else max(0.0, first[i] - EDGE)
+            end = (total if i == len(lines) - 1 else (last[i] + first[i + 1]) / 2 if i + 1 in first
+                   else min(total, last[i] + EDGE))
             spans.append((start, end))
         return spans
 
@@ -538,12 +567,11 @@ class Listener:
 
 
 def status(state, all_texts):
-    wanted = all_texts
-    done = sum(1 for c, t in wanted.items() if state["done"].get(c) == t)
+    done = sum(1 for c, t in all_texts.items() if state["done"].get(c) == t)
     stuck = [c for c in state["failed"] if c in all_texts and fails(state, c, all_texts[c]) >= GIVE_UP]
     hold = held()
-    waiting = sum(1 for c, t in wanted.items() if state["done"].get(c) != t and is_held(c, hold))
-    return len(wanted), done, stuck, waiting
+    waiting = sum(1 for c, t in all_texts.items() if state["done"].get(c) != t and is_held(c, hold))
+    return len(all_texts), done, stuck, waiting
 
 
 def main():
@@ -568,12 +596,15 @@ def main():
     # one style.
     queues = {lang: [] for lang in LANGS}
     first = []
+    sorted_todo = {}
+    for c in todo:
+        key = (bool(fails(state, c, all_texts[c])), priority(c), group(c), split(c)[0])
+        sorted_todo.setdefault(key, []).append(c)
     for retry in (False, True):
         for step in range(0, 10):
             for style in ("sparkle", "clear", "big", "words", "names", "phonics"):
                 for lang in LANGS:
-                    these = [c for c in todo if split(c)[0] == lang and group(c) == style and priority(c) == step
-                             and bool(fails(state, c, all_texts[c])) == retry]
+                    these = sorted_todo.get((retry, step, style, lang), [])
                     size = batch_size(style, retry)
                     chunks = [(lang, style, these[i:i + size]) for i in range(0, len(these), size)]
                     if step == 0:
@@ -644,7 +675,7 @@ def main():
                 piece, trimmed, out = tmp / "piece.wav", tmp / "trimmed.wav", tmp / f"{name}.m4a"
                 ffmpeg("-i", str(raw), "-ss", f"{start:.3f}", "-to", f"{end:.3f}", str(piece))
                 ffmpeg("-i", str(piece), "-af", TRIM, "-ar", "44100", "-ac", "1", str(trimmed))
-                gain = TARGET_LUFS - loudness(trimmed)
+                gain = gain_for(trimmed)
                 ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,{finish(style)}", "-ar", "44100", "-ac", "1",
                        "-c:a", "aac", "-b:a", "128k", str(out))
                 if style in ("phonics", "names"):

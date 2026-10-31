@@ -47,7 +47,7 @@ jobs:
           python3 scripts/validate_content.py > /dev/null
           MAX_REQUESTS=$(head -1 voice-lab/aoede-run.txt | tr -dc 0-9) python3 scripts/gemini_narrator.py
       # Even when recording stopped with an error or the job ran out of time: the clips already checked
-      # are kept. (The recorder stops starting batches after 150 minutes, well inside the limit.)
+      # are kept. (The recorder stops starting batches after 120 minutes, inside the limit.)
       - name: Commit the clips
         if: ${{ always() }}
         run: |
@@ -55,10 +55,12 @@ jobs:
           git config user.email "aoede-narrator@users.noreply.github.com"
           mkdir -p voice-lab/aoede_phonics
           git add Resources/Audio voice-lab/aoede.json voice-lab/aoede_phonics
-          git commit -m "Narrator clips from Gemini Aoede, checked by Whisper [skip ci]" || exit 0
+          # No [skip ci]: a bot commit is often the head of this branch's pull request, and its checks must run.
+          git commit -m "Narrator clips from Gemini Aoede, checked by Whisper" || exit 0
           # If someone pushed to the branch meanwhile and the rebase can't be done, the clips go to a side
           # branch instead of being lost (merge it by hand).
-          if ! { git pull --rebase origin "${GITHUB_REF_NAME}" && git push; }; then
+          # --autostash: the validator may have rewritten the asset manifests, which aren't committed here.
+          if ! { git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; }; then
             git rebase --abort 2>/dev/null || true
             git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-rescue-${GITHUB_RUN_ID}"
             echo "::error::The clips are on ${GITHUB_REF_NAME}-rescue-${GITHUB_RUN_ID}: merge them into ${GITHUB_REF_NAME} by hand."

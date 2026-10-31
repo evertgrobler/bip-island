@@ -4,15 +4,18 @@
 > for the design. **When you finish work, update this file**: append a dated entry under
 > "Session log", refresh "Where things stand", and commit it with your changes.
 
-## Where things stand (4 October 2026)
+## Where things stand (31 October 2026)
 
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** 17 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
-  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance), Words (Sound Buttons, Word Builder, Word Rocket),
-  Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
-  game, 8-question visits, star celebration. Letter Trace works with a mouse or a trackpad (18 Oct).
+- **Games:** 21 live across 6 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance), Words (Sound Buttons,
+  Word Builder, Word Rocket, Bip's Stories), Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots,
+  Mirror Magic), Language (Show Me, What Is It?, Bip's Day). Picnic Plates and Number Machine (Numbers) come
+  with #69. Levels inside every game, 8-question visits, star celebration. Letter Trace works with a mouse or a
+  trackpad (18 Oct); Feed the Monster and Word Builder with clicks too once #68 merges. English and Afrikaans
+  home languages, chosen per child.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
   in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
   Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
@@ -25,7 +28,10 @@
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
   aren't covered yet.
-- **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
+- **Voice:** the whole game is being re-recorded with Gemini's Aoede voice, English and Afrikaans, in daily
+  free runs (`scripts/gemini_narrator.py --status` says how far; 529 of 2,800 on 31 Oct). Until a clip is
+  re-recorded the older one plays (ElevenLabs "Bip Island Narrator", then Chatterbox copying her). Letter sounds
+  and letter names wait in `voice-lab/aoede_phonics/` for the owner's ear. The y sound's picture word is yo-yo.
 - **Text contrast (18 Oct):** every text colour meets WCAG (4.5:1, 3:1 for big glyphs). Use `Palette.Ink`,
   `SoftInk`, `QuietInk`, `AlertOrange`, `WrongRed`, `ProblemRed` or `GoodGreen` for text, and the named fills
   (`BalanceBoxFill`, `GapFill`, …) behind it. Their values live in `BipCore.PaletteColours`; a unit test
@@ -137,7 +143,7 @@
   them), or every check run leaves untracked files behind.
 - ElevenLabs keys are often created **restricted** (no `voices_read`/`user_read`): reads fail but
   TTS works. A transient `401` under parallel load goes away with 2 workers + backoff.
-- New narrator clips come from Chatterbox (Narrator workflow), not ElevenLabs. The original voice belongs to one ElevenLabs account; keys from other accounts get
+- New narrator clips come from Aoede (Gemini, the **Aoede narrator** workflow, daily on `claude/aoede-narrator`); Chatterbox (Narrator workflow) and ElevenLabs made the older clips. The original voice belongs to one ElevenLabs account; keys from other accounts get
   `voice_not_found`. Ask the owner for a key from the voice-owner account.
 - Session-only secrets live in `/tmp` (`opencode/.elkey`, `gen_batch.py`, `jobs.json`,
   `bip-full/raw/`, `bip-test/`): never commit, never print.
@@ -650,4 +656,5 @@
   no stickers) from a precise brief; the lead session reviewed it and added one line. This PC has no .NET or `gh`
   yet, so CI is the first run of the test.
 - **25 Oct, 13:30 SAST: daily publishing.** The Vercel team was paused on 25 Oct: "Blob Advanced Operations" reached 2.9K of the free 2K a month, which also took down the owner's other site. Each upload call counts, and `put()`'s multipart sends 8 MB parts, so one release cost well over 100 operations; about 15 merges in two days used up the month. The owner chose to wait for the limit to reset (about 5 days) and to merge less. Since then: `main` builds, tests and publishes once a day at 20:52 SAST (`schedule`), and only when a file that goes into the game or the download page changed since the commit the store was last published from (`godot-test/published.json`, written by `mark_published.mjs` as the publish job's very last step, after the feed check and the download page, and read by the `changed` job with `git diff`). Each commit is built by the daily run once at most (an Actions cache key `daily-tried-<sha>`): a commit whose build, test or publish failed isn't rebuilt every night; a manual run or the next change to `main` tries again. Anything the check can't work out (Vercel unreachable, no note yet) builds anyway. A manual run still publishes at once, and pull requests are unchanged. `publish_blob.mjs` sends files over 64 MB in 64 MB parts (about 4 operations for a 150 MB installer instead of about 20). Keep merges to `main` few and batched. A move to GitHub Releases plus GitHub Pages was built (PR #65, branch `claude/downloads-github`) and closed unmerged; it is ready if the repository goes private or Vercel becomes a problem again.
-- **29 Oct: the Aoede recorder is ready for main (it merges on 1 Nov, when Vercel is back).** `scripts/gemini_narrator.py` and the **Aoede narrator** workflow (daily batches within Gemini's free limit, on `claude/aoede-narrator` only) come to `main` with 480 clips (421 English, 59 Afrikaans). Whisper now gets each line's people's names as hotwords; a person's name may differ as Whisper spells it (on 28 Oct, Sipho heard as "Sipo" threw away 30 good story clips), any other word only by Whisper's American spelling, and Afrikaans is compared as it sounds (Whisper hears it half Dutch: "Precies raag" for "Presies reg"), loosely word by word, with numbers and "nie" exact. On 30 Oct the strict word-by-word check kept only 4 of 18 good Afrikaans takes; the sound-alike check passes 11 of those 17 and still fails a wrong number, an extra "nie" or a different word. The owner heard static in some clips: Gemini's hiss above about 8 kHz, made louder by the volume raise. Spoken lines are now cut above 8 kHz and words, letter names and letter sounds above 11 kHz (so f, th and s stay distinct), with a gentler limiter, at 128 kbps; the owner compared both on the Afrikaans Voice Check page and chose the cleaned sound. Letter names, like letter sounds, wait in `voice-lab/aoede_phonics/` for the owner's ear. A bad key stops the run (and fails it); a run stops starting batches after 150 minutes so its clips are always committed. The owner approved Word Check sections 9 and 10, so those lines left the hold list; the Afrikaans Bip's Stories wait for the owner's check.
+- **29 Oct: the Aoede recorder is ready for main (it merges on 1 Nov, when Vercel is back).** `scripts/gemini_narrator.py` and the **Aoede narrator** workflow (daily batches within Gemini's free limit, on `claude/aoede-narrator` only) come to `main` with 480 clips (421 English, 59 Afrikaans). Whisper now gets each line's people's names as hotwords; a person's name may differ as Whisper spells it (on 28 Oct, Sipho heard as "Sipo" threw away 30 good story clips), any other word only by Whisper's American spelling, and Afrikaans is compared as it sounds (Whisper hears it half Dutch: "Precies raag" for "Presies reg"), loosely word by word, with numbers and "nie" exact. On 30 Oct the strict word-by-word check kept only 4 of 18 good Afrikaans takes; the sound-alike check passes 13 of those 17 and still fails a wrong number, an extra "nie" or a different word. The owner heard static in some clips: Gemini's hiss above about 8 kHz, made louder by the volume raise. Spoken lines are now cut above 8 kHz and words, letter names and letter sounds above 11 kHz (so f, th and s stay distinct), with a gentler limiter, at 128 kbps; the owner compared both on the Afrikaans Voice Check page and chose the cleaned sound. Letter names, like letter sounds, wait in `voice-lab/aoede_phonics/` for the owner's ear. A bad key stops the run (and fails it); a run stops starting batches after 120 minutes so its clips are always committed. Short letter sounds (a stop sound is about 0.3 s, too short for the loudness meter) are measured looped and turned up at most 20 dB; the first takes of b, d, g and the other short sounds came out about 10 dB too hot and are recorded again. The owner approved Word Check sections 9 and 10, so those lines left the hold list; the Afrikaans Bip's Stories wait for the owner's check.
+- **31 Oct, 09:00 SAST: fifth review of #67.** Short letter sounds (b, ck, d, dd, e, g, h, i: 0.24 to 0.34 s) were turned up about 10 dB too far, because the loudness meter reads anything under 0.4 s as silence; they are now measured looped, no piece goes up more than 20 dB, and those eight takes are recorded again. A line next to one Whisper missed is cut 0.4 s past its own words. Any 4xx from Gemini (but 429) stops the run without blaming the lines. Afrikaans "een" (one) no longer sounds like "en" (and), and "geen" and "nooit" are checked exactly like "nie". The run stops starting batches after 120 minutes; the commit step no longer says [skip ci] and pulls with --autostash. CLAUDE.md, PLAN and "Where things stand" now say Aoede records every new clip. The hold list holds the new Afrikaans lines from #69.

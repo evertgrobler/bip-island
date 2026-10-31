@@ -12,7 +12,9 @@ af/vo_picnic
 af/vo_put
 af/vo_on_each_plate
 af/vo_click_the_basket
-af/vo_share_plates
+af/vo_share
+af/vo_between
+af/vo_plates
 af/vo_how_many_each
 af/vo_groups_of
 af/vo_how_many_groups
@@ -24,3 +26,7 @@ af/vo_number_machine
 af/vo_times
 af/vo_divided_by
 af/vo_machine_*
+af/vo_its_a
+af/vo_went_in
+af/vo_came_out
+af/vo_or
