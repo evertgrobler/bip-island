@@ -181,10 +181,12 @@ def priority(key):
     """Most-heard first (docs/VOICE_PLAN.md, section 7): Bip's own lines, instructions, the older lines,
     small numbers, letter sounds, words, stories and reading sentences, Language Island words, and the
     number sentences last (the game joins those from pieces meanwhile). The English Bip's Stories lines
-    come before everything (owner, 25 October 2026): the game has no other recording of them."""
+    come before everything (owner, 25 October 2026): the game has no other recording of them. So do the
+    Afrikaans stories (approved 1 November 2026) and the Afrikaans Language Island words, which an English
+    child learns and which have no recording either."""
     lang, clip = split(key)
     style = group(key)
-    if lang == "en" and (clip.startswith("vo_story_") or clip == "vo_bips_stories"):
+    if clip.startswith("vo_story_") or clip == "vo_bips_stories" or (lang == "af" and clip.startswith("learn_")):
         return 0
     if style == "sparkle":
         return 1
