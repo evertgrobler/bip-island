@@ -13,9 +13,10 @@ namespace BipIsland.App;
 ///   about to power off.
 /// - Windows: exclusive full screen, plus a keyboard hook that swallows the Windows key, Alt-Tab,
 ///   Alt-Esc and Ctrl-Esc while the game is in front. Ctrl-Alt-Del always works.
-/// - Both: the mouse stays inside the game's window, so on a computer with a second screen a child can't
-///   move it over there and click another program (which would also take the game out of the front,
-///   where the Windows keyboard hook stops blocking).
+/// - Both: while the game is in front, the mouse stays inside its window, so on a computer with a second
+///   screen a child can't move it over there and click another program (which would also take the game
+///   out of the front, where the Windows keyboard hook stops blocking). If another program takes the
+///   front by itself (a system dialog, an updater), the limit lifts until the game is back in front.
 /// - Hold Option (Mac) or Alt (Windows) while the game opens for parent mode: a normal window, no lock.
 /// Cmd-Q, Alt-F4 and the close button are handled in <see cref="Boot"/> (only the parent area quits).
 /// Every operating-system call is guarded: if one fails, the game logs it and plays unlocked.
@@ -54,15 +55,17 @@ public static class KidLock
         {
             Status = "failed: " + error.Message;
             GD.PrintErr($"Bip Island: the child lock couldn't start, so the game plays unlocked: {error.Message}");
-            // Still fill the screen, as a child expects.
+            // Still fill the screen, as a child expects, and keep the mouse on it: that needs neither the
+            // keyboard hook nor the Mac options.
             DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
+            KeepMouseIn();
         }
     }
 
     /// <summary>The game came back to the front: put the Mac options and the mouse limit back (the system can drop them).</summary>
     public static void Reapply()
     {
-        if (!IsOn) return;
+        if (!IsOn && !Status.StartsWith("failed", StringComparison.Ordinal)) return;
         KeepMouseIn();
         if (Status != "mac") return;
         try { Mac.ApplyOptions(); }
@@ -101,8 +104,9 @@ public static class KidLock
     /// <summary>Lifts the lock before the game quits or restarts for an update.</summary>
     public static void Release()
     {
+        try { Input.MouseMode = Input.MouseModeEnum.Visible; }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (mouse): {error.Message}"); }
         if (!IsOn) return;
-        Input.MouseMode = Input.MouseModeEnum.Visible;
         try
         {
             if (Status == "mac") Mac.Unlock();
