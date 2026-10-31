@@ -644,7 +644,8 @@
         "3Ni.03",
         "3Ni.05",
         "3Ni.06",
-        "3Ni.07"
+        "3Ni.07",
+        "3Ni.08"
       ],
       "content": "curriculum/games.json (levels: the machine rules are each level's steps)",
       "buildPhase": 3,

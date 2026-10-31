@@ -252,11 +252,11 @@ public partial class PicnicPlatesScreen : GameScreen
     /// </summary>
     private void DrawSharePile(PicnicPlatesGame.Round round)
     {
-        const double gap = 54;
+        const double gap = 60;
         for (var n = 0; n < round.Total; n++)
         {
             var inRow = Math.Min(10, round.Total - n / 10 * 10);
-            var food = Add(Food(round.Food, 0.24f), P(115 + (n % 10 - (inRow - 1) / 2.0) * gap, -55 - n / 10 * gap), 3);
+            var food = Add(Food(round.Food, 0.28f), P(115 + (n % 10 - (inRow - 1) / 2.0) * gap, -55 - n / 10 * gap), 3);
             _scene.Add(food);
             _loose.Add(food);
         }

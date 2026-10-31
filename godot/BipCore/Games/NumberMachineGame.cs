@@ -71,18 +71,13 @@ public sealed class NumberMachineGame(ContentLibrary content) : IMiniGame<Number
             }
             var unused = options.Where(o => !session.UsedItems.Contains($"{mode}:{o.n}x{o.rule}")).ToList();
             if (!rng.TryPick(unused, out var pick) && !rng.TryPick(options, out pick)) continue;
-            var answer = mode == Mode.Out ? pick.n * pick.rule : pick.n;
-            return new Round(mode, pick.n, pick.rule, NearChoices.Make(answer, mode == Mode.Out ? pick.rule : 1, rng));
+            var round = new Round(mode, pick.n, pick.rule, []);
+            return round with { Choices = NearChoices.Make(round.Answer, mode == Mode.Out ? pick.rule : 1, rng) };
         }
         return null;
     }
 
-    public bool IsCorrect(int choice, Round round) => round.Mode switch
-    {
-        Mode.Out => choice == round.In * round.Rule,
-        Mode.Rule => (round.Inputs ?? [round.In]).All(n => n * choice == n * round.Rule),
-        _ => choice * round.Rule == round.Product,
-    };
+    public bool IsCorrect(int choice, Round round) => choice == round.Answer;
 
     public string SkillId(Round round) => round.Mode switch
     {

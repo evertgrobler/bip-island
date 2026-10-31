@@ -191,12 +191,12 @@ public partial class NumberMachineScreen : GameScreen
             sign.AddChild(Pen(RoundRect(R(-170, -50, 340, 100), 26), Seed(10 + i), fill: Palette.Card, ink: Palette.Teal, lineWidth: 5));
             // In, a drawn arrow, out: the font has no arrow, and every letter is Atkinson Hyperlegible.
             var into = Sketch.Letter($"{inputs[i]}", 70, shadow: Palette.LightTeal);
-            into.Position = P(-105, 0);
+            into.Position = P(-115, 0);
             sign.AddChild(into);
-            sign.AddChild(Pen(Polyline(P(-55, 0), P(15, 0)), Seed(20 + i), ink: Palette.Ink, lineWidth: 7));
-            sign.AddChild(Pen(Polyline(P(-3, 16), P(17, 0), P(-3, -16)), Seed(30 + i), ink: Palette.Ink, lineWidth: 7));
+            sign.AddChild(Pen(Polyline(P(-38, 0), P(26, 0)), Seed(20 + i), ink: Palette.Ink, lineWidth: 7));
+            sign.AddChild(Pen(Polyline(P(8, 16), P(28, 0), P(8, -16)), Seed(30 + i), ink: Palette.Ink, lineWidth: 7));
             var outOf = Sketch.Letter($"{inputs[i] * round.Rule}", 70, shadow: Palette.LightTeal);
-            outOf.Position = P(85, 0);
+            outOf.Position = P(100, 0);
             sign.AddChild(outOf);
             _scene.Add(sign);
         }

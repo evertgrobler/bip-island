@@ -70,9 +70,9 @@ public sealed class PicnicPlatesGame(ContentLibrary content) : IMiniGame<PicnicP
             var fresh = options.Where(o => !session.UsedItems.Contains($"{mode}:{o.Groups}x{o.Each}")).ToList();
             if (!rng.TryPick(fresh, out var pick) && !rng.TryPick(options, out pick)) continue;
             if (!rng.TryPick(_picnic.Food, out var food)) return null;
-            var answer = mode switch { Mode.Sharing => pick.Each, Mode.Grouping => pick.Groups, _ => pick.Groups * pick.Each };
+            var round = new Round(mode, pick.Groups, pick.Each, food, []);
             var step = mode is Mode.Groups or Mode.Make or Mode.Arrays ? pick.Each : 1;
-            return new Round(mode, pick.Groups, pick.Each, food, NearChoices.Make(answer, step, rng));
+            return round with { Choices = NearChoices.Make(round.Answer, step, rng) };
         }
         return null;
     }
@@ -88,12 +88,7 @@ public sealed class PicnicPlatesGame(ContentLibrary content) : IMiniGame<PicnicP
                 select (groups, each)).ToList();
     }
 
-    public bool IsCorrect(int choice, Round round) => round.Mode switch
-    {
-        Mode.Sharing => choice * round.Groups == round.Total,
-        Mode.Grouping => choice * round.Each == round.Total,
-        _ => choice == round.Groups * round.Each,
-    };
+    public bool IsCorrect(int choice, Round round) => choice == round.Answer;
 
     public string SkillId(Round round) => round.Mode is Mode.Sharing or Mode.Grouping ? "share_group" : "equal_groups";
 
