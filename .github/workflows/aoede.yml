@@ -35,11 +35,11 @@ jobs:
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
           pip install faster-whisper==1.2.1
-      # Whisper's models (small.en and small, about 1 GB) are kept between runs.
+      # Whisper's models (small.en and large-v3-turbo, about 2 GB) are kept between runs.
       - uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface
-          key: whisper-small-faster-whisper-1.2.1
+          key: whisper-small-en-turbo-faster-whisper-1.2.1
       - name: Record a day's batches
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

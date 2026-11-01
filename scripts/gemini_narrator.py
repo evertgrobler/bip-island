@@ -101,7 +101,7 @@ LANGS = {
 }
 AF_NUMBERS = ("nul een twee drie vier vyf ses sewe agt nege tien elf twaalf dertien veertien vyftien sestien "
               "sewentien agtien negentien twintig").split()
-# Afrikaans: Whisper's small model hears Afrikaans as half Dutch ("Precies raag" for "Presies reg"), so a
+# Afrikaans: Whisper can hear Afrikaans as half Dutch ("Precies raag" for "Presies reg"), so a
 # line passes when, after DUTCH spellings are made Afrikaans, the whole line is this close (0 to 1)...
 AF_LINE_CLOSE = 0.65
 # ...and each changed stretch of words is this close; numbers and "nie" (DUTCH_NOT) must match exactly.
@@ -530,15 +530,20 @@ def one_word_alike(lang, heard, text):
     return len(g) <= len(w) + 3 and difflib.SequenceMatcher(a=w, b=g, autojunk=False).ratio() >= 0.5
 
 
+# Whisper's models: small.en hears English well; small heard long Afrikaans lines with numbers as Dutch
+# ("Ian in Ian" for "Een en een", 0 of 18 passing on 31 October), so Afrikaans uses the bigger turbo model.
+WHISPER_MODELS = {"en": "small.en", "af": "large-v3-turbo"}
+
+
 class Listener:
-    """Whisper: small.en for English, the multilingual small model for Afrikaans (loaded when first needed)."""
+    """Whisper (WHISPER_MODELS), each model loaded when first needed."""
     def __init__(self):
         self.models = {}
 
     def model(self, lang):
         if lang not in self.models:
             from faster_whisper import WhisperModel
-            self.models[lang] = WhisperModel("small.en" if lang == "en" else "small", device="cpu", compute_type="int8")
+            self.models[lang] = WhisperModel(WHISPER_MODELS[lang], device="cpu", compute_type="int8")
         return self.models[lang]
 
     def heard(self, path, lang="en", text=""):
