@@ -672,3 +672,9 @@
   Settings → Pages → Source: GitHub Actions; reinstall once on each family computer from
   https://evertgrobler.github.io/bip-island/. Removed: the Blob scripts (`publish_blob.mjs`, `blob_store.sh`,
   `mark_published.mjs`, `resolve_feed_url.sh`), `setup-updates.yml`, `site/vercel.json`, the `VERCEL_*` use.
+  How publishing protects itself: the release stays a draft (invisible to installed games) until
+  `github_release.py finish` has checked both computers' update files and both downloads are fully uploaded,
+  then publishes it as the latest with its tag on the commit built; the whole upload gets three tries, each
+  from a clean start (`clear` removes only this pipeline's drafts), a stall fails after 5 minutes, and the
+  job has 75 minutes; a re-run of a publish that worked skips the upload (`done`); clearing old releases
+  (`prune`, newest 5 of ours kept) only ever warns; and the run checks GitHub's latest really is this version.

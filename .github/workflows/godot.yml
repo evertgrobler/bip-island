@@ -488,7 +488,7 @@ jobs:
           # A re-run of a publish that already worked has nothing to upload.
           if release done "$VERSION"; then
             echo "Release $VERSION is already published."
-            release prune "$VERSION" --keep 5
+            release prune "$VERSION" --keep 5 || echo "::warning::Couldn't remove old releases."
           else
             # Up to three tries: a network blip shouldn't cost the family a day's update. Each try
             # starts clean (clear removes the previous try's draft).
@@ -500,7 +500,10 @@ jobs:
                  && upload osx release/macos/osx --merge && release finish "$VERSION" --keep 5; then
                 break
               fi
-              [ "$try" = 3 ] && { echo "::error::Publishing $VERSION failed three times."; exit 1; }
+              if [ "$try" = 3 ]; then
+                release done "$VERSION" && break  # the last try published, then broke
+                echo "::error::Publishing $VERSION failed three times."; exit 1
+              fi
               echo "::warning::Publishing try $try failed; trying again in a minute."
               sleep 60
             done

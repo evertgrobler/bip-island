@@ -17,7 +17,7 @@ GitHub REST API and the same token.
   published                   print the commit the latest release was built from (empty if none)
   done <tag>                  exit 0 if <tag> is already published with every file (a re-run)
   latest                      print the tag of the release GitHub calls latest
-  prune  <tag> --keep N       delete all but the newest N published releases (never <tag>)
+  prune  <tag> --keep N       delete all but the newest N (at least 2) published releases (never <tag>)
 
 Env: DOWNLOADS_TOKEN (contents read/write on the repository; the workflow's own GITHUB_TOKEN),
      DOWNLOADS_REPO (owner/name; the game's own repository),
@@ -184,16 +184,16 @@ def finish(tag, keep):
 
 
 def prune(tag, keep):
-    """Deletes all but the newest <keep> published releases (never <tag>). Only warns on failure:
-    the new version is already out."""
-    published = [r for r in releases() if not r["draft"]]
-    published.sort(key=lambda r: r.get("published_at") or "", reverse=True)
-    for old in published[keep:]:
-        if old["tag_name"] != tag:
-            try:
+    """Deletes all but the newest <keep> (at least 2) of this pipeline's published releases (never <tag>).
+    Never fails: the new version is already out, so any error here, network ones included, is a warning."""
+    try:
+        published = [r for r in releases() if not r["draft"] and ours(r)]
+        published.sort(key=lambda r: r.get("published_at") or "", reverse=True)
+        for old in published[max(keep, 2):]:
+            if old["tag_name"] != tag:
                 delete_release(old)
-            except SystemExit as e:
-                print(f"::warning::Couldn't delete the old release {old['tag_name']}: {e}")
+    except (SystemExit, Exception) as e:
+        print(f"::warning::Couldn't remove old releases: {e}")
 
 
 def published():
@@ -238,10 +238,8 @@ def main():
     elif args.command == "latest":
         latest()
     elif args.command == "prune":
-        prune(args.tag, max(args.keep, 2))
+        prune(args.tag, args.keep)
     else:
-        if args.keep < 2:
-            sys.exit("Keep at least 2 releases.")
         finish(args.tag, args.keep)
 
 
