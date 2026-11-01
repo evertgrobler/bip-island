@@ -180,6 +180,7 @@
       background: var(--paper); border: 3px solid var(--ink); border-radius: var(--wob2); padding: 14px 16px; min-height: 88px;
     }
     .voice:nth-child(even) { border-radius: var(--wob); }
+    .voice[hidden] { display: none; }
     .voice:focus-visible { outline: 4px solid var(--ink); outline-offset: 4px; }
     .voice .disc { flex: none; width: 52px; height: 52px; display: grid; place-items: center; background: var(--coding); border: 3px solid var(--ink); border-radius: 50%; }
     .voice .disc span { width: 0; height: 0; margin-left: 4px; border-left: 15px solid var(--ink); border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
@@ -325,10 +326,10 @@
       <!-- The narrator's real clips: deploy_site.sh copies each data-clip from Resources/Audio into voices/. -->
       <h3 class="eyebrow voices-head">Hear the narrator</h3>
       <div class="voices">
-        <button class="voice" type="button" data-clip="vo_welcome"><span class="disc" aria-hidden="true"><span></span></span><span><b>English: hello from Bip</b><small>"Hello! This is Bip, a little robot who loves sounds…"</small></span></button>
-        <button class="voice" type="button" data-clip="af/vo_welcome"><span class="disc" aria-hidden="true"><span></span></span><span><b>Afrikaans: hallo van Bip</b><small lang="af">"Hallo! Dit is Bip, 'n klein robot wat baie lief is vir klanke…"</small></span></button>
-        <button class="voice" type="button" data-clip="vo_letters_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>English: on an island</b><small>"Welcome to Letters Island! Click Bip, and let's play."</small></span></button>
-        <button class="voice" type="button" data-clip="af/vo_letters_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>Afrikaans: op 'n eiland</b><small lang="af">"Welkom op Letter-eiland! Klik op Bip, dan speel ons."</small></span></button>
+        <button class="voice" type="button" data-clip="vo_numbers_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>English: Numbers Island</b><small>"Welcome to Numbers Island! Click Bip, and let's count."</small></span></button>
+        <button class="voice" type="button" data-clip="af/vo_numbers_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>Afrikaans: Getalle-eiland</b><small lang="af">"Welkom op Getalle-eiland! Klik op Bip, dan tel ons."</small></span></button>
+        <button class="voice" type="button" data-clip="vo_letters_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>English: Letters Island</b><small>"Welcome to Letters Island! Click Bip, and let's play."</small></span></button>
+        <button class="voice" type="button" data-clip="af/vo_letters_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>Afrikaans: Letter-eiland</b><small lang="af">"Welkom op Letter-eiland! Klik op Bip, dan speel ons."</small></span></button>
       </div>
       <p class="voices-note">Afrikaans as a home language is on its way: the game is being recorded in both languages now.</p>
     </div>
@@ -375,8 +376,8 @@
     <div class="wrap made">
       <p class="eyebrow">How it was made</p>
       <h2>A family project, built with AI</h2>
-      <p>Bip Island is a personal project: a parent making a learning game for their own children. It isn't a company product, and it isn't for sale.</p>
-      <p><b>It was built with AI.</b> Claude, an AI from Anthropic, wrote the code, drew the pictures (in code), and helped plan the games against the Cambridge curriculum, with the parent deciding what to make and checking every change. The narrator is an AI voice too, made with Google Gemini and ElevenLabs.</p>
+      <p>Bip Island is our own family project: a learning game we're making for our children. It isn't a company product, and it isn't for sale.</p>
+      <p><b>It was built with AI.</b> Claude, an AI from Anthropic, wrote the code, drew the pictures (in code) and helped plan the games against the Cambridge curriculum, with us deciding what to make and checking every change. The narrator is an AI voice too, made with ElevenLabs and Chatterbox and now being re-recorded with Google Gemini, and the background music was made with ElevenLabs Music.</p>
       <p>Every game is tested automatically before it reaches our computers, and played by our own children first.</p>
     </div>
   </section>
@@ -411,7 +412,7 @@
           <details>
             <summary>Or install without the warning</summary>
             <p>Open <b>Terminal</b> (Applications → Utilities), paste this line and press Return. It downloads the same game, puts it in Applications (replacing an older one) and opens it. A download made this way isn't marked as coming from the internet, so the Mac doesn't stop it.</p>
-            <div class="cmd"><pre id="cmd-mac">d="$(mktemp -d)" &amp;&amp; curl -fL "{{MAC_URL}}" -o "$d/BipIsland-mac.dmg" &amp;&amp; mkdir "$d/disk" &amp;&amp; hdiutil attach -nobrowse -quiet -mountpoint "$d/disk" "$d/BipIsland-mac.dmg" &amp;&amp; { ditto "$d/disk/Bip Island.app" "$d/Bip Island.app"; ok=$?; hdiutil detach -quiet "$d/disk"; [ $ok -eq 0 ]; } &amp;&amp; rm -rf "/Applications/Bip Island.app" &amp;&amp; mv "$d/Bip Island.app" /Applications/ &amp;&amp; rm -rf "$d" &amp;&amp; open "/Applications/Bip Island.app"</pre><button class="copy" type="button" data-for="cmd-mac">Copy</button></div>
+            <div class="cmd"><pre id="cmd-mac">d="$(mktemp -d)"; curl -fL "{{MAC_URL}}" -o "$d/BipIsland-mac.dmg" &amp;&amp; mkdir "$d/disk" &amp;&amp; hdiutil attach -nobrowse -quiet -mountpoint "$d/disk" "$d/BipIsland-mac.dmg" &amp;&amp; { ditto "$d/disk/Bip Island.app" "$d/Bip Island.app"; ok=$?; hdiutil detach -quiet "$d/disk" || hdiutil detach -force -quiet "$d/disk"; [ $ok -eq 0 ]; } &amp;&amp; rm -rf "/Applications/Bip Island.app" &amp;&amp; mv "$d/Bip Island.app" /Applications/ &amp;&amp; open "/Applications/Bip Island.app"; rm -rf "$d"</pre><button class="copy" type="button" data-for="cmd-mac">Copy</button></div>
           </details>
         </div>
         <div class="dl" id="download-windows">
@@ -463,11 +464,8 @@
   var voice = new Audio(), playing = null;
   function stopVoice() { voice.pause(); if (playing) playing.classList.remove("playing"); playing = null; }
   voice.addEventListener("ended", stopVoice);
+  voice.addEventListener("error", stopVoice);
   document.querySelectorAll(".voice").forEach(function (button) {
-    // A sample the build couldn't find (not recorded yet) isn't shown.
-    var probe = new Audio(); probe.preload = "metadata";
-    probe.addEventListener("error", function () { button.hidden = true; });
-    probe.src = "voices/" + button.dataset.clip + ".m4a";
     button.addEventListener("click", function () {
       if (playing === button) { stopVoice(); return; }
       stopVoice();
