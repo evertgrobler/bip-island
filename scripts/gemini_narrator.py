@@ -289,8 +289,18 @@ def sounds(lang):
         spelt = g["grapheme"] * 3 if g.get("kind") == "stretchy" and len(g["grapheme"]) == 1 else g["grapheme"]
         # Keep the notes on how it sounds; drop the ones on how the old clips were cut ("generate 'tap' and trim").
         hint = " ".join(x for x in re.split(r"(?<=\.)\s+", g.get("narratorHint", "")) if not re.search(r"[Gg]enerate|trim|[Rr]ecord", x))
+        spelt, hint = SAY_AS.get((lang, g["audio"]), (spelt, hint))
         found[g["audio"]] = (spelt, hint)
     return found
+
+
+# Sounds the owner flagged on the Letter Sounds Check page (1 November 2026), written the way they sound:
+# "igh" came out as the three letters and "er" and "a" not as the sound.
+SAY_AS = {
+    ("en", "snd_igh"): ("eye", "The long i sound in light and night, said once. Never the letters i, g, h."),
+    ("en", "snd_er"): ("uh", "The soft, short 'uh' at the end of ladder and sister: no 'r', never the letters e, r."),
+    ("en", "snd_a"): ("a", "The short a in ant, cat and apple, said very briefly: not 'ay', not 'ah', and no word after it."),
+}
 
 
 def speak(key, lang, style, lines, hints=()):
