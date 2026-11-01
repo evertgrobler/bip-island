@@ -11,15 +11,19 @@ GitHub REST API and the same token.
                               (and tag) already named <tag>, so a re-run starts clean
   attach <tag> <file>...      upload extra files (the Mac .dmg) to the release tagged <tag>
   finish <tag> --keep N       check the release is published with both computers' files, mark it
-                              the latest (the download page's links follow "latest"), then delete
-                              all but the newest N releases and their tags
+                              the latest (the download page's links follow "latest"), note the commit
+                              it was built from (GITHUB_SHA) in its description, then delete all but
+                              the newest N releases and their tags
+  published                   print the commit the latest release was built from (empty if none)
 
-Env: DOWNLOADS_TOKEN (contents read/write on the repository), DOWNLOADS_REPO (owner/name),
+Env: DOWNLOADS_TOKEN (contents read/write on the repository; the workflow's own GITHUB_TOKEN),
+     DOWNLOADS_REPO (owner/name; the game's own repository),
      optional GITHUB_API_URL (default https://api.github.com; set by GitHub Actions anyway).
 """
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -131,13 +135,22 @@ def finish(tag, keep):
     missing = [n for n in REQUIRED if n not in names]
     if missing:
         sys.exit(f"Release {tag} is missing {', '.join(missing)}.")
-    call("PATCH", f"/releases/{release['id']}", body={"make_latest": "true"})
+    sha = os.environ.get("GITHUB_SHA", "")
+    note = f"Bip Island {tag}. Built from commit {sha}." if sha else f"Bip Island {tag}."
+    call("PATCH", f"/releases/{release['id']}", body={"make_latest": "true", "body": note})
     print(f"Release {tag} is the latest, with {len(names)} files.")
     published = [r for r in releases() if not r["draft"]]
     published.sort(key=lambda r: r.get("published_at") or "", reverse=True)
     for old in published[keep:]:
         if old["tag_name"] != tag:
             delete_release(old)
+
+
+def published():
+    """The commit the latest release says it was built from, or nothing."""
+    latest = call("GET", "/releases/latest", ok404=True)
+    match = re.search(r"Built from commit ([0-9a-f]{40})", (latest or {}).get("body") or "")
+    print(match.group(1) if match else "")
 
 
 def main():
@@ -153,6 +166,7 @@ def main():
     p = sub.add_parser("finish")
     p.add_argument("tag")
     p.add_argument("--keep", type=int, default=5)
+    sub.add_parser("published")
     args = parser.parse_args()
     if args.command == "trim":
         return trim(args.folder, args.channel)
@@ -162,6 +176,8 @@ def main():
         clear(args.tag)
     elif args.command == "attach":
         attach(args.tag, args.files)
+    elif args.command == "published":
+        published()
     else:
         if args.keep < 2:
             sys.exit("Keep at least 2 releases.")

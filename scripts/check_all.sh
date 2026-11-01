@@ -98,7 +98,7 @@ export_both() {
     test -s godot/build/macos/BipIsland.zip
 }
 step "Export for Mac and Windows" export_both
-step "Download page builds" env VERSION=0.0.1 scripts/ci/deploy_site.sh --build-only
+step "Download page builds" env VERSION=0.0.1 scripts/ci/deploy_site.sh
 step "Pack the Windows installer" vpk "[win]" pack -x --packId BipIslandCheck --packVersion 0.0.1 \
   --packDir godot/build/windows --mainExe "Bip Island.exe" --packTitle "Bip Island" --skipVeloAppCheck --icon godot/icons/app-icon.ico \
   --outputDir "$out/windows-package"

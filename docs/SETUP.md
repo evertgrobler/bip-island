@@ -1,73 +1,64 @@
 # Setting up Bip Island (Mac and Windows)
 
-Every change merged to `main` is built on GitHub, tested on a real Mac and a real Windows PC, and
-published to the download page. Installed copies update themselves once a grown-up says yes. You
-won't need Xcode, Visual Studio or a terminal.
+Once a day (if `main` changed), the game is built on GitHub, tested on a real Mac and a real Windows
+PC, and published to the download page. Installed copies update themselves once a grown-up says yes.
+You won't need Xcode, Visual Studio or a terminal.
 
 ## How it fits together
 
 ```
-Claude Code ──► GitHub (bip-island)
-                 │  every merge to main
+Claude Code ──► GitHub (bip-island, public)
+                 │  once a day at 20:52 SAST, if main changed (or a manual run)
                  ▼
          GitHub Actions (Linux, Mac and Windows machines in the cloud)
          builds, tests, installs, updates and checks the child lock
                  │
                  ▼
-         GitHub (bip-island-downloads, public): one release per version
-         (installers and update files) + the download page on GitHub Pages
+         GitHub (bip-island): one release per version (installers and
+         update files) + the download page on GitHub Pages
                  │  the game checks when it opens
                  ▼
          Your Mac / Windows PC: "Update ready" for a grown-up to install
 ```
 
-- **Download page:** https://evertgrobler.github.io/bip-island-downloads/
-- **Releases:** https://github.com/evertgrobler/bip-island-downloads/releases (the newest 5 are kept;
-  older ones are deleted by CI).
+- **Download page:** https://evertgrobler.github.io/bip-island/
+- **Releases:** https://github.com/evertgrobler/bip-island/releases (the newest 5 are kept; older ones
+  are deleted by CI).
 - The download buttons always fetch the newest version:
-  `https://github.com/evertgrobler/bip-island-downloads/releases/latest/download/BipIsland-mac.dmg` and
+  `https://github.com/evertgrobler/bip-island/releases/latest/download/BipIsland-mac.dmg` and
   `.../BipIsland-win-Setup.exe`.
 
-Only the finished game, its update files and the download page go to `bip-island-downloads`. Never
-code, content, family details or keys. It's free, with no storage or download limits to run into.
-(Until 25 October 2026 this was on Vercel, which paused the account when the free Blob store limit
-was reached.)
+It's free for a public repository, with no storage or download limits to run into, and it needs no
+token: the workflow publishes with its own. (Until 1 November 2026 this was on Vercel, which paused the
+whole account, the owner's other site included, when the free Blob store limit was reached.)
+
+**If the repository is ever made private,** installed games can no longer read its releases and
+GitHub Pages stops on the free plan. Move the releases to a separate public repository first (ask
+Claude: commit 2c805df, the first version of pull request #65, did that).
 
 ## The one-time setup
 
-1. **Make the downloads repository** (done by the owner on 25 October 2026): on GitHub, a new
-   **public** repository `evertgrobler/bip-island-downloads`, with a README. Then its **Settings** →
-   **Pages** → **Deploy from a branch** → `main`, folder `/ (root)`.
-2. **Make a token for it:** GitHub → your picture → **Settings** → **Developer settings** →
-   **Personal access tokens** → **Fine-grained tokens** → **Generate new token**.
-   - Repository access: **Only select repositories** → `bip-island-downloads`.
-   - Permissions: **Contents: Read and write** (nothing else).
-   - Expiration: as long as GitHub allows; put a reminder in your calendar to renew it.
-3. **Save it in the game repository** (`bip-island` → **Settings** → **Secrets and variables** →
-   **Actions** → **New repository secret**):
-
-| Secret | What it is |
-| --- | --- |
-| `DOWNLOADS_TOKEN` | The token from step 2 |
-
-4. **Actions** → **Godot** → **Run workflow** on `main` publishes the first release and the page.
+1. In `bip-island` → **Settings** → **Pages** → **Build and deployment** → **Source**, choose
+   **GitHub Actions**.
+2. **Actions** → **Godot** → **Run workflow** on `main` publishes the first release and the page.
 
 The old secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` and `SPARKLE_PRIVATE_KEY` aren't
 used any more and can be deleted.
 
-## Moving from Vercel (once, October 2026)
+## Moving from Vercel (once, November 2026)
 
-Copies installed before 25 October 2026 check the old Vercel address for updates, and Vercel has
-paused it, so they won't update any more. **Install once more from the new download page** (same
-steps as below). The new copy replaces the old one, and the children's progress is kept: it's saved
-separately from the game.
+Copies installed before this change check the old Vercel address for updates, so they won't update any
+more. **Install once more from the new download page** (same steps as below). The new copy replaces
+the old one, and the children's progress is kept: it's saved separately from the game.
 
 When Vercel unpauses the old site, Claude can put a small page there that sends visitors to the new
 download page.
 
 ## Installing (once per computer)
 
-Open the download page (https://evertgrobler.github.io/bip-island-downloads/) and pick your computer.
+Open the download page (https://evertgrobler.github.io/bip-island/) and pick your computer. Under each
+button, **Or install without the warning** has a line to paste into Terminal (Mac) or PowerShell
+(Windows) instead, which skips the steps below.
 
 **Mac** (macOS 14 Sonoma or newer)
 1. Click **Download for Mac** and open the `.dmg`. Drag **Bip Island** into **Applications**.
@@ -100,8 +91,7 @@ and open it again any time from the parent area (**Settings → Show the setup g
   question or enter your passcode. The parent area has **Quit** in Settings.
 - **Parent mode:** hold **Option** (Mac) or **Alt** (Windows) while the game opens, for a normal
   window without the lock.
-- Only the main screen is covered. If the Mac gets a second monitor, tell Claude so the lock can
-  cover it too.
+- With a second screen plugged in, the mouse stays on the game's screen while the game is in front.
 
 ## How updates arrive
 
@@ -116,12 +106,11 @@ and open it again any time from the parent area (**Settings → Show the setup g
 
 | Problem | What to do |
 | --- | --- |
-| The **Godot** run warns "DOWNLOADS_TOKEN isn't set" | Add the secret (setup step 3). |
-| The **Godot** run fails at **Publish** with a 401 or 403 | The token has expired or can't write to `bip-island-downloads`. Make a new one (setup step 2) and replace the secret. |
-| The download page is old or missing | `bip-island-downloads` → **Settings** → **Pages** must say **Deploy from a branch**, `main`, `/ (root)`. |
+| The **Godot** run fails at **Publish the release** with a 403 | **Settings** → **Actions** → **General** → **Workflow permissions** must allow the workflow to write (the publish job asks for "contents: write" itself, but an organisation or repository setting can forbid it). |
+| The run warns "the download page wasn't published" | **Settings** → **Pages** → **Source** must be **GitHub Actions** (setup step 1). The release is out either way: installed games still update. |
 | The Mac won't open the app | Use the Privacy & Security → **Open Anyway** step above. |
 | The game won't let me quit | Hold Esc for a full 3 seconds without pressing anything else, then answer the sum. As a last resort: hold the power button (Mac) or Ctrl-Alt-Del (Windows). |
-| Want a nicer web address | `bip-island-downloads` → **Settings** → **Pages** → **Custom domain**. Installed copies don't mind: they update from the releases, not the page. |
+| Want a nicer web address | **Settings** → **Pages** → **Custom domain**. Installed copies don't mind: they update from the releases, not the page. |
 
 ## Later: proper signing
 
@@ -133,8 +122,11 @@ later through GitHub secrets, with no game changes. Updates are already checked 
 
 The owner plans to make `evertgrobler/bip-island` private. Before or when you do:
 
-- **Keep `bip-island-downloads` public.** Installed games read its releases without a password, and
-  the download page lives there. If it went private, every installed copy would stop updating.
+- **Move the releases out first.** Today installed games update from this repository's releases,
+  and the download page is its GitHub Pages site; both stop when it goes private. Before switching,
+  ask Claude to move publishing to a separate public repository (say `bip-island-downloads`, with a
+  `DOWNLOADS_TOKEN` secret; commit 2c805df, the first version of pull request #65, did that), and publish at least one build to
+  both places, so installed copies pick up the new address through a normal update.
 - **GitHub Actions minutes:** a private repository on the free plan gets 2,000 minutes a month, and a
   Mac minute counts as 10 (Windows as 2). A 15-minute Mac job alone counts as 150, so running the Mac
   test on every merge would use the month in about a dozen merges (a run's **Usage** page shows the
@@ -146,5 +138,4 @@ The owner plans to make `evertgrobler/bip-island` private. Before or when you do
 - **The PC session needs a GitHub login:** cloning or pushing a private repository on the owner's
   Windows PC needs `gh auth login` (or Git Credential Manager) with the `evertgrobler` account.
   Cloud sessions keep working through the Claude GitHub app, as long as it can see the repository.
-- **Nothing else changes:** `DOWNLOADS_TOKEN` keeps working, and the download page and update links
-  stay the same.
+- **The download page moves** with the releases, to the new repository's GitHub Pages address.

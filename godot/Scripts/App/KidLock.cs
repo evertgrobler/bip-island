@@ -13,6 +13,10 @@ namespace BipIsland.App;
 ///   about to power off.
 /// - Windows: exclusive full screen, plus a keyboard hook that swallows the Windows key, Alt-Tab,
 ///   Alt-Esc and Ctrl-Esc while the game is in front. Ctrl-Alt-Del always works.
+/// - Both: while the game is in front, the mouse stays inside its window, so on a computer with a second
+///   screen a child can't move it over there and click another program (which would also take the game
+///   out of the front, where the Windows keyboard hook stops blocking). If another program takes the
+///   front by itself (a system dialog, an updater), the limit lifts until the game is back in front.
 /// - Hold Option (Mac) or Alt (Windows) while the game opens for parent mode: a normal window, no lock.
 /// Cmd-Q, Alt-F4 and the close button are handled in <see cref="Boot"/> (only the parent area quits).
 /// Every operating-system call is guarded: if one fails, the game logs it and plays unlocked.
@@ -45,27 +49,63 @@ public static class KidLock
             if (IsMac) Mac.Lock();
             else Windows.Lock();
             Status = IsMac ? "mac" : "windows";
+            KeepMouseIn();
         }
         catch (Exception error)
         {
             Status = "failed: " + error.Message;
             GD.PrintErr($"Bip Island: the child lock couldn't start, so the game plays unlocked: {error.Message}");
-            // Still fill the screen, as a child expects.
+            // Still fill the screen, as a child expects, and keep the mouse on it: that needs neither the
+            // keyboard hook nor the Mac options.
             DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
+            KeepMouseIn();
         }
     }
 
-    /// <summary>The game came back to the front: put the Mac options back (macOS can drop them).</summary>
+    /// <summary>The game came back to the front: put the Mac options and the mouse limit back (the system can drop them).</summary>
     public static void Reapply()
     {
+        if (!IsOn && !Status.StartsWith("failed", StringComparison.Ordinal)) return;
+        KeepMouseIn();
         if (Status != "mac") return;
         try { Mac.ApplyOptions(); }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock: {error.Message}"); }
     }
 
+    /// <summary>
+    /// Whether the mouse is kept inside the game's window (for the self-test report). On Windows this asks
+    /// the system for the cursor's clip rectangle and compares it with the game window; on a Mac there is
+    /// no such question to ask, so it reports Godot's own setting.
+    /// </summary>
+    public static bool MouseKeptIn
+    {
+        get
+        {
+            if (Input.MouseMode != Input.MouseModeEnum.Confined) return false;
+            try { return Status != "windows" || Windows.CursorClippedToGame(); }
+            catch (Exception) { return false; }
+        }
+    }
+
+    /// <summary>
+    /// Keeps the mouse inside the game's window, so it can't reach a second screen. Godot skips a mode
+    /// it thinks is already set, so the mode goes to Visible first: the system really is asked again.
+    /// </summary>
+    private static void KeepMouseIn()
+    {
+        try
+        {
+            Input.MouseMode = Input.MouseModeEnum.Visible;
+            Input.MouseMode = Input.MouseModeEnum.Confined;
+        }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock (mouse): {error.Message}"); }
+    }
+
     /// <summary>Lifts the lock before the game quits or restarts for an update.</summary>
     public static void Release()
     {
+        try { Input.MouseMode = Input.MouseModeEnum.Visible; }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (mouse): {error.Message}"); }
         if (!IsOn) return;
         try
         {
@@ -234,6 +274,27 @@ public static class KidLock
         [DllImport("user32.dll")] private static extern bool UnhookWindowsHookEx(IntPtr hook);
         [DllImport("user32.dll")] private static extern IntPtr CallNextHookEx(IntPtr hook, int code, IntPtr message, IntPtr data);
         [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")] private static extern bool GetClipCursor(out Rect rect);
+        [DllImport("user32.dll")] private static extern bool GetClientRect(IntPtr window, out Rect rect);
+        [DllImport("user32.dll")] private static extern bool ClientToScreen(IntPtr window, ref Point point);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Rect { public int Left, Top, Right, Bottom; }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Point { public int X, Y; }
+
+        /// <summary>Whether Windows clips the cursor to the game window's inside (what Confined asks for).</summary>
+        public static bool CursorClippedToGame()
+        {
+            if (!GetClipCursor(out var clip) || !GetClientRect(_gameWindow, out var inside)) return false;
+            var topLeft = new Point { X = inside.Left, Y = inside.Top };
+            var bottomRight = new Point { X = inside.Right, Y = inside.Bottom };
+            if (!ClientToScreen(_gameWindow, ref topLeft) || !ClientToScreen(_gameWindow, ref bottomRight)) return false;
+            // Inside the window, with a pixel's give for rounding.
+            return clip.Left >= topLeft.X - 1 && clip.Top >= topLeft.Y - 1
+                && clip.Right <= bottomRight.X + 1 && clip.Bottom <= bottomRight.Y + 1;
+        }
         [DllImport("user32.dll")] private static extern short GetAsyncKeyState(int virtualKey);
         [DllImport("kernel32.dll")] private static extern IntPtr GetModuleHandleW(IntPtr name);
 

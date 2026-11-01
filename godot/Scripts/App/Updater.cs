@@ -9,7 +9,7 @@ namespace BipIsland.App;
 
 /// <summary>
 /// Automatic updates (Velopack). Each version is a GitHub Release in a public downloads repository
-/// (evertgrobler/bip-island-downloads), read with Velopack's GithubSource. The repository address comes
+/// (evertgrobler/bip-island, the game's own public repository), read with Velopack's GithubSource. The repository address comes
 /// from res://assets/update.json, written by CI on main; local and pull-request builds have none and
 /// never check. A new version is downloaded quietly in the background, but updates need a grown-up
 /// (owner rule): it is only installed after the parent gate, from the "Update ready" button or the

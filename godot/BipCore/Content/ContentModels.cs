@@ -426,6 +426,27 @@ public sealed record NumbersFile
     public List<StorySum>? StorySums { get; init; }
     /// <summary>Whole sentences with numbers in them, each recorded as one clip (AudioCatalogue.SentenceClip).</summary>
     public SpokenNumbers? SpokenNumbers { get; init; }
+    /// <summary>Picnic Plates: the food on the plates, and how much fits on the screen.</summary>
+    public Picnic? Picnic { get; init; }
+}
+
+/// <summary>Picnic Plates' food (each with a hand-drawn picture) and the most the picnic blanket holds.</summary>
+public sealed record Picnic
+{
+    public string? Note { get; init; }
+    public required List<PicnicFood> Food { get; init; }
+    /// <summary>The most plates (or rows on a tray, or punnets) at once.</summary>
+    public required int MostPlates { get; init; }
+    /// <summary>The most food on one plate (or in one row, or one punnet).</summary>
+    public required int MostEach { get; init; }
+    /// <summary>The most food on the screen at once.</summary>
+    public required int MostFood { get; init; }
+}
+
+public sealed record PicnicFood
+{
+    public required string Id { get; init; }
+    public required string Picture { get; init; }
 }
 
 /// <summary>

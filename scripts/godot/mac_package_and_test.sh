@@ -91,3 +91,26 @@ ln -s /Applications "$stage/Applications"
 hdiutil create -volname "Bip Island" -srcfolder "$stage" -ov -format UDZO "$OUT_DIR/BipIsland-mac.dmg"
 hdiutil verify "$OUT_DIR/BipIsland-mac.dmg"
 ls -la "$OUT_DIR" "$OUT_DIR/osx"
+
+# The download page's "install without the warning" line (site/index.html, cmd-mac), run against this
+# .dmg instead of the published one and without its last step (opening the game): the app must land in
+# Applications, still signed, and with no quarantine mark, which is what keeps Gatekeeper's warning away.
+dmg_url="file://$(cd "$OUT_DIR" && pwd)/BipIsland-mac.dmg"
+line="$(python3 - "$root/site/index.html" "$dmg_url" <<'PY'
+import html, re, sys
+page = open(sys.argv[1], encoding="utf-8").read()
+line = html.unescape(re.search(r'<pre id="cmd-mac">(.*?)</pre>', page, re.S).group(1))
+opener = ' && open "/Applications/Bip Island.app"'
+assert line.endswith(opener), "the Mac install line should end by opening the game"
+print(line[:-len(opener)].replace("{{MAC_URL}}", sys.argv[2]))
+PY
+)"
+bash -c "$line"
+page_app="/Applications/Bip Island.app"
+[ -d "$page_app" ] || { echo "::error::The page's install line didn't put Bip Island in Applications."; exit 1; }
+if xattr "$page_app" | grep -q com.apple.quarantine; then
+  echo "::error::The page's install line left a quarantine mark: the Mac would still warn."; exit 1
+fi
+codesign --verify --deep --strict "$page_app"
+rm -rf "$page_app" /tmp/BipIsland-mac.dmg
+echo "The download page's Mac install line works."
