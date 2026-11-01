@@ -1,2 +1,2 @@
 100
-Paid run (started 1 November 2026 01:00 SAST, prepaid credit, monthly cap $3): up to 100 requests.
+Paid run (started 1 November 2026 12:15 SAST, monthly cap $3): up to 100 requests; Afrikaans now heard with Whisper large-v3-turbo.
