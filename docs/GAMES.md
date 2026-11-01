@@ -136,7 +136,7 @@ As built, the two-miss hint counts the short way instead of always showing cubes
 
 Skins: see-saw at the park, fruit scale at the market, kitchen scale.
 
-### New game: Picnic Plates
+### New game: Picnic Plates (built 29 October 2026, levels 1–5)
 
 Bip's picnic on a blanket, with a row of plates for friends (the child's own creatures sit at them once collected). Food is sandwiches, naartjies, strawberries and biscuits. Every share comes out even: no leftovers.
 
@@ -152,7 +152,9 @@ Bip's picnic on a blanket, with a row of plates for friends (the child's own cre
 
 After 2 misses Bip deals the food out slowly, one to each plate in turn, counting as he goes. Skins: picnic blanket, school lunch boxes, fruit stall crates.
 
-### New game: Number Machine
+As built: the food is sandwiches, biscuits, naartjies and strawberries (`numbers.json` "picnic", with at most 5 plates, 10 on a plate and 30 on the blanket), and each level's tables are its `steps` in `games.json` (2, 5 and 10 at stage 2). Making groups, sharing and grouping start with the basket: each click puts one piece on every plate (making groups and sharing, round and round) or packs one punnet (grouping); then three number cards ask the question. Level 1 shows the plates already filled (tapping each plate to count comes later), and arrays ask "how many on the tray?" only. The two-miss hint counts in steps of the table ("Let's count in steps of 5: 5, 10, 15"), the rounds of a share ("one to each plate, round and round: 1, 2, 3"), or the punnets, while each plate, row or punnet bobs; it doesn't deal the food out again. Levels 6 and 7 (turn the tray, bigger shares with tens) are still to come.
+
+### New game: Number Machine (built 29 October 2026, levels 1–7)
 
 Bip's hand-drawn machine with a rule card on the front (× 2, × 5, × 4…). A number rolls in, the handle turns, and while it runs the machine shows the groups (4 goes into the × 5 machine: 4 hands of 5 fingers) and counts in steps out loud. The child picks what comes out from three cards. After 2 misses the hint runs the machine again slowly, counting each group. Thinking like a machine (input, rule, output) links to Coding Island.
 
@@ -167,6 +169,8 @@ Bip's hand-drawn machine with a rule card on the front (× 2, × 5, × 4…). A 
 | 7 | stage3 | What's the rule? | 3 → 12, 5 → 20, 2 → 8: pick the rule card (× 4) |
 
 Skins: Bip's workshop, a sweet factory, a juice press.
+
+As built: the rules are each level's `steps` in `games.json`, and what goes in is 2 to 10. The machine shows its groups (In towers of Rule cubes) while the × machine runs; for what went in, the ÷ machine and the rule, they show only in the hint, so the child does the thinking first. Level 5 is the × 8 table counted in eights, not yet three × 2 machines in a row (doubling three times comes later). The rule level shows two signs, each a number, a drawn arrow and what came out (the font has no arrow), and three rule cards. Every number on the screen is also said, so a child who can't read them yet can play: what went in says the machine's rule and what came out, and the rule level says both examples and reads out the three cards. The two-miss hint counts in steps of the rule up to what the × machine makes, while each group bobs.
 
 ### New levels in planned and existing games
 
@@ -206,7 +210,7 @@ Numbers 0 to 100 (`num_0` … `num_100`) are already recorded, and Block Towers 
 | `vo_picnic.m4a` | Bip is having a picnic! Help him put the food on the plates. | Picnic Plates start |
 | `vo_put.m4a` | Put | "Put" + number + "on each plate." |
 | `vo_on_each_plate.m4a` | on each plate. | Picnic Plates |
-| `vo_share_plates.m4a` | Share them out so every plate gets the same. | Picnic Plates, sharing |
+| `vo_share.m4a`, `vo_between.m4a`, `vo_plates.m4a` | Share / between / plates. | "Share" + 12 + "between" + 2 + "plates.", Picnic Plates sharing (the food to share lies on the blanket) |
 | `vo_how_many_each.m4a` | How many on each plate? | Picnic Plates, sharing |
 | `vo_groups_of.m4a` | Pack them in groups of | + number, Picnic Plates grouping |
 | `vo_how_many_groups.m4a` | How many groups? | Picnic Plates grouping |
@@ -216,7 +220,9 @@ Numbers 0 to 100 (`num_0` … `num_100`) are already recorded, and Block Towers 
 | `vo_one_each.m4a` | Let's give one to each plate, round and round. | Picnic Plates hint |
 | `vo_machine_out.m4a` | What comes out of the machine? | Number Machine |
 | `vo_machine_in.m4a` | What went into the machine? | Number Machine |
-| `vo_machine_rule.m4a` | What does the machine do? Find its card. | Number Machine level 7 |
+| `vo_machine_rule.m4a` | What does the machine do? Find its card. | Number Machine level 7, then the cards read out: "times 2, times 4, or times 8" |
+| `vo_its_a.m4a`, `vo_machine_end.m4a` | It's a / machine. | "It's a times 10 machine.", Number Machine "what went in" |
+| `vo_went_in.m4a`, `vo_came_out.m4a`, `vo_or.m4a` | went in, / came out. / or | "70 came out."; the rule level's examples "3 went in, 12 came out." |
 | `vo_count_in_steps.m4a` | Let's count in steps of | + number, hint (Number Machine, Count & Tap, Number Train) |
 | `vo_start_at.m4a` | Start at | Number Train hops |
 | `vo_go_forward.m4a` | go forward | Number Train hops |
@@ -353,7 +359,7 @@ The plug-in template and Bip's planner come first, so every later game is quick 
 | 2b. Second wave | Number Train, More or Less, Missing Letter, Rhyme Time, Pattern Party, Fix-It | Skins (3 per game), golden rounds |
 | 3. Polish | Letter Fishing, Sound Detective, Ten-Frame Garden, Tricky Word Memory, Silly Sentences, Repeat Robot, Bip's Dance Party | Island grows, creature collection, decorations |
 | 4. Older children | Corner Shop, Word Rocket (built 4 Oct 2026, for ages 4–8, all three skins), Puddle Rules | Special days |
-| Maths plan (planned 10 Oct; Bip's Balance first) | Bip's Balance, Picnic Plates, Number Machine, plus new levels for Number Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers (order in the maths plan above) | Story sums |
+| Maths plan (planned 10 Oct; Bip's Balance, Picnic Plates and Number Machine built) | Bip's Balance, Picnic Plates, Number Machine, plus new levels for Number Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers (order in the maths plan above) | Story sums |
 | Ongoing | A new game, skin or word list with each update | “New!” flag on the map |
 
 ## Decisions

@@ -159,11 +159,15 @@ public static class WalkTest
         var mysteryStickersBefore = game.Progress.PictureStickers.Count;
         var mysteryMakesTen = (starsBefore + BipCore.ChildProgress.MysteryBonusStars) / BipCore.ChildProgress.StarsPerSticker
                               > game.Progress.StarStickersGiven;
+        // A sticker won just before Home waits, and pops out of the box too (it's already in the book).
+        var stickerWaiting = game.StickersWaiting > 0;
         if (mysteryShown && await Tap("mystery"))
         {
             await Wait(1.0);
-            Check(mysteryMakesTen ? "the mystery box's stars make up 10, and the sticker pops out" : "the mystery box's stars don't make up 10: no sticker",
-                  mysteryMakesTen == (Screen()?.FindChild("NewSticker", true, false) != null)
+            Check(mysteryMakesTen ? "the mystery box's stars make up 10, and the sticker pops out"
+                  : stickerWaiting ? "the mystery box's stars don't make up 10, but the sticker that was waiting pops out"
+                  : "the mystery box's stars don't make up 10: no sticker",
+                  (mysteryMakesTen || stickerWaiting) == (Screen()?.FindChild("NewSticker", true, false) != null)
                   && game.Progress.PictureStickers.Count == mysteryStickersBefore + (mysteryMakesTen ? 1 : 0),
                   $"stars {starsBefore} + {BipCore.ChildProgress.MysteryBonusStars}, stickers {mysteryStickersBefore} → {game.Progress.PictureStickers.Count}");
             await Wait(2.5);
@@ -464,6 +468,57 @@ public static class WalkTest
                 Check("the right card first time earns a star", await WaitFor(() => game.Progress.Stars == stars + 1, 6), $"stars {stars} → {game.Progress.Stars}");
             }
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Balance goes back to numbers island");
+
+            // Picnic Plates: plates of food, a wrong card then the right one; then sharing, dealt with the basket.
+            if (await Tap("picnic")) await Expect<PicnicPlatesScreen>("Picnic Plates opens from the island");
+            Check("Picnic Plates shows plates and three cards", await WaitFor(() => Screen() is PicnicPlatesScreen { RightIndex: >= 0, InputLocked: false }, 3));
+            if (Screen() is PicnicPlatesScreen picnic && picnic.Round is { } plates)
+            {
+                await Tap($"choice:{(picnic.RightIndex + 1) % 3}");
+                Check("a wrong card stays on the same plates", picnic.Round == plates && !picnic.InputLocked);
+                await Tap($"choice:{picnic.RightIndex}");
+                Check("the right card counts for equal groups", await WaitFor(() => game.Progress.Skill("equal_groups").TotalAttempts > 0, 6));
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Picnic Plates goes back to numbers island");
+            game.Progress.GameLevels[PicnicPlatesGame.GameId] = new SkillMastery(3);
+            if (await Tap("picnic")) await Expect<PicnicPlatesScreen>("Picnic Plates opens again, at sharing");
+            Check("sharing starts with the basket, no cards yet",
+                  await WaitFor(() => Screen() is PicnicPlatesScreen { DealsLeft: > 0, RightIndex: -1, InputLocked: false }, 3));
+            if (Screen() is PicnicPlatesScreen share && share.Round is { Mode: PicnicPlatesGame.Mode.Sharing } shareRound)
+            {
+                for (var i = 0; i < shareRound.Deals; i++) await Tap("basket");
+                Check("each click of the basket deals a round; then the cards come", await WaitFor(() => share is { DealsLeft: 0, RightIndex: >= 0 }, 3),
+                      $"{share.DealsLeft} deals left");
+                await Tap($"choice:{share.RightIndex}");
+                Check("the right share counts for sharing", await WaitFor(() => game.Progress.Skill("share_group").TotalAttempts > 0, 6));
+            }
+            else Check("Picnic Plates level 4 is sharing", false, Screen() is PicnicPlatesScreen other ? $"{other.Round?.Mode}" : "no screen");
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Picnic Plates (sharing) goes back to numbers island");
+
+            // Number Machine: what comes out of the × machine (its groups show), a wrong card then the right one;
+            // then the rule level, with rule cards.
+            if (await Tap("machine")) await Expect<NumberMachineScreen>("Number Machine opens from the island");
+            Check("Number Machine shows a number going in and three cards",
+                  await WaitFor(() => Screen() is NumberMachineScreen { RightIndex: >= 0, InputLocked: false }, 3));
+            if (Screen() is NumberMachineScreen machine && machine.Round is { } run)
+            {
+                Check("the times machine shows its groups", await WaitFor(() => machine.GroupsShown == run.In, 2), $"{machine.GroupsShown} of {run.In}");
+                await Tap($"choice:{(machine.RightIndex + 1) % 3}");
+                Check("a wrong card stays on the same number", machine.Round == run && !machine.InputLocked);
+                await Tap($"choice:{machine.RightIndex}");
+                Check("the right card counts for the tables", await WaitFor(() => game.Progress.Skill("count_steps").TotalAttempts > 0, 6));
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Number Machine goes back to numbers island");
+            game.Progress.GameLevels[NumberMachineGame.GameId] = new SkillMastery(6);
+            if (await Tap("machine")) await Expect<NumberMachineScreen>("Number Machine opens again, at what's the rule");
+            Check("the rule level shows rule cards",
+                  await WaitFor(() => Screen() is NumberMachineScreen { RightIndex: >= 0, Round.Mode: NumberMachineGame.Mode.Rule }, 3));
+            if (Screen() is NumberMachineScreen rules)
+            {
+                await Tap($"choice:{rules.RightIndex}");
+                Check("the right rule card counts for times and divide", await WaitFor(() => game.Progress.Skill("times_divide").TotalAttempts > 0, 6));
+            }
+            if (await Tap("home")) await Expect<GameIslandScreen>("home from Number Machine (rules) goes back to numbers island");
             if (await Tap("home")) await Expect<MapScreen>("home from numbers island after the games");
         }
         // The parent gate: hold Esc, answer, the parent area, then a fresh Esc goes back.
