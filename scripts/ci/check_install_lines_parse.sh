@@ -19,10 +19,14 @@ PY
 bash -n "$work/cmd-mac.txt"
 if command -v zsh > /dev/null; then zsh -n "$work/cmd-mac.txt"; else echo "zsh isn't installed: the Mac line was checked with bash only."; fi
 if command -v pwsh > /dev/null; then
-  pwsh -NoProfile -Command '
+  # The path goes in an environment variable: anything after pwsh's -Command becomes part of the command.
+  LINE_FILE="$work/cmd-win.txt" pwsh -NoProfile -Command '
     $errors = $null
-    [System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Raw $args[0]), [ref]$null, [ref]$errors) | Out-Null
-    if ($errors.Count) { $errors | ForEach-Object { Write-Error $_.Message }; exit 1 }' "$work/cmd-win.txt"
+    [System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Raw $env:LINE_FILE), [ref]$null, [ref]$errors) | Out-Null
+    if ($errors.Count) { $errors | ForEach-Object { Write-Error $_.Message }; exit 1 }'
+elif [ -n "${CI:-}" ]; then
+  echo "::error::pwsh isn't installed on this runner, so the Windows install line can't be parsed."
+  exit 1
 else
   echo "pwsh isn't installed: the Windows line wasn't parsed here (the Linux CI job does)."
 fi
