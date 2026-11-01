@@ -193,7 +193,7 @@ jobs:
       - name: Copy fonts, content and voice clips into the Godot project
         run: python3 scripts/godot/prepare_assets.py
 
-      # Installed copies check the GitHub Releases of the public downloads repository (Updater.cs).
+      # Installed copies check the GitHub Releases of this public repository (Updater.cs).
       - name: Update source (main only)
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
@@ -413,7 +413,7 @@ jobs:
       ${{ !cancelled() && needs.export.result == 'success' && needs.windows.result == 'success'
       && needs.macos.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75
     # The workflow's own token makes the release (contents) and deploys the page (pages, id-token).
     permissions:
       contents: write
@@ -474,6 +474,7 @@ jobs:
           # A re-run of a publish that already worked has nothing to upload.
           if release done "$VERSION"; then
             echo "Release $VERSION is already published."
+            release prune "$VERSION" --keep 5
           else
             # Up to three tries: a network blip shouldn't cost the family a day's update. Each try
             # starts clean (clear removes the previous try's draft).

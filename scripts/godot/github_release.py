@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GitHub Releases chores for publishing a version to the downloads repository.
+"""GitHub Releases chores for publishing a version to the game's own repository (evertgrobler/bip-island).
 
 Velopack's `vpk upload github` uploads each computer's update files; this does the rest, with the
 GitHub REST API and the same token.
@@ -17,6 +17,7 @@ GitHub REST API and the same token.
   published                   print the commit the latest release was built from (empty if none)
   done <tag>                  exit 0 if <tag> is already published with every file (a re-run)
   latest                      print the tag of the release GitHub calls latest
+  prune  <tag> --keep N       delete all but the newest N published releases (never <tag>)
 
 Env: DOWNLOADS_TOKEN (contents read/write on the repository; the workflow's own GITHUB_TOKEN),
      DOWNLOADS_REPO (owner/name; the game's own repository),
@@ -56,7 +57,7 @@ def call(method, url, body=None, data=None, content_type="application/json", ok4
             headers["Content-Length"] = str(os.fstat(data.fileno()).st_size)
     request = urllib.request.Request(url, data=data, method=method, headers=headers)
     try:
-        with urllib.request.urlopen(request, timeout=1800) as response:
+        with urllib.request.urlopen(request, timeout=300) as response:
             text = response.read().decode() or "null"
             return json.loads(text)
     except urllib.error.HTTPError as e:
@@ -124,9 +125,13 @@ def ours(release):
     return (release.get("name") or "").startswith("Bip Island ")
 
 
+def uploaded(release):
+    """The names of a release's files that finished uploading (a broken-off upload is a "starter")."""
+    return {a["name"] for a in release["assets"] if a.get("state", "uploaded") == "uploaded"}
+
+
 def complete(release):
-    return release is not None and not release["draft"] and \
-        all(n in {a["name"] for a in release["assets"]} for n in REQUIRED)
+    return release is not None and not release["draft"] and all(n in uploaded(release) for n in REQUIRED)
 
 
 def clear(tag):
@@ -142,8 +147,7 @@ def clear(tag):
 
 def done(tag):
     """Exit 0 if <tag> is already published with every file (a re-run of a publish that worked)."""
-    match = [r for r in releases() if r["tag_name"] == tag]
-    sys.exit(0 if match and complete(match[0]) else 1)
+    sys.exit(0 if any(r["tag_name"] == tag and complete(r) for r in releases()) else 1)
 
 
 def latest():
@@ -157,9 +161,6 @@ def attach(tag, files):
     upload = release["upload_url"].split("{")[0]
     for file in files:
         name = os.path.basename(file)
-        for asset in release["assets"]:
-            if asset["name"] == name:  # left by an upload that broke off
-                call("DELETE", f"/releases/assets/{asset['id']}", ok404=True)
         with open(file, "rb") as f:
             call("POST", f"{upload}?name={urllib.parse.quote(name)}", data=f, content_type="application/octet-stream")
         print(f"Uploaded {name} ({os.path.getsize(file) / 1e6:.1f} MB) to {tag}")
@@ -168,7 +169,7 @@ def attach(tag, files):
 def finish(tag, keep):
     """Checks the draft holds both computers' files and both downloads, and only then publishes it."""
     release = by_tag(tag)
-    names = {a["name"] for a in release["assets"]}
+    names = uploaded(release)
     missing = [n for n in REQUIRED if n not in names]
     if missing:
         sys.exit(f"Release {tag} is missing {', '.join(missing)}, so it stays a draft (installed games can't see it).")
@@ -179,9 +180,14 @@ def finish(tag, keep):
         body["target_commitish"] = sha  # the tag is made on publishing: point it at the commit built
     call("PATCH", f"/releases/{release['id']}", body=body)
     print(f"Release {tag} is published and the latest, with {len(names)} files.")
+    prune(tag, keep)
+
+
+def prune(tag, keep):
+    """Deletes all but the newest <keep> published releases (never <tag>). Only warns on failure:
+    the new version is already out."""
     published = [r for r in releases() if not r["draft"]]
     published.sort(key=lambda r: r.get("published_at") or "", reverse=True)
-    # Tidying up old versions never fails the publish: the new one is already out.
     for old in published[keep:]:
         if old["tag_name"] != tag:
             try:
@@ -213,6 +219,9 @@ def main():
     sub.add_parser("published")
     sub.add_parser("done").add_argument("tag")
     sub.add_parser("latest")
+    p = sub.add_parser("prune")
+    p.add_argument("tag")
+    p.add_argument("--keep", type=int, default=5)
     args = parser.parse_args()
     if args.command == "trim":
         return trim(args.folder, args.channel)
@@ -228,6 +237,8 @@ def main():
         done(args.tag)
     elif args.command == "latest":
         latest()
+    elif args.command == "prune":
+        prune(args.tag, max(args.keep, 2))
     else:
         if args.keep < 2:
             sys.exit("Keep at least 2 releases.")
