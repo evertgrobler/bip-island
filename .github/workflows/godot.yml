@@ -478,6 +478,8 @@ jobs:
             # Up to three tries: a network blip shouldn't cost the family a day's update. Each try
             # starts clean (clear removes the previous try's draft).
             for try in 1 2 3; do
+              # A try that got as far as publishing (then broke) has nothing left to do.
+              release done "$VERSION" && break
               if release clear "$VERSION" && upload win release/windows \
                  && release attach "$VERSION" release/macos/BipIsland-mac.dmg \
                  && upload osx release/macos/osx --merge && release finish "$VERSION" --keep 5; then

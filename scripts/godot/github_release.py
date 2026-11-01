@@ -181,9 +181,13 @@ def finish(tag, keep):
     print(f"Release {tag} is published and the latest, with {len(names)} files.")
     published = [r for r in releases() if not r["draft"]]
     published.sort(key=lambda r: r.get("published_at") or "", reverse=True)
+    # Tidying up old versions never fails the publish: the new one is already out.
     for old in published[keep:]:
         if old["tag_name"] != tag:
-            delete_release(old)
+            try:
+                delete_release(old)
+            except SystemExit as e:
+                print(f"::warning::Couldn't delete the old release {old['tag_name']}: {e}")
 
 
 def published():
