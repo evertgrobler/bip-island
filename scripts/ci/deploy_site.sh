@@ -29,6 +29,19 @@ else
   echo "::warning title=No screenshots::The download page was built without screenshots."
 fi
 
+# The narrator samples (each data-clip on the page), straight from the game's own clips.
+mkdir -p "$site/voices"
+# A clip that isn't recorded yet is left out (the page then hides its button), with a warning.
+for clip in $(grep -o 'data-clip="[a-z0-9_/]*"' "$root/site/index.html" | cut -d'"' -f2); do
+  src="$root/Resources/Audio/$clip.m4a"
+  if [ -f "$src" ]; then
+    mkdir -p "$(dirname "$site/voices/$clip")"
+    cp "$src" "$site/voices/$clip.m4a"
+  else
+    echo "::warning title=Voice sample::The page plays $clip, but Resources/Audio/$clip.m4a doesn't exist yet."
+  fi
+done
+
 latest="https://github.com/$repo/releases/latest/download"
 date_text="$(TZ=Africa/Johannesburg date '+%-d %B %Y')"
 sed -e "s|{{VERSION}}|$VERSION|g" -e "s|{{DATE}}|$date_text|g" \

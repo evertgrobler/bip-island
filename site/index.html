@@ -174,6 +174,31 @@
     .note p, .note li { font-size: 17px; }
     .note ul { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
 
+    /* Voice samples: the narrator's real clips from the game (deploy_site.sh copies them into voices/). */
+    .voices { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); margin-top: 20px; }
+    .voice {
+      display: flex; align-items: center; gap: 14px; text-align: left; cursor: pointer; font-family: inherit; color: var(--ink);
+      background: var(--paper); border: 3px solid var(--ink); border-radius: var(--wob2); padding: 14px 16px; min-height: 88px;
+    }
+    .voice:nth-child(even) { border-radius: var(--wob); }
+    .voice:focus-visible { outline: 4px solid var(--ink); outline-offset: 4px; }
+    .voice .disc { flex: none; width: 52px; height: 52px; display: grid; place-items: center; background: var(--coding); border: 3px solid var(--ink); border-radius: 50%; }
+    .voice .disc span { width: 0; height: 0; margin-left: 4px; border-left: 15px solid var(--ink); border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+    .voice.playing .disc { background: var(--numbers); }
+    .voice.playing .disc span { margin: 0; border: none; width: 14px; height: 14px; background: var(--ink); border-radius: 2px; }
+    .voice b { display: block; font-size: 17px; }
+    .voice small { display: block; font-size: 15px; color: var(--soft); line-height: 1.4; }
+
+    .voices-head { margin-top: 48px; }
+    .voices-note { margin-top: 12px; font-size: 15px; color: var(--soft); }
+
+    /* How it was made */
+    .made { display: grid; gap: 14px; }
+    .made > * { max-width: 760px; }
+    .made h2 { font-size: clamp(28px, 3.6vw, 38px); }
+    .made p { color: var(--soft); }
+    .made p b { color: var(--ink); }
+
     footer { padding-block: 40px 56px; color: var(--soft); font-size: 15px; border-top: 3px dashed rgba(43, 42, 51, .2); }
     footer .wrap { display: grid; gap: 6px; }
 
@@ -298,6 +323,15 @@
           <p>Every button is large enough for a four-year-old with a mouse. Stars earn stickers; nothing is ever bought.</p>
         </div>
       </div>
+      <!-- The narrator's real clips: deploy_site.sh copies each data-clip from Resources/Audio into voices/. -->
+      <h3 class="eyebrow voices-head">Hear the narrator</h3>
+      <div class="voices">
+        <button class="voice" type="button" data-clip="vo_welcome"><span class="disc" aria-hidden="true"><span></span></span><span><b>English: hello from Bip</b><small>"Hello! This is Bip, a little robot who loves sounds…"</small></span></button>
+        <button class="voice" type="button" data-clip="af/vo_welcome"><span class="disc" aria-hidden="true"><span></span></span><span><b>Afrikaans: hallo van Bip</b><small lang="af">"Hallo! Dit is Bip, 'n klein robot wat baie lief is vir klanke…"</small></span></button>
+        <button class="voice" type="button" data-clip="vo_letters_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>English: on an island</b><small>"Welcome to Letters Island! Click Bip, and let's play."</small></span></button>
+        <button class="voice" type="button" data-clip="af/vo_letters_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>Afrikaans: op 'n eiland</b><small lang="af">"Welkom op Letter-eiland! Klik op Bip, dan speel ons."</small></span></button>
+      </div>
+      <p class="voices-note">Afrikaans as a home language is on its way: the game is being recorded in both languages now.</p>
     </div>
   </section>
 
@@ -335,6 +369,16 @@
         <div class="card"><h3>Follows the Cambridge curriculum</h3><p>Games line up with Cambridge Early Years and Primary Stages 1 to 3 for English, Mathematics and Computing.</p></div>
         <div class="card"><h3>Calm music, your choice</h3><p>Gentle music plays on the map and the islands, never during a game. Set it to on, quiet or off.</p></div>
       </div>
+    </div>
+  </section>
+
+  <section id="made">
+    <div class="wrap made">
+      <p class="eyebrow">How it was made</p>
+      <h2>A family project, built with AI</h2>
+      <p>Bip Island is a personal project: a parent making a learning game for their own children. It isn't a company product, and it isn't for sale.</p>
+      <p><b>It was built with AI.</b> Claude, an AI from Anthropic, wrote the code, drew the pictures (in code), and helped plan the games against the Cambridge curriculum, with the parent deciding what to make and checking every change. The narrator is an AI voice too, made with Google Gemini and ElevenLabs.</p>
+      <p>Every game is tested automatically before it reaches our computers, and played by our own children first.</p>
     </div>
   </section>
 
@@ -410,12 +454,30 @@
 
 <footer>
   <div class="wrap">
-    <p>Bip Island is made in South Africa for our family. Screenshots are taken from the real game.</p>
+    <p>Bip Island is a personal project, made in South Africa for our family and built with AI. Screenshots and voice samples are taken from the real game.</p>
     <p>Text is set in Atkinson Hyperlegible by the Braille Institute, under the <a href="fonts/OFL.txt">SIL Open Font Licence</a>.</p>
   </div>
 </footer>
 
 <script>
+  // Voice samples: one plays at a time; tap again to stop.
+  var voice = new Audio(), playing = null;
+  function stopVoice() { voice.pause(); if (playing) playing.classList.remove("playing"); playing = null; }
+  voice.addEventListener("ended", stopVoice);
+  document.querySelectorAll(".voice").forEach(function (button) {
+    // A sample the build couldn't find (not recorded yet) isn't shown.
+    var probe = new Audio(); probe.preload = "metadata";
+    probe.addEventListener("error", function () { button.hidden = true; });
+    probe.src = "voices/" + button.dataset.clip + ".m4a";
+    button.addEventListener("click", function () {
+      if (playing === button) { stopVoice(); return; }
+      stopVoice();
+      voice.src = "voices/" + button.dataset.clip + ".m4a";
+      voice.play().catch(stopVoice);
+      button.classList.add("playing"); playing = button;
+    });
+  });
+
   // Copy buttons for the install lines. If the browser won't copy, the line is selected instead.
   document.querySelectorAll(".copy").forEach(function (button) {
     button.addEventListener("click", function () {
