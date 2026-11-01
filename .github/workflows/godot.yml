@@ -345,25 +345,30 @@ jobs:
           scripts/godot/windows_update_test.ps1 -OldDir packages/old -NewDir packages/win
           -Version "${{ needs.export.outputs.version }}" -PackId "$env:PACK_ID"
 
-      # The download page's "install without the warning" line (site/index.html, cmd-win), in Windows
-      # PowerShell, against this build's setup file and without its last step (running it): the download
-      # must have no "from the internet" mark (Zone.Identifier), which is what SmartScreen warns about.
+      # The download page's Windows install line (site/index.html, cmd-win), in Windows PowerShell 5.1,
+      # against this build's setup file served over local HTTP, without its last step (running it).
+      # Checks the whole file arrives with no "from the internet" mark (Invoke-WebRequest never adds
+      # one, so this mostly proves the line itself works). A convenience on the page must never hold
+      # back a release, so a failure here is a warning, not a failed job.
       - name: Check the download page's Windows install line
+        continue-on-error: true
         shell: powershell
         run: |
-          $page = Get-Content site/index.html -Raw -Encoding UTF8
-          $line = [System.Net.WebUtility]::HtmlDecode([regex]::Match($page, '(?s)<pre id="cmd-win">(.*?)</pre>').Groups[1].Value)
-          $run = '; Start-Process $f'
-          if (-not $line.EndsWith($run)) { throw "The Windows install line should end by running the setup file." }
           $setup = Get-ChildItem packages/win -Filter *Setup.exe | Select-Object -First 1
           if (-not $setup) { throw "No setup file in packages/win." }
-          $url = ([System.Uri]$setup.FullName).AbsoluteUri
-          Invoke-Expression ($line.Substring(0, $line.Length - $run.Length).Replace('{{WIN_URL}}', $url))
-          $f = "$env:TEMP\BipIsland-win-Setup.exe"
-          if ((Get-Item $f).Length -ne $setup.Length) { throw "The install line didn't download the whole setup file." }
-          if (Get-Item $f -Stream Zone.Identifier -ErrorAction SilentlyContinue) { throw "The download is marked as from the internet: SmartScreen would still warn." }
-          Remove-Item $f
-          "The download page's Windows install line works."
+          $server = Start-Process python -ArgumentList "-m", "http.server", "8766", "--bind", "127.0.0.1", "--directory", $setup.DirectoryName -PassThru -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          try {
+            $page = Get-Content site/index.html -Raw -Encoding UTF8
+            $line = [System.Net.WebUtility]::HtmlDecode([regex]::Match($page, '(?s)<pre id="cmd-win">(.*?)</pre>').Groups[1].Value)
+            $run = '; Start-Process $f'
+            if (-not $line.EndsWith($run)) { throw "The Windows install line should end by running the setup file." }
+            Invoke-Expression ($line.Substring(0, $line.Length - $run.Length).Replace('{{WIN_URL}}', "http://127.0.0.1:8766/$($setup.Name)"))
+            if ((Get-Item $f).Length -ne $setup.Length) { throw "The install line didn't download the whole setup file." }
+            if (Get-Item $f -Stream Zone.Identifier -ErrorAction SilentlyContinue) { throw "The download is marked as from the internet." }
+            Remove-Item $f
+            "The download page's Windows install line works."
+          } finally { Stop-Process -Id $server.Id -ErrorAction SilentlyContinue }
 
       - name: Keep the Windows release
         uses: actions/upload-artifact@v4
@@ -403,6 +408,14 @@ jobs:
           VERSION: ${{ needs.export.outputs.version }}
           OUT_DIR: build/godot/macos
         run: scripts/godot/mac_package_and_test.sh
+
+      # The download page's Mac install line. A convenience on the page must never hold back a release,
+      # so a failure here is a warning on the run, not a failed job.
+      - name: Check the download page's Mac install line
+        continue-on-error: true
+        env:
+          DMG: build/godot/macos/BipIsland-mac.dmg
+        run: scripts/ci/check_install_line_mac.sh
 
       - name: Keep the Mac release
         uses: actions/upload-artifact@v4

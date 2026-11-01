@@ -166,7 +166,7 @@
       font: 14px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-all;
     }
     .copy {
-      position: absolute; right: 10px; bottom: 10px; font: 700 15px/1 inherit; font-family: inherit; cursor: pointer;
+      position: absolute; right: 10px; bottom: 10px; font-family: inherit; font-size: 15px; font-weight: 700; line-height: 1; cursor: pointer;
       padding: 8px 14px; color: var(--ink); background: var(--numbers); border: 2px solid var(--ink); border-radius: 10px;
     }
     .note { background: var(--sea); border: 3px solid var(--ink); border-radius: var(--wob2); padding: 18px 22px; display: grid; gap: 10px; margin-top: 28px; }
@@ -360,14 +360,14 @@
           </ul>
           <h4>First install</h4>
           <ol class="steps">
-            <li>Open the downloaded <b>BipIsland-mac.dmg</b> and drag <b>Bip Island</b> into <b>Applications</b>. If an older Bip Island is already there, choose <b>Replace</b>.</li>
+            <li>Open the downloaded <b>BipIsland-mac.dmg</b> and drag <b>Bip Island</b> into <b>Applications</b>. If an older Bip Island is already there, choose <b>Replace</b>. Progress from the older version doesn't carry over.</li>
             <li>Open <b>Bip Island</b>. The Mac warns that it can't check the app: click <b>Done</b> (or <b>OK</b>).</li>
-            <li>Within the hour, go to <b>System Settings → Privacy &amp; Security</b>, scroll down, click <b>Open Anyway</b> next to Bip Island and enter your Mac's password. When the warning shows once more, click <b>Open Anyway</b>. On macOS 14 Sonoma you can instead right-click <b>Bip Island</b>, choose <b>Open</b>, then <b>Open</b> again.</li>
+            <li>Within the hour, go to <b>System Settings → Privacy &amp; Security</b>, scroll down, click <b>Open Anyway</b> next to Bip Island and enter your Mac's password. When the warning shows once more, click <b>Open Anyway</b>. (If the button isn't there, open Bip Island again first.) On macOS 14 Sonoma you can instead right-click <b>Bip Island</b>, choose <b>Open</b>, then <b>Open</b> again.</li>
           </ol>
           <details>
             <summary>Or install without the warning</summary>
             <p>Open <b>Terminal</b> (Applications → Utilities), paste this line and press Return. It downloads the same game, puts it in Applications (replacing an older one) and opens it. A download made this way isn't marked as coming from the internet, so the Mac doesn't stop it.</p>
-            <div class="cmd"><pre id="cmd-mac">curl -fL "{{MAC_URL}}" -o /tmp/BipIsland-mac.dmg &amp;&amp; hdiutil attach -nobrowse -quiet -mountroot /tmp /tmp/BipIsland-mac.dmg &amp;&amp; rm -rf "/Applications/Bip Island.app" &amp;&amp; cp -R "/tmp/Bip Island/Bip Island.app" /Applications/ &amp;&amp; hdiutil detach -quiet "/tmp/Bip Island" &amp;&amp; open "/Applications/Bip Island.app"</pre><button class="copy" type="button" data-for="cmd-mac">Copy</button></div>
+            <div class="cmd"><pre id="cmd-mac">d="$(mktemp -d)" &amp;&amp; curl -fL "{{MAC_URL}}" -o "$d/BipIsland-mac.dmg" &amp;&amp; mkdir "$d/disk" &amp;&amp; hdiutil attach -nobrowse -quiet -mountpoint "$d/disk" "$d/BipIsland-mac.dmg" &amp;&amp; { ditto "$d/disk/Bip Island.app" "$d/Bip Island.app"; ok=$?; hdiutil detach -quiet "$d/disk"; [ $ok -eq 0 ]; } &amp;&amp; rm -rf "/Applications/Bip Island.app" &amp;&amp; mv "$d/Bip Island.app" /Applications/ &amp;&amp; rm -rf "$d" &amp;&amp; open "/Applications/Bip Island.app"</pre><button class="copy" type="button" data-for="cmd-mac">Copy</button></div>
           </details>
         </div>
         <div class="dl" id="download-windows">
@@ -389,7 +389,7 @@
           <details>
             <summary>Or install without the warning</summary>
             <p>Right-click the <b>Start</b> button, choose <b>Terminal</b> (or <b>Windows PowerShell</b>), paste this line and press Enter. It downloads the same installer and runs it. A download made this way isn't marked as coming from the internet, so Windows doesn't stop it.</p>
-            <div class="cmd"><pre id="cmd-win">$ProgressPreference = "SilentlyContinue"; $f = "$env:TEMP\BipIsland-win-Setup.exe"; Invoke-WebRequest "{{WIN_URL}}" -OutFile $f -UseBasicParsing; Start-Process $f</pre><button class="copy" type="button" data-for="cmd-win">Copy</button></div>
+            <div class="cmd"><pre id="cmd-win">[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor 3072; $ProgressPreference = "SilentlyContinue"; $f = "$env:TEMP\BipIsland-win-Setup.exe"; Invoke-WebRequest "{{WIN_URL}}" -OutFile $f -UseBasicParsing; Start-Process $f</pre><button class="copy" type="button" data-for="cmd-win">Copy</button></div>
           </details>
         </div>
       </div>
