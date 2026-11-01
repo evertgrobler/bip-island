@@ -1,13 +1,4 @@
 # Clips the daily Aoede run doesn't record yet: lines still waiting for the owner's check.
 # One pattern per line (* matches anything); Afrikaans clips start with af/. Remove a line once it's approved.
-# The Afrikaans Bip's Stories lines: approved by the owner on the Afrikaans Stories Check page (1 Nov 2026).
-# The owner approved the first Afrikaans lines for Picnic Plates and Number Machine (1 Nov 2026). These
-# newer short lines (Bip says every number; added after the review of #69) wait for the owner's check.
-af/vo_share
-af/vo_between
-af/vo_plates
-af/vo_its_a
-af/vo_machine_end
-af/vo_went_in
-af/vo_came_out
-af/vo_or
+# Empty: the owner approved the Afrikaans Bip's Stories lines and all the Picnic Plates and Number Machine
+# lines, the newer short ones too (1 Nov 2026).
