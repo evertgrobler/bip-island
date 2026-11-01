@@ -21,6 +21,14 @@ else
   echo "::warning title=No screenshots::The download page was published without screenshots."
 fi
 
+# The narrator samples (each data-clip on the page), straight from the game's own clips.
+mkdir -p "$site/voices"
+for clip in $(grep -o 'data-clip="[a-z0-9_]*"' "$root/site/index.html" | cut -d'"' -f2); do
+  src="$root/Resources/Audio/$clip.m4a"
+  [ -f "$src" ] || { echo "::error::The page plays $clip, but Resources/Audio/$clip.m4a doesn't exist."; exit 1; }
+  cp "$src" "$site/voices/"
+done
+
 # The page's own address, for the live check below.
 feed_url="$("$root/scripts/ci/resolve_feed_url.sh")"
 base="${feed_url%/*}"
