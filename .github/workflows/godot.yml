@@ -471,11 +471,29 @@ jobs:
           }
           release trim release/windows win
           release trim release/macos/osx osx
-          release clear "$VERSION"
-          upload win release/windows
-          release attach "$VERSION" release/macos/BipIsland-mac.dmg
-          upload osx release/macos/osx --merge
-          release finish "$VERSION" --keep 5
+          # A re-run of a publish that already worked has nothing to upload.
+          if release done "$VERSION"; then
+            echo "Release $VERSION is already published."
+          else
+            # Up to three tries: a network blip shouldn't cost the family a day's update. Each try
+            # starts clean (clear removes the previous try's draft).
+            for try in 1 2 3; do
+              if release clear "$VERSION" && upload win release/windows \
+                 && release attach "$VERSION" release/macos/BipIsland-mac.dmg \
+                 && upload osx release/macos/osx --merge && release finish "$VERSION" --keep 5; then
+                break
+              fi
+              [ "$try" = 3 ] && { echo "::error::Publishing $VERSION failed three times."; exit 1; }
+              echo "::warning::Publishing try $try failed; trying again in a minute."
+              sleep 60
+            done
+          fi
+          # GitHub's "latest" must be this version (the download links and installed games follow it).
+          for attempt in 1 2 3 4 5 6; do
+            [ "$(release latest)" = "$VERSION" ] && break
+            [ "$attempt" = 6 ] && { echo "::error::GitHub's latest release isn't $VERSION."; exit 1; }
+            sleep 10
+          done
           # The download page's links: fetch the first byte of each.
           for file in BipIsland-mac.dmg BipIsland-win-Setup.exe; do
             url="https://github.com/$DOWNLOADS_REPO/releases/latest/download/$file"
@@ -511,12 +529,14 @@ jobs:
 
       - name: Upload the download page
         if: steps.pages.outcome == 'success'
+        continue-on-error: true
+        id: page-files
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/site
 
       - name: Publish the download page (GitHub Pages)
-        if: steps.pages.outcome == 'success'
+        if: steps.page-files.outcome == 'success'
         continue-on-error: true
         id: page
         uses: actions/deploy-pages@v4

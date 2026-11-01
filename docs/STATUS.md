@@ -98,7 +98,7 @@
 - CI: `.github/workflows/godot.yml`. Linux exports both platforms and packs the Windows `Setup.exe`
   (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from this build served
   as a stand-in GitHub Release on the runner (`scripts/godot/fake_github.py`, read by the game's own
-  GithubSource). Main builds are published as GitHub Releases in `evertgrobler/bip-island-downloads`.
+  GithubSource). Main builds are published as GitHub Releases in this repository (`evertgrobler/bip-island`), with the download page on its GitHub Pages.
 - Drawing is y-down in Godot: when porting a Swift drawing, negate y values and angles.
 - Drawing kit ported (Phase 2, part): `Buttons`, `PictureNode` (+ `PictureCard`), `EmojiPictures`
   (Noto via `Fonts.Emoji`), `StepPictures`, `Avatars`, `Sketch.StarPoints`. Ports keep the Swift numbers

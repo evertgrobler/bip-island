@@ -10,9 +10,9 @@ Bip Island is built only with Apple technology: Swift, SpriteKit, SwiftUI, Swift
 - Pause new games during the move. The current Mac app gets bug fixes only. The 17 remaining games are built once, in Godot.
 - Carry children's progress over from the Mac app to the Godot version.
 - **Full rebuild in one go.** The owner can't test right now, so there are no playtest gates between phases. Automated checks in CI replace them, and the owner tests once, at the switchover.
-- **No stores.** Direct download only: `.dmg` for the Mac, `Setup.exe` for Windows, linked from the Vercel download page.
+- **No stores.** Direct download only: `.dmg` for the Mac, `Setup.exe` for Windows, linked from the download page.
 - **Updates need a grown-up** (owner rule from 1 Oct, as in the Swift app): the game checks and downloads quietly, but installs only after the parent gate, through an "Update ready" button.
-- **Hosting: Vercel Blob** (replaced on 25 October 2026: everything now lives in the public GitHub repository `evertgrobler/bip-island-downloads`, as GitHub Releases plus the download page on GitHub Pages; see `docs/SETUP.md`). The Godot builds (about 400 MB for both computers) are too big for a Vercel Hobby deployment (100 MB), so the installers and update packages go in a public Vercel Blob store (`bip-island-downloads`), created automatically with the existing `VERCEL_TOKEN`. Only the latest version is kept there, to stay inside the free storage.
+- **Hosting: Vercel Blob** (replaced on 1 November 2026: everything now lives in this public repository, `evertgrobler/bip-island`, as GitHub Releases plus the download page on GitHub Pages; see `docs/SETUP.md`). The Godot builds (about 400 MB for both computers) are too big for a Vercel Hobby deployment (100 MB), so the installers and update packages go in a public Vercel Blob store (`bip-island-downloads`), created automatically with the existing `VERCEL_TOKEN`. Only the latest version is kept there, to stay inside the free storage.
 - **Free and unsigned.** Ad-hoc signed on the Mac, unsigned on Windows. Each computer needs one "Open anyway" click on first install. Paid signing can be switched on later through secrets.
 
 **How the rebuild stays safe without owner testing:**

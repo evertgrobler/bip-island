@@ -19,8 +19,6 @@ mkdir -p "$site"
 
 cp "$root/site/icon.png" "$root/site/favicon.png" "$root/site/bip.png" "$site/"
 cp -R "$root/site/fonts" "$site/fonts"
-# GitHub Pages serves the files as they are (no Jekyll).
-touch "$site/.nojekyll"
 
 if compgen -G "$shots/*.jpg" > /dev/null; then
   mkdir -p "$site/screenshots"

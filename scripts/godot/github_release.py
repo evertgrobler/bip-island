@@ -7,14 +7,16 @@ GitHub REST API and the same token.
   trim   <folder> <channel>   before uploading a vpk output folder: drop the Portable.zip (not used
                               for installs or updates) and name the Windows installer
                               BipIsland-win-Setup.exe, the name the download page links to
-  clear  <tag>                remove leftovers before publishing: unfinished drafts, and any release
-                              (and tag) already named <tag>, so a re-run starts clean
+  clear  <tag>                remove leftovers before publishing: this pipeline's unfinished drafts
+                              ("Bip Island ..."), and an incomplete release (and tag) named <tag>
   attach <tag> <file>...      upload extra files (the Mac .dmg) to the release tagged <tag>
   finish <tag> --keep N       check the draft holds both computers' files and both downloads, then
                               publish it as the latest (the download page's links follow "latest"), note the commit
                               it was built from (GITHUB_SHA) in its description, then delete all but
                               the newest N releases and their tags
   published                   print the commit the latest release was built from (empty if none)
+  done <tag>                  exit 0 if <tag> is already published with every file (a re-run)
+  latest                      print the tag of the release GitHub calls latest
 
 Env: DOWNLOADS_TOKEN (contents read/write on the repository; the workflow's own GITHUB_TOKEN),
      DOWNLOADS_REPO (owner/name; the game's own repository),
@@ -90,31 +92,64 @@ def by_tag(tag):
 
 
 def trim(folder, channel):
-    """Edits vpk's list of files to upload (assets.<channel>.json, VPK_VERSION 1.2.161's format)."""
+    """Edits vpk's list of files to upload (assets.<channel>.json, VPK_VERSION 1.2.161's format).
+    Stops the run if the listing isn't what it expects, before anything is uploaded."""
     listing = os.path.join(folder, f"assets.{channel}.json")
     with open(listing) as f:
         assets = json.load(f)
-    kept = []
+    kept, dropped, installer = [], 0, False
     for asset in assets:
         name = asset["RelativeFileName"]
         if asset["Type"] == "Portable":
             print(f"Not uploading {name}")
+            dropped += 1
             continue
-        if asset["Type"] == "Installer" and name.endswith("-win-Setup.exe") and name != WIN_SETUP:
-            os.replace(os.path.join(folder, name), os.path.join(folder, WIN_SETUP))
-            asset["RelativeFileName"] = WIN_SETUP
-            print(f"Renamed {name} to {WIN_SETUP}")
+        if asset["Type"] == "Installer" and name.endswith("-win-Setup.exe"):
+            if name != WIN_SETUP:
+                os.replace(os.path.join(folder, name), os.path.join(folder, WIN_SETUP))
+                asset["RelativeFileName"] = WIN_SETUP
+                print(f"Renamed {name} to {WIN_SETUP}")
+            installer = True
         kept.append(asset)
+    if not dropped:
+        print(f"::warning::{listing} has no Portable asset: vpk's listing may have changed; check trim against it.")
+    if channel == "win" and not installer:
+        sys.exit(f"{listing} has no Windows installer (Type Installer, *-win-Setup.exe): check trim against it.")
     with open(listing, "w") as f:
         json.dump(kept, f)
 
 
+def ours(release):
+    """A release this pipeline makes (vpk names them "Bip Island <version>"), not one made by hand."""
+    return (release.get("name") or "").startswith("Bip Island ")
+
+
+def complete(release):
+    return release is not None and not release["draft"] and \
+        all(n in {a["name"] for a in release["assets"]} for n in REQUIRED)
+
+
 def clear(tag):
+    """Removes this pipeline's unfinished drafts, and an incomplete release already tagged <tag>.
+    Drafts made by hand are left alone."""
     for release in releases():
-        if release["draft"] or release["tag_name"] == tag:
+        if (release["draft"] and ours(release)) or (release["tag_name"] == tag and not complete(release)):
             delete_release(release)
-    # A tag left behind by a release deleted by hand.
-    call("DELETE", f"/git/refs/tags/{urllib.parse.quote(tag)}", ok404=True)
+    if not any(r["tag_name"] == tag for r in releases()):
+        # A tag left behind by a release deleted by hand.
+        call("DELETE", f"/git/refs/tags/{urllib.parse.quote(tag)}", ok404=True)
+
+
+def done(tag):
+    """Exit 0 if <tag> is already published with every file (a re-run of a publish that worked)."""
+    match = [r for r in releases() if r["tag_name"] == tag]
+    sys.exit(0 if match and complete(match[0]) else 1)
+
+
+def latest():
+    """Print the tag of the release GitHub calls latest (what the download links fetch)."""
+    release = call("GET", "/releases/latest", ok404=True)
+    print((release or {}).get("tag_name", ""))
 
 
 def attach(tag, files):
@@ -122,6 +157,9 @@ def attach(tag, files):
     upload = release["upload_url"].split("{")[0]
     for file in files:
         name = os.path.basename(file)
+        for asset in release["assets"]:
+            if asset["name"] == name:  # left by an upload that broke off
+                call("DELETE", f"/releases/assets/{asset['id']}", ok404=True)
         with open(file, "rb") as f:
             call("POST", f"{upload}?name={urllib.parse.quote(name)}", data=f, content_type="application/octet-stream")
         print(f"Uploaded {name} ({os.path.getsize(file) / 1e6:.1f} MB) to {tag}")
@@ -169,6 +207,8 @@ def main():
     p.add_argument("tag")
     p.add_argument("--keep", type=int, default=5)
     sub.add_parser("published")
+    sub.add_parser("done").add_argument("tag")
+    sub.add_parser("latest")
     args = parser.parse_args()
     if args.command == "trim":
         return trim(args.folder, args.channel)
@@ -180,6 +220,10 @@ def main():
         attach(args.tag, args.files)
     elif args.command == "published":
         published()
+    elif args.command == "done":
+        done(args.tag)
+    elif args.command == "latest":
+        latest()
     else:
         if args.keep < 2:
             sys.exit("Keep at least 2 releases.")
