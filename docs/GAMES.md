@@ -254,6 +254,44 @@ Choices for the owner:
 
 **Decided (owner, 10 October 2026):** the owner left the choice to Claude, so it is **A: Bip's Balance first**, levels 1–5, then the order above.
 
+## Time plan: Bip's Calendar (planned 1 November 2026, owner approved; built after the voices are finished)
+
+Days of the week, months and the seasons, which both curricula expect in the early grades and the game
+doesn't teach yet: Cambridge Mathematics Stage 1–2, time (names and order of days, months and seasons;
+objective codes to check against the framework PDF) and CAPS Mathematics Grade R–2, Measurement: Time
+(days of the week, months, seasons, birthdays, then reading a calendar). One new game on Numbers Island,
+for ages 5 to 7, on the usual template: rounds from data lists, generated at random and checked by tests.
+
+**Bip's Calendar.** Bip's own week and year on a hand-drawn wall calendar. Each day has a picture of what
+Bip does (Monday: school, Wednesday: swimming, Saturday: the park, Sunday: a visit to Granny), and each month
+a South African picture (December: the beach, March: school, June: a jersey and a heater, September: spring
+flowers). The child taps a card or drags it into place; no reading is needed, every name is spoken.
+
+| Level | Band | What it asks | Example |
+| --- | --- | --- | --- |
+| 1 | stage1 | The days in order | Four day cards: put Monday, Tuesday, Wednesday, Thursday on Bip's week |
+| 2 | stage1 | Before and after | "What day comes after Tuesday?" Three day cards |
+| 3 | stage1 | Yesterday, today, tomorrow | "Today is Friday. What day was it yesterday?" |
+| 4 | stage1 | Weekdays and the weekend | Which days does Bip go to school? Sort the cards |
+| 5 | stage1 | The seasons, South African way round | A picture (the beach in December, a jersey in July): summer, autumn, winter or spring? |
+| 6 | stage2 | The months in order, by season | Put the three summer months (December, January, February) in order |
+| 7 | stage2 | Before and after with months, and birthdays | "Bip's birthday is in May. Which month comes next?" |
+| 8 | stage2 | Reading the calendar | "How many Saturdays are in this month?" "What date is the second Tuesday?" |
+
+After two misses Bip says the days (or months) in order, pointing at each card in turn, and stops on the
+answer. Skins: Bip's kitchen calendar, the school class calendar, a farm diary. Seasons always follow the
+South African year (summer is December to February, winter June to August), never the northern one.
+
+- **Content:** a new `calendar` section in `numbers.json` (days, months, seasons with their months, Bip's
+  day pictures), and `Content/af/` the same in Afrikaans (Maandag, Januarie, somer). `validate_content.py`
+  checks every month sits in exactly one season and the seasons follow the South African year.
+- **Language Island:** the day, month and season words join its "weather and seasons" theme in both
+  directions, with the same pictures.
+- **Voice:** day, month and season names (`word_monday`, `word_january`, `word_summer`, said on their own
+  and as `_mid` clips to join a sentence), about 10 instruction lines ("What day comes after…", "Today
+  is…"), in English and Afrikaans: about 70 clips per language, recorded with Aoede.
+- **Pictures:** 7 day scenes, 12 month scenes and 4 season scenes, hand-drawn in code like the rest.
+
 ## Bip's Stories (built 24 October 2026)
 
 Reading for meaning on Words Island, ages 5 to 10 (owner: reading from 5, just easier). The narrator reads a short story one scene at a time: each scene is a picture with one to three sentences under it, each sentence lighting up as it is read; clicking a sentence reads it again, and the green arrow turns the page. Then the questions, one at a time: Bip asks, says each answer as its card lights up, and the child clicks one. No typing, no microphone, no timers. A wrong answer gets the soft sound and a retry; after two misses Bip says "Let's look at this part of the story again", the scene that holds the answer comes back above the cards and is read again, then the question.
@@ -354,6 +392,7 @@ The plug-in template and Bip's planner come first, so every later game is quick 
 | 3. Polish | Letter Fishing, Sound Detective, Ten-Frame Garden, Tricky Word Memory, Silly Sentences, Repeat Robot, Bip's Dance Party | Island grows, creature collection, decorations |
 | 4. Older children | Corner Shop, Word Rocket (built 4 Oct 2026, for ages 4–8, all three skins), Puddle Rules | Special days |
 | Maths plan (planned 10 Oct; Bip's Balance first) | Bip's Balance, Picnic Plates, Number Machine, plus new levels for Number Train, Ten-Frame Garden, More or Less, Corner Shop, Count & Tap, Quick Look and Block Towers (order in the maths plan above) | Story sums |
+| Time plan (planned 1 Nov; after the voices are finished) | Bip's Calendar (days, months, seasons), and its words on the Language Island | |
 | Ongoing | A new game, skin or word list with each update | “New!” flag on the map |
 
 ## Decisions
