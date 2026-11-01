@@ -449,8 +449,8 @@ jobs:
 
       # One GitHub Release per version holds both computers' update files (releases.win.json,
       # releases.osx.json and their packages) and the two downloads. It stays a draft, hidden from
-      # installed games, until the Mac files are in; then it's published, marked latest (noting the
-      # commit it was built from), and all but the newest 5 releases are deleted.
+      # installed games, until finish has checked every file is in; only then is it published, marked
+      # latest (noting the commit it was built from), and all but the newest 5 releases are deleted.
       - name: Publish the release
         id: release
         env:
@@ -474,7 +474,7 @@ jobs:
           release clear "$VERSION"
           upload win release/windows
           release attach "$VERSION" release/macos/BipIsland-mac.dmg
-          upload osx release/macos/osx --merge --publish
+          upload osx release/macos/osx --merge
           release finish "$VERSION" --keep 5
           # The download page's links: fetch the first byte of each.
           for file in BipIsland-mac.dmg BipIsland-win-Setup.exe; do

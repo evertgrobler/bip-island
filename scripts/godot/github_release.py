@@ -10,8 +10,8 @@ GitHub REST API and the same token.
   clear  <tag>                remove leftovers before publishing: unfinished drafts, and any release
                               (and tag) already named <tag>, so a re-run starts clean
   attach <tag> <file>...      upload extra files (the Mac .dmg) to the release tagged <tag>
-  finish <tag> --keep N       check the release is published with both computers' files, mark it
-                              the latest (the download page's links follow "latest"), note the commit
+  finish <tag> --keep N       check the draft holds both computers' files and both downloads, then
+                              publish it as the latest (the download page's links follow "latest"), note the commit
                               it was built from (GITHUB_SHA) in its description, then delete all but
                               the newest N releases and their tags
   published                   print the commit the latest release was built from (empty if none)
@@ -128,17 +128,19 @@ def attach(tag, files):
 
 
 def finish(tag, keep):
+    """Checks the draft holds both computers' files and both downloads, and only then publishes it."""
     release = by_tag(tag)
-    if release["draft"]:
-        sys.exit(f"Release {tag} is still a draft.")
     names = {a["name"] for a in release["assets"]}
     missing = [n for n in REQUIRED if n not in names]
     if missing:
-        sys.exit(f"Release {tag} is missing {', '.join(missing)}.")
+        sys.exit(f"Release {tag} is missing {', '.join(missing)}, so it stays a draft (installed games can't see it).")
     sha = os.environ.get("GITHUB_SHA", "")
     note = f"Bip Island {tag}. Built from commit {sha}." if sha else f"Bip Island {tag}."
-    call("PATCH", f"/releases/{release['id']}", body={"make_latest": "true", "body": note})
-    print(f"Release {tag} is the latest, with {len(names)} files.")
+    body = {"draft": False, "make_latest": "true", "body": note}
+    if sha:
+        body["target_commitish"] = sha  # the tag is made on publishing: point it at the commit built
+    call("PATCH", f"/releases/{release['id']}", body=body)
+    print(f"Release {tag} is published and the latest, with {len(names)} files.")
     published = [r for r in releases() if not r["draft"]]
     published.sort(key=lambda r: r.get("published_at") or "", reverse=True)
     for old in published[keep:]:
