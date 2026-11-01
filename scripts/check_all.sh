@@ -53,6 +53,7 @@ git fetch -q origin main || { echo "Couldn't fetch origin/main."; exit 2; }
 git rev-parse -q --verify origin/main > /dev/null || { echo "origin/main doesn't resolve."; exit 2; }
 step "Latest main merged in" git merge-base --is-ancestor origin/main HEAD
 step "Content" python3 scripts/validate_content.py
+step "Download page install lines parse" scripts/ci/check_install_lines_parse.sh
 step "Copy assets into Godot" python3 scripts/godot/prepare_assets.py
 step "C# build (warnings are errors)" dotnet build godot/BipIsland.sln -warnaserror
 step "Logic tests" dotnet test godot/BipCore.Tests --no-build

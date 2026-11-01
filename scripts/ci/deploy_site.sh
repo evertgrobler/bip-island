@@ -29,7 +29,8 @@ fi
 
 # The narrator samples (each data-clip on the page), straight from the game's own clips.
 mkdir -p "$site/voices"
-# A clip that isn't recorded yet is left out (the page then hides its button), with a warning.
+# A clip that isn't recorded yet is left out with a warning, and finish_page.py removes its button.
+missing=""
 for clip in $(grep -o 'data-clip="[a-z0-9_/]*"' "$root/site/index.html" | cut -d'"' -f2); do
   src="$root/Resources/Audio/$clip.m4a"
   if [ -f "$src" ]; then
@@ -37,6 +38,7 @@ for clip in $(grep -o 'data-clip="[a-z0-9_/]*"' "$root/site/index.html" | cut -d
     cp "$src" "$site/voices/$clip.m4a"
   else
     echo "::warning title=Voice sample::The page plays $clip, but Resources/Audio/$clip.m4a doesn't exist yet."
+    missing="$missing $clip"
   fi
 done
 
@@ -45,6 +47,8 @@ date_text="$(TZ=Africa/Johannesburg date '+%-d %B %Y')"
 sed -e "s|{{VERSION}}|$VERSION|g" -e "s|{{DATE}}|$date_text|g" \
     -e "s|{{MAC_URL}}|$latest/BipIsland-mac.dmg|g" -e "s|{{WIN_URL}}|$latest/BipIsland-win-Setup.exe|g" \
     "$root/site/index.html" > "$site/index.html"
+# Env MAC_LINE_OK / WIN_LINE_OK: CI's checks of the install lines (a failed one is left off the page).
+MISSING_CLIPS="$missing" python3 "$root/scripts/ci/finish_page.py" "$site/index.html"
 if grep -q '{{' "$site/index.html"; then
   echo "::error::The page still has an unfilled {{placeholder}}."
   exit 1

@@ -19,6 +19,9 @@ on:
       - "scripts/spoken_numbers.py"
       - "scripts/ci/deploy_site.sh"
       - "scripts/ci/site_screenshots.sh"
+      - "scripts/ci/check_install_line_mac.sh"
+      - "scripts/ci/check_install_lines_parse.sh"
+      - "scripts/ci/finish_page.py"
       - "site/**"
       - "Content/**"
       - "Resources/**"
@@ -183,6 +186,9 @@ jobs:
       - name: Check game content
         run: python3 scripts/validate_content.py
 
+      - name: The download page's install lines parse
+        run: scripts/ci/check_install_lines_parse.sh
+
       - name: Version
         id: version
         run: |
@@ -304,6 +310,9 @@ jobs:
 
   windows:
     name: Install and update test (Windows)
+    # Whether the download page's install line for this computer worked (deploy_site.sh leaves it off if not).
+    outputs:
+      install-line: ${{ steps.install-line.outcome }}
     needs: export
     # !cancelled() and the result check stand in for success(), which would also look at the skipped
     # "changed" job on manual runs and skip this one too (actions/runner#491).
@@ -332,6 +341,7 @@ jobs:
       # one, so this mostly proves the line itself works). A convenience on the page must never hold
       # back a release, so a failure here is a warning, not a failed job.
       - name: Check the download page's Windows install line
+        id: install-line
         continue-on-error: true
         shell: powershell
         run: |
@@ -361,6 +371,9 @@ jobs:
 
   macos:
     name: Package, install and update test (Mac)
+    # Whether the download page's install line for this computer worked (deploy_site.sh leaves it off if not).
+    outputs:
+      install-line: ${{ steps.install-line.outcome }}
     needs: export
     if: ${{ !cancelled() && needs.export.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: macos-latest
@@ -393,6 +406,7 @@ jobs:
       # The download page's Mac install line. A convenience on the page must never hold back a release,
       # so a failure here is a warning on the run, not a failed job.
       - name: Check the download page's Mac install line
+        id: install-line
         continue-on-error: true
         env:
           DMG: build/godot/macos/BipIsland-mac.dmg
@@ -519,6 +533,8 @@ jobs:
       - name: Build the download page
         if: steps.release.outputs.published == 'true'
         env:
+          MAC_LINE_OK: ${{ needs.macos.outputs.install-line }}
+          WIN_LINE_OK: ${{ needs.windows.outputs.install-line }}
           VERSION: ${{ needs.export.outputs.version }}
         run: scripts/ci/deploy_site.sh
 

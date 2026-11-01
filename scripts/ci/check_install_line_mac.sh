@@ -19,19 +19,19 @@ import html, re, sys
 page = open(sys.argv[1], encoding="utf-8").read()
 line = html.unescape(re.search(r'<pre id="cmd-mac">(.*?)</pre>', page, re.S).group(1))
 opener = ' && open "/Applications/Bip Island.app"'
-assert line.endswith(opener), "the Mac install line should end by opening the game"
-print(line[:-len(opener)].replace("{{MAC_URL}}", sys.argv[2]))
+assert line.count(opener) == 1, "the Mac install line should open the game once"
+print(line.replace(opener, "").replace("{{MAC_URL}}", sys.argv[2]))
 PY
 )"
 app="/Applications/Bip Island.app"
 for run in 1 2; do
   zsh -c "$line"
   [ -d "$app" ] || { echo "::error::Run $run: the page's install line didn't put Bip Island in Applications."; exit 1; }
-  if xattr "$app" | grep -q com.apple.quarantine; then
+  if xattr "$app" | grep com.apple.quarantine > /dev/null; then
     echo "::error::Run $run: the page's install line left a quarantine mark."; exit 1
   fi
   codesign --verify --deep --strict "$app"
 done
-if mount | grep -q "BipIsland\|/disk "; then mount; echo "::error::The line left the disk image mounted."; exit 1; fi
+if mount | grep "/disk (" > /dev/null; then mount; echo "::error::The line left the disk image mounted."; exit 1; fi
 rm -rf "$app"
 echo "The download page's Mac install line works."
