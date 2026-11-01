@@ -11,7 +11,7 @@ site="$root/build/site"
 rm -rf "$site"
 mkdir -p "$site"
 
-cp "$root/site/index.html" "$root/site/vercel.json" "$root/site/icon.png" "$root/site/favicon.png" "$site/"
+cp "$root/site/index.html" "$root/site/vercel.json" "$root/site/icon.png" "$root/site/favicon.png" "$root/site/bip.png" "$site/"
 cp -R "$root/site/fonts" "$site/fonts"
 
 if compgen -G "$shots/*.jpg" > /dev/null; then

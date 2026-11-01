@@ -345,6 +345,26 @@ jobs:
           scripts/godot/windows_update_test.ps1 -OldDir packages/old -NewDir packages/win
           -Version "${{ needs.export.outputs.version }}" -PackId "$env:PACK_ID"
 
+      # The download page's "install without the warning" line (site/index.html, cmd-win), in Windows
+      # PowerShell, against this build's setup file and without its last step (running it): the download
+      # must have no "from the internet" mark (Zone.Identifier), which is what SmartScreen warns about.
+      - name: Check the download page's Windows install line
+        shell: powershell
+        run: |
+          $page = Get-Content site/index.html -Raw -Encoding UTF8
+          $line = [System.Net.WebUtility]::HtmlDecode([regex]::Match($page, '(?s)<pre id="cmd-win">(.*?)</pre>').Groups[1].Value)
+          $run = '; Start-Process $f'
+          if (-not $line.EndsWith($run)) { throw "The Windows install line should end by running the setup file." }
+          $setup = Get-ChildItem packages/win -Filter *Setup.exe | Select-Object -First 1
+          if (-not $setup) { throw "No setup file in packages/win." }
+          $url = ([System.Uri]$setup.FullName).AbsoluteUri
+          Invoke-Expression ($line.Substring(0, $line.Length - $run.Length).Replace('{{WIN_URL}}', $url))
+          $f = "$env:TEMP\BipIsland-win-Setup.exe"
+          if ((Get-Item $f).Length -ne $setup.Length) { throw "The install line didn't download the whole setup file." }
+          if (Get-Item $f -Stream Zone.Identifier -ErrorAction SilentlyContinue) { throw "The download is marked as from the internet: SmartScreen would still warn." }
+          Remove-Item $f
+          "The download page's Windows install line works."
+
       - name: Keep the Windows release
         uses: actions/upload-artifact@v4
         with:
