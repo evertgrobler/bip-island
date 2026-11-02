@@ -514,6 +514,48 @@ def same_afrikaans(heard, text):
     return True
 
 
+# A number said on its own (num_21: "21"): Whisper writes it as digits or as words, and Afrikaans often
+# in Dutch spelling ("twee en negentig", "eenentwintig", "zevenentachtig"), so it passes when the heard
+# words are that exact number in any of these spellings. (Before 2 November 2026 every number over 20 was
+# turned down, as "ninety two" never matched "92".)
+EN_TENS = "twenty thirty forty fifty sixty seventy eighty ninety".split()
+AF_TENS = "twintig dertig veertig vyftig sestig sewentig tagtig negentig".split()
+NL_UNITS = ("nul een twee drie vier vijf zes zeven acht negen tien elf twaalf dertien veertien vijftien zestien "
+            "zeventien achttien negentien").split()
+NL_TENS = "twintig dertig veertig vijftig zestig zeventig tachtig negentig".split()
+
+
+def number_spellings(lang, n):
+    """Every way the number n (0-100) may be written, as letters only (af_sound for Afrikaans)."""
+    if n == 100:
+        forms = ["hundred", "onehundred", "ahundred"] if lang == "en" else ["honderd", "eenhonderd"]
+    elif lang == "en":
+        forms = [NUMBER_WORDS[n]] if n <= 20 else [EN_TENS[n // 10 - 2] + (NUMBER_WORDS[n % 10] if n % 10 else "")]
+    else:
+        forms = []
+        for units, tens in ((AF_NUMBERS, AF_TENS), (NL_UNITS, NL_TENS)):
+            if n < 20:
+                forms.append(units[n])
+            else:
+                forms.append(tens[n // 10 - 2] if n % 10 == 0 else units[n % 10] + "en" + tens[n // 10 - 2])
+    return {af_sound(f) if lang == "af" else f for f in forms}
+
+
+def same_number(lang, heard, text):
+    """Whether a clip whose text is a number (num_21: "21") was heard as exactly that number."""
+    want = re.sub(r"[^0-9]", "", text)
+    if not want or re.sub(r"[\s.,!?]", "", text) != want:
+        return False
+    got = heard.lower().replace("\u00eb", "e")
+    digits = re.sub(r"[^0-9]", "", got)
+    letters_ = re.sub(r"[^a-z]", "", got)
+    if digits:
+        return digits == want and not letters_
+    if lang == "af":
+        letters_ = af_sound(letters_)
+    return letters_ in number_spellings(lang, int(want))
+
+
 # Words Whisper adds round a single word ("an egg", Dutch "een" for Afrikaans "'n"): ignored there.
 LONE_WORD_EXTRAS = {"a", "an", "the", "n", "een", "die", "de", "het"}
 
@@ -607,7 +649,7 @@ class Listener:
         lang = split(key)[0]
         heard = self.heard(path, lang, text)
         same = same_english(heard, text) if lang == "en" else same_afrikaans(heard, text)
-        return same or one_word_alike(lang, heard, text), heard
+        return same or one_word_alike(lang, heard, text) or same_number(lang, heard, text), heard
 
 
 def status(state, all_texts):
