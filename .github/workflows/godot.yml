@@ -1,6 +1,7 @@
 # Builds and tests the Godot version of the game (Mac + Windows). See docs/GODOT_MIGRATION.md.
-# Once a day (and on a manual run), main is tested on real Mac and Windows machines, then published with the
-# download page (site/).
+# Once a day (and on a manual run), main is tested on real Mac and Windows machines, then published from
+# this public repository: a GitHub Release (installers and update files) and the download page (site/) on
+# GitHub Pages.
 name: Godot
 
 # Docs-only changes run nothing. Pull requests run the Linux job only; the Mac and Windows
@@ -18,14 +19,17 @@ on:
       - "scripts/spoken_numbers.py"
       - "scripts/ci/deploy_site.sh"
       - "scripts/ci/site_screenshots.sh"
+      - "scripts/ci/check_install_line_mac.sh"
+      - "scripts/ci/check_install_lines_parse.sh"
+      - "scripts/ci/finish_page.py"
       - "site/**"
       - "Content/**"
       - "Resources/**"
       - "audio/**"
       - ".github/workflows/godot.yml"
-  # main publishes once a day, not on every merge: each publish uses Vercel Blob operations, and
-  # the free plan allows 2,000 a month (owner decision, 25 October 2026, after the limit paused the
-  # account). The daily run skips itself when main hasn't changed since the last published build.
+  # main publishes once a day, not on every merge (owner decision, 25 October 2026), so the family sees
+  # one update a day at most. The daily run skips itself when main hasn't changed since the last
+  # published build.
   schedule:
     - cron: "52 18 * * *" # 20:52 SAST
   workflow_dispatch:
@@ -46,16 +50,16 @@ env:
   VPK_VERSION: 1.2.161
   # The Godot test build's Velopack id, so it installs next to anything else.
   PACK_ID: BipIslandTest
-  # Where in the Blob store the test release lives (the update feeds, installers and published.json).
-  BLOB_PREFIX: godot-test/
+  # The public repository the game updates from (this one): one GitHub Release per version, and the
+  # download page on GitHub Pages. The publish job writes with the workflow's own token.
+  DOWNLOADS_REPO: ${{ github.repository }}
   DOTNET_NOLOGO: "1"
   DOTNET_CLI_TELEMETRY_OPTOUT: "1"
 
 jobs:
   # The daily build only goes ahead when a file that goes into the game or the download page has
-  # changed since the commit the store says it was last published from (published.json, written by
-  # mark_published.mjs as the publish job's last step), so a quiet or docs-only day costs no Blob
-  # operations. The daily run tries each commit once: one that failed (or didn't publish because
+  # changed since the commit the latest release was built from (its description, written by
+  # github_release.py finish), so a quiet or docs-only day publishes nothing. The daily run tries each commit once: one that failed (or didn't publish because
   # main moved on) isn't rebuilt nightly; a manual run or the next change tries again. Pull requests
   # and manual runs always go ahead.
   changed:
@@ -86,9 +90,7 @@ jobs:
       - id: check
         env:
           TRIED: ${{ steps.tried.outputs.cache-hit }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOWNLOADS_TOKEN: ${{ github.token }}
         # Anything that can't be worked out builds anyway ("go=true"); only a clear "nothing new" skips.
         run: |
           if [ "$TRIED" = "true" ]; then
@@ -96,15 +98,7 @@ jobs:
             echo "go=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "go=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          base="$(BLOB_STORE_NO_CREATE=1 scripts/godot/blob_store.sh | sed -n 2p)" || base=""
-          last=""
-          if [ -n "$base" ]; then
-            last="$(curl -fsS "$base/${BLOB_PREFIX}published.json" 2>/dev/null | jq -r '.sha // empty' 2>/dev/null)" || last=""
-          fi
+          last="$(python3 scripts/godot/github_release.py published 2>/dev/null)" || last=""
           if [ -z "$last" ] || ! git cat-file -e "$last^{commit}" 2>/dev/null; then
             echo "No published commit found (${last:-none}); building."
             echo "go=true" >> "$GITHUB_OUTPUT"
@@ -192,6 +186,9 @@ jobs:
       - name: Check game content
         run: python3 scripts/validate_content.py
 
+      - name: The download page's install lines parse
+        run: scripts/ci/check_install_lines_parse.sh
+
       - name: Version
         id: version
         run: |
@@ -202,22 +199,12 @@ jobs:
       - name: Copy fonts, content and voice clips into the Godot project
         run: python3 scripts/godot/prepare_assets.py
 
-      - name: Update feed address (main only)
+      # Installed copies check the GitHub Releases of this public repository (Updater.cs).
+      - name: Update source (main only)
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "::warning::The Vercel secrets aren't set, so this build won't check for updates."
-            exit 0
-          fi
-          store="$(scripts/godot/blob_store.sh)"
-          echo "::add-mask::$(printf '%s\n' "$store" | sed -n 1p)"
-          base="$(printf '%s\n' "$store" | sed -n 2p)"
-          printf '{"feed": "%s/%s"}\n' "$base" "$BLOB_PREFIX" > godot/assets/update.json
-          echo "Update feed: $base/$BLOB_PREFIX"
+          printf '{"github": "https://github.com/%s"}\n' "$DOWNLOADS_REPO" > godot/assets/update.json
+          echo "Updates from: https://github.com/$DOWNLOADS_REPO/releases"
 
       - name: Cache Godot
         uses: actions/cache@v4
@@ -323,6 +310,9 @@ jobs:
 
   windows:
     name: Install and update test (Windows)
+    # Whether the download page's install line for this computer worked (deploy_site.sh leaves it off if not).
+    outputs:
+      install-line: ${{ steps.install-line.outcome }}
     needs: export
     # !cancelled() and the result check stand in for success(), which would also look at the skipped
     # "changed" job on manual runs and skip this one too (actions/runner#491).
@@ -345,6 +335,32 @@ jobs:
           scripts/godot/windows_update_test.ps1 -OldDir packages/old -NewDir packages/win
           -Version "${{ needs.export.outputs.version }}" -PackId "$env:PACK_ID"
 
+      # The download page's Windows install line (site/index.html, cmd-win), in Windows PowerShell 5.1,
+      # against this build's setup file served over local HTTP, without its last step (running it).
+      # Checks the whole file arrives with no "from the internet" mark (Invoke-WebRequest never adds
+      # one, so this mostly proves the line itself works). A convenience on the page must never hold
+      # back a release, so a failure here is a warning, not a failed job.
+      - name: Check the download page's Windows install line
+        id: install-line
+        continue-on-error: true
+        shell: powershell
+        run: |
+          $setup = Get-ChildItem packages/win -Filter *Setup.exe | Select-Object -First 1
+          if (-not $setup) { throw "No setup file in packages/win." }
+          $server = Start-Process python -ArgumentList "-m", "http.server", "8766", "--bind", "127.0.0.1", "--directory", $setup.DirectoryName -PassThru -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          try {
+            $page = Get-Content site/index.html -Raw -Encoding UTF8
+            $line = [System.Net.WebUtility]::HtmlDecode([regex]::Match($page, '(?s)<pre id="cmd-win">(.*?)</pre>').Groups[1].Value)
+            $run = '; Start-Process $f'
+            if (-not $line.EndsWith($run)) { throw "The Windows install line should end by running the setup file." }
+            Invoke-Expression ($line.Substring(0, $line.Length - $run.Length).Replace('{{WIN_URL}}', "http://127.0.0.1:8766/$($setup.Name)"))
+            if ((Get-Item $f).Length -ne $setup.Length) { throw "The install line didn't download the whole setup file." }
+            if (Get-Item $f -Stream Zone.Identifier -ErrorAction SilentlyContinue) { throw "The download is marked as from the internet." }
+            Remove-Item $f
+            "The download page's Windows install line works."
+          } finally { Stop-Process -Id $server.Id -ErrorAction SilentlyContinue }
+
       - name: Keep the Windows release
         uses: actions/upload-artifact@v4
         with:
@@ -355,6 +371,9 @@ jobs:
 
   macos:
     name: Package, install and update test (Mac)
+    # Whether the download page's install line for this computer worked (deploy_site.sh leaves it off if not).
+    outputs:
+      install-line: ${{ steps.install-line.outcome }}
     needs: export
     if: ${{ !cancelled() && needs.export.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: macos-latest
@@ -384,6 +403,15 @@ jobs:
           OUT_DIR: build/godot/macos
         run: scripts/godot/mac_package_and_test.sh
 
+      # The download page's Mac install line. A convenience on the page must never hold back a release,
+      # so a failure here is a warning on the run, not a failed job.
+      - name: Check the download page's Mac install line
+        id: install-line
+        continue-on-error: true
+        env:
+          DMG: build/godot/macos/BipIsland-mac.dmg
+        run: scripts/ci/check_install_line_mac.sh
+
       - name: Keep the Mac release
         uses: actions/upload-artifact@v4
         with:
@@ -393,16 +421,33 @@ jobs:
           compression-level: 0
 
   publish:
-    name: Publish the test release (Vercel Blob)
+    name: Publish the release (GitHub Releases and Pages)
     needs: [export, windows, macos]
     if: >-
       ${{ !cancelled() && needs.export.result == 'success' && needs.windows.result == 'success'
       && needs.macos.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 75
+    # The workflow's own token makes the release (contents) and deploys the page (pages, id-token).
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.page.outputs.page_url }}
     steps:
       - name: Check out
         uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install Velopack
+        timeout-minutes: 5
+        run: dotnet tool install -g vpk --version "$VPK_VERSION"
 
       - name: Get the Windows release
         uses: actions/download-artifact@v4
@@ -416,93 +461,121 @@ jobs:
           name: godot-macos-${{ needs.export.outputs.version }}
           path: release/macos
 
-      - name: Upload to Vercel Blob
-        id: upload
+      # One GitHub Release per version holds both computers' update files (releases.win.json,
+      # releases.osx.json and their packages) and the two downloads. It stays a draft, hidden from
+      # installed games, until finish has checked every file is in; only then is it published, marked
+      # latest (noting the commit it was built from), and all but the newest 5 releases are deleted.
+      - name: Publish the release
+        id: release
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOWNLOADS_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.export.outputs.version }}
-          # Each retry is another counted Blob operation (the SDK's default is 10), but a part that
-          # fails for good costs a whole new upload (about 25 operations), so allow a few.
-          VERCEL_BLOB_RETRIES: "4"
         run: |
-          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "::warning::The Vercel secrets aren't set, so the test release wasn't published."
-            exit 0
-          fi
           # Never let an older run overwrite a newer one.
           head="$(git ls-remote origin refs/heads/main | cut -f1)"
           if [ -n "$head" ] && [ "$head" != "$GITHUB_SHA" ]; then
             echo "::notice::main has moved on, so this older build isn't published."
             exit 0
           fi
-          store="$(scripts/godot/blob_store.sh)"
-          token="$(printf '%s\n' "$store" | sed -n 1p)"
-          echo "::add-mask::$token"
-          tools="$RUNNER_TEMP/blob-tools"
-          mkdir -p "$tools"
-          (cd "$tools" && npm init -y > /dev/null && npm install --silent @vercel/blob@2)
-          cp scripts/godot/publish_blob.mjs "$tools/"
-          BLOB_READ_WRITE_TOKEN="$token" node "$tools/publish_blob.mjs" release/windows release/macos "$BLOB_PREFIX"
-          # For the last step, which notes this commit as published.
-          cp scripts/godot/mark_published.mjs "$tools/"
-          (umask 077 && printf '%s' "$token" > "$RUNNER_TEMP/blob-token")
-          base="$(printf '%s\n' "$store" | sed -n 2p)"
-          # The feeds are overwritten in place and cached for 60 seconds (publish_blob.mjs), so
-          # the old feed can still be served just after the upload: give the cache up to 3 minutes.
-          for os in win osx; do
-            listed=false
-            for _ in $(seq 1 12); do
-              if curl -fsS "$base/${BLOB_PREFIX}$os/releases.$os.json" | grep -q "$VERSION"; then
-                listed=true
+          release() { python3 scripts/godot/github_release.py "$@"; }
+          upload() { # upload <channel> <folder> [more vpk options]
+            vpk "[$1]" upload github --channel "$1" --outputDir "$2" \
+              --repoUrl "https://github.com/$DOWNLOADS_REPO" --token "$DOWNLOADS_TOKEN" \
+              --releaseName "Bip Island $VERSION" --tag "$VERSION" "${@:3}"
+          }
+          release trim release/windows win
+          release trim release/macos/osx osx
+          # A re-run of a publish that already worked has nothing to upload.
+          if release done "$VERSION"; then
+            echo "Release $VERSION is already published."
+            release prune "$VERSION" --keep 5 || echo "::warning::Couldn't remove old releases."
+          else
+            # Up to three tries: a network blip shouldn't cost the family a day's update. Each try
+            # starts clean (clear removes the previous try's draft).
+            for try in 1 2 3; do
+              # A try that got as far as publishing (then broke) has nothing left to do.
+              release done "$VERSION" && break
+              if release clear "$VERSION" && upload win release/windows \
+                 && release attach "$VERSION" release/macos/BipIsland-mac.dmg \
+                 && upload osx release/macos/osx --merge && release finish "$VERSION" --keep 5; then
                 break
               fi
-              sleep 15
+              if [ "$try" = 3 ]; then
+                release done "$VERSION" && break  # the last try published, then broke
+                echo "::error::Publishing $VERSION failed three times."; exit 1
+              fi
+              echo "::warning::Publishing try $try failed; trying again in a minute."
+              sleep 60
             done
-            $listed || {
-              echo "::error::The $os update feed still doesn't list $VERSION after 3 minutes."
-              exit 1
-            }
+          fi
+          # GitHub's "latest" must be this version (the download links and installed games follow it).
+          for attempt in 1 2 3 4 5 6; do
+            [ "$(release latest)" = "$VERSION" ] && break
+            [ "$attempt" = 6 ] && { echo "::error::GitHub's latest release isn't $VERSION."; exit 1; }
+            sleep 10
           done
+          # The download page's links: fetch the first byte of each.
+          for file in BipIsland-mac.dmg BipIsland-win-Setup.exe; do
+            url="https://github.com/$DOWNLOADS_REPO/releases/latest/download/$file"
+            for attempt in 1 2 3 4 5 6; do
+              curl -fsSL -r 0-0 -o /dev/null "$url" && break
+              [ "$attempt" = 6 ] && { echo "::error::The download link $url doesn't work."; exit 1; }
+              sleep 10
+            done
+          done
+          echo "published=true" >> "$GITHUB_OUTPUT"
 
       - name: Get the download page screenshots
-        if: always() && steps.upload.outputs.mac_url != ''
+        if: steps.release.outputs.published == 'true'
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: site-screenshots
           path: build/site-screenshots
 
-      # The download page (site/) with this version's links. Runs once the builds are uploaded,
-      # even if the feed check above is slow to see the new version.
-      - name: Publish the download page
-        if: always() && steps.upload.outputs.mac_url != ''
+      - name: Build the download page
+        if: steps.release.outputs.published == 'true'
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          UPDATE_FEED_URL: ${{ vars.UPDATE_FEED_URL }}
+          MAC_LINE_OK: ${{ needs.macos.outputs.install-line }}
+          WIN_LINE_OK: ${{ needs.windows.outputs.install-line }}
           VERSION: ${{ needs.export.outputs.version }}
-          MAC_URL: ${{ steps.upload.outputs.mac_url }}
-          WIN_URL: ${{ steps.upload.outputs.win_url }}
         run: scripts/ci/deploy_site.sh
 
-      # Last, and only when every step above worked (the uploads, the feed check and the download
-      # page): the note the daily "changed" job reads to skip days when nothing new went into the game.
-      - name: Note this commit as published
-        env:
-          VERSION: ${{ needs.export.outputs.version }}
-          VERCEL_BLOB_RETRIES: "4"
-        run: BLOB_READ_WRITE_TOKEN="$(cat "$RUNNER_TEMP/blob-token")" node "$RUNNER_TEMP/blob-tools/mark_published.mjs" "$BLOB_PREFIX"
+      # The page goes on GitHub Pages (Settings → Pages → Source: GitHub Actions, set once by the owner,
+      # docs/SETUP.md). The release is already out, so a page that doesn't go up is a warning.
+      - name: Set up GitHub Pages
+        if: steps.release.outputs.published == 'true'
+        continue-on-error: true
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the download page
+        if: steps.pages.outcome == 'success'
+        continue-on-error: true
+        id: page-files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site
+
+      - name: Publish the download page (GitHub Pages)
+        if: steps.page-files.outcome == 'success'
+        continue-on-error: true
+        id: page
+        uses: actions/deploy-pages@v4
 
       - name: Summary
-        if: always() && steps.upload.outputs.mac_url != ''
+        if: always() && steps.release.outputs.published == 'true'
+        env:
+          PAGE: ${{ steps.page.outputs.page_url }}
+          PAGE_OUTCOME: ${{ steps.page.outcome }}
         run: |
+          if [ "$PAGE_OUTCOME" != "success" ]; then
+            echo "::warning::The release is out, but the download page wasn't published. Is GitHub Pages set to \"GitHub Actions\" (docs/SETUP.md)?"
+          fi
           {
-            echo "### Godot test build ${{ needs.export.outputs.version }} published"
-            echo "- Mac: ${{ steps.upload.outputs.mac_url }}"
-            echo "- Windows: ${{ steps.upload.outputs.win_url }}"
+            echo "### Bip Island ${{ needs.export.outputs.version }} published"
+            echo "- Download page: ${PAGE:-not published}"
+            echo "- Release: https://github.com/$DOWNLOADS_REPO/releases/tag/${{ needs.export.outputs.version }}"
             echo
-            echo "Installed test copies download this version quietly; a grown-up approves the install."
+            echo "Installed copies download this version quietly; a grown-up approves the install."
           } >> "$GITHUB_STEP_SUMMARY"
