@@ -514,6 +514,58 @@
       ]
     },
     {
+      "id": "equal_groups",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Equal groups and arrays",
+      "objectives": [
+        "2Ni.05"
+      ],
+      "prerequisites": [
+        "count_steps"
+      ]
+    },
+    {
+      "id": "share_group",
+      "island": "numbers",
+      "band": "stage2",
+      "name": "Sharing and grouping",
+      "objectives": [
+        "2Ni.06"
+      ],
+      "prerequisites": [
+        "equal_groups"
+      ]
+    },
+    {
+      "id": "tables_3_4_8",
+      "island": "numbers",
+      "band": "stage3",
+      "name": "The 3, 4 and 8 tables",
+      "objectives": [
+        "3Ni.05",
+        "3Ni.08"
+      ],
+      "prerequisites": [
+        "count_steps"
+      ]
+    },
+    {
+      "id": "times_divide",
+      "island": "numbers",
+      "band": "stage3",
+      "name": "Times and divide undo each other",
+      "objectives": [
+        "3Ni.03",
+        "3Ni.06",
+        "3Ni.07"
+      ],
+      "prerequisites": [
+        "share_group",
+        "tables_3_4_8"
+      ]
+    },
+    {
       "id": "even_odd",
       "island": "numbers",
       "band": "stage1",

@@ -411,5 +411,29 @@
         "to": 20
       }
     ]
+  },
+  "picnic": {
+    "note": "Picnic Plates: the food on Bip's picnic plates (each needs artwork pic_<id>). The most plates, food on a plate and food on the blanket at once.",
+    "food": [
+      {
+        "id": "sandwich",
+        "picture": "pic_sandwich"
+      },
+      {
+        "id": "biscuit",
+        "picture": "pic_biscuit"
+      },
+      {
+        "id": "naartjie",
+        "picture": "pic_naartjie"
+      },
+      {
+        "id": "strawberry",
+        "picture": "pic_strawberry"
+      }
+    ],
+    "mostPlates": 5,
+    "mostEach": 10,
+    "mostFood": 30
   }
 }
