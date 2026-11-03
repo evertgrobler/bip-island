@@ -49,14 +49,17 @@ public static class SelfTest
                 // Give the window and the operating system a moment to settle, then ask it.
                 for (var i = 0; i < 60; i++) await boot.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
                 var state = KidLock.Check();
-                var locked = state is "mac lock on" or "windows hook on";
+                // Locked means the keys are blocked and the mouse can't leave for a second screen.
+                var mouseKeptIn = KidLock.MouseKeptIn;
+                var locked = (state is "mac lock on" or "windows hook on") && mouseKeptIn;
                 System.IO.File.WriteAllText(lockCheck[0], JsonSerializer.Serialize(new Dictionary<string, object>
                 {
                     ["os"] = OS.GetName(),
                     ["kidLock"] = state,
+                    ["mouseKeptIn"] = mouseKeptIn,
                     ["locked"] = locked,
                 }));
-                GD.Print($"Bip Island: child lock check: {state}");
+                GD.Print($"Bip Island: child lock check: {state}, mouse kept in: {mouseKeptIn}");
                 boot.Quit(locked ? 0 : 1);
                 return;
             }
