@@ -1,0 +1,4 @@
+# Clips the daily Aoede run doesn't record yet: lines still waiting for the owner's check.
+# One pattern per line (* matches anything); Afrikaans clips start with af/. Remove a line once it's approved.
+# Empty: the owner approved the Afrikaans Bip's Stories lines and all the Picnic Plates and Number Machine
+# lines, the newer short ones too (1 Nov 2026).

@@ -41,7 +41,8 @@ Questions for you are at the end (section 8).
 
 Counted with a script from `Content/asset_manifest.json`, `Content/af/asset_manifest.json`,
 `audio/script.csv` and `audio/af/script.csv` on the `claude/language-island` branch, and
-`voice-lab/aoede.json` on `claude/aoede-narrator` for what's done.
+`voice-lab/aoede.json` for what's done (then on `claude/aoede-narrator`; on `main` since #67, with the daily
+runs' newest state on that branch).
 
 | Category | Clip names | English | Done (EN) | Afrikaans | Heard how often |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -62,11 +63,11 @@ Counted with a script from `Content/asset_manifest.json`, `Content/af/asset_mani
 | **Total** | | **1,238** | **94** | **984** | |
 
 **2,222 clips in all** (the earlier ~1,964 figure was before the 248 Language Island words were
-added). 94 English clips are done; letter sounds (*) are recorded into `voice-lab/aoede_phonics/` (on the recorder's branch) and
+added). 94 English clips are done; letter sounds (*) are recorded into `voice-lab/aoede_phonics/` (recorded on `claude/aoede-narrator`, on `main` once merged) and
 only count once you've approved them by ear.
 
-How the recorder groups them today (`group()` in `scripts/gemini_narrator.py`, on branch `claude/aoede-narrator` until
-its own pull request reaches `main`; until then new clips are made with `scripts/speak_clips.py`):
+How the recorder groups them today (`group()` in `scripts/gemini_narrator.py`, on `main` since #67; the daily runs record
+on `claude/aoede-narrator`):
 
 | Style | English | Afrikaans | Batch | First-pass requests |
 | --- | ---: | ---: | ---: | ---: |
@@ -271,7 +272,7 @@ question 2.
   column says "Big band (ages 7–10)").
 - `scripts/validate_content.py`: every `_big` row has a Little row of the same name (praise pool
   excepted), and `sa_english.py` / `af_spelling.py` already cover the script files.
-- `scripts/gemini_narrator.py` (on `claude/aoede-narrator`): `group()` returns `"big"` for `vo_`, `hint_` and
+- `scripts/gemini_narrator.py`: `group()` returns `"big"` for `vo_`, `hint_` and
   `praise_` clips ending `_big` (never `word_big`, a real word) and a new
   `"clear"` style for instructions and sentences (section 6); `learn_` joins the words group; a
   priority order replaces plain alphabetical (section 7).
