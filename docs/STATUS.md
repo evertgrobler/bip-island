@@ -33,12 +33,17 @@
 - **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
   the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
   remain only as a fallback for new words and in the parent area's child menus.
-- **Delivery:** once a day (20:52 SAST, only if a game or download-page file changed since the last
-  published build; a manual run of the Godot workflow publishes at once) `main` is built, tested on real
-  Mac and Windows machines, and published:
-  installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
-  parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
-  screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
+- **Delivery (moved off Vercel on 1 Nov):** once a day (20:52 SAST, only if a game or download-page file
+  changed since the commit the latest release was built from; a manual run of the Godot workflow publishes
+  at once) `main` is built, tested on real Mac and Windows machines, and published from this public
+  repository with the workflow's own token: one GitHub Release per version (installers + both computers'
+  Velopack files, the newest 5 kept; `scripts/godot/github_release.py` + `vpk upload github`), and the
+  download page (`site/`, built by `scripts/ci/deploy_site.sh`, screenshots from
+  `scripts/ci/site_screenshots.sh`) on GitHub Pages at https://evertgrobler.github.io/bip-island/. The game
+  updates from those releases (Velopack GithubSource, `Updater.cs`). The owner sets Settings → Pages →
+  Source: GitHub Actions once. Copies installed earlier point at the paused Vercel feed: the family
+  reinstalls once from the new page. Before making `bip-island` private, follow "Going private" in
+  `docs/SETUP.md`.
 - **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
   review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
 - **Bip's Stories (24 Oct):** reading for meaning on Words Island, ages 5–10, 5 levels, 20 stories per language.
@@ -89,10 +94,11 @@
   blocked by the proxy), then `scripts/godot/install_godot.sh` prints the Godot binary path.
   `cd godot && dotnet build`, then `$GODOT --headless --path . --import`.
 - Self-tests run the real game: `-- --bip-report out.json`, `-- --bip-screenshot out.png` (needs
-  `xvfb-run` + `--rendering-driver opengl3`), `-- --bip-update-test <feed> <report>`.
+  `xvfb-run` + `--rendering-driver opengl3`), `-- --bip-update-test <repo url> <report>`.
 - CI: `.github/workflows/godot.yml`. Linux exports both platforms and packs the Windows `Setup.exe`
-  (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from a local feed.
-  Main builds go to a public Vercel Blob store (`godot-test/`); the Swift app's feed is untouched.
+  (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from this build served
+  as a stand-in GitHub Release on the runner (`scripts/godot/fake_github.py`, read by the game's own
+  GithubSource). Main builds are published as GitHub Releases in this repository (`evertgrobler/bip-island`), with the download page on its GitHub Pages.
 - Drawing is y-down in Godot: when porting a Swift drawing, negate y values and angles.
 - Drawing kit ported (Phase 2, part): `Buttons`, `PictureNode` (+ `PictureCard`), `EmojiPictures`
   (Noto via `Fonts.Emoji`), `StepPictures`, `Avatars`, `Sketch.StarPoints`. Ports keep the Swift numbers
@@ -657,3 +663,18 @@
 - **1 Nov, 01:00 SAST: child lock, second screens.** While the lock is on, the mouse is kept inside the game's window while the game is in front (Mac and Windows), and put back whenever the game comes to the front (a program that takes the front by itself, like a system dialog, lifts it until then), so on a computer with two screens a child can't move it over and click another program (which on Windows would also stop the key blocking, as the hook only works while the game is in front). The Mac and Windows lock check now also reports `mouseKeptIn` and needs it. The lock lifts it again for the parent area's quit and for updates.
 - **1 Nov, 08:10 SAST: the download page's new design.** The owner approved a design built on the game's own map: a sea band with "Bip" on letter stones and the map screenshot, the five islands in their map colours with a screenshot each (Meet the Sound, Picnic Plates, Word Rocket, Bip's Path, Paint Pots), "Nothing to read, nothing to rush", play-time breaks, the grown-up cards and the download cards. Each download card has an "Or install without the warning" line to paste into Terminal (Mac: `curl` the .dmg, copy the app to Applications, open it) or PowerShell (Windows: `Invoke-WebRequest` the setup file, run it): a download made that way isn't marked as from the internet, so Gatekeeper and SmartScreen don't stop it (owner decision, 1 November 2026; the click-through steps stay). The Mac and Windows CI jobs (which run on `main` and manual runs, not on pull requests) run each line against the build they just made, served over local HTTP (the Mac one twice, in zsh, to prove replacing an older copy); a failure there is only a warning, so it never holds back a release. Windows PowerShell 5.1 gets TLS 1.2 switched on first, which the Blob store needs. Bip's picture is `site/bip.png`; `site_screenshots.sh` takes the new game screenshots.
 - **1 Nov, 08:20 SAST: the download page says how it was made, and plays the narrator.** Owner asks: "Hear the narrator", the Numbers Island and Letters Island welcomes in English and the same two in Afrikaans, real clips from the game (`data-clip` on the page; `deploy_site.sh` copies each from `Resources/Audio` into `voices/`, and `scripts/ci/finish_page.py` removes the button of a clip not recorded yet, so the page always plays the voice the game ships with). Never `vo_welcome` or `vo_bip_charging`: they're the clips Chatterbox copies the narrator from (`audio/NARRATOR_VOICE.md`). And "A family project, built with AI": our own project, not a product; Claude (Anthropic) wrote the code, drew the pictures and helped plan the games, we decided and checked; the narrator is an AI voice (ElevenLabs and Chatterbox, being re-recorded with Google Gemini) and the music ElevenLabs Music. The install lines are parsed on every pull request (`check_install_lines_parse.sh`, in `check_all.sh` and the Linux job), and a line whose Mac or Windows check failed on a build is left off that build's page (`finish_page.py`).
+- **1 Nov, 08:30 SAST: downloads and updates move to GitHub (pull request #65, brought up to date).** Vercel
+  stayed paused into November, so nothing could reach the family's computers. The owner chose the move built
+  on 25 Oct (closed then). It now publishes from this repository instead of a separate one, with the
+  workflow's own token, so there's no token to make: a GitHub Release per version (`vpk upload github` +
+  `scripts/godot/github_release.py`, which also notes the commit each release was built from, for the daily
+  "anything new?" check) and the download page on GitHub Pages (`actions/deploy-pages`). Owner to do once:
+  Settings → Pages → Source: GitHub Actions; reinstall once on each family computer from
+  https://evertgrobler.github.io/bip-island/. Removed: the Blob scripts (`publish_blob.mjs`, `blob_store.sh`,
+  `mark_published.mjs`, `resolve_feed_url.sh`), `setup-updates.yml`, `site/vercel.json`, the `VERCEL_*` use.
+  How publishing protects itself: the release stays a draft (invisible to installed games) until
+  `github_release.py finish` has checked both computers' update files and both downloads are fully uploaded,
+  then publishes it as the latest with its tag on the commit built; the whole upload gets three tries, each
+  from a clean start (`clear` removes only this pipeline's drafts), a stall fails after 5 minutes, and the
+  job has 75 minutes; a re-run of a publish that worked skips the upload (`done`); clearing old releases
+  (`prune`, newest 5 of ours kept) only ever warns; and the run checks GitHub's latest really is this version.
