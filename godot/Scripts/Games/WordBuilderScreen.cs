@@ -18,8 +18,6 @@ namespace BipIsland.Games;
 /// </summary>
 public partial class WordBuilderScreen : GameScreen
 {
-    /// <summary>Further than this (in canvas points) between press and release is a drag, not a tap.</summary>
-    private const float DragDistance = 12;
     /// <summary>A dropped tile lands in the nearest space within this distance, else goes back.</summary>
     private const float DropDistance = 130;
     private const float SlotSize = 116;
@@ -42,7 +40,8 @@ public partial class WordBuilderScreen : GameScreen
     private Node2D _nextButton = null!;
     private LetterTile? _dragged;
     private Vector2 _dragOffset;
-    private Vector2 _pressPoint;
+    /// <summary>Whether a press is a click or a drag: the same rule as Feed the Monster and Letter Trace.</summary>
+    private readonly CarryHand _hand = new();
     private int? _draggedFromSlot;
 
     public WordBuilderScreen(WordBuilderGame game)
@@ -131,6 +130,7 @@ public partial class WordBuilderScreen : GameScreen
         _bankTiles.Clear();
         _bankHomes.Clear();
         _dragged = null;
+        _hand.Cancel();
         _attempt = new QuestionAttempt();
         ResetKeys();
         _round = next;
@@ -199,7 +199,9 @@ public partial class WordBuilderScreen : GameScreen
                 return;
             case InputEventMouseMotion motion when _dragged != null:
                 GetViewport().SetInputAsHandled();
-                if (!InputLocked) _dragged.Position = Stage.ToLocal(motion.GlobalPosition) + _dragOffset;
+                var point = Stage.ToLocal(motion.GlobalPosition);
+                _hand.Move(Numeric(point), buttonHeld: true);
+                if (!InputLocked) _dragged.Position = point + _dragOffset;
                 return;
             case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } release when _dragged != null:
                 GetViewport().SetInputAsHandled();
@@ -216,7 +218,7 @@ public partial class WordBuilderScreen : GameScreen
     private void StartDrag(LetterTile tile, Vector2 point)
     {
         _dragged = tile;
-        _pressPoint = point;
+        _hand.Press(Numeric(point), onPiece: true);
         _dragOffset = tile.Position - point;
         tile.ZIndex = 20;
         tile.Move?.Kill();
@@ -229,12 +231,15 @@ public partial class WordBuilderScreen : GameScreen
         if (_dragged is not { } tile) return;
         _dragged = null;
         tile.ZIndex = 10;
+        // Word Builder treats a click itself (no carrying): it never moved past the wobble and ended near its start.
+        var tap = _hand.IsClick(Numeric(point));
+        _hand.Cancel();
         if (InputLocked)
         {
             SendHome(tile);
             return;
         }
-        if (point.DistanceTo(_pressPoint) < DragDistance)
+        if (tap)
         {
             // A tap: a tile in a space goes back; a tile in the bank goes to the next space.
             if (_draggedFromSlot != null)
@@ -396,6 +401,8 @@ public partial class WordBuilderScreen : GameScreen
     {
         if (!InputLocked) SayPrompt();
     }
+
+    private static System.Numerics.Vector2 Numeric(Vector2 point) => new(point.X, point.Y);
 }
 
 /// <summary>A teal letter tile for Word Builder.</summary>

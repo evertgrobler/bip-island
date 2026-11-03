@@ -900,8 +900,32 @@ public static class WalkTest
                 await Wait(0.5);
                 Check("dragging the right food to the monster is saved", game.Store.Progress(game.ChildId, game.Language).Skills.ContainsKey("snd_g1"));
                 Check("the next food comes", await WaitFor(() => monster is { InputLocked: false }, 8));
+                // A drag carried away and put back on its spot isn't a click: nothing is fed, no miss.
+                monster.DragAwayAndBackForTest(monster.RightIndex);
+                await Wait(0.5);
+                Check("a food carried away and put back isn't fed", monster is { InputLocked: false, Carrying: false, Misses: 0 });
+                // A trackpad: a click picks a food up, and it follows the pointer until the next click.
+                monster.ClickFoodForTest(monster.RightIndex);
+                Check("clicking a food picks it up", monster.Carrying);
+                monster.ClickForTest(atMouth: false);
+                await Wait(0.5);
+                Check("clicking away from the mouth puts it back, no miss", monster is { Carrying: false, InputLocked: false, Misses: 0 });
+                monster.ClickFoodForTest((monster.RightIndex + 1) % 3);
+                monster.ClickForTest(atMouth: true);
+                await Wait(0.5);
+                Check("a wrong food clicked to the mouth is a miss", monster is { Carrying: false, InputLocked: false, Misses: 1 });
+                monster.ClickFoodForTest(monster.RightIndex);
+                monster.ClickForTest(atMouth: true);
+                Check("the right food clicked to the mouth is eaten", await WaitFor(() => monster is { InputLocked: true }, 1));
+                Check("then the next food comes", await WaitFor(() => monster is { InputLocked: false }, 8));
+                // Home always works, even with a food in hand.
+                monster.ClickFoodForTest(monster.RightIndex);
+                Check("a clicked food is in hand", monster.Carrying);
+                monster.ClickHomeForTest();
+                await Wait(0.8);
+                await Expect<LettersIslandScreen>("home works with a food in hand, and goes back to letters island");
             }
-            if (await Tap("home")) await Expect<LettersIslandScreen>("home from Feed the Monster goes back to letters island");
+            else if (await Tap("home")) await Expect<LettersIslandScreen>("home from Feed the Monster goes back to letters island");
         }
 
         async Task PlayCoding()
