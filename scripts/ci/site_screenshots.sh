@@ -12,12 +12,11 @@ mkdir -p "$raw"
 # page name : scene under godot/Scenes
 shots=(
   map:Screens/map
-  letters-game:Games/feed_the_monster
-  numbers-game:Games/count_and_tap
-  words-game:Games/word_builder
+  letters-game:Games/meet_the_sound
+  numbers-game:Games/picnic_plates
+  words-game:Games/word_rocket
   coding-game:Games/bips_path
   art-game:Games/paint_pots
-  stickers:Screens/stickers
   charging:Screens/charging
   parent-progress:Parent/progress
 )

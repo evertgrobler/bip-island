@@ -9,8 +9,8 @@
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
   was built: `docs/GODOT_MIGRATION.md`.
-- **Games:** 17 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
-  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance), Words (Sound Buttons, Word Builder, Word Rocket),
+- **Games:** 20 live across 5 islands: Letters (Meet the Sound, Sound Hunt, Bubble Pop, Letter
+  Trace, Feed the Monster), Numbers (Count & Tap, Block Towers, Quick Look, Bip's Balance, Picnic Plates, Number Machine), Words (Sound Buttons, Word Builder, Word Rocket, Bip's Stories),
   Coding (Morning Order, Bip's Path), Art (Shape Builder, Paint Pots, Mirror Magic). Levels inside every
   game, 8-question visits, star celebration. Letter Trace works with a mouse or a trackpad (18 Oct).
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
@@ -23,8 +23,8 @@
   setup guide for grown-ups opens at launch until finished or skipped: practise the Esc hold for real
   (required when it opens by itself), passcode, children, play time, a 3-card tour.
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
-  keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. Second screens
-  aren't covered yet.
+  keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. While the game is in
+  front the mouse stays inside its window (1 Nov), so a second screen can't be reached.
 - **Voice:** every clip the game needs is recorded (ElevenLabs "Bip Island Narrator"), including the 10 Oct batch (charging, day done, Word Rocket, a new `snd_h`, `word_yoyo`). The y sound's picture word is yo-yo.
 - **Text contrast (18 Oct):** every text colour meets WCAG (4.5:1, 3:1 for big glyphs). Use `Palette.Ink`,
   `SoftInk`, `QuietInk`, `AlertOrange`, `WrongRed`, `ProblemRed` or `GoodGreen` for text, and the named fills
@@ -33,12 +33,17 @@
 - **Pictures:** every picture is hand-drawn (18 Oct): the word, letter-sound, money and sentence pictures,
   the 123 Morning Order step scenes and the 8 profile animals (`Scripts/Drawing/ArtPictures*.cs`). Emoji
   remain only as a fallback for new words and in the parent area's child menus.
-- **Delivery:** once a day (20:52 SAST, only if a game or download-page file changed since the last
-  published build; a manual run of the Godot workflow publishes at once) `main` is built, tested on real
-  Mac and Windows machines, and published:
-  installers + Velopack feeds in the Vercel Blob store, and the download page (`site/`: islands,
-  parents section with the kid lock card, two download cards with the Option/Alt tip, Godot
-  screenshots from `scripts/ci/site_screenshots.sh`) via `scripts/ci/deploy_site.sh`.
+- **Delivery (moved off Vercel on 1 Nov):** once a day (20:52 SAST, only if a game or download-page file
+  changed since the commit the latest release was built from; a manual run of the Godot workflow publishes
+  at once) `main` is built, tested on real Mac and Windows machines, and published from this public
+  repository with the workflow's own token: one GitHub Release per version (installers + both computers'
+  Velopack files, the newest 5 kept; `scripts/godot/github_release.py` + `vpk upload github`), and the
+  download page (`site/`, built by `scripts/ci/deploy_site.sh`, screenshots from
+  `scripts/ci/site_screenshots.sh`) on GitHub Pages at https://evertgrobler.github.io/bip-island/. The game
+  updates from those releases (Velopack GithubSource, `Updater.cs`). The owner sets Settings → Pages →
+  Source: GitHub Actions once. Copies installed earlier point at the paused Vercel feed: the family
+  reinstalls once from the new page. Before making `bip-island` private, follow "Going private" in
+  `docs/SETUP.md`.
 - **The repo is public since 3 Oct**, so GitHub Actions is free. Merge rule: green CI + another session's
   review; run `scripts/check_all.sh` before pushing (see CLAUDE.md "Working rules").
 - **Bip's Stories (24 Oct):** reading for meaning on Words Island, ages 5–10, 5 levels, 20 stories per language.
@@ -52,7 +57,7 @@
   its own `curriculum/skills.json`), signed off by the owner on 18 October 2026 and checked by
   `validate_content.py --lang af` and `af_spelling.py`. It stays hidden from children until
   `Content/af/language.json` lands (with the Afrikaans voice and the download page change, `docs/LANGUAGES.md` step 8).
-- **Known open items:** cover second screens in the kid lock; more games (waves 2b/3/4); paid signing only if shared beyond the family.
+- **Known open items:** more games (waves 2b/3/4); paid signing only if shared beyond the family.
 
 ## Locked decisions (don't relitigate)
 
@@ -89,10 +94,11 @@
   blocked by the proxy), then `scripts/godot/install_godot.sh` prints the Godot binary path.
   `cd godot && dotnet build`, then `$GODOT --headless --path . --import`.
 - Self-tests run the real game: `-- --bip-report out.json`, `-- --bip-screenshot out.png` (needs
-  `xvfb-run` + `--rendering-driver opengl3`), `-- --bip-update-test <feed> <report>`.
+  `xvfb-run` + `--rendering-driver opengl3`), `-- --bip-update-test <repo url> <report>`.
 - CI: `.github/workflows/godot.yml`. Linux exports both platforms and packs the Windows `Setup.exe`
-  (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from a local feed.
-  Main builds go to a public Vercel Blob store (`godot-test/`); the Swift app's feed is untouched.
+  (`vpk "[win]" pack`); Windows and Mac runners install an older build and update it from this build served
+  as a stand-in GitHub Release on the runner (`scripts/godot/fake_github.py`, read by the game's own
+  GithubSource). Main builds are published as GitHub Releases in this repository (`evertgrobler/bip-island`), with the download page on its GitHub Pages.
 - Drawing is y-down in Godot: when porting a Swift drawing, negate y values and angles.
 - Drawing kit ported (Phase 2, part): `Buttons`, `PictureNode` (+ `PictureCard`), `EmojiPictures`
   (Noto via `Fonts.Emoji`), `StepPictures`, `Avatars`, `Sketch.StarPoints`. Ports keep the Swift numbers
@@ -124,8 +130,10 @@
   exclusive full screen with a keyboard hook (Windows). Off when headless, with `--bip-windowed`, on
   Linux, or with Option/Alt held at launch (parent mode). Quitting or updating lifts it first. It
   can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
-  Known gap vs Swift: second screens aren't covered with paper windows yet (a click there could reach
-  another app). Fine on a one-screen Mac; add cover windows if the family Mac gets a second display.
+  Second screens: the mouse is kept inside the game's window while locked (`Input.MouseMode` Confined,
+  put back when the game comes to the front), so a click can't reach another app on a second display;
+  the lock check reports `mouseKeptIn` and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a Mac it can only report Godot's own setting). Setting it again goes through Visible first, as Godot skips a mode it thinks is already set. The CI install jobs only warn when `locked` is false. The second screen itself still shows the desktop
+  (no paper cover windows like the Swift app had).
 
 ## Gotchas learned the hard way
 
@@ -650,3 +658,23 @@
   no stickers) from a precise brief; the lead session reviewed it and added one line. This PC has no .NET or `gh`
   yet, so CI is the first run of the test.
 - **25 Oct, 13:30 SAST: daily publishing.** The Vercel team was paused on 25 Oct: "Blob Advanced Operations" reached 2.9K of the free 2K a month, which also took down the owner's other site. Each upload call counts, and `put()`'s multipart sends 8 MB parts, so one release cost well over 100 operations; about 15 merges in two days used up the month. The owner chose to wait for the limit to reset (about 5 days) and to merge less. Since then: `main` builds, tests and publishes once a day at 20:52 SAST (`schedule`), and only when a file that goes into the game or the download page changed since the commit the store was last published from (`godot-test/published.json`, written by `mark_published.mjs` as the publish job's very last step, after the feed check and the download page, and read by the `changed` job with `git diff`). Each commit is built by the daily run once at most (an Actions cache key `daily-tried-<sha>`): a commit whose build, test or publish failed isn't rebuilt every night; a manual run or the next change to `main` tries again. Anything the check can't work out (Vercel unreachable, no note yet) builds anyway. A manual run still publishes at once, and pull requests are unchanged. `publish_blob.mjs` sends files over 64 MB in 64 MB parts (about 4 operations for a 150 MB installer instead of about 20). Keep merges to `main` few and batched. A move to GitHub Releases plus GitHub Pages was built (PR #65, branch `claude/downloads-github`) and closed unmerged; it is ready if the repository goes private or Vercel becomes a problem again.
+- **29 Oct, 21:49 SAST: Picnic Plates (levels 1–5).** The second game of the maths plan (`docs/GAMES.md`, "New game: Picnic Plates"): times and sharing with food on Bip's picnic blanket, for stage 2 (ages 6–8). Five kinds of question: plates with the same on each (how many altogether?), making equal groups ("Put 5 on each plate", each click of the basket deals a round), a tray in rows, sharing (the basket deals round and round until it's empty: how many on each plate?) and grouping (each click packs a punnet: how many punnets?). The 2, 5 and 10 tables are each level's `steps`; `numbers.json` "picnic" holds the food (sandwiches, biscuits, and new hand-drawn naartjies and strawberries) and what the blanket fits (5 plates, 10 on a plate, 30 in all). New objectives 2Ni.05 and 2Ni.06 (to check against the framework PDF), skills `equal_groups` and `share_group` (two more stickers: 135), 12 voice lines in both scripts (the Afrikaans ones wait for the owner's check, so the recorder's hold list needs them). `PicnicPlatesTests` play 1,000 rounds a level; the walk-through plays plates (a wrong then the right card) and sharing with the basket; five screenshots. Numbers Island now has five games, drawn a little smaller to fit. Levels 6 and 7 (turn the tray, bigger shares with tens) come later; Number Machine is next in the maths plan.
+- **29 Oct, 21:57 SAST: Number Machine (levels 1–7).** The third game of the maths plan: Bip's machine with a rule card on the front. A number ball rolls into the hopper, the handle turns, and the child picks what comes out (× 2 and × 10, then × 5 mixed in, then × 3 and × 4, then × 8), what went in, what the ÷ machine gives back, or which rule card is the machine's ("3 → 12, 5 → 20"). The rules are each level's `steps`; what goes in is 2 to 10. The × machine shows its groups (towers of cubes) as it runs; the others only in the hint, which counts in steps while each group bobs. New objectives 3Ni.03 and 3Ni.05–3Ni.08 (to check against the framework PDF), skills `tables_3_4_8` and `times_divide` (stickers: 137), six voice lines in both scripts (Afrikaans to be checked: the recorder's hold list needs them). `NumberMachineTests` play 1,000 rounds a level; the walk-through plays the × machine (groups, a wrong card, the right one) and the rule level; five screenshots. Numbers Island has six games now, drawn smaller (0.7). Built on the Picnic Plates branch, so it merges after it.
+- **1 Nov, 01:00 SAST: child lock, second screens.** While the lock is on, the mouse is kept inside the game's window while the game is in front (Mac and Windows), and put back whenever the game comes to the front (a program that takes the front by itself, like a system dialog, lifts it until then), so on a computer with two screens a child can't move it over and click another program (which on Windows would also stop the key blocking, as the hook only works while the game is in front). The Mac and Windows lock check now also reports `mouseKeptIn` and needs it. The lock lifts it again for the parent area's quit and for updates.
+- **1 Nov, 08:10 SAST: the download page's new design.** The owner approved a design built on the game's own map: a sea band with "Bip" on letter stones and the map screenshot, the five islands in their map colours with a screenshot each (Meet the Sound, Picnic Plates, Word Rocket, Bip's Path, Paint Pots), "Nothing to read, nothing to rush", play-time breaks, the grown-up cards and the download cards. Each download card has an "Or install without the warning" line to paste into Terminal (Mac: `curl` the .dmg, copy the app to Applications, open it) or PowerShell (Windows: `Invoke-WebRequest` the setup file, run it): a download made that way isn't marked as from the internet, so Gatekeeper and SmartScreen don't stop it (owner decision, 1 November 2026; the click-through steps stay). The Mac and Windows CI jobs (which run on `main` and manual runs, not on pull requests) run each line against the build they just made, served over local HTTP (the Mac one twice, in zsh, to prove replacing an older copy); a failure there is only a warning, so it never holds back a release. Windows PowerShell 5.1 gets TLS 1.2 switched on first, which the Blob store needs. Bip's picture is `site/bip.png`; `site_screenshots.sh` takes the new game screenshots.
+- **1 Nov, 08:20 SAST: the download page says how it was made, and plays the narrator.** Owner asks: "Hear the narrator", the Numbers Island and Letters Island welcomes in English and the same two in Afrikaans, real clips from the game (`data-clip` on the page; `deploy_site.sh` copies each from `Resources/Audio` into `voices/`, and `scripts/ci/finish_page.py` removes the button of a clip not recorded yet, so the page always plays the voice the game ships with). Never `vo_welcome` or `vo_bip_charging`: they're the clips Chatterbox copies the narrator from (`audio/NARRATOR_VOICE.md`). And "A family project, built with AI": our own project, not a product; Claude (Anthropic) wrote the code, drew the pictures and helped plan the games, we decided and checked; the narrator is an AI voice (ElevenLabs and Chatterbox, being re-recorded with Google Gemini) and the music ElevenLabs Music. The install lines are parsed on every pull request (`check_install_lines_parse.sh`, in `check_all.sh` and the Linux job), and a line whose Mac or Windows check failed on a build is left off that build's page (`finish_page.py`).
+- **1 Nov, 08:30 SAST: downloads and updates move to GitHub (pull request #65, brought up to date).** Vercel
+  stayed paused into November, so nothing could reach the family's computers. The owner chose the move built
+  on 25 Oct (closed then). It now publishes from this repository instead of a separate one, with the
+  workflow's own token, so there's no token to make: a GitHub Release per version (`vpk upload github` +
+  `scripts/godot/github_release.py`, which also notes the commit each release was built from, for the daily
+  "anything new?" check) and the download page on GitHub Pages (`actions/deploy-pages`). Owner to do once:
+  Settings → Pages → Source: GitHub Actions; reinstall once on each family computer from
+  https://evertgrobler.github.io/bip-island/. Removed: the Blob scripts (`publish_blob.mjs`, `blob_store.sh`,
+  `mark_published.mjs`, `resolve_feed_url.sh`), `setup-updates.yml`, `site/vercel.json`, the `VERCEL_*` use.
+  How publishing protects itself: the release stays a draft (invisible to installed games) until
+  `github_release.py finish` has checked both computers' update files and both downloads are fully uploaded,
+  then publishes it as the latest with its tag on the commit built; the whole upload gets three tries, each
+  from a clean start (`clear` removes only this pipeline's drafts), a stall fails after 5 minutes, and the
+  job has 75 minutes; a re-run of a publish that worked skips the upload (`done`); clearing old releases
+  (`prune`, newest 5 of ours kept) only ever warns; and the run checks GitHub's latest really is this version.

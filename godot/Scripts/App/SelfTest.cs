@@ -13,7 +13,7 @@ namespace BipIsland.App;
 /// Arguments go after "--":
 ///   --bip-report &lt;file&gt;               write a JSON report (version, fonts, clips, content, save) and quit
 ///   --bip-screenshot &lt;file&gt;           save a PNG of the first screen and quit
-///   --bip-update-test &lt;feed&gt; &lt;file&gt;  save something, update from the feed, restart, then write the report
+///   --bip-update-test &lt;repo&gt; &lt;file&gt;  save something, update from the repo's releases, restart, then write the report
 ///   --bip-scene &lt;res://path.tscn&gt;     open that scene first (Boot), e.g. to screenshot a dev page
 ///   --bip-walk &lt;file&gt;                 click round every screen and check each step (Dev/WalkTest.cs)
 ///   --bip-save-dir &lt;folder&gt;           keep saves there instead of the player's folder
@@ -36,10 +36,10 @@ public static class SelfTest
         {
             if (Value(args, "--bip-update-test", 2) is { } update)
             {
-                var (feed, report) = (update[0], update[1]);
+                var (repo, report) = (update[0], update[1]);
                 WriteMarker();
                 // The new version restarts headless and writes the report, proving the update and the save.
-                var error = await Updater.UpdateNowAndRestart(feed, new[] { "--headless", "--", "--bip-report", report });
+                var error = await Updater.UpdateNowAndRestart(repo, new[] { "--headless", "--", "--bip-report", report });
                 WriteReport(report, error);
                 boot.Quit(1);
                 return;
@@ -49,14 +49,17 @@ public static class SelfTest
                 // Give the window and the operating system a moment to settle, then ask it.
                 for (var i = 0; i < 60; i++) await boot.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
                 var state = KidLock.Check();
-                var locked = state is "mac lock on" or "windows hook on";
+                // Locked means the keys are blocked and the mouse can't leave for a second screen.
+                var mouseKeptIn = KidLock.MouseKeptIn;
+                var locked = (state is "mac lock on" or "windows hook on") && mouseKeptIn;
                 System.IO.File.WriteAllText(lockCheck[0], JsonSerializer.Serialize(new Dictionary<string, object>
                 {
                     ["os"] = OS.GetName(),
                     ["kidLock"] = state,
+                    ["mouseKeptIn"] = mouseKeptIn,
                     ["locked"] = locked,
                 }));
-                GD.Print($"Bip Island: child lock check: {state}");
+                GD.Print($"Bip Island: child lock check: {state}, mouse kept in: {mouseKeptIn}");
                 boot.Quit(locked ? 0 : 1);
                 return;
             }
@@ -129,7 +132,7 @@ public static class SelfTest
             ["os"] = OS.GetName(),
             ["appVersion"] = ProjectSettings.GetSetting("application/config/version").AsString(),
             ["installedVersion"] = Updater.InstalledVersion,
-            ["updateFeed"] = Updater.PlatformFeedUrl,
+            ["updateRepo"] = Updater.RepoUrl,
             ["fontsInstalled"] = Fonts.IsInstalled,
             ["emojiInstalled"] = Fonts.EmojiInstalled,
             ["contentFiles"] = contentFiles,
