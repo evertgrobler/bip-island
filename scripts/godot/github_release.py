@@ -61,9 +61,11 @@ def call(method, url, body=None, data=None, content_type="application/json", ok4
             text = response.read().decode() or "null"
             return json.loads(text)
     except urllib.error.HTTPError as e:
-        if ok404 and e.code == 404:
+        detail = e.read().decode()
+        # Deleting a tag that isn't there answers 422 "Reference does not exist", not 404: the same thing.
+        if ok404 and (e.code == 404 or (e.code == 422 and "Reference does not exist" in detail)):
             return None
-        sys.exit(f"GitHub said {e.code} to {method} {url}: {e.read().decode()[:500]}")
+        sys.exit(f"GitHub said {e.code} to {method} {url}: {detail[:500]}")
 
 
 def releases():
