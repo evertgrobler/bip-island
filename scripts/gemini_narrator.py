@@ -44,6 +44,11 @@ MAX_MINUTES = 120
 TRIM = ("silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.05,areverse,"
         "silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.08,areverse")
 GIVE_UP = 4  # failed takes before a clip is listed for a person to look at
+# A clip past GIVE_UP gets up to EAR_TRIES more takes, each kept in voice-lab/aoede_review/ (not the
+# game) for the owner to listen to, since Whisper mishears some short Afrikaans lines that are fine
+# ("'n slak", "eier"). The newest take waits there; one the owner approves is copied into the game.
+EAR_TRIES = 3
+REVIEW_DIR = ROOT / "voice-lab" / "aoede_review"
 
 # The styles (docs/VOICE_PLAN.md, section 6): Bip's own lines sparkle for young children (sparkle) and are
 # upbeat but relaxed for older ones (big, the <clip>_big lines); instructions and sentences are clear and
@@ -240,6 +245,7 @@ def finish(style):
 def load_state():
     state = json.loads(STATE.read_text()) if STATE.exists() else {"done": {}, "failed": {}}
     state.setdefault("failed_text", {})
+    state.setdefault("review", {})
     return state
 
 
@@ -255,6 +261,7 @@ def failed_take(state, clip, text):
 
 def took(state, clip, text):
     state["done"][clip] = text
+    state["review"].pop(clip, None)
     state["failed"].pop(clip, None)
     state["failed_text"].pop(clip, None)
 
@@ -654,7 +661,8 @@ class Listener:
 
 def status(state, all_texts):
     done = sum(1 for c, t in all_texts.items() if state["done"].get(c) == t)
-    stuck = [c for c in state["failed"] if c in all_texts and fails(state, c, all_texts[c]) >= GIVE_UP]
+    stuck = [c for c in state["failed"] if c in all_texts and fails(state, c, all_texts[c]) >= GIVE_UP
+             and state["review"].get(c, {}).get("text") != all_texts[c]]
     hold = held()
     waiting = sum(1 for c, t in all_texts.items() if state["done"].get(c) != t and is_held(c, hold))
     return len(all_texts), done, stuck, waiting
@@ -667,7 +675,7 @@ def main():
     state, all_texts = load_state(), texts()
     KNOWN_NAMES.update(known_names(all_texts))
     total, done, stuck, waiting = status(state, all_texts)
-    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
+    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(state['review'])} takes waiting for the owner's ear; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
     if a.status:
         return
     key = os.environ.get("GEMINI_API_KEY")
@@ -676,7 +684,10 @@ def main():
 
     hold = held()
     todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if state["done"].get(c) != all_texts[c]
-            and fails(state, c, all_texts[c]) < GIVE_UP and not is_held(c, hold)]
+            and not is_held(c, hold)
+            and (fails(state, c, all_texts[c]) < GIVE_UP
+                 or (fails(state, c, all_texts[c]) < GIVE_UP + EAR_TRIES
+                     and state["review"].get(c, {}).get("text") != all_texts[c]))]
     # Fresh clips first in big batches, most-heard first, then retries in small ones; English and
     # Afrikaans take turns, except that step 0 (the stories) goes before any turn-taking. Each batch is
     # one style.
@@ -780,12 +791,18 @@ def main():
                     took(state, clip, all_texts[clip])
                     good += 1
                 else:
+                    if fails(state, clip, all_texts[clip]) >= GIVE_UP:
+                        # Past GIVE_UP: the take waits for the owner's ear instead of being thrown away.
+                        where = REVIEW_DIR / ("af" if lang == "af" else "")
+                        where.mkdir(parents=True, exist_ok=True)
+                        out.replace(where / f"{name}.m4a")
+                        state["review"][clip] = {"text": all_texts[clip], "heard": check[1]}
                     failed_take(state, clip, all_texts[clip])
                     print(f"  {clip}: heard {check[1]!r}, wanted {all_texts[clip]!r}", flush=True)
             save_state(state)
             print(f"Request {requests}: {good} of {len(clips)} {lang} {style} clips kept.", flush=True)
     total, done, stuck, waiting = status(state, all_texts)
-    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
+    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(state['review'])} takes waiting for the owner's ear; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
     if setup_error:
         sys.exit(1)
 

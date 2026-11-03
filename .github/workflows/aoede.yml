@@ -54,7 +54,8 @@ jobs:
           git config user.name "aoede-narrator"
           git config user.email "aoede-narrator@users.noreply.github.com"
           mkdir -p voice-lab/aoede_phonics
-          git add Resources/Audio voice-lab/aoede.json voice-lab/aoede_phonics
+          mkdir -p voice-lab/aoede_review
+          git add Resources/Audio voice-lab/aoede.json voice-lab/aoede_phonics voice-lab/aoede_review
           # No [skip ci]: a bot commit is often the head of this branch's pull request, and its checks must run.
           git commit -m "Narrator clips from Gemini Aoede, checked by Whisper" || exit 0
           # If someone pushed to the branch meanwhile and the rebase can't be done, the clips go to a side
