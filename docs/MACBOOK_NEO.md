@@ -118,7 +118,7 @@ come from search results that quote those pages, so check them on Apple's own sp
 
   Spotlight is the one that matters: a child could open another app from it. None of these is new to
   the Neo, but a laptop puts them right under small fingers. The Swift and Godot locks were never tested against them.
-- Second screens still aren't covered (a known gap). The Neo can drive one external display, so the gap applies if one is plugged in.
+- Second screens: while the game is in front the mouse stays inside its window (1 Nov 2026), so a child can't reach an external display. A program that takes the front by itself (a system dialog) lifts the limit until the game is back; the other screen still shows the desktop.
 - Logging out and shutting down are never blocked (`NSWorkspaceWillPowerOffNotification`). That's good.
 
 ### Updates (Velopack)

@@ -53,6 +53,7 @@ git fetch -q origin main || { echo "Couldn't fetch origin/main."; exit 2; }
 git rev-parse -q --verify origin/main > /dev/null || { echo "origin/main doesn't resolve."; exit 2; }
 step "Latest main merged in" git merge-base --is-ancestor origin/main HEAD
 step "Content" python3 scripts/validate_content.py
+step "Download page install lines parse" scripts/ci/check_install_lines_parse.sh
 step "Copy assets into Godot" python3 scripts/godot/prepare_assets.py
 step "C# build (warnings are errors)" dotnet build godot/BipIsland.sln -warnaserror
 step "Logic tests" dotnet test godot/BipCore.Tests --no-build
@@ -98,6 +99,7 @@ export_both() {
     test -s godot/build/macos/BipIsland.zip
 }
 step "Export for Mac and Windows" export_both
+step "Download page builds" env VERSION=0.0.1 scripts/ci/deploy_site.sh
 step "Pack the Windows installer" vpk "[win]" pack -x --packId BipIslandCheck --packVersion 0.0.1 \
   --packDir godot/build/windows --mainExe "Bip Island.exe" --packTitle "Bip Island" --skipVeloAppCheck --icon godot/icons/app-icon.ico \
   --outputDir "$out/windows-package"
@@ -112,7 +114,7 @@ diff_hygiene() {
     return 1
   fi
   # Patterns match real-looking secrets only (so this line doesn't match itself).
-  if git diff "$base" | grep -E '^\+.*(vercel_blob_rw_[A-Za-z0-9]{8,}_|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{36})'; then
+  if git diff "$base" | grep -E '^\+.*(github_pat_[A-Za-z0-9_]{22,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{36})'; then
     echo "Something that looks like a secret is in the diff."
     return 1
   fi
