@@ -671,8 +671,27 @@ def status(state, all_texts):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--status", action="store_true")
+    ap.add_argument("--approve", nargs="+", metavar="CLIP", help="the owner's ear passed these review takes: into the game")
+    ap.add_argument("--redo", nargs="+", metavar="CLIP", help="the owner's ear turned these review takes down: record again")
     a = ap.parse_args()
     state, all_texts = load_state(), texts()
+    if a.approve or a.redo:
+        for clip in (a.approve or []) + (a.redo or []):
+            if clip not in state["review"]:
+                sys.exit(f"{clip} has no take waiting for the owner's ear.")
+        for clip in a.approve or []:
+            lang, name = split(clip)
+            take = REVIEW_DIR / ("af" if lang == "af" else "") / f"{name}.m4a"
+            LANGS[lang]["audio"].mkdir(parents=True, exist_ok=True)
+            take.replace(LANGS[lang]["audio"] / f"{name}.m4a")
+            took(state, clip, state["review"][clip]["text"])
+        for clip in a.redo or []:
+            lang, name = split(clip)
+            (REVIEW_DIR / ("af" if lang == "af" else "") / f"{name}.m4a").unlink(missing_ok=True)
+            state["review"].pop(clip)
+            state["failed"].pop(clip, None)  # starts again, in a fresh batch
+            state["failed_text"].pop(clip, None)
+        save_state(state)
     KNOWN_NAMES.update(known_names(all_texts))
     total, done, stuck, waiting = status(state, all_texts)
     print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(state['review'])} takes waiting for the owner's ear; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)

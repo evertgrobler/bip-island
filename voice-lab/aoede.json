@@ -44,6 +44,7 @@
   "af/learn_drum": "trom",
   "af/learn_duck": "eend",
   "af/learn_egg": "eier",
+  "af/learn_fire": "vuur",
   "af/learn_fish": "vis",
   "af/learn_fog": "mis",
   "af/learn_foot": "voet",
@@ -74,7 +75,9 @@
   "af/learn_mouth": "mond",
   "af/learn_mud": "modder",
   "af/learn_mum": "Ma",
+  "af/learn_n1": "een",
   "af/learn_n10": "tien",
+  "af/learn_n2": "twee",
   "af/learn_n3": "drie",
   "af/learn_n4": "vier",
   "af/learn_n5": "vyf",
@@ -303,6 +306,7 @@
   "af/snd_v": "v",
   "af/snd_w": "w",
   "af/snd_y": "y",
+  "af/vo_and": "en,",
   "af/vo_appletree_1": "'n Blom aan die boom",
   "af/vo_appletree_3": "'n Groot rooi appel",
   "af/vo_appletree_4": "Pluk die appel",
@@ -321,6 +325,7 @@
   "af/vo_bip_charging": "Bip se battery is pap, so hy rus 'n bietjie. Wanneer die battery vol is, kan ons weer speel!",
   "af/vo_bips_day": "Wat doen Bip? Luister na die Engels, en soek dan die prentjie.",
   "af/vo_bips_path": "Las die pyle aan mekaar, en druk dan Gaan om Bip huis toe te stap.",
+  "af/vo_bips_stories": "Hier is 'n storie. Luister, en klik op 'n sin om dit weer te hoor. Klik op die groen pyl om die bladsy om te blaai.",
   "af/vo_birthday_1": "Bak 'n koek",
   "af/vo_birthday_2": "Steek die kerse aan",
   "af/vo_birthday_3": "Sing 'Veels geluk'",
@@ -418,6 +423,7 @@
   "af/vo_letters_island": "Welkom op Letter-eiland! Klik op Bip, dan speel ons.",
   "af/vo_letters_island_big": "Letter-eiland. Klik op Bip as jy gereed is.",
   "af/vo_level_up": "Sjoe! Jy ken daardie klank nou regtig goed!",
+  "af/vo_level_up_big": "Jy ken di\u00e9 een nou regtig goed. Op na die volgende vlak!",
   "af/vo_machine_end": "masjien.",
   "af/vo_machine_in": "Wat het in die masjien ingegaan?",
   "af/vo_machine_rule": "Wat doen die masjien? Soek sy kaart.",
@@ -721,6 +727,7 @@
   "af/vo_sound_buttons": "Druk elke knoppie, en vind dan die woord wat hulle maak.",
   "af/vo_story_bal_in_die_boom_1": "Ruan en Thabo skop die bal.",
   "af/vo_story_bal_in_die_boom_2": "Die bal sit vas in 'n boom.",
+  "af/vo_story_bal_in_die_boom_3": "Pa haal die bal met 'n leer af.",
   "af/vo_story_bal_in_die_boom_a5": "Ouma",
   "af/vo_story_bal_in_die_boom_q1": "Waar sit die bal vas?",
   "af/vo_story_bal_in_die_boom_q2": "Wie haal die bal af?",
@@ -813,7 +820,11 @@
   "af/vo_story_lina_se_verrassing_6": "Na skool wag Pa by die huis met 'n hondjie.",
   "af/vo_story_lina_se_verrassing_7": "Hy het die geheim die hele dag gehou!",
   "af/vo_story_lina_se_verrassing_a4": "Hy wou haar verras.",
+  "af/vo_story_lina_se_verrassing_a5": "Hy was kwaad.",
+  "af/vo_story_lina_se_verrassing_a6": "Hy was siek.",
+  "af/vo_story_lina_se_verrassing_a7": "'n hondjie",
   "af/vo_story_lina_se_verrassing_a8": "'n fiets",
+  "af/vo_story_lina_se_verrassing_a9": "'n vlie\u00ebr",
   "af/vo_story_lina_se_verrassing_q1": "Wat eet Lina vir ontbyt?",
   "af/vo_story_lina_se_verrassing_q2": "Hoekom s\u00ea Pa niks by die ontbyttafel nie?",
   "af/vo_story_lina_se_verrassing_q3": "Wat kry Lina van Pa?",
@@ -832,6 +843,7 @@
   "af/vo_story_markdag_q1": "Wie betaal by die mark?",
   "af/vo_story_markdag_q2": "Wat koop Ma?",
   "af/vo_story_markdag_q3": "Wat bak Ma by die huis?",
+  "af/vo_story_mia_se_koek_1": "Ouma en Mia klits eiers in 'n bak.",
   "af/vo_story_mia_se_koek_2": "Hulle bak 'n groot koek.",
   "af/vo_story_mia_se_koek_3": "Dit is Mia se verjaardag.",
   "af/vo_story_mia_se_koek_4": "Haar maats kom koek eet.",
@@ -906,6 +918,7 @@
   "af/vo_story_slakke_soek_a4": "slakke",
   "af/vo_story_slakke_soek_a5": "vo\u00ebls",
   "af/vo_story_slakke_soek_a7": "Hulle teken.",
+  "af/vo_story_slakke_soek_a8": "Hulle sing.",
   "af/vo_story_slakke_soek_a9": "Hulle slaap.",
   "af/vo_story_slakke_soek_q1": "Wie lees vir die klas?",
   "af/vo_story_slakke_soek_q2": "Wat soek die kinders in die tuin?",
@@ -919,6 +932,7 @@
   "af/vo_story_slang_op_die_paadjie_7": "\"Daardie slang was seker banger as ons,\" lag Pieter.",
   "af/vo_story_slang_op_die_paadjie_a1": "'n slang",
   "af/vo_story_slang_op_die_paadjie_a2": "'n stomp",
+  "af/vo_story_slang_op_die_paadjie_a3": "'n slak",
   "af/vo_story_slang_op_die_paadjie_a4": "Daar l\u00ea 'n slang op die paadjie.",
   "af/vo_story_slang_op_die_paadjie_a5": "Hulle is moeg.",
   "af/vo_story_slang_op_die_paadjie_a6": "Dit begin re\u00ebn.",
@@ -937,6 +951,7 @@
   "af/vo_story_thabo_se_bus_a2": "Nandi",
   "af/vo_story_thabo_se_bus_a3": "Ruan",
   "af/vo_story_thabo_se_bus_a4": "in die klas",
+  "af/vo_story_thabo_se_bus_a5": "by die see",
   "af/vo_story_thabo_se_bus_q1": "Wie klim op die bus?",
   "af/vo_story_thabo_se_bus_q2": "Waar is Thabo aan die einde?",
   "af/vo_story_there_are": "Daar is",
@@ -962,6 +977,9 @@
   "af/vo_story_wagter_hardloop_weg_a1": "bekommerd",
   "af/vo_story_wagter_hardloop_weg_a2": "verveeld",
   "af/vo_story_wagter_hardloop_weg_a3": "trots",
+  "af/vo_story_wagter_hardloop_weg_a4": "'n seemeeu",
+  "af/vo_story_wagter_hardloop_weg_a5": "'n krap",
+  "af/vo_story_wagter_hardloop_weg_a6": "'n vis",
   "af/vo_story_wagter_hardloop_weg_a7": "Dit begin re\u00ebn.",
   "af/vo_story_wagter_hardloop_weg_a8": "Hy val in die see.",
   "af/vo_story_wagter_hardloop_weg_a9": "Wagter spat hom nat.",
@@ -2728,9 +2746,6 @@
   "word_zoo": "zoo"
  },
  "failed": {
-  "af/learn_fire": 5,
-  "af/learn_n1": 5,
-  "af/learn_n2": 5,
   "af/money_c10": 4,
   "af/num_1": 4,
   "af/num_10": 4,
@@ -2764,12 +2779,8 @@
   "af/num_95": 3,
   "af/num_96": 3,
   "af/num_97": 3,
-  "af/praise_05_big": 5,
-  "af/vo_and": 5,
   "af/vo_appletree_2": 2,
   "af/vo_between": 1,
-  "af/vo_bip_charging_big": 5,
-  "af/vo_bips_stories": 5,
   "af/vo_butterfly_3": 2,
   "af/vo_came_out": 1,
   "af/vo_carwash_2": 2,
@@ -2779,7 +2790,6 @@
   "af/vo_growing_1": 2,
   "af/vo_growing_2": 2,
   "af/vo_growing_4": 2,
-  "af/vo_level_up_big": 5,
   "af/vo_machine_out": 1,
   "af/vo_say_double_10": 2,
   "af/vo_say_double_2": 2,
@@ -2809,18 +2819,6 @@
   "af/vo_sent_08": 2,
   "af/vo_sent_13": 2,
   "af/vo_sent_16": 2,
-  "af/vo_story_bal_in_die_boom_3": 5,
-  "af/vo_story_lina_se_verrassing_a5": 5,
-  "af/vo_story_lina_se_verrassing_a6": 5,
-  "af/vo_story_lina_se_verrassing_a7": 5,
-  "af/vo_story_lina_se_verrassing_a9": 5,
-  "af/vo_story_mia_se_koek_1": 5,
-  "af/vo_story_slakke_soek_a8": 5,
-  "af/vo_story_slang_op_die_paadjie_a3": 5,
-  "af/vo_story_thabo_se_bus_a5": 5,
-  "af/vo_story_wagter_hardloop_weg_a4": 5,
-  "af/vo_story_wagter_hardloop_weg_a5": 5,
-  "af/vo_story_wagter_hardloop_weg_a6": 5,
   "af/vo_tower_1": 2,
   "af/word_bye": 3,
   "af/word_een": 3,
@@ -2854,9 +2852,6 @@
   "word_tin": 3
  },
  "failed_text": {
-  "af/learn_fire": "vuur",
-  "af/learn_n1": "een",
-  "af/learn_n2": "twee",
   "af/money_c10": "10 sent",
   "af/num_1": "1",
   "af/num_10": "10",
@@ -2890,12 +2885,8 @@
   "af/num_95": "95",
   "af/num_96": "96",
   "af/num_97": "97",
-  "af/praise_05_big": "Jy het dit self uitgewerk.",
-  "af/vo_and": "en,",
   "af/vo_appletree_2": "'n Klein groen appeltjie",
   "af/vo_between": "tussen",
-  "af/vo_bip_charging_big": "Bip se battery is pap, so hy laai op. Tyd vir 'n blaaskans. Ons speel weer wanneer hy vol is.",
-  "af/vo_bips_stories": "Hier is 'n storie. Luister, en klik op 'n sin om dit weer te hoor. Klik op die groen pyl om die bladsy om te blaai.",
   "af/vo_butterfly_3": "'n Papie",
   "af/vo_came_out": "het uitgekom.",
   "af/vo_carwash_2": "Spuit dit met water",
@@ -2905,7 +2896,6 @@
   "af/vo_growing_1": "'n Baba",
   "af/vo_growing_2": "'n Kind",
   "af/vo_growing_4": "'n Ouma",
-  "af/vo_level_up_big": "Jy ken di\u00e9 een nou regtig goed. Op na die volgende vlak!",
   "af/vo_machine_out": "Wat kom uit die masjien uit?",
   "af/vo_say_double_10": "Dubbel tien. Hoeveel is dit?",
   "af/vo_say_double_2": "Dubbel twee. Hoeveel is dit?",
@@ -2935,18 +2925,6 @@
   "af/vo_sent_08": "Die hen het tien kuikens.",
   "af/vo_sent_13": "'n Koei in 'n motor.",
   "af/vo_sent_16": "Die vink is in my hemp.",
-  "af/vo_story_bal_in_die_boom_3": "Pa haal die bal met 'n leer af.",
-  "af/vo_story_lina_se_verrassing_a5": "Hy was kwaad.",
-  "af/vo_story_lina_se_verrassing_a6": "Hy was siek.",
-  "af/vo_story_lina_se_verrassing_a7": "'n hondjie",
-  "af/vo_story_lina_se_verrassing_a9": "'n vlie\u00ebr",
-  "af/vo_story_mia_se_koek_1": "Ouma en Mia klits eiers in 'n bak.",
-  "af/vo_story_slakke_soek_a8": "Hulle sing.",
-  "af/vo_story_slang_op_die_paadjie_a3": "'n slak",
-  "af/vo_story_thabo_se_bus_a5": "by die see",
-  "af/vo_story_wagter_hardloop_weg_a4": "'n seemeeu",
-  "af/vo_story_wagter_hardloop_weg_a5": "'n krap",
-  "af/vo_story_wagter_hardloop_weg_a6": "'n vis",
   "af/vo_tower_1": "Een blok",
   "af/word_bye": "bye",
   "af/word_een": "een",
@@ -2979,86 +2957,5 @@
   "word_saw": "saw",
   "word_tin": "tin"
  },
- "review": {
-  "af/learn_fire": {
-   "heard": "Fear",
-   "text": "vuur"
-  },
-  "af/learn_n1": {
-   "heard": "Ien",
-   "text": "een"
-  },
-  "af/learn_n2": {
-   "heard": "Deweer.",
-   "text": "twee"
-  },
-  "af/praise_05_big": {
-   "heard": "Jy het het self uitgewerk, weer die selfde warm Afrikaans teefrouw, maar nou praat met een 7-10 jare gewaar.",
-   "text": "Jy het dit self uitgewerk."
-  },
-  "af/vo_and": {
-   "heard": "1",
-   "text": "en,"
-  },
-  "af/vo_bip_charging_big": {
-   "heard": "het sy respect. Vriendelik,  upbeat en genuinely pleased, met  een real smile in die stem, maar ontspanne  en natuurlijk, soos een ginstelling  tevrouw of een ouwe koosijn chat,  nie performing vir een toddler nie.  Normale talksboot? A little quicker  dan vir little ene. Geen  singsang, geen oordreewe opgewondenheid  nie. Geen babietaal.  Never sarkasties of boort.  Confident and encouraging.  Everything is in Afrikaans. Say it with  natural, fluent South African Afrikaans  pronunciation as a first language  Afrikaans speaker word. Never with  an English or Dutch accent.  After every line, stay silent for two  full seconds before the next one.  Never read anything twice.  Jy het het self uitgewerkt.  Pupse batterij is  pap, so hy laai op.  Tijd vir a blaaskans. Ons speel weer  wanneer hy vol is.",
-   "text": "Bip se battery is pap, so hy laai op. Tyd vir 'n blaaskans. Ons speel weer wanneer hy vol is."
-  },
-  "af/vo_bips_stories": {
-   "heard": "Hier is a story. Luister en klik op a sin om dit weer te hoor.  Klik op die groen peil om die bladseie om te blaai.",
-   "text": "Hier is 'n storie. Luister, en klik op 'n sin om dit weer te hoor. Klik op die groen pyl om die bladsy om te blaai."
-  },
-  "af/vo_level_up_big": {
-   "heard": "Jy ken die hier nou rechtig goed.  Op na die volgende vlak.",
-   "text": "Jy ken di\u00e9 een nou regtig goed. Op na die volgende vlak!"
-  },
-  "af/vo_story_bal_in_die_boom_3": {
-   "heard": "Pa haal die bal met die leer af.",
-   "text": "Pa haal die bal met 'n leer af."
-  },
-  "af/vo_story_lina_se_verrassing_a5": {
-   "heard": "I was squat.",
-   "text": "Hy was kwaad."
-  },
-  "af/vo_story_lina_se_verrassing_a6": {
-   "heard": "Aiva Sik",
-   "text": "Hy was siek."
-  },
-  "af/vo_story_lina_se_verrassing_a7": {
-   "heard": "A hojnke.",
-   "text": "'n hondjie"
-  },
-  "af/vo_story_lina_se_verrassing_a9": {
-   "heard": "afleer",
-   "text": "'n vlie\u00ebr"
-  },
-  "af/vo_story_mia_se_koek_1": {
-   "heard": "Ooma en Mia klits eiers in a bak.",
-   "text": "Ouma en Mia klits eiers in 'n bak."
-  },
-  "af/vo_story_slakke_soek_a8": {
-   "heard": "Hallo Seng!",
-   "text": "Hulle sing."
-  },
-  "af/vo_story_slang_op_die_paadjie_a3": {
-   "heard": "A slok.",
-   "text": "'n slak"
-  },
-  "af/vo_story_thabo_se_bus_a5": {
-   "heard": "Baidee Sia",
-   "text": "by die see"
-  },
-  "af/vo_story_wagter_hardloop_weg_a4": {
-   "heard": "A CMU?",
-   "text": "'n seemeeu"
-  },
-  "af/vo_story_wagter_hardloop_weg_a5": {
-   "heard": "A krab.",
-   "text": "'n krap"
-  },
-  "af/vo_story_wagter_hardloop_weg_a6": {
-   "heard": "A fiss.",
-   "text": "'n vis"
-  }
- }
+ "review": {}
 }
