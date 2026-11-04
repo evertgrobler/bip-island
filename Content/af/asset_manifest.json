@@ -5327,8 +5327,8 @@
       "notes": ""
     },
     {
-      "id": "word_oktopus",
-      "text": "oktopus",
+      "id": "word_olifant",
+      "text": "olifant",
       "notes": ""
     },
     {
@@ -6223,6 +6223,10 @@
       "brief": "eier (picture for the sound ei)"
     },
     {
+      "id": "pic_elephant",
+      "brief": "olifant (picture for the sound o)"
+    },
+    {
       "id": "pic_fire",
       "brief": "vuur (picture for the sound uu)"
     },
@@ -6604,7 +6608,7 @@
     },
     {
       "id": "pic_octopus",
-      "brief": "oktopus (picture for the sound o)"
+      "brief": "octopus"
     },
     {
       "id": "pic_owl",
