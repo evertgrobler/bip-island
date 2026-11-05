@@ -29,6 +29,7 @@ import argparse, base64, csv, difflib, fnmatch, itertools, json, os, re, subproc
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import clip_clean  # noqa: E402
 from speak_clips import AUDIO, NUMBER_WORDS, ROOT, TARGET_LUFS, ffmpeg, loudness, words  # noqa: E402
 
 MODEL = "gemini-3.8-flash-tts"
@@ -235,14 +236,30 @@ def batch_size(style, retry):
     return 36 if style == "words" else 18
 
 
+def reads_instructions(heard, text, lang, style):
+    """
+    Whether a take has Gemini reading its instructions aloud: much longer than the line, or three or more words
+    that are in the instructions but not in the line ("read anything twice" for "twee", owner, 5 Nov 2026).
+    """
+    if len(heard) > 2 * len(text) + 20:
+        return True
+    prompt = set(words(LANGS[lang]["styles"][style] + " " + PAUSE))
+    extra = [w for w in words(heard) if w in prompt and w not in set(line_words(lang, text))]
+    return len(extra) >= 3
+
+
 def finish(style):
     """
     The last filters on every clip. Gemini's audio carries a hiss above about 8 kHz (static to the owner's
     ear, 29 Oct 2026), which the volume raise makes louder: narration is cut above 8 kHz (a voice needs
     little there), letter sounds only above 11 kHz so "s", "f" and "th" keep their hiss. Then a gentle limit.
+    Then the hiss under the voice and the clicks come out (clip_clean.CLEAN; static to the owner's ear again on
+    3 and 5 Nov), except on letter sounds, and every clip gets soft ends.
     """
     top = 11000 if style in ("phonics", "words", "names") else 8000
-    return f"lowpass=f={top}:poles=2,lowpass=f={top}:poles=2,highpass=f=70,alimiter=limit=0.85:attack=5:release=60:level=disabled"
+    clean = "" if style == "phonics" else clip_clean.CLEAN + ","
+    return (f"lowpass=f={top}:poles=2,lowpass=f={top}:poles=2,highpass=f=70,"
+            f"alimiter=limit=0.85:attack=5:release=60:level=disabled,{clean}{clip_clean.FADES}")
 
 
 def load_state():
@@ -814,11 +831,19 @@ def main():
                 piece, trimmed, out = tmp / "piece.wav", tmp / "trimmed.wav", tmp / f"{name}.m4a"
                 ffmpeg("-i", str(raw), "-ss", f"{start:.3f}", "-to", f"{end:.3f}", str(piece))
                 ffmpeg("-i", str(piece), "-af", TRIM, "-ar", "44100", "-ac", "1", str(trimmed))
+                # A burst of noise or of the next line at the end of the cut ("static at the end", owner, 5 Nov).
+                clip_clean.drop_edge_bursts(trimmed, heads=False)
                 gain = gain_for(trimmed)
                 ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,{finish(style)}", "-ar", "44100", "-ac", "1",
                        "-c:a", "aac", "-b:a", "128k", str(out))
                 if style in ("phonics", "names"):
-                    # No machine check for a pure sound or a letter name: it waits for the owner's ear.
+                    # No machine check for a pure sound or a letter name: it waits for the owner's ear. But a take
+                    # where Whisper hears several words is Gemini reading its instructions aloud: thrown away.
+                    heard = listener.heard(out, lang)
+                    if len(words(heard)) > 3:
+                        failed_take(state, clip, all_texts[clip])
+                        print(f"  {clip}: heard {heard!r}, a letter sound or name with words read out", flush=True)
+                        continue
                     LANGS[lang]["phonics"].mkdir(parents=True, exist_ok=True)
                     out.replace(LANGS[lang]["phonics"] / f"{name}.m4a")
                     took(state, clip, all_texts[clip])
@@ -832,7 +857,7 @@ def main():
                     # Past EAR_FROM failed takes the take waits for the owner's ear instead of being thrown away,
                     # unless Gemini plainly read more than the line (its instructions, out loud).
                     if (fails(state, clip, all_texts[clip]) >= EAR_FROM[lang]
-                            and len(check[1]) <= 2 * len(all_texts[clip]) + 20):
+                            and not reads_instructions(check[1], all_texts[clip], lang, style)):
                         where = REVIEW_DIR / ("af" if lang == "af" else "")
                         where.mkdir(parents=True, exist_ok=True)
                         out.replace(where / f"{name}.m4a")
