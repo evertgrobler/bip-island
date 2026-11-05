@@ -48,6 +48,9 @@ GIVE_UP = 4  # failed takes before a clip is listed for a person to look at
 # game) for the owner to listen to, since Whisper mishears some short Afrikaans lines that are fine
 # ("'n slak", "eier"). The newest take waits there; one the owner approves is copied into the game.
 EAR_TRIES = 3
+# Whisper hears Afrikaans poorly (English for "Dubbel drie. Hoeveel is dit?": "Double three. Who feel is
+# that?"), so an Afrikaans take goes to the owner's ear from its second failed take; English from GIVE_UP.
+EAR_FROM = {"en": GIVE_UP, "af": 1}
 REVIEW_DIR = ROOT / "voice-lab" / "aoede_review"
 
 # The styles (docs/VOICE_PLAN.md, section 6): Bip's own lines sparkle for young children (sparkle) and are
@@ -716,9 +719,8 @@ def main():
     hold = held()
     todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if state["done"].get(c) != all_texts[c]
             and not is_held(c, hold)
-            and (fails(state, c, all_texts[c]) < GIVE_UP
-                 or (fails(state, c, all_texts[c]) < GIVE_UP + EAR_TRIES
-                     and state["review"].get(c, {}).get("text") != all_texts[c]))]
+            and state["review"].get(c, {}).get("text") != all_texts[c]  # a take already waits for the owner's ear
+            and fails(state, c, all_texts[c]) < GIVE_UP + EAR_TRIES]
     # Fresh clips first in big batches, most-heard first, then retries in small ones; English and
     # Afrikaans take turns, except that step 0 (the stories) goes before any turn-taking. Each batch is
     # one style.
@@ -822,8 +824,10 @@ def main():
                     took(state, clip, all_texts[clip])
                     good += 1
                 else:
-                    if fails(state, clip, all_texts[clip]) >= GIVE_UP:
-                        # Past GIVE_UP: the take waits for the owner's ear instead of being thrown away.
+                    # Past EAR_FROM failed takes the take waits for the owner's ear instead of being thrown away,
+                    # unless Gemini plainly read more than the line (its instructions, out loud).
+                    if (fails(state, clip, all_texts[clip]) >= EAR_FROM[lang]
+                            and len(check[1]) <= 2 * len(all_texts[clip]) + 20):
                         where = REVIEW_DIR / ("af" if lang == "af" else "")
                         where.mkdir(parents=True, exist_ok=True)
                         out.replace(where / f"{name}.m4a")
