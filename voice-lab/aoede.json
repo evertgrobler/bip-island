@@ -154,7 +154,6 @@
   "af/name_m": "em",
   "af/name_n": "en",
   "af/name_o": "oo",
-  "af/name_p": "pee",
   "af/name_r": "er",
   "af/name_s": "es",
   "af/name_t": "tee",
@@ -183,6 +182,7 @@
   "af/num_18_mid": "Agtien,",
   "af/num_19": "19",
   "af/num_19_mid": "Negentien,",
+  "af/num_1_mid": "Een,",
   "af/num_20": "20",
   "af/num_20_mid": "Twintig,",
   "af/num_21": "21",
@@ -194,6 +194,7 @@
   "af/num_27": "27",
   "af/num_28": "28",
   "af/num_29": "29",
+  "af/num_2_mid": "Twee,",
   "af/num_3": "3",
   "af/num_30": "30",
   "af/num_31": "31",
@@ -228,6 +229,7 @@
   "af/num_57": "57",
   "af/num_58": "58",
   "af/num_59": "59",
+  "af/num_5_mid": "Vyf,",
   "af/num_6": "6",
   "af/num_60": "60",
   "af/num_61": "61",
@@ -240,12 +242,14 @@
   "af/num_68": "68",
   "af/num_69": "69",
   "af/num_6_mid": "Ses,",
+  "af/num_7": "7",
   "af/num_70": "70",
   "af/num_71": "71",
   "af/num_72": "72",
   "af/num_73": "73",
   "af/num_74": "74",
   "af/num_76": "76",
+  "af/num_7_mid": "Sewe,",
   "af/num_8": "8",
   "af/num_81": "81",
   "af/num_83": "83",
@@ -2781,21 +2785,14 @@
   "word_zoo": "zoo"
  },
  "failed": {
-  "af/money_c10": 5,
   "af/num_1": 5,
   "af/num_10": 5,
   "af/num_100": 4,
-  "af/num_1_mid": 5,
-  "af/num_2": 5,
-  "af/num_2_mid": 5,
   "af/num_44": 4,
-  "af/num_5_mid": 5,
-  "af/num_7": 5,
   "af/num_75": 4,
   "af/num_77": 4,
   "af/num_78": 4,
   "af/num_79": 4,
-  "af/num_7_mid": 5,
   "af/num_80": 4,
   "af/num_82": 4,
   "af/num_84": 4,
@@ -2855,21 +2852,14 @@
   "word_tin": 4
  },
  "failed_text": {
-  "af/money_c10": "10 sent",
   "af/num_1": "1",
   "af/num_10": "10",
   "af/num_100": "100",
-  "af/num_1_mid": "Een,",
-  "af/num_2": "2",
-  "af/num_2_mid": "Twee,",
   "af/num_44": "44",
-  "af/num_5_mid": "Vyf,",
-  "af/num_7": "7",
   "af/num_75": "75",
   "af/num_77": "77",
   "af/num_78": "78",
   "af/num_79": "79",
-  "af/num_7_mid": "Sewe,",
   "af/num_80": "80",
   "af/num_82": "82",
   "af/num_84": "84",
@@ -2928,34 +2918,5 @@
   "word_saw": "saw",
   "word_tin": "tin"
  },
- "review": {
-  "af/money_c10": {
-   "heard": "Director's Notes  Never read these out.  Read these words as a warm, friendly Afrikaans teacher  showing a child each word.  Clear, bright, and natural.  Each word once, exactly as written,  all at the same even pitch and speed.  So the first and last words sound alike.  And none sounds like the end of a list.  Everything is in Afrikaans.  Say it with natural, fluent South African.",
-   "text": "10 sent"
-  },
-  "af/num_1_mid": {
-   "heard": "Ien",
-   "text": "Een,"
-  },
-  "af/num_2": {
-   "heard": "read anything twice.",
-   "text": "2"
-  },
-  "af/num_2_mid": {
-   "heard": "toia.",
-   "text": "Twee,"
-  },
-  "af/num_5_mid": {
-   "heard": "Fyf.",
-   "text": "Vyf,"
-  },
-  "af/num_7": {
-   "heard": "Sjever.",
-   "text": "7"
-  },
-  "af/num_7_mid": {
-   "heard": "Seewa.",
-   "text": "Sewe,"
-  }
- }
+ "review": {}
 }
