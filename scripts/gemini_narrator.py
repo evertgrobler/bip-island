@@ -306,6 +306,11 @@ def sounds(lang):
 
 # Sounds the owner flagged on the Letter Sounds Check page (1 November 2026), written the way they sound:
 # "igh" came out as the three letters and "er" and "a" not as the sound.
+# Lines written differently for Gemini than in the game, where it read the game's spelling wrong: the
+# Afrikaans letter name "pee" came out as the English word twice (owner, 5 Nov 2026); the capital letter
+# alone makes it say the Afrikaans name.
+SAY_LINE = {"af/name_p": "P"}
+
 SAY_AS = {
     ("en", "snd_igh"): ("eye", "The long i sound in light and night, said once. Never the letters i, g, h."),
     ("en", "snd_er"): ("uh", "The soft, short 'uh' at the end of ladder and sister: no 'r', never the letters e, r."),
@@ -760,7 +765,7 @@ def main():
                 lines = [known.get(split(c)[1], (all_texts[c], ""))[0] for c in clips]
                 hints = [known.get(split(c)[1], ("", ""))[1] for c in clips]
             else:
-                lines, hints = [all_texts[c] for c in clips], ()
+                lines, hints = [SAY_LINE.get(c, all_texts[c]) for c in clips], ()
             try:
                 pcm = speak(key, lang, style, lines, hints)
             except DailyLimit as e:
