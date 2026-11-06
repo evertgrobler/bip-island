@@ -164,6 +164,7 @@
   "af/name_y": "y",
   "af/num_0": "0",
   "af/num_0_mid": "Nul,",
+  "af/num_100": "100",
   "af/num_10_mid": "Tien,",
   "af/num_11": "11",
   "af/num_11_mid": "Elf,",
@@ -212,6 +213,7 @@
   "af/num_41": "41",
   "af/num_42": "42",
   "af/num_43": "43",
+  "af/num_44": "44",
   "af/num_45": "45",
   "af/num_46": "46",
   "af/num_47": "47",
@@ -249,6 +251,7 @@
   "af/num_73": "73",
   "af/num_74": "74",
   "af/num_76": "76",
+  "af/num_77": "77",
   "af/num_7_mid": "Sewe,",
   "af/num_8": "8",
   "af/num_81": "81",
@@ -267,6 +270,7 @@
   "af/num_94": "94",
   "af/num_95": "95",
   "af/num_96": "96",
+  "af/num_97": "97",
   "af/num_98": "98",
   "af/num_99": "99",
   "af/num_9_mid": "Nege,",
@@ -361,6 +365,7 @@
   "af/vo_build_word": "Sleep die letters om die woord in die prentjie te bou.",
   "af/vo_butterfly_1": "'n Klein eiertjie op 'n blaar",
   "af/vo_butterfly_2": "'n Ruspe eet",
+  "af/vo_butterfly_3": "'n Papie",
   "af/vo_butterfly_4": "'n Skoenlapper",
   "af/vo_came_out": "het uitgekom.",
   "af/vo_carwash_1": "'n Modderige motor",
@@ -412,6 +417,7 @@
   "af/vo_goingout_4": "Gaan speel buite",
   "af/vo_groups_of": "Pak die kos in groepe van",
   "af/vo_growing_1": "'n Baba",
+  "af/vo_growing_2": "'n Kind",
   "af/vo_growing_3": "'n Grootmens",
   "af/vo_growing_4": "'n Ouma",
   "af/vo_hands_1": "Maak jou hande nat",
@@ -521,6 +527,7 @@
   "af/vo_say_build_tower_9": "Bou 'n toring van nege.",
   "af/vo_say_double_1": "Dubbel een. Hoeveel is dit?",
   "af/vo_say_double_4": "Dubbel vier. Hoeveel is dit?",
+  "af/vo_say_double_5": "Dubbel vyf. Hoeveel is dit?",
   "af/vo_say_double_6": "Dubbel ses. Hoeveel is dit?",
   "af/vo_say_double_7": "Dubbel sewe. Hoeveel is dit?",
   "af/vo_say_double_8": "Dubbel agt. Hoeveel is dit?",
@@ -531,6 +538,7 @@
   "af/vo_say_double_right_3": "Dubbel drie is ses.",
   "af/vo_say_double_right_4": "Dubbel vier is agt.",
   "af/vo_say_double_right_5": "Dubbel vyf is tien.",
+  "af/vo_say_double_right_6": "Dubbel ses is twaalf.",
   "af/vo_say_double_right_7": "Dubbel sewe is veertien.",
   "af/vo_say_double_right_8": "Dubbel agt is sestien.",
   "af/vo_say_double_right_9": "Dubbel nege is agtien.",
@@ -621,6 +629,7 @@
   "af/vo_say_join_make_4_5": "Vier en vyf maak nege.",
   "af/vo_say_join_make_4_6": "Vier en ses maak tien.",
   "af/vo_say_join_make_5_1": "Vyf en een maak ses.",
+  "af/vo_say_join_make_5_2": "Vyf en twee maak sewe.",
   "af/vo_say_join_make_5_3": "Vyf en drie maak agt.",
   "af/vo_say_join_make_5_4": "Vyf en vier maak nege.",
   "af/vo_say_join_make_5_5": "Vyf en vyf maak tien.",
@@ -672,6 +681,7 @@
   "af/vo_say_odd_even_7": "Sewe. Is dit ewe of onewe?",
   "af/vo_say_odd_even_8": "Agt. Is dit ewe of onewe?",
   "af/vo_say_odd_even_9": "Nege. Is dit ewe of onewe?",
+  "af/vo_say_odd_even_right_1": "Een is onewe.",
   "af/vo_say_odd_even_right_10": "Tien is ewe.",
   "af/vo_say_odd_even_right_11": "Elf is onewe.",
   "af/vo_say_odd_even_right_12": "Twaalf is ewe.",
@@ -702,6 +712,7 @@
   "af/vo_say_take_away_10_9": "Tien min nege.",
   "af/vo_say_take_away_2_1": "Twee min een.",
   "af/vo_say_take_away_3_1": "Drie min een.",
+  "af/vo_say_take_away_3_2": "Drie min twee.",
   "af/vo_say_take_away_4_1": "Vier min een.",
   "af/vo_say_take_away_4_2": "Vier min twee.",
   "af/vo_say_take_away_4_3": "Vier min drie.",
@@ -710,10 +721,12 @@
   "af/vo_say_take_away_5_3": "Vyf min drie.",
   "af/vo_say_take_away_5_4": "Vyf min vier.",
   "af/vo_say_take_away_6_1": "Ses min een.",
+  "af/vo_say_take_away_6_2": "Ses min twee.",
   "af/vo_say_take_away_6_3": "Ses min drie.",
   "af/vo_say_take_away_6_4": "Ses min vier.",
   "af/vo_say_take_away_6_5": "Ses min vyf.",
   "af/vo_say_take_away_7_1": "Sewe min een.",
+  "af/vo_say_take_away_7_2": "Sewe min twee.",
   "af/vo_say_take_away_7_3": "Sewe min drie.",
   "af/vo_say_take_away_7_4": "Sewe min vier.",
   "af/vo_say_take_away_7_5": "Sewe min vyf.",
@@ -738,6 +751,7 @@
   "af/vo_school_3": "Pak jou skooltas",
   "af/vo_school_4": "Trek jou skoene aan",
   "af/vo_school_5": "Stap skool toe",
+  "af/vo_seed_1": "Plant 'n saadjie",
   "af/vo_seed_2": "Gee dit water",
   "af/vo_seed_3": "'n Plantjie groei",
   "af/vo_seed_4": "'n Blom gaan oop",
@@ -1231,6 +1245,7 @@
   "af/word_tou": "tou",
   "af/word_trap": "trap",
   "af/word_trein": "trein",
+  "af/word_twee": "twee",
   "af/word_uil": "uil",
   "af/word_van": "van",
   "af/word_vandag": "vandag",
@@ -1238,6 +1253,7 @@
   "af/word_vet": "vet",
   "af/word_vierkant": "vierkant",
   "af/word_vink": "vink",
+  "af/word_vir": "vir",
   "af/word_vis": "vis",
   "af/word_visse": "visse",
   "af/word_vlag": "vlag",
@@ -1246,11 +1262,13 @@
   "af/word_vos": "vos",
   "af/word_vriend": "vriend",
   "af/word_vurk": "vurk",
+  "af/word_vuur": "vuur",
   "af/word_vyfhoek": "vyfhoek",
   "af/word_waar": "waar",
   "af/word_wanneer": "wanneer",
   "af/word_was": "was",
   "af/word_wat": "wat",
+  "af/word_wys": "wys",
   "af/word_yellow": "geel",
   "hint_01": "Listen carefully. It sounds like this:",
   "hint_01_big": "Here's the sound again:",
@@ -2505,6 +2523,7 @@
   "word_even": "even",
   "word_every": "every",
   "word_everybody": "everybody",
+  "word_eye": "eye",
   "word_fan": "fan",
   "word_farm": "farm",
   "word_fast": "fast",
@@ -2650,6 +2669,7 @@
   "word_past": "past",
   "word_pat": "pat",
   "word_path": "path",
+  "word_paw": "paw",
   "word_pen": "pen",
   "word_pentagon": "pentagon",
   "word_people": "people",
@@ -2694,6 +2714,7 @@
   "word_sad": "sad",
   "word_said": "said",
   "word_sat": "sat",
+  "word_saw": "saw",
   "word_says": "says",
   "word_school": "school",
   "word_sea": "sea",
@@ -2753,6 +2774,7 @@
   "word_this": "this",
   "word_three": "three",
   "word_thumb": "thumb",
+  "word_tin": "tin",
   "word_tip": "tip",
   "word_to": "to",
   "word_today": "today",
@@ -2803,224 +2825,55 @@
   "af/money_c10": 1,
   "af/num_1": 6,
   "af/num_10": 6,
-  "af/num_100": 5,
   "af/num_2": 1,
   "af/num_2_mid": 1,
-  "af/num_44": 5,
-  "af/num_75": 5,
-  "af/num_77": 5,
   "af/num_78": 5,
   "af/num_79": 5,
   "af/num_80": 5,
   "af/num_82": 5,
-  "af/num_84": 5,
-  "af/num_97": 5,
   "af/snd_d": 2,
   "af/snd_p": 2,
-  "af/vo_butterfly_3": 4,
-  "af/vo_growing_2": 4,
   "af/vo_say_double_10": 4,
-  "af/vo_say_double_2": 4,
-  "af/vo_say_double_3": 4,
-  "af/vo_say_double_5": 4,
-  "af/vo_say_double_right_6": 4,
-  "af/vo_say_join_make_5_2": 4,
-  "af/vo_say_odd_even_right_1": 4,
-  "af/vo_say_take_away_3_2": 4,
-  "af/vo_say_take_away_6_2": 4,
-  "af/vo_say_take_away_7_2": 4,
-  "af/vo_seed_1": 4,
   "af/vo_sent_01": 4,
   "af/vo_sent_04": 4,
   "af/vo_sent_06": 4,
-  "af/vo_sent_08": 4,
   "af/word_een": 5,
   "af/word_ertjie": 5,
   "af/word_hy": 5,
   "af/word_jy": 5,
-  "af/word_twee": 4,
-  "af/word_vir": 4,
-  "af/word_vuur": 4,
   "af/word_web": 4,
   "af/word_white": 4,
   "af/word_wil": 4,
   "af/word_wolk": 4,
-  "af/word_wys": 4,
   "vo_frog_1": 5,
-  "vo_story_priyas_birthday_a6": 7,
-  "word_are": 5,
-  "word_eye": 5,
-  "word_paw": 5,
-  "word_saw": 5,
-  "word_tin": 5
+  "vo_story_priyas_birthday_a6": 7
  },
  "failed_text": {
   "af/money_c10": "10 sent",
   "af/num_1": "1",
   "af/num_10": "10",
-  "af/num_100": "100",
   "af/num_2": "2",
   "af/num_2_mid": "Twee,",
-  "af/num_44": "44",
-  "af/num_75": "75",
-  "af/num_77": "77",
   "af/num_78": "78",
   "af/num_79": "79",
   "af/num_80": "80",
   "af/num_82": "82",
-  "af/num_84": "84",
-  "af/num_97": "97",
   "af/snd_d": "d",
   "af/snd_p": "p",
-  "af/vo_butterfly_3": "'n Papie",
-  "af/vo_growing_2": "'n Kind",
   "af/vo_say_double_10": "Dubbel tien. Hoeveel is dit?",
-  "af/vo_say_double_2": "Dubbel twee. Hoeveel is dit?",
-  "af/vo_say_double_3": "Dubbel drie. Hoeveel is dit?",
-  "af/vo_say_double_5": "Dubbel vyf. Hoeveel is dit?",
-  "af/vo_say_double_right_6": "Dubbel ses is twaalf.",
-  "af/vo_say_join_make_5_2": "Vyf en twee maak sewe.",
-  "af/vo_say_odd_even_right_1": "Een is onewe.",
-  "af/vo_say_take_away_3_2": "Drie min twee.",
-  "af/vo_say_take_away_6_2": "Ses min twee.",
-  "af/vo_say_take_away_7_2": "Sewe min twee.",
-  "af/vo_seed_1": "Plant 'n saadjie",
   "af/vo_sent_01": "'n Kat sit op 'n mat.",
   "af/vo_sent_04": "'n Vos sit in 'n boks.",
   "af/vo_sent_06": "Ses visse in 'n bak.",
-  "af/vo_sent_08": "Die hen het tien kuikens.",
   "af/word_een": "een",
   "af/word_ertjie": "ertjie",
   "af/word_hy": "hy",
   "af/word_jy": "jy",
-  "af/word_twee": "twee",
-  "af/word_vir": "vir",
-  "af/word_vuur": "vuur",
   "af/word_web": "web",
   "af/word_white": "wit",
   "af/word_wil": "wil",
   "af/word_wolk": "wolk",
-  "af/word_wys": "wys",
   "vo_frog_1": "Frogspawn",
-  "vo_story_priyas_birthday_a6": "ball",
-  "word_are": "are",
-  "word_eye": "eye",
-  "word_paw": "paw",
-  "word_saw": "saw",
-  "word_tin": "tin"
+  "vo_story_priyas_birthday_a6": "ball"
  },
- "review": {
-  "af/num_100": {
-   "heard": "Honert",
-   "text": "100"
-  },
-  "af/num_44": {
-   "heard": "4 en 40",
-   "text": "44"
-  },
-  "af/num_75": {
-   "heard": "57",
-   "text": "75"
-  },
-  "af/num_77": {
-   "heard": "7 en 70",
-   "text": "77"
-  },
-  "af/num_84": {
-   "heard": "68",
-   "text": "84"
-  },
-  "af/num_97": {
-   "heard": "7 en 90",
-   "text": "97"
-  },
-  "af/vo_butterfly_3": {
-   "heard": "A barbie.",
-   "text": "'n Papie"
-  },
-  "af/vo_growing_2": {
-   "heard": "a kent",
-   "text": "'n Kind"
-  },
-  "af/vo_say_double_2": {
-   "heard": "Double tin.  O fiel is dead?  Double twi-a.",
-   "text": "Dubbel twee. Hoeveel is dit?"
-  },
-  "af/vo_say_double_3": {
-   "heard": "Who feel is dit?  Double three  Who feel is dit?",
-   "text": "Dubbel drie. Hoeveel is dit?"
-  },
-  "af/vo_say_double_5": {
-   "heard": "Double five.  Who feel is dat?",
-   "text": "Dubbel vyf. Hoeveel is dit?"
-  },
-  "af/vo_say_double_right_6": {
-   "heard": "Double C's is 12.",
-   "text": "Dubbel ses is twaalf."
-  },
-  "af/vo_say_join_make_5_2": {
-   "heard": "Fyf een twier mag sierwe.",
-   "text": "Vyf en twee maak sewe."
-  },
-  "af/vo_say_odd_even_right_1": {
-   "heard": "Ien es unewe.",
-   "text": "Een is onewe."
-  },
-  "af/vo_say_take_away_3_2": {
-   "heard": "Drie men toie.",
-   "text": "Drie min twee."
-  },
-  "af/vo_say_take_away_6_2": {
-   "heard": "Sees men tuie.",
-   "text": "Ses min twee."
-  },
-  "af/vo_say_take_away_7_2": {
-   "heard": "Sier vir myn toer.",
-   "text": "Sewe min twee."
-  },
-  "af/vo_seed_1": {
-   "heard": "Plant a saiki.",
-   "text": "Plant 'n saadjie"
-  },
-  "af/vo_sent_08": {
-   "heard": "Voor die volgende een.  Never lees iets twee keer nie.",
-   "text": "Die hen het tien kuikens."
-  },
-  "af/word_twee": {
-   "heard": "Twia.",
-   "text": "twee"
-  },
-  "af/word_vir": {
-   "heard": "Fer",
-   "text": "vir"
-  },
-  "af/word_vuur": {
-   "heard": "4.",
-   "text": "vuur"
-  },
-  "af/word_wys": {
-   "heard": "Vice",
-   "text": "wys"
-  },
-  "word_are": {
-   "heard": "Aww.",
-   "text": "are"
-  },
-  "word_eye": {
-   "heard": "I",
-   "text": "eye"
-  },
-  "word_paw": {
-   "heard": "Pull",
-   "text": "paw"
-  },
-  "word_saw": {
-   "heard": "Soul",
-   "text": "saw"
-  },
-  "word_tin": {
-   "heard": "10",
-   "text": "tin"
-  }
- }
+ "review": {}
 }

@@ -330,6 +330,29 @@ def sounds(lang):
 # alone makes it say the Afrikaans name.
 SAY_LINE = {"af/name_p": "P"}
 
+def af_number_words(n):
+    """An Afrikaans number in words, the small part first as Afrikaans says it: 75 -> "vyf-en-sewentig"."""
+    if n <= 20:
+        return AF_NUMBERS[n]
+    if n == 100:
+        return "honderd"
+    tens = AF_TENS[n // 10 - 2]
+    return tens if n % 10 == 0 else f"{AF_NUMBERS[n % 10]}-en-{tens}"
+
+
+def said(clip, text):
+    """
+    What Gemini is given to say for a clip. An Afrikaans number written in digits goes as words: from "75"
+    Gemini said "sewe-en-vyftig" (the digits in English order) and from "84" "agt-en-sestig" (owner, 6 Nov 2026).
+    """
+    if clip in SAY_LINE:
+        return SAY_LINE[clip]
+    lang, _ = split(clip)
+    if lang == "af" and re.fullmatch(r"\d{1,3}", text.strip()) and int(text) <= 100:
+        return af_number_words(int(text))
+    return text
+
+
 SAY_AS = {
     ("en", "snd_igh"): ("eye", "The long i sound in light and night, said once. Never the letters i, g, h."),
     ("en", "snd_er"): ("uh", "The soft, short 'uh' at the end of ladder and sister: no 'r', never the letters e, r."),
@@ -784,7 +807,7 @@ def main():
                 lines = [known.get(split(c)[1], (all_texts[c], ""))[0] for c in clips]
                 hints = [known.get(split(c)[1], ("", ""))[1] for c in clips]
             else:
-                lines, hints = [SAY_LINE.get(c, all_texts[c]) for c in clips], ()
+                lines, hints = [said(c, all_texts[c]) for c in clips], ()
             try:
                 pcm = speak(key, lang, style, lines, hints)
             except DailyLimit as e:
