@@ -243,7 +243,9 @@ def reads_instructions(heard, text, lang, style):
     """
     if len(heard) > 2 * len(text) + 20:
         return True
-    prompt = set(words(LANGS[lang]["styles"][style] + " " + PAUSE))
+    # Gemini sometimes reads them out in Afrikaans too ("Never lees iets twee keer nie", 6 Nov 2026).
+    prompt = set(words(LANGS[lang]["styles"][style] + " " + PAUSE)) | {
+        "lees", "keer", "volgende", "sekondes", "stil", "instruksies", "notes", "director", "never"}
     extra = [w for w in words(heard) if w in prompt and w not in set(line_words(lang, text))]
     return len(extra) >= 3
 
