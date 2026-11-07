@@ -132,6 +132,7 @@
   "af/learn_white": "wit",
   "af/learn_wing": "vlerk",
   "af/learn_yellow": "geel",
+  "af/money_c10": "10 sent",
   "af/money_c20": "20 sent",
   "af/money_c50": "50 sent",
   "af/money_r1": "1 rand",
@@ -164,6 +165,7 @@
   "af/name_y": "y",
   "af/num_0": "0",
   "af/num_0_mid": "Nul,",
+  "af/num_10": "10",
   "af/num_100": "100",
   "af/num_10_mid": "Tien,",
   "af/num_11": "11",
@@ -250,12 +252,17 @@
   "af/num_72": "72",
   "af/num_73": "73",
   "af/num_74": "74",
+  "af/num_75": "75",
   "af/num_76": "76",
   "af/num_77": "77",
+  "af/num_78": "78",
   "af/num_7_mid": "Sewe,",
   "af/num_8": "8",
+  "af/num_80": "80",
   "af/num_81": "81",
+  "af/num_82": "82",
   "af/num_83": "83",
+  "af/num_84": "84",
   "af/num_85": "85",
   "af/num_86": "86",
   "af/num_87": "87",
@@ -299,6 +306,7 @@
   "af/snd_a": "a",
   "af/snd_aa": "aa",
   "af/snd_b": "b",
+  "af/snd_d": "d",
   "af/snd_e": "e",
   "af/snd_ee": "ee",
   "af/snd_ei": "ei",
@@ -318,6 +326,7 @@
   "af/snd_oe": "oe",
   "af/snd_oo": "oo",
   "af/snd_ou": "ou",
+  "af/snd_p": "p",
   "af/snd_r": "r",
   "af/snd_s": "s",
   "af/snd_t": "t",
@@ -526,6 +535,8 @@
   "af/vo_say_build_tower_8": "Bou 'n toring van agt.",
   "af/vo_say_build_tower_9": "Bou 'n toring van nege.",
   "af/vo_say_double_1": "Dubbel een. Hoeveel is dit?",
+  "af/vo_say_double_10": "Dubbel tien. Hoeveel is dit?",
+  "af/vo_say_double_3": "Dubbel drie. Hoeveel is dit?",
   "af/vo_say_double_4": "Dubbel vier. Hoeveel is dit?",
   "af/vo_say_double_5": "Dubbel vyf. Hoeveel is dit?",
   "af/vo_say_double_6": "Dubbel ses. Hoeveel is dit?",
@@ -759,6 +770,7 @@
   "af/vo_sent_03": "Die eend het 'n rooi hoed.",
   "af/vo_sent_05": "Die padda is op 'n stomp.",
   "af/vo_sent_07": "'n Bok in 'n boot.",
+  "af/vo_sent_08": "Die hen het tien kuikens.",
   "af/vo_sent_09": "'n Kewer op 'n brood.",
   "af/vo_sent_10": "Die skaap is in die boom.",
   "af/vo_sent_11": "'n Slak op 'n trein.",
@@ -1105,6 +1117,7 @@
   "af/word_driehoek": "driehoek",
   "af/word_duim": "duim",
   "af/word_dun": "dun",
+  "af/word_een": "een",
   "af/word_eend": "eend",
   "af/word_eende": "eende",
   "af/word_eier": "eier",
@@ -2822,49 +2835,34 @@
   "word_zoo": "zoo"
  },
  "failed": {
-  "af/money_c10": 1,
-  "af/num_1": 6,
-  "af/num_10": 6,
-  "af/num_2": 1,
-  "af/num_2_mid": 1,
-  "af/num_78": 5,
-  "af/num_79": 5,
-  "af/num_80": 5,
-  "af/num_82": 5,
-  "af/snd_d": 2,
-  "af/snd_p": 2,
-  "af/vo_say_double_10": 4,
-  "af/vo_sent_01": 4,
-  "af/vo_sent_04": 4,
-  "af/vo_sent_06": 4,
-  "af/word_een": 5,
-  "af/word_ertjie": 5,
-  "af/word_hy": 5,
-  "af/word_jy": 5,
-  "af/word_web": 4,
-  "af/word_white": 4,
-  "af/word_wil": 4,
-  "af/word_wolk": 4,
-  "vo_frog_1": 5,
-  "vo_story_priyas_birthday_a6": 7
+  "af/num_1": 7,
+  "af/num_2": 2,
+  "af/num_2_mid": 2,
+  "af/num_79": 6,
+  "af/vo_say_double_2": 1,
+  "af/vo_sent_01": 5,
+  "af/vo_sent_04": 5,
+  "af/vo_sent_06": 5,
+  "af/word_ertjie": 6,
+  "af/word_hy": 6,
+  "af/word_jy": 6,
+  "af/word_web": 5,
+  "af/word_white": 5,
+  "af/word_wil": 5,
+  "af/word_wolk": 5,
+  "vo_frog_1": 6,
+  "vo_story_priyas_birthday_a6": 7,
+  "word_are": 1
  },
  "failed_text": {
-  "af/money_c10": "10 sent",
   "af/num_1": "1",
-  "af/num_10": "10",
   "af/num_2": "2",
   "af/num_2_mid": "Twee,",
-  "af/num_78": "78",
   "af/num_79": "79",
-  "af/num_80": "80",
-  "af/num_82": "82",
-  "af/snd_d": "d",
-  "af/snd_p": "p",
-  "af/vo_say_double_10": "Dubbel tien. Hoeveel is dit?",
+  "af/vo_say_double_2": "Dubbel twee. Hoeveel is dit?",
   "af/vo_sent_01": "'n Kat sit op 'n mat.",
   "af/vo_sent_04": "'n Vos sit in 'n boks.",
   "af/vo_sent_06": "Ses visse in 'n bak.",
-  "af/word_een": "een",
   "af/word_ertjie": "ertjie",
   "af/word_hy": "hy",
   "af/word_jy": "jy",
@@ -2873,7 +2871,53 @@
   "af/word_wil": "wil",
   "af/word_wolk": "wolk",
   "vo_frog_1": "Frogspawn",
-  "vo_story_priyas_birthday_a6": "ball"
+  "vo_story_priyas_birthday_a6": "ball",
+  "word_are": "are"
  },
- "review": {}
+ "review": {
+  "af/num_1": {
+   "heard": "Ien",
+   "text": "1"
+  },
+  "af/num_2": {
+   "heard": "Tuia.",
+   "text": "2"
+  },
+  "af/num_2_mid": {
+   "heard": "Dwee, ja.",
+   "text": "Twee,"
+  },
+  "af/num_79": {
+   "heard": "Miege in 70",
+   "text": "79"
+  },
+  "af/vo_sent_01": {
+   "heard": "A kat set op a mat.",
+   "text": "'n Kat sit op 'n mat."
+  },
+  "af/vo_sent_04": {
+   "heard": "A force sit in a box.",
+   "text": "'n Vos sit in 'n boks."
+  },
+  "af/vo_sent_06": {
+   "heard": "Sees wisse in a bak.",
+   "text": "Ses visse in 'n bak."
+  },
+  "af/word_ertjie": {
+   "heard": "\u00c6rky",
+   "text": "ertjie"
+  },
+  "af/word_hy": {
+   "heard": "Ai.",
+   "text": "hy"
+  },
+  "af/word_jy": {
+   "heard": "Jai.",
+   "text": "jy"
+  },
+  "af/word_white": {
+   "heard": "as written.",
+   "text": "wit"
+  }
+ }
 }
