@@ -1,2 +1,2 @@
-100
-Paid run (started 7 November 2026 10:18 SAST, monthly cap $3): up to 100 requests.
+30
+Paid run (started 8 November 2026 10:17 SAST, monthly cap $3): up to 30 requests (8 clips left).
