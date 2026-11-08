@@ -540,6 +540,7 @@
   "af/vo_say_build_tower_9": "Bou 'n toring van nege.",
   "af/vo_say_double_1": "Dubbel een. Hoeveel is dit?",
   "af/vo_say_double_10": "Dubbel tien. Hoeveel is dit?",
+  "af/vo_say_double_2": "Dubbel twee. Hoeveel is dit?",
   "af/vo_say_double_3": "Dubbel drie. Hoeveel is dit?",
   "af/vo_say_double_4": "Dubbel vier. Hoeveel is dit?",
   "af/vo_say_double_5": "Dubbel vyf. Hoeveel is dit?",
@@ -1292,6 +1293,7 @@
   "af/word_was": "was",
   "af/word_wat": "wat",
   "af/word_web": "web",
+  "af/word_wil": "wil",
   "af/word_wolk": "wolk",
   "af/word_wys": "wys",
   "af/word_yellow": "geel",
@@ -2848,31 +2850,19 @@
   "word_zoo": "zoo"
  },
  "failed": {
-  "af/vo_say_double_2": 2,
   "af/word_white": 2,
-  "af/word_wil": 5,
   "vo_frog_1": 6,
   "vo_story_priyas_birthday_a6": 6
  },
  "failed_text": {
-  "af/vo_say_double_2": "Dubbel twee. Hoeveel is dit?",
   "af/word_white": "wit",
-  "af/word_wil": "wil",
   "vo_frog_1": "Frogspawn",
   "vo_story_priyas_birthday_a6": "ball"
  },
  "review": {
-  "af/vo_say_double_2": {
-   "heard": "Dibeltwee, ufiel is dit?",
-   "text": "Dubbel twee. Hoeveel is dit?"
-  },
   "af/word_white": {
    "heard": "goed  wat",
    "text": "wit"
-  },
-  "af/word_wil": {
-   "heard": "Vol",
-   "text": "wil"
   }
  }
 }
