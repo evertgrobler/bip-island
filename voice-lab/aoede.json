@@ -1291,6 +1291,8 @@
   "af/word_wanneer": "wanneer",
   "af/word_was": "was",
   "af/word_wat": "wat",
+  "af/word_web": "web",
+  "af/word_wolk": "wolk",
   "af/word_wys": "wys",
   "af/word_yellow": "geel",
   "hint_01": "Listen carefully. It sounds like this:",
@@ -2845,22 +2847,29 @@
   "word_zoo": "zoo"
  },
  "failed": {
-  "af/vo_say_double_2": 1,
-  "af/word_web": 4,
-  "af/word_wil": 4,
-  "af/word_wolk": 4,
-  "vo_frog_1": 4,
-  "vo_story_priyas_birthday_a6": 4,
-  "word_are": 1
+  "af/vo_say_double_2": 2,
+  "af/word_white": 1,
+  "af/word_wil": 5,
+  "vo_frog_1": 5,
+  "vo_story_priyas_birthday_a6": 5,
+  "word_are": 2
  },
  "failed_text": {
   "af/vo_say_double_2": "Dubbel twee. Hoeveel is dit?",
-  "af/word_web": "web",
+  "af/word_white": "wit",
   "af/word_wil": "wil",
-  "af/word_wolk": "wolk",
   "vo_frog_1": "Frogspawn",
   "vo_story_priyas_birthday_a6": "ball",
   "word_are": "are"
  },
- "review": {}
+ "review": {
+  "af/vo_say_double_2": {
+   "heard": "Dibeltwee, ufiel is dit?",
+   "text": "Dubbel twee. Hoeveel is dit?"
+  },
+  "af/word_wil": {
+   "heard": "Vol",
+   "text": "wil"
+  }
+ }
 }
