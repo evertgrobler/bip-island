@@ -1293,6 +1293,7 @@
   "af/word_was": "was",
   "af/word_wat": "wat",
   "af/word_web": "web",
+  "af/word_white": "wit",
   "af/word_wil": "wil",
   "af/word_wolk": "wolk",
   "af/word_wys": "wys",
@@ -2850,19 +2851,12 @@
   "word_zoo": "zoo"
  },
  "failed": {
-  "af/word_white": 2,
   "vo_frog_1": 4,
   "vo_story_priyas_birthday_a6": 4
  },
  "failed_text": {
-  "af/word_white": "wit",
   "vo_frog_1": "Frogspawn",
   "vo_story_priyas_birthday_a6": "ball"
  },
- "review": {
-  "af/word_white": {
-   "heard": "goed  wat",
-   "text": "wit"
-  }
- }
+ "review": {}
 }
