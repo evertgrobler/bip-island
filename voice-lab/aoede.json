@@ -2436,6 +2436,7 @@
   "word_ants": "ants",
   "word_any": "any",
   "word_apples": "apples",
+  "word_are": "are",
   "word_ask": "ask",
   "word_bag": "bag",
   "word_bat": "bat",
@@ -2848,24 +2849,26 @@
  },
  "failed": {
   "af/vo_say_double_2": 2,
-  "af/word_white": 1,
+  "af/word_white": 2,
   "af/word_wil": 5,
-  "vo_frog_1": 5,
-  "vo_story_priyas_birthday_a6": 5,
-  "word_are": 2
+  "vo_frog_1": 6,
+  "vo_story_priyas_birthday_a6": 6
  },
  "failed_text": {
   "af/vo_say_double_2": "Dubbel twee. Hoeveel is dit?",
   "af/word_white": "wit",
   "af/word_wil": "wil",
   "vo_frog_1": "Frogspawn",
-  "vo_story_priyas_birthday_a6": "ball",
-  "word_are": "are"
+  "vo_story_priyas_birthday_a6": "ball"
  },
  "review": {
   "af/vo_say_double_2": {
    "heard": "Dibeltwee, ufiel is dit?",
    "text": "Dubbel twee. Hoeveel is dit?"
+  },
+  "af/word_white": {
+   "heard": "goed  wat",
+   "text": "wit"
   },
   "af/word_wil": {
    "heard": "Vol",
