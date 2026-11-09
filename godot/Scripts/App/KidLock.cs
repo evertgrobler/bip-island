@@ -181,12 +181,15 @@ public static class KidLock
     /// </summary>
     private static List<int> OtherScreens()
     {
+        // The main screen (where CoverMainScreen puts the game; the owner's crash report names the MacBook's
+        // own screen "Main") is never covered, nor any screen the window touches.
+        var main = DisplayServer.GetPrimaryScreen();
         var game = new Rect2I(DisplayServer.WindowGetPosition(), DisplayServer.WindowGetSize());
         var screens = new List<int>();
         for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
         {
             var area = new Rect2I(DisplayServer.ScreenGetPosition(screen), DisplayServer.ScreenGetSize(screen));
-            if (!area.Intersects(game)) screens.Add(screen);
+            if (screen != main && !area.Intersects(game)) screens.Add(screen);
         }
         return screens;
     }
