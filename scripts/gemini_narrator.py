@@ -238,16 +238,20 @@ def batch_size(style, retry):
 
 def reads_instructions(heard, text, lang, style):
     """
-    Whether a take has Gemini reading its instructions aloud: much longer than the line, or three or more words
-    that are in the instructions but not in the line ("read anything twice" for "twee", owner, 5 Nov 2026).
+    Whether a take has Gemini reading its instructions aloud: much longer than the line, or two or more of the
+    instructions' longer words that are not in the line ("read anything twice" for "twee", owner, 5 Nov 2026).
+    Only words of five letters or more count: Whisper hears Afrikaans as English ("Click on the dog and the
+    cat"), and short words like "the", "and" or "two" are in the instructions too, so counting them would
+    throw away good Afrikaans takes instead of sending them to the owner's ear.
     """
     if len(heard) > 2 * len(text) + 20:
         return True
     # Gemini sometimes reads them out in Afrikaans too ("Never lees iets twee keer nie", 6 Nov 2026).
     prompt = set(words(LANGS[lang]["styles"][style] + " " + PAUSE)) | {
         "lees", "keer", "volgende", "sekondes", "stil", "instruksies", "notes", "director", "never"}
-    extra = [w for w in words(heard) if w in prompt and w not in set(line_words(lang, text))]
-    return len(extra) >= 3
+    line = set(line_words(lang, text))
+    extra = {w for w in words(heard) if len(w) >= 5 and w in prompt and w not in line}
+    return len(extra) >= 2
 
 
 def finish(style):

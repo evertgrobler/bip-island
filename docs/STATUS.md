@@ -699,7 +699,7 @@
   where Gemini reads its instructions out (in English or Afrikaans), sends a take Whisper turns down to the owner's ear
   (`voice-lab/aoede_review/`, `--approve`/`--redo`; Afrikaans from its second miss), gives Gemini Afrikaans numbers as
   words with the small part first ("vyf-en-sewentig": from "75" it said 57) and the letter name p as "P" (from "pee" it
-  said the English word). Afrikaans o is "o vir olifant" (not "oktopus": in Afrikaans it's a seekat), with the profile
-  elephant as its picture. Gemini's daily limit resets at midnight Pacific time (10:00 SAST in the southern summer), so the
+  said the English word). Afrikaans o is "o soos in bok" (not "oktopus": in Afrikaans it's a seekat; not "olifant"
+  either, whose o is the long "oo" of "boom", review of #74), with the goat picture. Gemini's daily limit resets at midnight Pacific time (10:00 SAST in the southern summer), so the
   daily run is at 10:17 SAST. `Content/af/language.json` switches Afrikaans on; the download page names both
   languages, shows the Language Island and CAPS (`site_screenshots.sh` adds `language-game` from Show Me).

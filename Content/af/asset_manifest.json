@@ -5327,11 +5327,6 @@
       "notes": ""
     },
     {
-      "id": "word_olifant",
-      "text": "olifant",
-      "notes": ""
-    },
-    {
       "id": "word_ons",
       "text": "ons",
       "notes": ""
@@ -6223,10 +6218,6 @@
       "brief": "eier (picture for the sound ei)"
     },
     {
-      "id": "pic_elephant",
-      "brief": "olifant (picture for the sound o)"
-    },
-    {
       "id": "pic_fire",
       "brief": "vuur (picture for the sound uu)"
     },
@@ -6288,7 +6279,7 @@
     },
     {
       "id": "pic_goat",
-      "brief": "bok"
+      "brief": "bok (picture for the sound o)"
     },
     {
       "id": "pic_goingout_1",
