@@ -15,8 +15,8 @@
   Art (Shape Builder, Paint Pots, Mirror Magic), Language (Show Me, What Is It?, Bip's Day). Levels inside every
   game, 8-question visits, star celebration. Every game works with a mouse or a trackpad:
   Letter Trace (18 Oct), and Feed the Monster (click to pick up, click to put down) and Word Builder (click to
-  place) with one click rule (29 Oct). English home language; Afrikaans switches on once its clips
-  are recorded and checked.
+  place) with one click rule (29 Oct). English and Afrikaans home languages (Afrikaans switched on
+  9 Nov 2026), chosen per child, and the Language Island to learn the other one.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
   in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
   Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
@@ -690,3 +690,16 @@
   from a clean start (`clear` removes only this pipeline's drafts), a stall fails after 5 minutes, and the
   job has 75 minutes; a re-run of a publish that worked skips the upload (`done`); clearing old releases
   (`prune`, newest 5 of ours kept) only ever warns; and the run checks GitHub's latest really is this version.
+- **3 to 9 Nov: the voices are finished, cleaned, and Afrikaans is switched on.** Every clip is recorded with Aoede except
+  two English ones Whisper never found in a batch ("Frogspawn" `vo_frog_1`, "ball" `vo_story_priyas_birthday_a6`), which
+  keep the older narrator's clip (owner's call, 9 Nov). The owner heard static in some clips: Gemini's hiss under the
+  voice, and a split second of noise or of the next line at the end of 302 clips, taken in by the cut.
+  `scripts/clip_clean.py` (a declicker, an FFT denoiser and a gentle gate, a noise-like end burst dropped, soft ends;
+  letter sounds keep their hiss) ran once over every clip and runs on every new one. The recorder throws away a take
+  where Gemini reads its instructions out (in English or Afrikaans), sends a take Whisper turns down to the owner's ear
+  (`voice-lab/aoede_review/`, `--approve`/`--redo`; Afrikaans from its second miss), gives Gemini Afrikaans numbers as
+  words with the small part first ("vyf-en-sewentig": from "75" it said 57) and the letter name p as "P" (from "pee" it
+  said the English word). Afrikaans o is "o vir olifant" (not "oktopus": in Afrikaans it's a seekat), with the profile
+  elephant as its picture. Gemini's daily limit resets at midnight Pacific time (10:00 SAST in the southern summer), so the
+  daily run is at 10:17 SAST. `Content/af/language.json` switches Afrikaans on; the download page names both
+  languages, shows the Language Island and CAPS (`site_screenshots.sh` adds `language-game` from Show Me).
