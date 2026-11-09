@@ -143,10 +143,11 @@
   front, so a click can't reach another app on a second display. Windows: `Input.MouseMode` Confined (the
   system's cursor clip). Mac (9 Nov): Confined slowed the Mac's mouse, so the mouse stays the Mac's own and
   `KidLock.FenceMouse` (every frame, `Boot._Process`, the point from `KidLockRules.FencePoint`) puts it back when it
-  leaves the window, and every other screen is covered by a borderless, unfocusable paper window (normal level, the game brought to the front after it; screens chosen by
-  where the game's window really is)
-  of the game's own, so a flick that beats the fence lands on the game. The covers step aside (hidden) while another program has
-  the front and come back with the game, which also takes the keys back; they're checked against the screens once
+  leaves the window, and every other screen is covered by a borderless, unfocusable paper window of the game's
+  own (floating, above other programs), so a flick that beats the fence lands on paper. `KidLockRules.ScreensToCover`
+  picks the screens: never the main one, never the one the game overlaps most. The game's window floats too and is
+  raised above the covers, and a cover that still lands over the game is taken away. The covers step aside
+  (hidden) while another program has the front and come back with the game, which also takes the keys back; they're checked against the screens once
   a second (plugged in, swapped or moved). The lock check reports `mouseKeptIn`
   and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a
   Mac it reports the fence and that every other screen has its cover). Setting the mode again goes through
@@ -723,5 +724,5 @@
 - **9 Nov: 0.2.256 hid the game on a MacBook with a second screen.** The owner's photo showed the paper cover on the
   MacBook itself, over the game: the cover chose screens by `WindowGetCurrentScreen`'s number, which pointed at the
   MacBook's own screen, and covers were always on top. Covers now go only on screens the game's window doesn't touch
-  (by its real position and size), sit at the normal window level, and the game's window is brought to the front
-  after them. Until then: unplug the second screen, or open with Option held.
+  (`KidLockRules.ScreensToCover`, tested), the game's window floats above them, and a cover that still lands
+  over the game is taken away. Until then: unplug the second screen, or open with Option held.

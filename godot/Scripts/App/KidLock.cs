@@ -74,6 +74,7 @@ public static class KidLock
     {
         foreach (var cover in Covers)
             if (GodotObject.IsInstanceValid(cover)) cover.Hide();
+        _coversHidden = Covers.Count > 0;
     }
 
     /// <summary>The game came back to the front: put the Mac options and the mouse limit back (the system can drop them).</summary>
@@ -135,77 +136,118 @@ public static class KidLock
     /// <summary>The paper windows over the Mac's other screens (see <see cref="CoverOtherScreens"/>).</summary>
     private static readonly List<Window> Covers = [];
 
+    /// <summary>The screens (position and size) the covers were made for, to tell when the screens change.</summary>
+    private static List<Rect2I> _coveredScreens = [];
+
+    /// <summary>Whether the covers are stepped aside (<see cref="Lifted"/>) and the game must be raised when they come back.</summary>
+    private static bool _coversHidden;
+
     /// <summary>
-    /// Covers every screen but the game's with a borderless paper window of the game's own, below the game and
-    /// never taking the focus (the fence below only pulls the mouse back once a frame, so a quick flick and
-    /// click could otherwise reach another program on a second screen; review of #74). A click there lands on
-    /// the cover and the game stays in front. Done again when the game comes back to the front, in case a
-    /// screen was plugged in or taken away.
+    /// Covers the Mac's other screens (<see cref="KidLockRules.ScreensToCover"/>: never the main screen, never the
+    /// one the game is on) with a borderless paper window of the game's own: above other programs (floating, so a
+    /// quick flick and click that beats the fence lands on paper; review of #74), never taking the focus. The
+    /// game's own window floats too and is raised above the covers whenever they are made or come back, and a
+    /// cover that still ends up over the game is taken away (owner's MacBook, 0.2.256: one hid the game).
+    /// Checked once a second and when the game comes back to the front, for screens plugged in, swapped or moved.
     /// </summary>
     private static void CoverOtherScreens()
     {
-        if (OtherScreensCovered())
+        var wanted = ScreensToCover();
+        var raise = false;
+        if (!SameScreens(wanted, _coveredScreens))
+        {
+            RemoveCovers();
+            _coveredScreens = wanted;
+            foreach (var screen in wanted)
+            {
+                var cover = new Window
+                {
+                    Title = "Bip Island",
+                    ForceNative = true,
+                    Borderless = true,
+                    AlwaysOnTop = true,
+                    Unfocusable = true,
+                    Transient = false,
+                    Position = screen.Position,
+                    Size = screen.Size,
+                };
+                var paper = new ColorRect { Color = Palette.Paper, MouseFilter = Control.MouseFilterEnum.Stop };
+                paper.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+                cover.AddChild(paper);
+                Covers.Add(cover);
+                // Install runs from Boot._Ready: add the windows once the tree is free to take them.
+                Boot.Instance.CallDeferred(Node.MethodName.AddChild, cover);
+            }
+            raise = Covers.Count > 0;
+        }
+        else if (_coversHidden)
         {
             foreach (var cover in Covers) cover.Show();
-            return;
+            raise = Covers.Count > 0;
         }
-        RemoveCovers();
-        foreach (var screen in OtherScreens())
+        _coversHidden = false;
+        TakeAwayCoversOverTheGame();
+        if (raise) Callable.From(RaiseGame).CallDeferred();
+    }
+
+    /// <summary>The game's window floats like the covers and goes to the front, above them.</summary>
+    private static void RaiseGame()
+    {
+        try
         {
-            var cover = new Window
-            {
-                Title = "Bip Island",
-                ForceNative = true,
-                Borderless = true,
-                Unfocusable = true,
-                Transient = false,
-                Position = DisplayServer.ScreenGetPosition(screen),
-                Size = DisplayServer.ScreenGetSize(screen),
-            };
-            var paper = new ColorRect { Color = Palette.Paper, MouseFilter = Control.MouseFilterEnum.Stop };
-            paper.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-            cover.AddChild(paper);
-            Covers.Add(cover);
-            // Install runs from Boot._Ready: add the windows once the tree is free to take them.
-            Boot.Instance.CallDeferred(Node.MethodName.AddChild, cover);
+            DisplayServer.WindowSetFlag(DisplayServer.WindowFlags.AlwaysOnTop, true);
+            DisplayServer.WindowMoveToForeground();
         }
-        // The covers sit at the normal window level, never above the game: once they're up, the game's own window
-        // is brought to the front again, so even a cover in the wrong place could never hide it.
-        if (Covers.Count > 0) Callable.From(() => DisplayServer.WindowMoveToForeground()).CallDeferred();
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock (raise): {error.Message}"); }
     }
 
     /// <summary>
-    /// Every screen the game's window doesn't touch. Judged from where the window really is, not from a screen
-    /// number: on the owner's MacBook with a second screen (0.2.256, 9 Nov) the number pointed at the MacBook's
-    /// own screen, and its cover hid the game.
+    /// A cover whose real place overlaps the game's window (wherever the system put it) is taken away for good,
+    /// until the screens change, so it can never hide the game and is never made again and again.
     /// </summary>
-    private static List<int> OtherScreens()
+    private static void TakeAwayCoversOverTheGame()
     {
-        // The main screen (where CoverMainScreen puts the game; the owner's crash report names the MacBook's
-        // own screen "Main") is never covered, nor any screen the window touches.
-        var main = DisplayServer.GetPrimaryScreen();
         var game = new Rect2I(DisplayServer.WindowGetPosition(), DisplayServer.WindowGetSize());
-        var screens = new List<int>();
-        for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
+        foreach (var cover in Covers)
         {
-            var area = new Rect2I(DisplayServer.ScreenGetPosition(screen), DisplayServer.ScreenGetSize(screen));
-            if (screen != main && !area.Intersects(game)) screens.Add(screen);
+            if (!GodotObject.IsInstanceValid(cover) || !cover.IsInsideTree()) continue;
+            if (!new Rect2I(cover.Position, cover.Size).Intersects(game)) continue;
+            GD.PrintErr($"Bip Island: child lock: a cover landed over the game at {cover.Position}; taken away.");
+            cover.QueueFree();
         }
-        return screens;
+        Covers.RemoveAll(cover => !GodotObject.IsInstanceValid(cover) || cover.IsQueuedForDeletion());
     }
 
-    /// <summary>Whether each other screen has a cover exactly over it (screens can be plugged in, swapped or moved).</summary>
+    /// <summary>The screens to cover now, from the game window's real place (<see cref="KidLockRules.ScreensToCover"/>).</summary>
+    private static List<Rect2I> ScreensToCover()
+    {
+        var position = DisplayServer.WindowGetPosition();
+        var size = DisplayServer.WindowGetSize();
+        var screens = new List<(int X, int Y, int W, int H)>();
+        for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
+        {
+            var at = DisplayServer.ScreenGetPosition(screen);
+            var area = DisplayServer.ScreenGetSize(screen);
+            screens.Add((at.X, at.Y, area.X, area.Y));
+        }
+        var cover = KidLockRules.ScreensToCover((position.X, position.Y, size.X, size.Y), screens,
+            DisplayServer.GetPrimaryScreen());
+        return cover.ConvertAll(i => new Rect2I(screens[i].X, screens[i].Y, screens[i].W, screens[i].H));
+    }
+
+    private static bool SameScreens(List<Rect2I> a, List<Rect2I> b)
+    {
+        if (a.Count != b.Count) return false;
+        for (var i = 0; i < a.Count; i++)
+            if (a[i] != b[i]) return false;
+        return true;
+    }
+
+    /// <summary>Every screen that should have a cover has one.</summary>
     private static bool OtherScreensCovered()
     {
         Covers.RemoveAll(cover => !GodotObject.IsInstanceValid(cover));
-        var screens = OtherScreens();
-        if (Covers.Count != screens.Count) return false;
-        for (var i = 0; i < screens.Count; i++)
-        {
-            if (Covers[i].Position != DisplayServer.ScreenGetPosition(screens[i])
-                || Covers[i].Size != DisplayServer.ScreenGetSize(screens[i])) return false;
-        }
-        return true;
+        return Covers.Count == _coveredScreens.Count;
     }
 
     private static ulong _coversCheckedAt;
@@ -254,7 +296,12 @@ public static class KidLock
     public static void Release()
     {
         _fence = false;
-        try { RemoveCovers(); }
+        try
+        {
+            RemoveCovers();
+            _coveredScreens = [];
+            if (IsMac) DisplayServer.WindowSetFlag(DisplayServer.WindowFlags.AlwaysOnTop, false);
+        }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (covers): {error.Message}"); }
         try { Input.MouseMode = Input.MouseModeEnum.Visible; }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (mouse): {error.Message}"); }
