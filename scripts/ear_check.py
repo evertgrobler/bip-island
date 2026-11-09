@@ -6,6 +6,7 @@ asks per clip: which accent it hears, how South African (or, for Afrikaans, how 
 any word said wrongly or missing, and any static, click, cut-off or stray sound. The answers go to
 voice-lab/ear_check.json, keyed by clip, with the clip's hash, so a clip is heard again only when it changes.
 
+It uses only a free key (GEMINI_FREE_KEY, from a Google project with no billing), so it never costs money.
 It runs in the Ear check workflow (push voice-lab/ear-run.txt on a claude/ branch); MAX_REQUESTS caps a day's
 requests and the free daily limit ends a run early. scripts/ear_page.py (in a session) makes the listening page.
 It is a second opinion for the owner's ear, never a judge: nothing in the game changes because of it.
@@ -104,7 +105,7 @@ def expected(clip, text):
 
 
 def main():
-    key = os.environ.get("GEMINI_API_KEY") or sys.exit("No GEMINI_API_KEY secret.")
+    key = os.environ.get("GEMINI_API_KEY") or sys.exit("No GEMINI_FREE_KEY secret (a key from a Google project with no billing).")
     limit = int(os.environ.get("MAX_REQUESTS") or 50)
     results = json.loads(RESULTS.read_text()) if RESULTS.exists() else {}
     texts = g.texts()

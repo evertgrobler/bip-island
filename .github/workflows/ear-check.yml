@@ -27,10 +27,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      # Only ever the free key: a key from a Google project with no billing, so the ear check can never cost
+      # money (owner, 9 Nov 2026). The recorder's paid GEMINI_API_KEY is never given to it.
       - name: Listen
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_FREE_KEY }}
         run: |
+          pip install -q numpy
           python3 scripts/validate_content.py > /dev/null
           MAX_REQUESTS=$(head -1 voice-lab/ear-run.txt | tr -dc 0-9) python3 scripts/ear_check.py
       - name: Commit the notes
