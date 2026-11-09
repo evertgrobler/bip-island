@@ -236,6 +236,8 @@ public sealed record TraceShapesFile
     public string? Note { get; init; }
     public string? Font { get; init; }
     public required Dictionary<string, List<List<float>>> Shapes { get; init; }
+    /// <summary>Per grapheme, the checkpoints that are a stroke on their own (the dot of i and j): they must be touched.</summary>
+    public Dictionary<string, List<int>> Dots { get; init; } = [];
 }
 
 // MARK: - phonics/graphemes.json

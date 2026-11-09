@@ -51,8 +51,8 @@ public enum TraceTapResult
 /// strokes never gets the hint for an old stray click.
 /// A press draws nothing until it has moved past <see cref="TapSlop"/>, so a click never both
 /// draws and counts as a miss. Where a click landed comes from the screen's hit test
-/// (<see cref="TraceSpot"/>); how a finished trace is judged (every checkpoint touched) stays with
-/// the screen.
+/// (<see cref="TraceSpot"/>); a click on a stroke traces it (the screen asks <see cref="IsClick"/>),
+/// and how a finished trace is judged is <see cref="TraceCheckpoints"/>.
 /// </summary>
 public sealed class TracePen
 {
@@ -164,9 +164,9 @@ public sealed class TracePen
         _lastDrawn = null;
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
-        if (_pressedAt is not { } pressed) return TraceTapResult.None;
+        var click = IsClick(at);
         _pressedAt = null;
-        if (Vector2.Distance(at, pressed) > TapSlop) return TraceTapResult.None;
+        if (!click) return TraceTapResult.None;
         switch (spot)
         {
             case TraceSpot.StartDot:

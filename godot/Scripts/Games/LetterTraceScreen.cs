@@ -65,7 +65,9 @@ public partial class LetterTraceScreen : GameScreen
         _letter.Position = P(0, 60);
         _letter.ZIndex = 10;
         Stage.AddChild(_letter);
-        _checkpoints = new TraceCheckpoints(Shape(), Numeric(_letter.Position), LetterSize, TouchRadius);
+        var shapes = Coordinator.Content?.TraceShapes;
+        _checkpoints = new TraceCheckpoints(Shape(), Numeric(_letter.Position), LetterSize, TouchRadius,
+                                            shapes?.Dots.GetValueOrDefault(_sound.Grapheme));
 
         // 120 pt across: the smallest click target allowed.
         _startDot = Buttons.Tappable(Group(
@@ -106,7 +108,7 @@ public partial class LetterTraceScreen : GameScreen
                     if (draws)
                     {
                         GetViewport().SetInputAsHandled();
-                        Trace(at, _pen.StrokeFrom is { } from ? new Vector2(from.X, from.Y) : null);
+                        Trace(at, _pen.StrokeFrom);
                     }
                     return;
                 case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } press:
@@ -208,7 +210,7 @@ public partial class LetterTraceScreen : GameScreen
         _startDot.Scale = Vector2.One;
     }
 
-    private void Trace(Vector2 point, Vector2? from)
+    private void Trace(Vector2 point, System.Numerics.Vector2? from)
     {
         if (!CanTrace) return;
         Color[] colours = [Palette.Sun, Palette.Pink, Palette.Teal, Palette.Purple];
@@ -218,7 +220,7 @@ public partial class LetterTraceScreen : GameScreen
         fade.TweenProperty(dot, "modulate:a", 0f, 0.7);
         fade.TweenCallback(Callable.From(dot.QueueFree));
 
-        Traced(from is { } start ? _checkpoints.Stroke(Numeric(start), Numeric(point)) : _checkpoints.Touch(Numeric(point)));
+        Traced(from is { } start ? _checkpoints.Stroke(start, Numeric(point)) : _checkpoints.Touch(Numeric(point)));
     }
 
     /// <summary>Checkpoints were reached: a tick, and the end once the letter is traced.</summary>

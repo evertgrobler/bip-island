@@ -10,7 +10,8 @@ public class TraceCheckpointsTests
     private const float Radius = 60;
 
     private static TraceCheckpoints For(string grapheme) =>
-        new(TestContent.Library().TraceShapes.Shapes[grapheme], Vector2.Zero, Size, Radius);
+        new(TestContent.Library().TraceShapes.Shapes[grapheme], Vector2.Zero, Size, Radius,
+            TestContent.Library().TraceShapes.Dots.GetValueOrDefault(grapheme));
 
     [Theory]
     [InlineData(HomeLanguage.English)]

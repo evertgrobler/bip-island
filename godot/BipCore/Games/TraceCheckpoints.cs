@@ -14,9 +14,6 @@ public sealed class TraceCheckpoints
     /// <summary>The share of checkpoints that finishes the letter: a stroke's very tip may be missed.</summary>
     public const float Enough = 0.9f;
 
-    /// <summary>A checkpoint with no other within this many ems is a stroke on its own (the dot of i and j).</summary>
-    public const float AloneEms = 0.16f;
-
     private readonly Vector2[] _points;
     private readonly bool[] _touched;
     private readonly bool[] _alone;
@@ -26,14 +23,16 @@ public sealed class TraceCheckpoints
     /// <param name="centre">Where the letter's centre is drawn.</param>
     /// <param name="size">The letter's font size: one em in drawing units.</param>
     /// <param name="radius">How near the pointer must come to a checkpoint.</param>
-    public TraceCheckpoints(IReadOnlyList<IReadOnlyList<float>> shape, Vector2 centre, float size, float radius)
+    /// <param name="dots">Checkpoints that are a stroke on their own (trace_shapes.json "dots"): they must be touched.</param>
+    public TraceCheckpoints(IReadOnlyList<IReadOnlyList<float>> shape, Vector2 centre, float size, float radius,
+                            IEnumerable<int>? dots = null)
     {
         _points = shape.Where(p => p.Count >= 2).Select(p => centre + new Vector2(p[0], p[1]) * size).ToArray();
         _touched = new bool[_points.Length];
         _radius = radius;
         // A stroke of one checkpoint can't be "nearly" traced: it must be touched (the dot of i and j).
-        var near = AloneEms * size;
-        _alone = _points.Select((p, i) => _points.Where((q, j) => j != i).All(q => Vector2.Distance(p, q) > near)).ToArray();
+        _alone = new bool[_points.Length];
+        foreach (var i in dots ?? []) if (i >= 0 && i < _alone.Length) _alone[i] = true;
     }
 
     public IReadOnlyList<Vector2> Points => _points;
