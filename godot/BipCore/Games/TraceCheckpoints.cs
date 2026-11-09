@@ -55,6 +55,9 @@ public sealed class TraceCheckpoints
     /// </summary>
     public static int Needed(int count) => count <= 3 ? count : count - Math.Max(1, (int)(count * (1 - Enough)));
 
+    /// <summary>Whether <paramref name="at"/> is on the letter's strokes: near any checkpoint, touched or not.</summary>
+    public bool Near(Vector2 at) => _points.Any(p => Vector2.Distance(at, p) <= _radius);
+
     /// <summary>The pen is at <paramref name="at"/>: returns how many checkpoints it reached for the first time.</summary>
     public int Touch(Vector2 at)
     {

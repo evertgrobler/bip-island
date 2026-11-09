@@ -125,9 +125,11 @@ public partial class LetterTraceScreen : GameScreen
                 case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } release:
                     GetViewport().SetInputAsHandled();
                     var where = Stage.ToLocal(release.GlobalPosition);
-                    // A click on a stroke traces it (dotting the i or the j with one click): never a miss.
+                    // A click on a stroke traces it (dotting the i or the j with one click): never a miss, every time.
                     var dotted = _pressedOn is null or "letter" && _pen.Mode == TracePenMode.Idle && _pen.IsClick(Numeric(where))
-                                 && _checkpoints.Touch(Numeric(where)) > 0;
+                                 && _checkpoints.Near(Numeric(where));
+                    var fresh = dotted ? _checkpoints.Touch(Numeric(where)) : 0;
+                    if (dotted) _pen.Traced();
                     var spot = _pressedOn switch
                     {
                         _ when dotted => TraceSpot.Button,
@@ -138,7 +140,9 @@ public partial class LetterTraceScreen : GameScreen
                     var result = _pen.Release(Numeric(where), spot);
                     _pressedOn = null;
                     SyncStartDot();
-                    if (dotted) Traced(1);
+                    // The end of a drag counts up to where the button came up.
+                    if (_pen.StrokeEnd is { } end) fresh += _checkpoints.Stroke(end.From, end.To);
+                    if (dotted || fresh > 0) Traced(fresh);
                     Tapped(result);
                     return;
             }

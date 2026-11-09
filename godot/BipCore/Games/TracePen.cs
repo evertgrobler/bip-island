@@ -62,7 +62,11 @@ public sealed class TracePen
     /// <summary>How far the pointer may move between press and release for it still to be a click.</summary>
     public const float TapSlop = 24;
 
-    /// <summary>A jump this far between two drawn points is a new stroke, never a line drawn across (events lost meanwhile).</summary>
+    /// <summary>
+    /// In tap mode (the button up, the pen following), a jump this far between two drawn points is a new stroke, never
+    /// a line across: events can go missing meanwhile (the parent gate). A drag with the button held is one stroke
+    /// however fast it goes, so it is never cut.
+    /// </summary>
     public const float MaxStep = 180;
 
     private Vector2? _pressedAt;
@@ -74,6 +78,12 @@ public sealed class TracePen
     /// the screen traces the whole step from here, so a fast mouse counts as much as a slow one.
     /// </summary>
     public Vector2? StrokeFrom { get; private set; }
+
+    /// <summary>
+    /// The last stretch of a drag, from its last drawn point to where the button came up, after <see cref="Release"/>:
+    /// the screen traces it so a stroke's end counts even when the last move fell short of it. Null otherwise.
+    /// </summary>
+    public (Vector2 From, Vector2 To)? StrokeEnd { get; private set; }
 
     public TracePenMode Mode { get; private set; } = TracePenMode.Idle;
     /// <summary>True once the trace is finished: the pen does nothing more.</summary>
@@ -106,11 +116,18 @@ public sealed class TracePen
     /// <summary>The pointer moved. Returns true when this point should be drawn and traced.</summary>
     public bool Move(Vector2 at, bool buttonHeld)
     {
+        // A drag starts where the button went down, not at its first move past the wobble: the stroke's tip counts.
+        var pressed = _pressedAt;
         var draws = Moved(at, buttonHeld);
-        StrokeFrom = draws && _lastDrawn is { } last && Vector2.Distance(last, at) <= MaxStep ? last : null;
+        if (draws && _lastDrawn is null && pressed is { } start && Mode == TracePenMode.Dragging) _lastDrawn = start;
+        StrokeFrom = draws && _lastDrawn is { } last
+                     && (Mode == TracePenMode.Dragging || Vector2.Distance(last, at) <= MaxStep) ? last : null;
         _lastDrawn = draws ? at : null;
         return draws;
     }
+
+    /// <summary>A click traced the letter (it landed on a stroke): like a drag, it forgives earlier stray clicks.</summary>
+    public void Traced() => _attempt = new QuestionAttempt();
 
     private bool Moved(Vector2 at, bool buttonHeld)
     {
@@ -143,6 +160,7 @@ public sealed class TracePen
     /// </summary>
     public TraceTapResult Release(Vector2 at, TraceSpot spot)
     {
+        StrokeEnd = Mode == TracePenMode.Dragging && _lastDrawn is { } last && !IsFinished ? (last, at) : null;
         _lastDrawn = null;
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
