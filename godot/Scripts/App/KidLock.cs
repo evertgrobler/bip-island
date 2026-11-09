@@ -66,12 +66,26 @@ public static class KidLock
         }
     }
 
+    /// <summary>
+    /// Another program took the front by itself (a system dialog, an updater): the covers step aside until the
+    /// game is back (<see cref="Reapply"/>), so that program's windows on another screen can be seen.
+    /// </summary>
+    public static void Lifted()
+    {
+        foreach (var cover in Covers)
+            if (GodotObject.IsInstanceValid(cover)) cover.Hide();
+    }
+
     /// <summary>The game came back to the front: put the Mac options and the mouse limit back (the system can drop them).</summary>
     public static void Reapply()
     {
         if (!IsOn && !Status.StartsWith("failed", StringComparison.Ordinal)) return;
         KeepMouseIn();
         if (Status != "mac") return;
+        // A click on a cover (which can't take the focus) can bring the game back: give the game's window the
+        // keys again, so the fence and the Esc hold work straight away.
+        try { DisplayServer.WindowMoveToForeground(); }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock: {error.Message}"); }
         try { Mac.ApplyOptions(); }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock: {error.Message}"); }
     }
@@ -130,12 +144,14 @@ public static class KidLock
     /// </summary>
     private static void CoverOtherScreens()
     {
-        if (OtherScreensCovered()) return;
-        RemoveCovers();
-        var game = DisplayServer.GetPrimaryScreen();
-        for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
+        if (OtherScreensCovered())
         {
-            if (screen == game) continue;
+            foreach (var cover in Covers) cover.Show();
+            return;
+        }
+        RemoveCovers();
+        foreach (var screen in OtherScreens())
+        {
             var cover = new Window
             {
                 Title = "Bip Island",
@@ -156,11 +172,31 @@ public static class KidLock
         }
     }
 
+    /// <summary>Every screen but the one the game's window is on.</summary>
+    private static List<int> OtherScreens()
+    {
+        var game = DisplayServer.WindowGetCurrentScreen();
+        var screens = new List<int>();
+        for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
+            if (screen != game) screens.Add(screen);
+        return screens;
+    }
+
+    /// <summary>Whether each other screen has a cover exactly over it (screens can be plugged in, swapped or moved).</summary>
     private static bool OtherScreensCovered()
     {
         Covers.RemoveAll(cover => !GodotObject.IsInstanceValid(cover));
-        return Covers.Count == Math.Max(0, DisplayServer.GetScreenCount() - 1);
+        var screens = OtherScreens();
+        if (Covers.Count != screens.Count) return false;
+        for (var i = 0; i < screens.Count; i++)
+        {
+            if (Covers[i].Position != DisplayServer.ScreenGetPosition(screens[i])
+                || Covers[i].Size != DisplayServer.ScreenGetSize(screens[i])) return false;
+        }
+        return true;
     }
+
+    private static ulong _coversCheckedAt;
 
     private static void RemoveCovers()
     {
@@ -179,6 +215,14 @@ public static class KidLock
         if (!_fence || !DisplayServer.WindowIsFocused()) return;
         try
         {
+            // Once a second, also check the covers still match the screens (one plugged in while the game is
+            // in front gets its cover now, not only the next time the game comes back to the front).
+            var now = Time.GetTicksMsec();
+            if (now - _coversCheckedAt >= 1000)
+            {
+                _coversCheckedAt = now;
+                CoverOtherScreens();
+            }
             var mouse = DisplayServer.MouseGetPosition();
             var origin = DisplayServer.WindowGetPosition();
             var size = DisplayServer.WindowGetSize();

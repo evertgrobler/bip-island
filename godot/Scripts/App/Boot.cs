@@ -61,6 +61,10 @@ public partial class Boot : Node
         {
             KidLock.Reapply();
         }
+        else if (what == NotificationApplicationFocusOut)
+        {
+            KidLock.Lifted();
+        }
     }
 
     /// <summary>Lets the window close (an update about to restart the game).</summary>
