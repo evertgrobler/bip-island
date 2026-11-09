@@ -225,6 +225,19 @@ public sealed record GameLevel
     public static readonly GameLevel Single = new();
 }
 
+// MARK: - phonics/trace_shapes.json
+
+/// <summary>
+/// Letter Trace's checkpoints on each grapheme's strokes (scripts/trace_shapes.py, from the letter font): [x, y] in ems
+/// from the centre of the letter's label, so the screen multiplies them by the size it draws the letter at.
+/// </summary>
+public sealed record TraceShapesFile
+{
+    public string? Note { get; init; }
+    public string? Font { get; init; }
+    public required Dictionary<string, List<List<float>>> Shapes { get; init; }
+}
+
 // MARK: - phonics/graphemes.json
 
 public sealed record GraphemesFile

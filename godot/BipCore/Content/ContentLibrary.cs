@@ -16,7 +16,7 @@ public sealed class ContentLibrary
     public static readonly IReadOnlyList<string> Files =
     [
         "curriculum/objectives.json", "curriculum/skills.json", "curriculum/games.json",
-        "phonics/graphemes.json",
+        "phonics/graphemes.json", "phonics/trace_shapes.json",
         "words/words.json", "words/tricky_words.json", "words/sentences.json", "words/endings.json",
         "words/homophones.json", "words/contractions.json",
         "numbers/numbers.json",
@@ -47,6 +47,7 @@ public sealed class ContentLibrary
     public ShapesFile Shapes { get; }
     public PaintsFile Paints { get; }
     public MirrorFile Mirror { get; }
+    public TraceShapesFile TraceShapes { get; }
     public LanguageWordsFile LanguageWords { get; }
     public StoryScenesFile StoryScenes { get; }
     public StoriesFile Stories { get; }
@@ -120,6 +121,7 @@ public sealed class ContentLibrary
         Shapes = Load<ShapesFile>("art/shapes.json");
         Paints = Load<PaintsFile>("art/paints.json");
         Mirror = Load<MirrorFile>("art/mirror.json");
+        TraceShapes = Load<TraceShapesFile>("phonics/trace_shapes.json");
         LanguageWords = Load<LanguageWordsFile>("language/words.json");
         StoryScenes = Load<StoryScenesFile>("stories/scenes.json");
         Stories = Load<StoriesFile>("stories/stories.json");

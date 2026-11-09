@@ -57,6 +57,12 @@ paints_doc = load("art/paints.json")
 mirror_doc = load("art/mirror.json")
 language_doc = load("language/words.json")
 
+# --- Letter Trace needs every grapheme's checkpoints (scripts/trace_shapes.py makes them from the letter font)
+trace_shapes = load("phonics/trace_shapes.json")["shapes"]
+for g in ph["graphemes"]:
+    if len(trace_shapes.get(g["grapheme"], [])) < 3:
+        err(f"grapheme {g['grapheme']}: no Letter Trace shape in phonics/trace_shapes.json (run scripts/trace_shapes.py)")
+
 # --- objectives referenced anywhere must exist
 def check_objs(where, codes):
     for c in codes:
