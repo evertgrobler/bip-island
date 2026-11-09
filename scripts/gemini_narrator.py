@@ -54,29 +54,33 @@ EAR_TRIES = 3
 EAR_FROM = {"en": GIVE_UP, "af": 1}
 REVIEW_DIR = ROOT / "voice-lab" / "aoede_review"
 
+# Every English style ends with this (owner, 9 Nov 2026: some lines, Coding Island's among them, still
+# sounded British). It starts "Natural South African English accent", which in_afrikaans() looks for.
+ACCENT = ("Natural South African English accent, the way an English-speaking teacher in Johannesburg or Cape Town "
+          "talks: South African vowels and rhythm in every word, never British Received Pronunciation, never posh or "
+          "plummy, and not American.")
+
 # The styles (docs/VOICE_PLAN.md, section 6): Bip's own lines sparkle for young children (sparkle) and are
 # upbeat but relaxed for older ones (big, the <clip>_big lines); instructions and sentences are clear and
 # friendly for every age (clear); words and numbers are even and clear (words).
 SPARKLE = ("Read these lines as a bubbly, sparkling, warm South African English teacher of four- to six-year-olds "
            "who is delighted to see the child: a big smile in the voice, playful and full of wonder, a little "
            "sing-song on the happy words, unhurried and very clear, with tiny pauses so a young child can follow. "
-           "Friendly, never shrill, squeaky or baby-talk. Natural South African English accent, not British and not American.")
+           "Friendly, never shrill, squeaky or baby-talk. " + ACCENT)
 BIG = ("Read these lines as the same warm South African English teacher, now talking to a seven- to ten-year-old "
        "she respects: friendly, upbeat and genuinely pleased, with a real smile in the voice, but relaxed and "
        "natural, like a favourite teacher or an older cousin chatting, not performing for a toddler. Normal "
        "talking speed, a little quicker than for little ones; no sing-song, no exaggerated excitement, no baby "
-       "talk, never sarcastic or bored. Confident and encouraging. Natural South African English accent, not "
-       "British and not American.")
+       "talk, never sarcastic or bored. Confident and encouraging. " + ACCENT)
 CLEAR = ("Read these lines as a warm, friendly South African English primary school teacher giving clear "
          "instructions to children aged four to ten: a smile in the voice and a bright, positive tone, but natural "
          "and not sing-song, so it suits a five-year-old and doesn't sound babyish to a ten-year-old. Unhurried and "
          "very clear; say each line once, exactly as written. A line that ends without a full stop, or with a "
          "comma or colon, leads straight into another recording: keep the voice up and unfinished, as if the "
-         "sentence carries on. Natural South African English accent, not British and not American.")
+         "sentence carries on. " + ACCENT)
 WORDS = ("Read these words as a warm, friendly South African English teacher showing a child each word: clear, "
          "bright and natural, each word once, exactly as written, all at the same even pitch and speed, so the "
-         "first and last words sound alike and none sounds like the end of a list. Natural South African English "
-         "accent, not British and not American.")
+         "first and last words sound alike and none sounds like the end of a list. " + ACCENT)
 PHONICS = ("You are a calm, clear South African English phonics teacher. Each line below is one letter sound. "
            "Say only the pure sound, never the letter name, once, then stop: stretchy sounds (s, m, n, f, l, r, v, z, "
            "sh, th) are held for about a second; stop sounds (t, p, k, c, b, d, g) are short and crisp with no 'uh' "
@@ -732,8 +736,24 @@ def main():
                     help="the owner's ear turned these review takes or letter sounds/names down: record again")
     ap.add_argument("--keep", nargs="+", metavar="CLIP",
                     help="the owner keeps the clip the game has now (an older narrator's): never recorded again")
+    ap.add_argument("--retake", nargs="+", metavar="CLIP",
+                    help="record these finished clips again; the new take waits for the owner's ear and the current "
+                         "clip keeps playing until --approve")
     a = ap.parse_args()
     state, all_texts = load_state(), texts()
+    if a.retake:
+        for clip in a.retake:
+            if clip not in all_texts:
+                sys.exit(f"{clip} is not a clip the game needs.")
+            state.setdefault("retake", [])
+            if clip not in state["retake"]:
+                state["retake"].append(clip)
+            state["done"].pop(clip, None)
+            state["failed"].pop(clip, None)
+            state["failed_text"].pop(clip, None)
+        save_state(state)
+        print(f"To record again for the owner's ear: {len(a.retake)}.")
+        a.status = True
     if a.keep:
         for clip in a.keep:
             if clip not in all_texts:
@@ -892,7 +912,15 @@ def main():
                     out.replace(LANGS[lang]["phonics"] / f"{name}.m4a")
                     took(state, clip, all_texts[clip])
                     good += 1
-                elif (check := listener.ok(clip, out, all_texts[clip]))[0]:
+                elif (check := listener.ok(clip, out, all_texts[clip]))[0] and clip in state.get("retake", []):
+                    # A retake (--retake): the owner hears it first; the clip in the game keeps playing till then.
+                    where = REVIEW_DIR / ("af" if lang == "af" else "")
+                    where.mkdir(parents=True, exist_ok=True)
+                    out.replace(where / f"{name}.m4a")
+                    state["review"][clip] = {"text": all_texts[clip], "heard": check[1], "retake": True}
+                    state["retake"].remove(clip)
+                    good += 1
+                elif check[0]:
                     LANGS[lang]["audio"].mkdir(parents=True, exist_ok=True)
                     out.replace(LANGS[lang]["audio"] / f"{name}.m4a")
                     took(state, clip, all_texts[clip])
