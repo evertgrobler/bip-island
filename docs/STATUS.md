@@ -719,3 +719,10 @@
   cursor clip, which doesn't slow the mouse).
   Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
   every other screen now gets a paper cover window of the game's own (as the Swift app had).
+- **9 Nov: Coding Island sounded British.** On 0.2.256 the owner heard a British accent on Coding Island, although
+  the lines were already Aoede's. Every English style now ends with one firmer `ACCENT` sentence (an English-speaking
+  teacher in Johannesburg or Cape Town, South African vowels and rhythm, never British Received Pronunciation), and
+  letter sounds ask for South African vowels. `gemini_narrator.py --retake CLIP...` records finished clips again:
+  every new take waits in `voice-lab/aoede_review/` for the owner's ear while the game's clip keeps playing
+  (`--approve` takes it, `--redo` tries again, `--keep` turns it down). The owner compared now and new by ear and
+  chose the retakes of `vo_coding_island`, `vo_coding_island_big`, `vo_bips_path` and `vo_morning_order`.
