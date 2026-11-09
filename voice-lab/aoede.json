@@ -1690,6 +1690,7 @@
   "vo_bip_charging": "Bip's battery is low, so he's having a rest. When the battery is full, we can play again!",
   "vo_bip_charging_big": "Bip's battery is low, so he's recharging. Time for a break. We'll play again when he's full.",
   "vo_bips_day": "What is Bip doing? Listen to the Afrikaans, then find the picture.",
+  "vo_bips_path": "Snap the arrows together, then press Go to walk Bip home.",
   "vo_bips_stories": "Here is a story. Listen, and click on a sentence to hear it again. Click the green arrow to turn the page.",
   "vo_birthday_1": "Bake a cake",
   "vo_birthday_2": "Light the candles",
@@ -1723,6 +1724,8 @@
   "vo_chick_4": "The chick grows into a hen",
   "vo_click_the_basket": "Click the basket.",
   "vo_click_to_hear_again": "Click the letter to hear it again. Click the green arrow when you're ready.",
+  "vo_coding_island": "Welcome to Coding Island! Click Bip, and let's program.",
+  "vo_coding_island_big": "Coding Island. Click Bip to start programming.",
   "vo_count_back_together": "Let's count back together.",
   "vo_count_groups": "Let's count the groups.",
   "vo_count_in_steps": "Let's count in steps of",
@@ -1827,6 +1830,7 @@
   "vo_morning_1": "Wake up",
   "vo_morning_2": "Brush your teeth",
   "vo_morning_3": "Eat breakfast",
+  "vo_morning_order": "Put the pictures in order. What comes first?",
   "vo_number_machine": "This is Bip's number machine! A number goes in, and the machine changes it.",
   "vo_numbers_island": "Welcome to Numbers Island! Click Bip, and let's count.",
   "vo_numbers_island_big": "Numbers Island. Click Bip to start counting.",
@@ -2849,26 +2853,5 @@
  "failed": {},
  "failed_text": {},
  "retake": [],
- "review": {
-  "vo_bips_path": {
-   "heard": "Snap the arrows together, then press go to walk Bip home",
-   "retake": true,
-   "text": "Snap the arrows together, then press Go to walk Bip home."
-  },
-  "vo_coding_island": {
-   "heard": "Welcome to Coding Island. Click Bip and let's program.",
-   "retake": true,
-   "text": "Welcome to Coding Island! Click Bip, and let's program."
-  },
-  "vo_coding_island_big": {
-   "heard": "Coding Island  Click Bip to start programming",
-   "retake": true,
-   "text": "Coding Island. Click Bip to start programming."
-  },
-  "vo_morning_order": {
-   "heard": "Put the pictures in order. What comes first?",
-   "retake": true,
-   "text": "Put the pictures in order. What comes first?"
-  }
- }
+ "review": {}
 }
