@@ -1211,8 +1211,6 @@
   "af/word_neut": "neut",
   "af/word_nie": "nie",
   "af/word_niks": "niks",
-  "af/word_oktopus": "oktopus",
-  "af/word_olifant": "olifant",
   "af/word_ons": "ons",
   "af/word_op": "op",
   "af/word_orange": "oranje",
@@ -1750,6 +1748,7 @@
   "vo_find_the_shape": "Can you find the",
   "vo_find_the_sound": "Find the picture that starts with\u2026",
   "vo_find_tower": "Can you find the tower of",
+  "vo_frog_1": "Frogspawn",
   "vo_frog_2": "Tadpole",
   "vo_frog_3": "Tadpole with legs",
   "vo_frog_4": "Froglet",
@@ -2281,6 +2280,7 @@
   "vo_story_priyas_birthday_a1": "Dad said nothing about her birthday.",
   "vo_story_priyas_birthday_a2": "She was sick.",
   "vo_story_priyas_birthday_a3": "She was late for school.",
+  "vo_story_priyas_birthday_a6": "ball",
   "vo_story_priyas_birthday_a7": "a puppy",
   "vo_story_priyas_birthday_a8": "a bike",
   "vo_story_priyas_birthday_a9": "a kite",
@@ -2850,13 +2850,7 @@
   "word_zip": "zip",
   "word_zoo": "zoo"
  },
- "failed": {
-  "vo_frog_1": 5,
-  "vo_story_priyas_birthday_a6": 5
- },
- "failed_text": {
-  "vo_frog_1": "Frogspawn",
-  "vo_story_priyas_birthday_a6": "ball"
- },
+ "failed": {},
+ "failed_text": {},
  "review": {}
 }

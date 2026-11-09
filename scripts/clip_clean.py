@@ -1,15 +1,20 @@
 """Cleans a narrator clip (owner, 3 and 5 November 2026: static in some clips, and noise at the end of some).
 
 Two things go wrong with Gemini's clips:
-- a hiss under the voice, loudest in the pauses, and small clicks: CLEAN takes them out (a declicker, an
-  FFT denoiser that tracks the noise, and a gentle gate that turns the pauses down);
-- a burst at the very start or end: when a line is cut out of a batch, the cut can take in a split second
-  of the next line or of noise. drop_edge_bursts removes a short, abrupt sound at either edge that is
-  cut off from the rest of the clip by a pause.
+- a hiss under the voice, loudest in the pauses, and small clicks: CLEAN takes them out of spoken lines (a
+  declicker, an FFT denoiser that tracks the noise, and a gentle gate that turns the pauses down). Words,
+  letter names, numbers and Language Island words get only the declicker (DECLICK): the gate and the
+  denoiser would turn down a quiet final f, th or s ("fin" and "thin" would sound alike). Letter sounds
+  get neither;
+- a burst of noise at the very end: when a line is cut out of a batch, the cut can take in a split second
+  of noise. drop_edge_bursts removes a short, abrupt, noise-like sound at the edge that is cut off from the
+  rest of the clip by a pause. A voiced burst (a syllable of the next line) is left alone, since it can't be
+  told from a real short word here; Whisper's check of every new line turns down a clip with an extra word.
 
-Used by gemini_narrator.py on every new clip, and on its own over clips already in the game:
+Every clip it cleans is marked (MARK, in the file's comment tag), and a marked clip is never cleaned again:
+a second pass would denoise and re-encode it twice. gemini_narrator.py marks every clip it records.
 
-  python3 scripts/clip_clean.py Resources/Audio/af/num_7.m4a ...   # cleans these files in place
+  python3 scripts/clip_clean.py Resources/Audio/af/num_7.m4a ...   # cleans unmarked files in place, once
 """
 import subprocess, sys, tempfile
 from pathlib import Path
@@ -17,6 +22,8 @@ from pathlib import Path
 import numpy as np
 
 RATE = 44100
+MARK = "bip-clip-clean-1"
+DECLICK = "adeclick=w=20:o=75"
 CLEAN = ("adeclick=w=20:o=75,afftdn=nr=18:nf=-55:tn=1,"
          "agate=threshold=0.008:ratio=4:attack=5:release=120:range=0.05")
 # Soft ends, so a clip never starts or stops with a click.
@@ -107,23 +114,41 @@ def drop_edge_bursts(wav, heads=True):
     return True
 
 
-def clean_file(src, dst, denoise=True, heads=True):
-    """A cleaned copy of a clip: edge bursts dropped, then the hiss and clicks (unless denoise=False), soft ends."""
+def marked(path):
+    """Whether a clip was already cleaned (or recorded clean)."""
+    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format_tags=comment", "-of", "csv=p=0",
+                          str(path)], capture_output=True, text=True).stdout
+    return MARK in out
+
+
+def chain_for(name):
+    """The clean-up a clip gets, by its name: none for letter sounds, the declicker for words, all for lines."""
+    if name.startswith("snd_"):
+        return ""
+    if name.startswith(("word_", "name_", "num_", "money_", "learn_")) and not Path(name).stem.endswith("_mid"):
+        return DECLICK
+    return CLEAN
+
+
+def clean_file(src, dst, chain=CLEAN, heads=True):
+    """A cleaned, marked copy of a clip: an edge burst dropped, then the chain (CLEAN, DECLICK or ""), soft ends."""
     with tempfile.TemporaryDirectory() as tmp:
         wav = Path(tmp) / "clip.wav"
         write(read(src), wav)
         drop_edge_bursts(wav, heads)
-        chain = (CLEAN + "," if denoise else "") + FADES
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(wav), "-af", chain, "-ar", str(RATE), "-ac", "1",
-                        "-c:a", "aac", "-b:a", "128k", str(dst)], check=True)
+        filters = (chain + "," if chain else "") + FADES
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(wav), "-af", filters, "-ar", str(RATE), "-ac", "1",
+                        "-c:a", "aac", "-b:a", "128k", "-metadata", f"comment={MARK}", str(dst)], check=True)
 
 
 if __name__ == "__main__":
     for name in sys.argv[1:]:
         path = Path(name)
-        # Letter sounds keep their hiss ("s", "f"): only the edges and fades for them.
+        if marked(path):
+            print("already clean", path)
+            continue
         # A clip already in the game passed Whisper as it is, and a short first word ("car", "Een,") can look
         # like a burst at its start, so only the end is cut here; new clips are heard again after cleaning.
-        clean_file(path, path.with_suffix(".tmp.m4a"), denoise=not path.name.startswith("snd_"), heads=False)
+        clean_file(path, path.with_suffix(".tmp.m4a"), chain_for(path.name), heads=False)
         path.with_suffix(".tmp.m4a").replace(path)
         print("cleaned", path)

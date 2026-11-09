@@ -263,7 +263,9 @@ def finish(style):
     3 and 5 Nov), except on letter sounds, and every clip gets soft ends.
     """
     top = 11000 if style in ("phonics", "words", "names") else 8000
-    clean = "" if style == "phonics" else clip_clean.CLEAN + ","
+    # Words and letter names keep their quiet f, th and s (the gate would turn them down): only the clicks.
+    clean = ("" if style == "phonics" else clip_clean.DECLICK + "," if style in ("words", "names")
+             else clip_clean.CLEAN + ",")
     return (f"lowpass=f={top}:poles=2,lowpass=f={top}:poles=2,highpass=f=70,"
             f"alimiter=limit=0.85:attack=5:release=60:level=disabled,{clean}{clip_clean.FADES}")
 
@@ -329,10 +331,18 @@ def sounds(lang):
 
 # Sounds the owner flagged on the Letter Sounds Check page (1 November 2026), written the way they sound:
 # "igh" came out as the three letters and "er" and "a" not as the sound.
+SAY_AS = {
+    ("en", "snd_igh"): ("eye", "The long i sound in light and night, said once. Never the letters i, g, h."),
+    ("en", "snd_er"): ("uh", "The soft, short 'uh' at the end of ladder and sister: no 'r', never the letters e, r."),
+    ("en", "snd_a"): ("a", "The short a in ant, cat and apple, said very briefly: not 'ay', not 'ah', and no word after it."),
+}
+
+
 # Lines written differently for Gemini than in the game, where it read the game's spelling wrong: the
 # Afrikaans letter name "pee" came out as the English word twice (owner, 5 Nov 2026); the capital letter
 # alone makes it say the Afrikaans name.
 SAY_LINE = {"af/name_p": "P"}
+
 
 def af_number_words(n):
     """An Afrikaans number in words, the small part first as Afrikaans says it: 75 -> "vyf-en-sewentig"."""
@@ -355,13 +365,6 @@ def said(clip, text):
     if lang == "af" and re.fullmatch(r"\d{1,3}", text.strip()) and int(text) <= 100:
         return af_number_words(int(text))
     return text
-
-
-SAY_AS = {
-    ("en", "snd_igh"): ("eye", "The long i sound in light and night, said once. Never the letters i, g, h."),
-    ("en", "snd_er"): ("uh", "The soft, short 'uh' at the end of ladder and sister: no 'r', never the letters e, r."),
-    ("en", "snd_a"): ("a", "The short a in ant, cat and apple, said very briefly: not 'ay', not 'ah', and no word after it."),
-}
 
 
 def speak(key, lang, style, lines, hints=()):
@@ -593,12 +596,10 @@ def number_spellings(lang, n):
     elif lang == "en":
         forms = [NUMBER_WORDS[n]] if n <= 20 else [EN_TENS[n // 10 - 2] + (NUMBER_WORDS[n % 10] if n % 10 else "")]
     else:
-        forms = []
-        for units, tens in ((AF_NUMBERS, AF_TENS), (NL_UNITS, NL_TENS)):
-            if n < 20:
-                forms.append(units[n])
-            else:
-                forms.append(tens[n // 10 - 2] if n % 10 == 0 else units[n % 10] + "en" + tens[n // 10 - 2])
+        # Afrikaans as af_number_words writes it (the game's own spelling), and Whisper's Dutch spelling.
+        forms = [af_number_words(n).replace("-", ""),
+                 NL_UNITS[n] if n < 20 else NL_TENS[n // 10 - 2] if n % 10 == 0
+                 else NL_UNITS[n % 10] + "en" + NL_TENS[n // 10 - 2]]
     return {af_sound(f) if lang == "af" else f for f in forms}
 
 
@@ -729,9 +730,21 @@ def main():
                     help="the owner's ear passed these review takes or letter sounds/names: into the game")
     ap.add_argument("--redo", nargs="+", metavar="CLIP",
                     help="the owner's ear turned these review takes or letter sounds/names down: record again")
+    ap.add_argument("--keep", nargs="+", metavar="CLIP",
+                    help="the owner keeps the clip the game has now (an older narrator's): never recorded again")
     a = ap.parse_args()
     state, all_texts = load_state(), texts()
+    if a.keep:
+        for clip in a.keep:
+            if clip not in all_texts:
+                sys.exit(f"{clip} isn't a clip the game needs.")
+            took(state, clip, all_texts[clip])  # done as it is: the clip in Resources/Audio stays
+        save_state(state)
+        print(f"Kept {len(a.keep)} as they are.")
+        a.status = True
     if a.approve or a.redo:
+        if set(a.approve or []) & set(a.redo or []):
+            sys.exit(f"Both approved and to redo: {', '.join(sorted(set(a.approve) & set(a.redo)))}.")
         def waiting(clip):
             """Where the clip's take waits for the owner's ear: a review take, or a letter sound or name."""
             lang, name = split(clip)
@@ -864,12 +877,14 @@ def main():
                 clip_clean.drop_edge_bursts(trimmed, heads=False)
                 gain = gain_for(trimmed)
                 ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,{finish(style)}", "-ar", "44100", "-ac", "1",
-                       "-c:a", "aac", "-b:a", "128k", str(out))
+                       "-c:a", "aac", "-b:a", "128k", "-metadata", f"comment={clip_clean.MARK}", str(out))
                 if style in ("phonics", "names"):
                     # No machine check for a pure sound or a letter name: it waits for the owner's ear. But a take
                     # where Whisper hears several words is Gemini reading its instructions aloud: thrown away.
                     heard = listener.heard(out, lang)
-                    if len(words(heard)) > 3:
+                    # Whisper makes up a few words for a clip with none ("Thank you for watching"), so only the
+                    # instructions' own words count, or far more than a letter could hold.
+                    if len(heard) > 60 or reads_instructions(heard, all_texts[clip], lang, style):
                         failed_take(state, clip, all_texts[clip])
                         print(f"  {clip}: heard {heard!r}, a letter sound or name with words read out", flush=True)
                         continue

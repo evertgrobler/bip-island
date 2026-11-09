@@ -14,7 +14,6 @@ public static partial class ArtPictures
         ["pic_map"] = Map,
         ["pic_goat"] = Goat,
         ["pic_octopus"] = Octopus,
-        ["pic_elephant"] = Elephant, // the profile animal (ArtPictures.Animals.cs), for Afrikaans "olifant"
         ["pic_rabbit"] = Rabbit,
         ["pic_leg"] = Leg,
         ["pic_kiss"] = Kiss,

@@ -692,10 +692,12 @@
   (`prune`, newest 5 of ours kept) only ever warns; and the run checks GitHub's latest really is this version.
 - **3 to 9 Nov: the voices are finished, cleaned, and Afrikaans is switched on.** Every clip is recorded with Aoede except
   two English ones Whisper never found in a batch ("Frogspawn" `vo_frog_1`, "ball" `vo_story_priyas_birthday_a6`), which
-  keep the older narrator's clip (owner's call, 9 Nov). The owner heard static in some clips: Gemini's hiss under the
+  keep the older narrator's clip (owner's call, 9 Nov; `gemini_narrator.py --keep`). The owner heard static in some clips: Gemini's hiss under the
   voice, and a split second of noise or of the next line at the end of 302 clips, taken in by the cut.
-  `scripts/clip_clean.py` (a declicker, an FFT denoiser and a gentle gate, a noise-like end burst dropped, soft ends;
-  letter sounds keep their hiss) ran once over every clip and runs on every new one. The recorder throws away a take
+  `scripts/clip_clean.py` (a declicker, an FFT denoiser and a gentle gate on spoken lines; only the declicker on
+  words, letter names and numbers, so a quiet final f, th or s stays; nothing on letter sounds; a noise-like end burst
+  dropped; soft ends) ran once over every clip and runs on every new one; a cleaned clip carries a mark in its
+  comment tag and is never cleaned twice. `--keep` records a clip the owner keeps as it is. The recorder throws away a take
   where Gemini reads its instructions out (in English or Afrikaans), sends a take Whisper turns down to the owner's ear
   (`voice-lab/aoede_review/`, `--approve`/`--redo`; Afrikaans from its second miss), gives Gemini Afrikaans numbers as
   words with the small part first ("vyf-en-sewentig": from "75" it said 57) and the letter name p as "P" (from "pee" it
