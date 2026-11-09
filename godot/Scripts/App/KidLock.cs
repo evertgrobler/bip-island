@@ -183,7 +183,9 @@ public static class KidLock
             var origin = DisplayServer.WindowGetPosition();
             var size = DisplayServer.WindowGetSize();
             var back = KidLockRules.FencePoint(mouse.X, mouse.Y, origin.X, origin.Y, size.X, size.Y);
-            if (back is { } point) DisplayServer.WarpMouse(new Vector2I(point.X, point.Y) - origin);
+            // Godot reads (0,0) on a Mac when the cursor is in no screen's frame (an edge row, a gap between
+            // screens): only trust a (0,0) that is a real place inside the window, never jump the mouse for it.
+            if (back is { } point && mouse != Vector2I.Zero) DisplayServer.WarpMouse(new Vector2I(point.X, point.Y) - origin);
         }
         catch (Exception error)
         {
