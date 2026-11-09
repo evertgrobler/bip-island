@@ -5327,11 +5327,6 @@
       "notes": ""
     },
     {
-      "id": "word_oktopus",
-      "text": "oktopus",
-      "notes": ""
-    },
-    {
       "id": "word_ons",
       "text": "ons",
       "notes": ""
@@ -6284,7 +6279,7 @@
     },
     {
       "id": "pic_goat",
-      "brief": "bok"
+      "brief": "bok (picture for the sound o)"
     },
     {
       "id": "pic_goingout_1",
@@ -6604,7 +6599,7 @@
     },
     {
       "id": "pic_octopus",
-      "brief": "oktopus (picture for the sound o)"
+      "brief": "octopus"
     },
     {
       "id": "pic_owl",

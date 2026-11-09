@@ -17,6 +17,7 @@ shots=(
   words-game:Games/word_rocket
   coding-game:Games/bips_path
   art-game:Games/paint_pots
+  language-game:Games/show_me
   charging:Screens/charging
   parent-progress:Parent/progress
 )

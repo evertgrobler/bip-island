@@ -29,6 +29,7 @@ import argparse, base64, csv, difflib, fnmatch, itertools, json, os, re, subproc
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import clip_clean  # noqa: E402
 from speak_clips import AUDIO, NUMBER_WORDS, ROOT, TARGET_LUFS, ffmpeg, loudness, words  # noqa: E402
 
 MODEL = "gemini-3.8-flash-tts"
@@ -48,6 +49,9 @@ GIVE_UP = 4  # failed takes before a clip is listed for a person to look at
 # game) for the owner to listen to, since Whisper mishears some short Afrikaans lines that are fine
 # ("'n slak", "eier"). The newest take waits there; one the owner approves is copied into the game.
 EAR_TRIES = 3
+# Whisper hears Afrikaans poorly (English for "Dubbel drie. Hoeveel is dit?": "Double three. Who feel is
+# that?"), so an Afrikaans take goes to the owner's ear from its second failed take; English from GIVE_UP.
+EAR_FROM = {"en": GIVE_UP, "af": 1}
 REVIEW_DIR = ROOT / "voice-lab" / "aoede_review"
 
 # The styles (docs/VOICE_PLAN.md, section 6): Bip's own lines sparkle for young children (sparkle) and are
@@ -232,14 +236,38 @@ def batch_size(style, retry):
     return 36 if style == "words" else 18
 
 
+def reads_instructions(heard, text, lang, style):
+    """
+    Whether a take has Gemini reading its instructions aloud: much longer than the line, or two or more of the
+    instructions' longer words that are not in the line ("read anything twice" for "twee", owner, 5 Nov 2026).
+    Only words of five letters or more count: Whisper hears Afrikaans as English ("Click on the dog and the
+    cat"), and short words like "the", "and" or "two" are in the instructions too, so counting them would
+    throw away good Afrikaans takes instead of sending them to the owner's ear.
+    """
+    if len(heard) > 2 * len(text) + 20:
+        return True
+    # Gemini sometimes reads them out in Afrikaans too ("Never lees iets twee keer nie", 6 Nov 2026).
+    prompt = set(words(LANGS[lang]["styles"][style] + " " + PAUSE)) | {
+        "lees", "keer", "volgende", "sekondes", "stil", "instruksies", "notes", "director", "never"}
+    line = set(line_words(lang, text))
+    extra = {w for w in words(heard) if len(w) >= 5 and w in prompt and w not in line}
+    return len(extra) >= 2
+
+
 def finish(style):
     """
     The last filters on every clip. Gemini's audio carries a hiss above about 8 kHz (static to the owner's
     ear, 29 Oct 2026), which the volume raise makes louder: narration is cut above 8 kHz (a voice needs
     little there), letter sounds only above 11 kHz so "s", "f" and "th" keep their hiss. Then a gentle limit.
+    Then the hiss under the voice and the clicks come out (clip_clean.CLEAN; static to the owner's ear again on
+    3 and 5 Nov), except on letter sounds, and every clip gets soft ends.
     """
     top = 11000 if style in ("phonics", "words", "names") else 8000
-    return f"lowpass=f={top}:poles=2,lowpass=f={top}:poles=2,highpass=f=70,alimiter=limit=0.85:attack=5:release=60:level=disabled"
+    # Words and letter names keep their quiet f, th and s (the gate would turn them down): only the clicks.
+    clean = ("" if style == "phonics" else clip_clean.DECLICK + "," if style in ("words", "names")
+             else clip_clean.CLEAN + ",")
+    return (f"lowpass=f={top}:poles=2,lowpass=f={top}:poles=2,highpass=f=70,"
+            f"alimiter=limit=0.85:attack=5:release=60:level=disabled,{clean}{clip_clean.FADES}")
 
 
 def load_state():
@@ -308,6 +336,35 @@ SAY_AS = {
     ("en", "snd_er"): ("uh", "The soft, short 'uh' at the end of ladder and sister: no 'r', never the letters e, r."),
     ("en", "snd_a"): ("a", "The short a in ant, cat and apple, said very briefly: not 'ay', not 'ah', and no word after it."),
 }
+
+
+# Lines written differently for Gemini than in the game, where it read the game's spelling wrong: the
+# Afrikaans letter name "pee" came out as the English word twice (owner, 5 Nov 2026); the capital letter
+# alone makes it say the Afrikaans name.
+SAY_LINE = {"af/name_p": "P"}
+
+
+def af_number_words(n):
+    """An Afrikaans number in words, the small part first as Afrikaans says it: 75 -> "vyf-en-sewentig"."""
+    if n <= 20:
+        return AF_NUMBERS[n]
+    if n == 100:
+        return "honderd"
+    tens = AF_TENS[n // 10 - 2]
+    return tens if n % 10 == 0 else f"{AF_NUMBERS[n % 10]}-en-{tens}"
+
+
+def said(clip, text):
+    """
+    What Gemini is given to say for a clip. An Afrikaans number written in digits goes as words: from "75"
+    Gemini said "sewe-en-vyftig" (the digits in English order) and from "84" "agt-en-sestig" (owner, 6 Nov 2026).
+    """
+    if clip in SAY_LINE:
+        return SAY_LINE[clip]
+    lang, _ = split(clip)
+    if lang == "af" and re.fullmatch(r"\d{1,3}", text.strip()) and int(text) <= 100:
+        return af_number_words(int(text))
+    return text
 
 
 def speak(key, lang, style, lines, hints=()):
@@ -539,12 +596,10 @@ def number_spellings(lang, n):
     elif lang == "en":
         forms = [NUMBER_WORDS[n]] if n <= 20 else [EN_TENS[n // 10 - 2] + (NUMBER_WORDS[n % 10] if n % 10 else "")]
     else:
-        forms = []
-        for units, tens in ((AF_NUMBERS, AF_TENS), (NL_UNITS, NL_TENS)):
-            if n < 20:
-                forms.append(units[n])
-            else:
-                forms.append(tens[n // 10 - 2] if n % 10 == 0 else units[n % 10] + "en" + tens[n // 10 - 2])
+        # Afrikaans as af_number_words writes it (the game's own spelling), and Whisper's Dutch spelling.
+        forms = [af_number_words(n).replace("-", ""),
+                 NL_UNITS[n] if n < 20 else NL_TENS[n // 10 - 2] if n % 10 == 0
+                 else NL_UNITS[n % 10] + "en" + NL_TENS[n // 10 - 2]]
     return {af_sound(f) if lang == "af" else f for f in forms}
 
 
@@ -671,8 +726,51 @@ def status(state, all_texts):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--status", action="store_true")
+    ap.add_argument("--approve", nargs="+", metavar="CLIP",
+                    help="the owner's ear passed these review takes or letter sounds/names: into the game")
+    ap.add_argument("--redo", nargs="+", metavar="CLIP",
+                    help="the owner's ear turned these review takes or letter sounds/names down: record again")
+    ap.add_argument("--keep", nargs="+", metavar="CLIP",
+                    help="the owner keeps the clip the game has now (an older narrator's): never recorded again")
     a = ap.parse_args()
     state, all_texts = load_state(), texts()
+    if a.keep:
+        for clip in a.keep:
+            if clip not in all_texts:
+                sys.exit(f"{clip} isn't a clip the game needs.")
+            took(state, clip, all_texts[clip])  # done as it is: the clip in Resources/Audio stays
+        save_state(state)
+        print(f"Kept {len(a.keep)} as they are.")
+        a.status = True
+    if a.approve or a.redo:
+        if set(a.approve or []) & set(a.redo or []):
+            sys.exit(f"Both approved and to redo: {', '.join(sorted(set(a.approve) & set(a.redo)))}.")
+        def waiting(clip):
+            """Where the clip's take waits for the owner's ear: a review take, or a letter sound or name."""
+            lang, name = split(clip)
+            if clip in state["review"]:
+                return REVIEW_DIR / ("af" if lang == "af" else "") / f"{name}.m4a"
+            phonics = LANGS[lang]["phonics"] / f"{name}.m4a"
+            return phonics if phonics.exists() else None
+        for clip in (a.approve or []) + (a.redo or []):
+            if waiting(clip) is None:
+                sys.exit(f"{clip} has no take waiting for the owner's ear.")
+        for clip in a.approve or []:
+            lang, name = split(clip)
+            take = waiting(clip)
+            LANGS[lang]["audio"].mkdir(parents=True, exist_ok=True)
+            take.replace(LANGS[lang]["audio"] / f"{name}.m4a")
+            if clip in state["review"]:
+                took(state, clip, state["review"][clip]["text"])
+        for clip in a.redo or []:
+            waiting(clip).unlink()
+            state["review"].pop(clip, None)
+            state["done"].pop(clip, None)  # recorded again, in a fresh batch
+            state["failed"].pop(clip, None)
+            state["failed_text"].pop(clip, None)
+        save_state(state)
+        print(f"Approved {len(a.approve or [])}, to record again {len(a.redo or [])}.")
+        a.status = True
     KNOWN_NAMES.update(known_names(all_texts))
     total, done, stuck, waiting = status(state, all_texts)
     print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(state['review'])} takes waiting for the owner's ear; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
@@ -685,9 +783,8 @@ def main():
     hold = held()
     todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if state["done"].get(c) != all_texts[c]
             and not is_held(c, hold)
-            and (fails(state, c, all_texts[c]) < GIVE_UP
-                 or (fails(state, c, all_texts[c]) < GIVE_UP + EAR_TRIES
-                     and state["review"].get(c, {}).get("text") != all_texts[c]))]
+            and state["review"].get(c, {}).get("text") != all_texts[c]  # a take already waits for the owner's ear
+            and fails(state, c, all_texts[c]) < GIVE_UP + EAR_TRIES]
     # Fresh clips first in big batches, most-heard first, then retries in small ones; English and
     # Afrikaans take turns, except that step 0 (the stories) goes before any turn-taking. Each batch is
     # one style.
@@ -727,7 +824,7 @@ def main():
                 lines = [known.get(split(c)[1], (all_texts[c], ""))[0] for c in clips]
                 hints = [known.get(split(c)[1], ("", ""))[1] for c in clips]
             else:
-                lines, hints = [all_texts[c] for c in clips], ()
+                lines, hints = [said(c, all_texts[c]) for c in clips], ()
             try:
                 pcm = speak(key, lang, style, lines, hints)
             except DailyLimit as e:
@@ -776,11 +873,21 @@ def main():
                 piece, trimmed, out = tmp / "piece.wav", tmp / "trimmed.wav", tmp / f"{name}.m4a"
                 ffmpeg("-i", str(raw), "-ss", f"{start:.3f}", "-to", f"{end:.3f}", str(piece))
                 ffmpeg("-i", str(piece), "-af", TRIM, "-ar", "44100", "-ac", "1", str(trimmed))
+                # A burst of noise or of the next line at the end of the cut ("static at the end", owner, 5 Nov).
+                clip_clean.drop_edge_bursts(trimmed, heads=False)
                 gain = gain_for(trimmed)
                 ffmpeg("-i", str(trimmed), "-af", f"volume={gain:.2f}dB,{finish(style)}", "-ar", "44100", "-ac", "1",
-                       "-c:a", "aac", "-b:a", "128k", str(out))
+                       "-c:a", "aac", "-b:a", "128k", "-metadata", f"comment={clip_clean.MARK}", str(out))
                 if style in ("phonics", "names"):
-                    # No machine check for a pure sound or a letter name: it waits for the owner's ear.
+                    # No machine check for a pure sound or a letter name: it waits for the owner's ear. But a take
+                    # where Whisper hears several words is Gemini reading its instructions aloud: thrown away.
+                    heard = listener.heard(out, lang)
+                    # Whisper makes up a few words for a clip with none ("Thank you for watching"), so only the
+                    # instructions' own words count, or far more than a letter could hold.
+                    if len(heard) > 60 or reads_instructions(heard, all_texts[clip], lang, style):
+                        failed_take(state, clip, all_texts[clip])
+                        print(f"  {clip}: heard {heard!r}, a letter sound or name with words read out", flush=True)
+                        continue
                     LANGS[lang]["phonics"].mkdir(parents=True, exist_ok=True)
                     out.replace(LANGS[lang]["phonics"] / f"{name}.m4a")
                     took(state, clip, all_texts[clip])
@@ -791,8 +898,10 @@ def main():
                     took(state, clip, all_texts[clip])
                     good += 1
                 else:
-                    if fails(state, clip, all_texts[clip]) >= GIVE_UP:
-                        # Past GIVE_UP: the take waits for the owner's ear instead of being thrown away.
+                    # Past EAR_FROM failed takes the take waits for the owner's ear instead of being thrown away,
+                    # unless Gemini plainly read more than the line (its instructions, out loud).
+                    if (fails(state, clip, all_texts[clip]) >= EAR_FROM[lang]
+                            and not reads_instructions(check[1], all_texts[clip], lang, style)):
                         where = REVIEW_DIR / ("af" if lang == "af" else "")
                         where.mkdir(parents=True, exist_ok=True)
                         out.replace(where / f"{name}.m4a")

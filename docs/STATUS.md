@@ -15,8 +15,8 @@
   Art (Shape Builder, Paint Pots, Mirror Magic), Language (Show Me, What Is It?, Bip's Day). Levels inside every
   game, 8-question visits, star celebration. Every game works with a mouse or a trackpad:
   Letter Trace (18 Oct), and Feed the Monster (click to pick up, click to put down) and Word Builder (click to
-  place) with one click rule (29 Oct). English home language; Afrikaans switches on once its clips
-  are recorded and checked.
+  place) with one click rule (29 Oct). English and Afrikaans home languages (Afrikaans switched on
+  9 Nov 2026), chosen per child, and the Language Island to learn the other one.
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
   in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
   Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
@@ -139,10 +139,17 @@
   exclusive full screen with a keyboard hook (Windows). Off when headless, with `--bip-windowed`, on
   Linux, or with Option/Alt held at launch (parent mode). Quitting or updating lifts it first. It
   can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
-  Second screens: the mouse is kept inside the game's window while locked (`Input.MouseMode` Confined,
-  put back when the game comes to the front), so a click can't reach another app on a second display;
-  the lock check reports `mouseKeptIn` and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a Mac it can only report Godot's own setting). Setting it again goes through Visible first, as Godot skips a mode it thinks is already set. The CI install jobs only warn when `locked` is false. The second screen itself still shows the desktop
-  (no paper cover windows like the Swift app had).
+  Second screens: the mouse is kept inside the game's window while locked, put back when the game comes to the
+  front, so a click can't reach another app on a second display. Windows: `Input.MouseMode` Confined (the
+  system's cursor clip). Mac (9 Nov): Confined slowed the Mac's mouse, so the mouse stays the Mac's own and
+  `KidLock.FenceMouse` (every frame, `Boot._Process`, the point from `KidLockRules.FencePoint`) puts it back when it
+  leaves the window, and every other screen is covered by a borderless, always-on-top, unfocusable paper window
+  of the game's own, so a flick that beats the fence lands on the game. The covers step aside (hidden) while another program has
+  the front and come back with the game, which also takes the keys back; they're checked against the screens once
+  a second (plugged in, swapped or moved). The lock check reports `mouseKeptIn`
+  and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a
+  Mac it reports the fence and that every other screen has its cover). Setting the mode again goes through
+  Visible first, as Godot skips a mode it thinks is already set. The CI install jobs only warn when `locked` is false.
 
 ## Gotchas learned the hard way
 
@@ -690,3 +697,25 @@
   from a clean start (`clear` removes only this pipeline's drafts), a stall fails after 5 minutes, and the
   job has 75 minutes; a re-run of a publish that worked skips the upload (`done`); clearing old releases
   (`prune`, newest 5 of ours kept) only ever warns; and the run checks GitHub's latest really is this version.
+- **3 to 9 Nov: the voices are finished, cleaned, and Afrikaans is switched on.** Every clip is recorded with Aoede except
+  two English ones Whisper never found in a batch ("Frogspawn" `vo_frog_1`, "ball" `vo_story_priyas_birthday_a6`), which
+  keep the older narrator's clip (owner's call, 9 Nov; `gemini_narrator.py --keep`). The owner heard static in some clips: Gemini's hiss under the
+  voice, and a split second of noise or of the next line at the end of 302 clips, taken in by the cut.
+  `scripts/clip_clean.py` (a declicker, an FFT denoiser and a gentle gate on spoken lines; only the declicker on
+  words, letter names and numbers, so a quiet final f, th or s stays; nothing on letter sounds; a noise-like end burst
+  dropped; soft ends) ran once over every clip and runs on every new one; a cleaned clip carries a mark in its
+  comment tag and is never cleaned twice. `--keep` records a clip the owner keeps as it is. The recorder throws away a take
+  where Gemini reads its instructions out (in English or Afrikaans), sends a take Whisper turns down to the owner's ear
+  (`voice-lab/aoede_review/`, `--approve`/`--redo`; Afrikaans from its second miss), gives Gemini Afrikaans numbers as
+  words with the small part first ("vyf-en-sewentig": from "75" it said 57) and the letter name p as "P" (from "pee" it
+  said the English word). Afrikaans o is "o soos in bok" (not "oktopus": in Afrikaans it's a seekat; not "olifant"
+  either, whose o is the long "oo" of "boom", review of #74), with the goat picture. Gemini's daily limit resets at midnight Pacific time (10:00 SAST in the southern summer), so the
+  daily run is at 10:17 SAST. `Content/af/language.json` switches Afrikaans on; the download page names both
+  languages, shows the Language Island and CAPS (`site_screenshots.sh` adds `language-game` from Show Me).
+- **9 Nov: the Mac mouse moves normally again.** On 0.2.242 the owner found the mouse slow, "as if something's pulling
+  it back": Godot's Confined mouse mode on a Mac takes over the pointer and moves it without the Mac's acceleration.
+  On a Mac the lock now leaves the mouse alone and `KidLock.FenceMouse` (every frame, from `Boot._Process`) only puts
+  it back inside the window when it has left it (towards a second screen); Windows keeps Confined (the system's own
+  cursor clip, which doesn't slow the mouse).
+  Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
+  every other screen now gets a paper cover window of the game's own (as the Swift app had).

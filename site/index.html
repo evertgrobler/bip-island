@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="color-scheme" content="light">
   <title>Bip Island</title>
-  <meta name="description" content="Bip Island: a learning game for children aged 4 to 8, for Mac and Windows.">
+  <meta name="description" content="Bip Island: a learning game for children aged 4 to 8, in English and Afrikaans, for Mac and Windows.">
   <link rel="icon" type="image/png" href="favicon.png">
   <!--
     The download page, on this repository's GitHub Pages (https://evertgrobler.github.io/bip-island/). godot.yml's publish job
@@ -24,7 +24,7 @@
       --paper: #FBF4E4; --card: #FFFDF6; --ink: #2B2A33; --soft: #5C5866;
       --sea: #BFE0EE; --sand: #F1D9A7; --stone: #E9E2D3; --code: #F4ECDA;
       /* The islands' colours on the map. */
-      --letters: #9BCB6B; --numbers: #F7C548; --words: #F3A6B8; --coding: #6FD0C4; --art: #C9B6EC;
+      --letters: #9BCB6B; --numbers: #F7C548; --words: #F3A6B8; --coding: #6FD0C4; --art: #C9B6EC; --language: #8FD3B6;
       --go: #61BF5C;
       /* Hand-drawn wobble for boxes, buttons and islands. */
       --wob: 18px 26px 20px 30px / 28px 18px 30px 20px;
@@ -103,7 +103,7 @@
     .head h2 { font-size: clamp(32px, 4.6vw, 48px); }
     .head p { font-size: 19px; color: var(--soft); }
 
-    /* The five islands, in their map colours. */
+    /* The six islands, in their map colours. */
     .isles { display: grid; gap: 56px; }
     .isle { display: grid; gap: 24px; align-items: center; }
     .isle-text { display: grid; gap: 12px; min-width: 0; }
@@ -118,6 +118,7 @@
     .words .sign { background: var(--words); }
     .coding .sign { background: var(--coding); }
     .art .sign { background: var(--art); }
+    .language .sign { background: var(--language); }
     .isle h3 { font-size: 28px; }
     .isle p { color: var(--soft); max-width: 48ch; }
     .games { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -223,7 +224,8 @@
         <span class="name-rest" aria-hidden="true">Island</span>
       </h1>
       <p class="tagline">A learning game that talks your child through every step.</p>
-      <p class="lead">Five islands of letters, numbers, words, coding and art, with Bip, a small hand-drawn robot. For children aged 4 to 8, on Mac and Windows.</p>
+      <p class="lead">Islands of letters, numbers, words, coding and art, with Bip, a small hand-drawn robot. In English or Afrikaans, for children aged 4 to 8, on Mac and Windows.</p>
+      <p class="lead" lang="af">'n Leerspeletjie in Engels of Afrikaans vir kinders van 4 tot 8.</p>
       <div class="cta">
         <a class="button" href="#download"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download the game</a>
         <a class="button alt" href="#islands">See the islands</a>
@@ -242,7 +244,7 @@
   <section id="islands">
     <div class="wrap">
       <div class="head">
-        <p class="eyebrow">Five islands · 20 games</p>
+        <p class="eyebrow">Six islands · 23 games</p>
         <h2>Your child picks the island. Bip suggests the next step.</h2>
         <p>Each game starts where your child is and moves on when they're ready. Rounds are made fresh every time, so no two visits are the same. A friendly South African narrator speaks every instruction, so no reading is needed to play.</p>
       </div>
@@ -292,6 +294,15 @@
           </div>
           <figure class="shot"><div class="frame"><img src="screenshots/art-game.jpg" alt="Paint Pots: three paint jars to mix into a bowl" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div></figure>
         </article>
+        <article class="isle language">
+          <div class="isle-text">
+            <span class="sign"><span class="mark">EN&nbsp;AF</span> Language</span>
+            <h3>Learn the other language</h3>
+            <p>A child who plays in English learns Afrikaans words here, and an Afrikaans child learns English: point to the picture, name it, and follow Bip's day.</p>
+            <ul class="games"><li>Show Me</li><li>What Is It?</li><li>Bip's Day</li></ul>
+          </div>
+          <figure class="shot"><div class="frame"><img src="screenshots/language-game.jpg" alt="Show Me: Bip says a word in the other language and the child clicks its picture" width="1200" height="750" loading="lazy" onerror="this.closest('.shot').classList.add('missing')"></div></figure>
+        </article>
       </div>
     </div>
   </section>
@@ -332,7 +343,7 @@
         <button class="voice" type="button" data-clip="vo_letters_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>English: Letters Island</b><small>"Welcome to Letters Island! Click Bip, and let's play."</small></span></button>
         <button class="voice" type="button" data-clip="af/vo_letters_island"><span class="disc" aria-hidden="true"><span></span></span><span><b>Afrikaans: Letter-eiland</b><small lang="af">"Welkom op Letter-eiland! Klik op Bip, dan speel ons."</small></span></button>
       </div>
-      <p class="voices-note">Afrikaans as a home language is on its way: the game is being recorded in both languages now.</p>
+      <p class="voices-note">A grown-up chooses English or Afrikaans for each child, so brothers and sisters can play in different languages on the same computer. <span lang="af">'n Grootmens kies Engels of Afrikaans vir elke kind, so broers en susters kan op dieselfde rekenaar in verskillende tale speel.</span></p>
     </div>
   </section>
 
@@ -367,7 +378,7 @@
         <div class="card"><h3>Up to 4 children</h3><p>Each child picks their animal picture on "Who's playing?" and has their own progress, stickers and play clock. Their age sets where they start.</p></div>
         <div class="card"><h3>Progress, sound by sound</h3><p>Behind the gate you see each child's stars, minutes played today and this week, each skill and each phonics sound, and what needs more practice.</p></div>
         <div class="card"><h3>Nothing leaves the computer</h3><p>No ads, in-app purchases, sign-up or tracking. Progress stays on your computer. Bip Island only goes online to check for updates, and a grown-up installs them.</p></div>
-        <div class="card"><h3>Follows the Cambridge curriculum</h3><p>Games line up with Cambridge Early Years and Primary Stages 1 to 3 for English, Mathematics and Computing.</p></div>
+        <div class="card"><h3>Follows Cambridge and CAPS</h3><p>Games line up with Cambridge Early Years and Primary Stages 1 to 3 for English, Mathematics and Computing, and with CAPS for Afrikaans Huistaal and Mathematics.</p></div>
         <div class="card"><h3>Calm music, your choice</h3><p>Gentle music plays on the map and the islands, never during a game. Set it to on, quiet or off.</p></div>
       </div>
     </div>

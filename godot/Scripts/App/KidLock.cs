@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using BipIsland.Drawing;
 using System.Runtime.InteropServices;
 using BipCore;
 using Godot;
@@ -17,6 +19,8 @@ namespace BipIsland.App;
 ///   screen a child can't move it over there and click another program (which would also take the game
 ///   out of the front, where the Windows keyboard hook stops blocking). If another program takes the
 ///   front by itself (a system dialog, an updater), the limit lifts until the game is back in front.
+///   On a Mac every other screen is also covered by a plain paper window of the game's own, so even a
+///   flick that gets past the mouse fence for a moment lands on the game, never on another program.
 /// - Hold Option (Mac) or Alt (Windows) while the game opens for parent mode: a normal window, no lock.
 /// Cmd-Q, Alt-F4 and the close button are handled in <see cref="Boot"/> (only the parent area quits).
 /// Every operating-system call is guarded: if one fails, the game logs it and plays unlocked.
@@ -62,48 +66,184 @@ public static class KidLock
         }
     }
 
+    /// <summary>
+    /// Another program took the front by itself (a system dialog, an updater): the covers step aside until the
+    /// game is back (<see cref="Reapply"/>), so that program's windows on another screen can be seen.
+    /// </summary>
+    public static void Lifted()
+    {
+        foreach (var cover in Covers)
+            if (GodotObject.IsInstanceValid(cover)) cover.Hide();
+    }
+
     /// <summary>The game came back to the front: put the Mac options and the mouse limit back (the system can drop them).</summary>
     public static void Reapply()
     {
         if (!IsOn && !Status.StartsWith("failed", StringComparison.Ordinal)) return;
         KeepMouseIn();
         if (Status != "mac") return;
+        // A click on a cover (which can't take the focus) can bring the game back: give the game's window the
+        // keys again, so the fence and the Esc hold work straight away.
+        try { DisplayServer.WindowMoveToForeground(); }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock: {error.Message}"); }
         try { Mac.ApplyOptions(); }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock: {error.Message}"); }
     }
 
     /// <summary>
     /// Whether the mouse is kept inside the game's window (for the self-test report). On Windows this asks
-    /// the system for the cursor's clip rectangle and compares it with the game window; on a Mac there is
-    /// no such question to ask, so it reports Godot's own setting.
+    /// the system for the cursor's clip rectangle and compares it with the game window; on a Mac it reports
+    /// whether the fence (<see cref="FenceMouse"/>) is up and every other screen has its cover.
     /// </summary>
     public static bool MouseKeptIn
     {
         get
         {
+            if (IsMac) return _fence && OtherScreensCovered();
             if (Input.MouseMode != Input.MouseModeEnum.Confined) return false;
             try { return Status != "windows" || Windows.CursorClippedToGame(); }
             catch (Exception) { return false; }
         }
     }
 
+    /// <summary>On a Mac, whether <see cref="FenceMouse"/> keeps the mouse in (see <see cref="KeepMouseIn"/>).</summary>
+    private static bool _fence;
+
     /// <summary>
-    /// Keeps the mouse inside the game's window, so it can't reach a second screen. Godot skips a mode
-    /// it thinks is already set, so the mode goes to Visible first: the system really is asked again.
+    /// Keeps the mouse inside the game's window, so it can't reach a second screen. On Windows Godot's
+    /// Confined mode asks the system to clip the cursor, and the mouse moves as normal. On a Mac Confined
+    /// takes over the pointer and moves it without the Mac's acceleration, so it felt slow and held back
+    /// (owner, 9 Nov 2026 on 0.2.242): there the mouse stays the Mac's own and <see cref="FenceMouse"/> only
+    /// puts it back when it leaves the window. Godot skips a mode it thinks is already set, so the mode goes
+    /// to Visible first: the system really is asked again.
     /// </summary>
     private static void KeepMouseIn()
     {
         try
         {
             Input.MouseMode = Input.MouseModeEnum.Visible;
-            Input.MouseMode = Input.MouseModeEnum.Confined;
+            if (IsMac)
+            {
+                _fence = true;
+                CoverOtherScreens();
+            }
+            else Input.MouseMode = Input.MouseModeEnum.Confined;
         }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock (mouse): {error.Message}"); }
+    }
+
+    /// <summary>The paper windows over the Mac's other screens (see <see cref="CoverOtherScreens"/>).</summary>
+    private static readonly List<Window> Covers = [];
+
+    /// <summary>
+    /// Covers every screen but the game's with a borderless paper window of the game's own, always on top and
+    /// never taking the focus (the fence below only pulls the mouse back once a frame, so a quick flick and
+    /// click could otherwise reach another program on a second screen; review of #74). A click there lands on
+    /// the cover and the game stays in front. Done again when the game comes back to the front, in case a
+    /// screen was plugged in or taken away.
+    /// </summary>
+    private static void CoverOtherScreens()
+    {
+        if (OtherScreensCovered())
+        {
+            foreach (var cover in Covers) cover.Show();
+            return;
+        }
+        RemoveCovers();
+        foreach (var screen in OtherScreens())
+        {
+            var cover = new Window
+            {
+                Title = "Bip Island",
+                ForceNative = true,
+                Borderless = true,
+                AlwaysOnTop = true,
+                Unfocusable = true,
+                Transient = false,
+                Position = DisplayServer.ScreenGetPosition(screen),
+                Size = DisplayServer.ScreenGetSize(screen),
+            };
+            var paper = new ColorRect { Color = Palette.Paper, MouseFilter = Control.MouseFilterEnum.Stop };
+            paper.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            cover.AddChild(paper);
+            Covers.Add(cover);
+            // Install runs from Boot._Ready: add the windows once the tree is free to take them.
+            Boot.Instance.CallDeferred(Node.MethodName.AddChild, cover);
+        }
+    }
+
+    /// <summary>Every screen but the one the game's window is on.</summary>
+    private static List<int> OtherScreens()
+    {
+        var game = DisplayServer.WindowGetCurrentScreen();
+        var screens = new List<int>();
+        for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
+            if (screen != game) screens.Add(screen);
+        return screens;
+    }
+
+    /// <summary>Whether each other screen has a cover exactly over it (screens can be plugged in, swapped or moved).</summary>
+    private static bool OtherScreensCovered()
+    {
+        Covers.RemoveAll(cover => !GodotObject.IsInstanceValid(cover));
+        var screens = OtherScreens();
+        if (Covers.Count != screens.Count) return false;
+        for (var i = 0; i < screens.Count; i++)
+        {
+            if (Covers[i].Position != DisplayServer.ScreenGetPosition(screens[i])
+                || Covers[i].Size != DisplayServer.ScreenGetSize(screens[i])) return false;
+        }
+        return true;
+    }
+
+    private static ulong _coversCheckedAt;
+
+    private static void RemoveCovers()
+    {
+        foreach (var cover in Covers)
+            if (GodotObject.IsInstanceValid(cover)) cover.QueueFree();
+        Covers.Clear();
+    }
+
+    /// <summary>
+    /// The Mac's mouse fence, every frame while the game is in front: a mouse that has left the game's window
+    /// (towards a second screen) goes back to the nearest point inside it. Inside the window it does nothing,
+    /// so the mouse moves exactly as the Mac moves it.
+    /// </summary>
+    public static void FenceMouse()
+    {
+        if (!_fence || !DisplayServer.WindowIsFocused()) return;
+        try
+        {
+            // Once a second, also check the covers still match the screens (one plugged in while the game is
+            // in front gets its cover now, not only the next time the game comes back to the front).
+            var now = Time.GetTicksMsec();
+            if (now - _coversCheckedAt >= 1000)
+            {
+                _coversCheckedAt = now;
+                CoverOtherScreens();
+            }
+            var mouse = DisplayServer.MouseGetPosition();
+            var origin = DisplayServer.WindowGetPosition();
+            var size = DisplayServer.WindowGetSize();
+            var back = KidLockRules.FencePoint(mouse.X, mouse.Y, origin.X, origin.Y, size.X, size.Y);
+            // Godot reads (0,0) on a Mac when the cursor is in no screen's frame (an edge row, a gap between
+            // screens): only trust a (0,0) that is a real place inside the window, never jump the mouse for it.
+            if (back is { } point && mouse != Vector2I.Zero) DisplayServer.WarpMouse(new Vector2I(point.X, point.Y) - origin);
+        }
+        catch (Exception error)
+        {
+            _fence = false;
+            GD.PrintErr($"Bip Island: child lock (mouse fence): {error.Message}");
+        }
     }
 
     /// <summary>Lifts the lock before the game quits or restarts for an update.</summary>
     public static void Release()
     {
+        _fence = false;
+        try { RemoveCovers(); }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (covers): {error.Message}"); }
         try { Input.MouseMode = Input.MouseModeEnum.Visible; }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (mouse): {error.Message}"); }
         if (!IsOn) return;

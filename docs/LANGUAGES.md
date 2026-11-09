@@ -113,6 +113,10 @@ Afrikaans children), Grade R and 1 listening and speaking outcomes.
 8. **Switch Afrikaans on:** add `Content/af/language.json`, and in the same pull request update the
    download page (`site/index.html`): one game in English and Afrikaans, each child's language set
    by a grown-up, plus the Language Island. The page is bilingual from then on.
+   **Done 9 November 2026:** `Content/af/language.json` added once every Afrikaans clip was recorded and
+   the owner had checked the letter sounds and the hard-to-check takes by ear; the download page names both
+   languages (with Afrikaans lines), shows the Language Island and CAPS. A full Afrikaans version of the page
+   can follow if the owner wants one.
 9. Family test on both computers.
 
 English and Afrikaans are **one game, one download**: the same app on the same computer, with the

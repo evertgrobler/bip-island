@@ -36,4 +36,24 @@ public sealed class KidLockRulesTests
         Assert.False(KidLockRules.MacLockIsOn(KidLockRules.MacHideDock | KidLockRules.MacHideMenuBar));
         Assert.Equal(0x80000UL, KidLockRules.MacOptionKeyFlag);
     }
+
+    [Fact]
+    public void TheMacFenceLeavesAMouseInsideAlone()
+    {
+        Assert.Null(KidLockRules.FencePoint(0, 0, 0, 0, 1440, 900));
+        Assert.Null(KidLockRules.FencePoint(1439, 899, 0, 0, 1440, 900));
+        Assert.Null(KidLockRules.FencePoint(700, 400, 0, 0, 1440, 900));
+    }
+
+    [Theory]
+    [InlineData(1440, 300, 1439, 300)]   // onto a second screen on the right
+    [InlineData(-5, 300, 0, 300)]        // or on the left
+    [InlineData(2000, -40, 1439, 0)]     // up and over, a corner
+    [InlineData(500, 1200, 500, 899)]    // a screen below
+    public void TheMacFenceBringsTheMouseBackToTheNearestPointInside(int x, int y, int backX, int backY) =>
+        Assert.Equal((backX, backY), KidLockRules.FencePoint(x, y, 0, 0, 1440, 900));
+
+    [Fact]
+    public void TheMacFenceWorksForAWindowAwayFromTheOrigin() =>
+        Assert.Equal((100, 249), KidLockRules.FencePoint(50, 400, 100, 50, 800, 200));
 }
