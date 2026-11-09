@@ -1,0 +1,43 @@
+name: Ear check
+
+# A listening AI hears the narrator clips and notes accent, pronunciation and sound (scripts/ear_check.py).
+# Started by a push of voice-lab/ear-run.txt (its first line: the most requests for this run) on a claude/ branch,
+# or by hand. It only writes voice-lab/ear_check.json; nothing in the game changes because of it.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/**"]
+    paths:
+      - "voice-lab/ear-run.txt"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ear-check-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  listen:
+    if: startsWith(github.ref, 'refs/heads/claude/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Listen
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python3 scripts/validate_content.py > /dev/null
+          MAX_REQUESTS=$(head -1 voice-lab/ear-run.txt | tr -dc 0-9) python3 scripts/ear_check.py
+      - name: Commit the notes
+        if: ${{ always() }}
+        run: |
+          git config user.name "ear-check"
+          git config user.email "ear-check@users.noreply.github.com"
+          git add voice-lab/ear_check.json 2>/dev/null || exit 0
+          git commit -m "Ear check notes from the listening AI" || exit 0
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push
