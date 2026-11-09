@@ -894,11 +894,6 @@ public static class WalkTest
                 PenMove(points[5], held: false);
                 Check("after letting go, moving draws nothing", trace.TouchedCount == dragged && trace.PenMode == BipCore.TracePenMode.Idle);
 
-                // Clicking the letter says its sound: never a miss, however often.
-                PenClick(points[8]);
-                PenClick(points[8]);
-                Check("clicks on the letter are not misses", !trace.StartDotHinted);
-
                 // A trackpad: two clicks away from the start dot, then the dot wiggles for a hint.
                 var paper = trace.StartDotOnScreen + new Vector2(520, 0);
                 PenClick(paper);
@@ -917,10 +912,6 @@ public static class WalkTest
                 PenMove(paper + new Vector2(3, 0), held: true);
                 PenButton(trace, paper + new Vector2(3, 0), false);
                 Check("a wobbly click draws nothing", trace.TouchedCount == touched, $"touched {touched} → {trace.TouchedCount}");
-                // A click on a stroke traces that spot, as a child dots an i or a j.
-                var spotOnLetter = trace.CheckpointsOnScreen.First();
-                PenClick(spotOnLetter);
-                Check("a click on a stroke traces it (dotting the i)", trace.TouchedCount > touched, $"touched {touched} → {trace.TouchedCount}");
                 // Following, then a drag takes over (its press went unseen): the start dot comes back.
                 PenClick(trace.StartDotOnScreen);
                 Check("tap mode hides the start dot", trace.PenMode == BipCore.TracePenMode.Following && !trace.StartDotShown);
@@ -929,6 +920,14 @@ public static class WalkTest
                 Check("a drag that takes over from tap mode brings the start dot back",
                       trace.PenMode == BipCore.TracePenMode.Idle && trace.StartDotShown);
                 Check("no star until the letter is finished", game.Progress.Stars == starsBefore);
+                // Clicking the letter says its sound and traces the spot clicked (a child dots an i or a j that way):
+                // never a miss, however often.
+                var beforeClicks = trace.TouchedCount;
+                PenClick(trace.CheckpointsOnScreen.First());
+                Check("a click on a stroke traces it (dotting the i)", trace.TouchedCount > beforeClicks,
+                      $"touched {beforeClicks} → {trace.TouchedCount}");
+                PenClick(trace.CheckpointsOnScreen.FirstOrDefault(trace.StartDotOnScreen + new Vector2(0, 300)));
+                Check("clicks on the letter are not misses", !trace.StartDotHinted);
                 // Click the dot again and finish the letter with the button up.
                 PenClick(trace.StartDotOnScreen);
                 foreach (var point in points) PenMove(point, held: false);
