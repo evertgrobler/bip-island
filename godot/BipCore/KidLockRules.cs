@@ -59,6 +59,16 @@ public static class KidLockRules
     public static List<int> ScreensToCover((int X, int Y, int W, int H) window,
                                            IReadOnlyList<(int X, int Y, int W, int H)> screens, int main)
     {
+        var game = GameScreen(window, screens);
+        var cover = new List<int>();
+        for (var i = 0; i < screens.Count; i++)
+            if (i != main && i != game && screens[i].W > 0 && screens[i].H > 0) cover.Add(i);
+        return cover;
+    }
+
+    /// <summary>The screen the game's window overlaps most, or -1 when it overlaps none.</summary>
+    public static int GameScreen((int X, int Y, int W, int H) window, IReadOnlyList<(int X, int Y, int W, int H)> screens)
+    {
         var game = -1;
         long most = 0;
         for (var i = 0; i < screens.Count; i++)
@@ -66,11 +76,15 @@ public static class KidLockRules
             var area = Overlap(window, screens[i]);
             if (area > most) (most, game) = (area, i);
         }
-        var cover = new List<int>();
-        for (var i = 0; i < screens.Count; i++)
-            if (i != main && i != game && screens[i].W > 0 && screens[i].H > 0) cover.Add(i);
-        return cover;
+        return game;
     }
+
+    /// <summary>
+    /// Whether a cover really hides the game: it covers at least a twentieth of the game's window. A cover that only
+    /// grazes the window's edge (a pixel of rounding) stays, as <see cref="ScreensToCover"/> wants it.
+    /// </summary>
+    public static bool CoverHidesGame((int X, int Y, int W, int H) cover, (int X, int Y, int W, int H) window) =>
+        Overlap(cover, window) * 20 >= (long)Math.Max(window.W, 0) * Math.Max(window.H, 0) && Overlap(cover, window) > 0;
 
     /// <summary>How many pixels two (x, y, width, height) rectangles share.</summary>
     public static long Overlap((int X, int Y, int W, int H) a, (int X, int Y, int W, int H) b)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BipIsland.Drawing;
 using System.Runtime.InteropServices;
 using BipCore;
@@ -75,6 +76,12 @@ public static class KidLock
         foreach (var cover in Covers)
             if (GodotObject.IsInstanceValid(cover)) cover.Hide();
         _coversHidden = Covers.Count > 0;
+        // The game stops floating too, so that program's windows on the game's screen can be seen.
+        if (_coversHidden)
+        {
+            try { DisplayServer.WindowSetFlag(DisplayServer.WindowFlags.AlwaysOnTop, false); }
+            catch (Exception error) { GD.PrintErr($"Bip Island: child lock (lift): {error.Message}"); }
+        }
     }
 
     /// <summary>The game came back to the front: put the Mac options and the mouse limit back (the system can drop them).</summary>
@@ -152,9 +159,20 @@ public static class KidLock
     /// </summary>
     private static void CoverOtherScreens()
     {
-        var wanted = ScreensToCover();
+        var (screens, game) = Screens();
+        // The game left the main screen (the main display changed, a screen woke or was plugged in again): put it
+        // back, so the main screen is never left open while the game sits elsewhere (review of #75).
+        var main = DisplayServer.GetPrimaryScreen();
+        if (Status == "mac" && game >= 0 && game != main && main < screens.Count)
+        {
+            CoverMainScreen();
+            (screens, game) = Screens();
+        }
+        var window = (DisplayServer.WindowGetPosition(), DisplayServer.WindowGetSize());
+        var wanted = KidLockRules.ScreensToCover((window.Item1.X, window.Item1.Y, window.Item2.X, window.Item2.Y),
+            screens, main).ConvertAll(i => new Rect2I(screens[i].X, screens[i].Y, screens[i].W, screens[i].H));
         var raise = false;
-        if (!SameScreens(wanted, _coveredScreens))
+        if (!wanted.SequenceEqual(_coveredScreens))
         {
             RemoveCovers();
             _coveredScreens = wanted;
@@ -182,6 +200,7 @@ public static class KidLock
         }
         else if (_coversHidden)
         {
+            Covers.RemoveAll(cover => !GodotObject.IsInstanceValid(cover));
             foreach (var cover in Covers) cover.Show();
             raise = Covers.Count > 0;
         }
@@ -202,27 +221,30 @@ public static class KidLock
     }
 
     /// <summary>
-    /// A cover whose real place overlaps the game's window (wherever the system put it) is taken away for good,
-    /// until the screens change, so it can never hide the game and is never made again and again.
+    /// A cover that really hides the game (<see cref="KidLockRules.CoverHidesGame"/>), by where the system says it
+    /// is, not where Godot asked it to go, is taken away until the screens change, so it can never hide the game
+    /// and is never made again and again. The lock check then reports the mouse as not kept in, which is true.
     /// </summary>
     private static void TakeAwayCoversOverTheGame()
     {
-        var game = new Rect2I(DisplayServer.WindowGetPosition(), DisplayServer.WindowGetSize());
+        var at = DisplayServer.WindowGetPosition();
+        var size = DisplayServer.WindowGetSize();
         foreach (var cover in Covers)
         {
             if (!GodotObject.IsInstanceValid(cover) || !cover.IsInsideTree()) continue;
-            if (!new Rect2I(cover.Position, cover.Size).Intersects(game)) continue;
-            GD.PrintErr($"Bip Island: child lock: a cover landed over the game at {cover.Position}; taken away.");
+            var id = cover.GetWindowId();
+            var where = DisplayServer.WindowGetPosition(id);
+            var big = DisplayServer.WindowGetSize(id);
+            if (!KidLockRules.CoverHidesGame((where.X, where.Y, big.X, big.Y), (at.X, at.Y, size.X, size.Y))) continue;
+            GD.PrintErr($"Bip Island: child lock: a cover landed over the game at {where}; taken away.");
             cover.QueueFree();
         }
         Covers.RemoveAll(cover => !GodotObject.IsInstanceValid(cover) || cover.IsQueuedForDeletion());
     }
 
-    /// <summary>The screens to cover now, from the game window's real place (<see cref="KidLockRules.ScreensToCover"/>).</summary>
-    private static List<Rect2I> ScreensToCover()
+    /// <summary>Every screen as (x, y, width, height), and the one the game's window overlaps most (-1: none).</summary>
+    private static (List<(int X, int Y, int W, int H)> Screens, int Game) Screens()
     {
-        var position = DisplayServer.WindowGetPosition();
-        var size = DisplayServer.WindowGetSize();
         var screens = new List<(int X, int Y, int W, int H)>();
         for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
         {
@@ -230,17 +252,9 @@ public static class KidLock
             var area = DisplayServer.ScreenGetSize(screen);
             screens.Add((at.X, at.Y, area.X, area.Y));
         }
-        var cover = KidLockRules.ScreensToCover((position.X, position.Y, size.X, size.Y), screens,
-            DisplayServer.GetPrimaryScreen());
-        return cover.ConvertAll(i => new Rect2I(screens[i].X, screens[i].Y, screens[i].W, screens[i].H));
-    }
-
-    private static bool SameScreens(List<Rect2I> a, List<Rect2I> b)
-    {
-        if (a.Count != b.Count) return false;
-        for (var i = 0; i < a.Count; i++)
-            if (a[i] != b[i]) return false;
-        return true;
+        var position = DisplayServer.WindowGetPosition();
+        var size = DisplayServer.WindowGetSize();
+        return (screens, KidLockRules.GameScreen((position.X, position.Y, size.X, size.Y), screens));
     }
 
     /// <summary>Every screen that should have a cover has one.</summary>

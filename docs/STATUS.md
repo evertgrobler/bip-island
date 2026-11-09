@@ -723,6 +723,9 @@
   every other screen now gets a paper cover window of the game's own (as the Swift app had).
 - **9 Nov: 0.2.256 hid the game on a MacBook with a second screen.** The owner's photo showed the paper cover on the
   MacBook itself, over the game: the cover chose screens by `WindowGetCurrentScreen`'s number, which pointed at the
-  MacBook's own screen, and covers were always on top. Covers now go only on screens the game's window doesn't touch
-  (`KidLockRules.ScreensToCover`, tested), the game's window floats above them, and a cover that still lands
-  over the game is taken away. Until then: unplug the second screen, or open with Option held.
+  MacBook's own screen, and covers were always on top. Now `KidLockRules.ScreensToCover` (tested) covers every
+  screen except the main one and the one the game overlaps most (a screen the window only grazes still gets its
+  cover); a game that drifts off the main screen is put back on it; the covers stay floating above other programs
+  and the game's window floats above them (it stops floating while another program has the front); a cover that
+  the system put over a real share of the game (`KidLockRules.CoverHidesGame`, by the cover's position as the
+  system reports it) is taken away. Until the fix: unplug the second screen, or open with Option held.
