@@ -2848,11 +2848,27 @@
  },
  "failed": {},
  "failed_text": {},
- "retake": [
-  "vo_coding_island",
-  "vo_coding_island_big",
-  "vo_bips_path",
-  "vo_morning_order"
- ],
- "review": {}
+ "retake": [],
+ "review": {
+  "vo_bips_path": {
+   "heard": "Snap the arrows together, then press go to walk Bip home",
+   "retake": true,
+   "text": "Snap the arrows together, then press Go to walk Bip home."
+  },
+  "vo_coding_island": {
+   "heard": "Welcome to Coding Island. Click Bip and let's program.",
+   "retake": true,
+   "text": "Welcome to Coding Island! Click Bip, and let's program."
+  },
+  "vo_coding_island_big": {
+   "heard": "Coding Island  Click Bip to start programming",
+   "retake": true,
+   "text": "Coding Island. Click Bip to start programming."
+  },
+  "vo_morning_order": {
+   "heard": "Put the pictures in order. What comes first?",
+   "retake": true,
+   "text": "Put the pictures in order. What comes first?"
+  }
+ }
 }
