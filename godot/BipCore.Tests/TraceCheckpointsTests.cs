@@ -87,7 +87,24 @@ public class TraceCheckpointsTests
     public void MostCheckpointsAreEnoughButAFewMustAllBeTouched()
     {
         Assert.Equal(3, TraceCheckpoints.Needed(3));
+        // From four up at least one may be missed (owner's i, j: a serif's tip mustn't block the letter).
+        for (var n = 4; n <= 9; n++) Assert.Equal(n - 1, TraceCheckpoints.Needed(n));
         Assert.Equal(9, TraceCheckpoints.Needed(10));
         Assert.Equal(27, TraceCheckpoints.Needed(30));
+    }
+
+    [Theory]
+    [InlineData("i")]
+    [InlineData("j")]
+    [InlineData("t")]
+    [InlineData("l")]
+    public void AShortLetterFinishesWithOneTipMissed(string grapheme)
+    {
+        var letter = For(grapheme);
+        // Everything but the checkpoint furthest from the letter's middle that isn't a dot (a serif or a tail).
+        var dot = grapheme is "i" or "j" ? letter.Points.MinBy(p => p.Y) : (Vector2?)null;
+        var tip = letter.Points.Where(p => p != dot).MaxBy(p => p.Length());
+        foreach (var p in letter.Points.Where(p => p != tip)) letter.Touch(p);
+        Assert.True(letter.Done, $"{grapheme}: missing only {tip} should be enough");
     }
 }
