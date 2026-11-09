@@ -31,8 +31,6 @@ public partial class LetterTraceScreen : GameScreen
     private Node2D _startDot = null!;
     private Tween? _pulse;
     private TraceCheckpoints _checkpoints = null!;
-    /// <summary>Where the pen last drew in this stroke, so a fast move touches everything along the way.</summary>
-    private Vector2? _lastTrace;
     /// <summary>Just above the letter, where most letters start.</summary>
     private static readonly Vector2 StartDotAt = P(0, 290);
     private readonly TracePen _pen = new();
@@ -108,9 +106,8 @@ public partial class LetterTraceScreen : GameScreen
                     if (draws)
                     {
                         GetViewport().SetInputAsHandled();
-                        Trace(at);
+                        Trace(at, _pen.StrokeFrom is { } from ? new Vector2(from.X, from.Y) : null);
                     }
-                    else _lastTrace = null;
                     return;
                 case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true } press:
                 {
@@ -118,7 +115,6 @@ public partial class LetterTraceScreen : GameScreen
                     // One hit test for the pen and the tap alike.
                     var target = TappableAt(press.GlobalPosition);
                     _pressedOn = target is null ? null : Buttons.TapName(target);
-                    _lastTrace = null;
                     var stopped = _pen.Press(Numeric(Stage.ToLocal(press.GlobalPosition))) == TraceTapResult.Stopped;
                     if (stopped) Sfx.Play(BipSounds.Effect.Tick);
                     SyncStartDot();
@@ -128,16 +124,21 @@ public partial class LetterTraceScreen : GameScreen
                 }
                 case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } release:
                     GetViewport().SetInputAsHandled();
+                    var where = Stage.ToLocal(release.GlobalPosition);
+                    // A click on a stroke traces it (dotting the i or the j with one click): never a miss.
+                    var dotted = _pressedOn is null or "letter" && _pen.Mode == TracePenMode.Idle && _pen.IsClick(Numeric(where))
+                                 && _checkpoints.Touch(Numeric(where)) > 0;
                     var spot = _pressedOn switch
                     {
+                        _ when dotted => TraceSpot.Button,
                         null => TraceSpot.Paper,
                         "start" => TraceSpot.StartDot,
                         _ => TraceSpot.Button,
                     };
-                    _lastTrace = null;
-                    var result = _pen.Release(Numeric(Stage.ToLocal(release.GlobalPosition)), spot);
+                    var result = _pen.Release(Numeric(where), spot);
                     _pressedOn = null;
                     SyncStartDot();
+                    if (dotted) Traced(1);
                     Tapped(result);
                     return;
             }
@@ -152,7 +153,7 @@ public partial class LetterTraceScreen : GameScreen
             case TraceTapResult.Started:
                 StopHint();
                 Sfx.Play(BipSounds.Effect.Pop);
-                Trace(StartDotAt);
+                Trace(StartDotAt, null);
                 break;
             case TraceTapResult.Missed or TraceTapResult.Hint:
                 Sfx.Play(BipSounds.Effect.Boop);
@@ -203,7 +204,7 @@ public partial class LetterTraceScreen : GameScreen
         _startDot.Scale = Vector2.One;
     }
 
-    private void Trace(Vector2 point)
+    private void Trace(Vector2 point, Vector2? from)
     {
         if (!CanTrace) return;
         Color[] colours = [Palette.Sun, Palette.Pink, Palette.Teal, Palette.Purple];
@@ -213,10 +214,12 @@ public partial class LetterTraceScreen : GameScreen
         fade.TweenProperty(dot, "modulate:a", 0f, 0.7);
         fade.TweenCallback(Callable.From(dot.QueueFree));
 
-        var fresh = _lastTrace is { } from
-            ? _checkpoints.Stroke(Numeric(from), Numeric(point))
-            : _checkpoints.Touch(Numeric(point));
-        _lastTrace = point;
+        Traced(from is { } start ? _checkpoints.Stroke(Numeric(start), Numeric(point)) : _checkpoints.Touch(Numeric(point)));
+    }
+
+    /// <summary>Checkpoints were reached: a tick, and the end once the letter is traced.</summary>
+    private void Traced(int fresh)
+    {
         if (fresh > 0) Sfx.Play(BipSounds.Effect.Tick);
         if (_checkpoints.Done) FinishTrace();
     }
@@ -252,12 +255,12 @@ public partial class LetterTraceScreen : GameScreen
 
     /// <summary>
     /// This grapheme's checkpoints from trace_shapes.json. A grapheme the file doesn't have yet (new content before
-    /// scripts/trace_shapes.py ran; the validator catches it) gets a small ring around the letter's middle.
+    /// scripts/trace_shapes.py ran; the validator catches it) gets one checkpoint in the letter's middle: never gated.
     /// </summary>
     private List<List<float>> Shape()
     {
         if (Coordinator.Content?.TraceShapes.Shapes.TryGetValue(_sound.Grapheme, out var shape) == true && shape.Count > 0)
             return shape;
-        return [.. Enumerable.Range(0, 8).Select(i => new List<float> { 0.3f * MathF.Cos(i / 8f * MathF.Tau), 0.3f * MathF.Sin(i / 8f * MathF.Tau) })];
+        return [[0f, 0f]];
     }
 }

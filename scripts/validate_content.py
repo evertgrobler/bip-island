@@ -11,7 +11,7 @@ shared files. When Content/af/ exists the same checks run again for it (--lang a
 Content/af/asset_manifest.json, with Afrikaans number words, audio/af/script.csv and the
 Afrikaans spelling check (af_spelling.py) in place of the South African English one.
 """
-import csv, json, re, subprocess, sys, unicodedata
+import csv, hashlib, json, re, subprocess, sys, unicodedata
 from collections import deque
 from pathlib import Path
 
@@ -58,7 +58,16 @@ mirror_doc = load("art/mirror.json")
 language_doc = load("language/words.json")
 
 # --- Letter Trace needs every grapheme's checkpoints (scripts/trace_shapes.py makes them from the letter font)
-trace_shapes = load("phonics/trace_shapes.json")["shapes"]
+trace_doc = load("phonics/trace_shapes.json")
+trace_shapes = trace_doc["shapes"]
+_letters = set()
+for _list in (CONTENT / "phonics" / "graphemes.json", CONTENT / "af" / "phonics" / "graphemes.json"):
+    if _list.exists():
+        _letters |= {g["grapheme"] for g in json.loads(_list.read_text(encoding="utf-8"))["graphemes"]}
+_font = REPO / "Resources" / "Fonts" / trace_doc.get("font", "")
+_made_from = hashlib.sha1((_font.read_bytes() if _font.is_file() else b"") + "\n".join(sorted(_letters)).encode()).hexdigest()
+if trace_doc.get("source") != _made_from:
+    err("phonics/trace_shapes.json is out of date with the letter font or the graphemes: run scripts/trace_shapes.py")
 for g in ph["graphemes"]:
     if len(trace_shapes.get(g["grapheme"], [])) < 3:
         err(f"grapheme {g['grapheme']}: no Letter Trace shape in phonics/trace_shapes.json (run scripts/trace_shapes.py)")

@@ -912,11 +912,15 @@ public static class WalkTest
                 var touched = trace.TouchedCount;
                 PenMove(points[6], held: false);
                 Check("a lifted pen draws nothing", trace.TouchedCount == touched);
-                // A wobbly click (3 points) near a checkpoint draws nothing.
-                PenButton(trace, points[6], true);
-                PenMove(points[6] + new Vector2(3, 0), held: true);
-                PenButton(trace, points[6] + new Vector2(3, 0), false);
+                // A wobbly click (3 points) away from the letter draws nothing.
+                PenButton(trace, paper, true);
+                PenMove(paper + new Vector2(3, 0), held: true);
+                PenButton(trace, paper + new Vector2(3, 0), false);
                 Check("a wobbly click draws nothing", trace.TouchedCount == touched, $"touched {touched} → {trace.TouchedCount}");
+                // A click on a stroke traces that spot, as a child dots an i or a j.
+                var spotOnLetter = trace.CheckpointsOnScreen.First();
+                PenClick(spotOnLetter);
+                Check("a click on a stroke traces it (dotting the i)", trace.TouchedCount > touched, $"touched {touched} → {trace.TouchedCount}");
                 // Following, then a drag takes over (its press went unseen): the start dot comes back.
                 PenClick(trace.StartDotOnScreen);
                 Check("tap mode hides the start dot", trace.PenMode == BipCore.TracePenMode.Following && !trace.StartDotShown);

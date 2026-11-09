@@ -62,8 +62,18 @@ public sealed class TracePen
     /// <summary>How far the pointer may move between press and release for it still to be a click.</summary>
     public const float TapSlop = 24;
 
+    /// <summary>A jump this far between two drawn points is a new stroke, never a line drawn across (events lost meanwhile).</summary>
+    public const float MaxStep = 180;
+
     private Vector2? _pressedAt;
+    private Vector2? _lastDrawn;
     private QuestionAttempt _attempt = new();
+
+    /// <summary>
+    /// Where the stroke was before the point <see cref="Move"/> just drew, or null when that point starts a stroke:
+    /// the screen traces the whole step from here, so a fast mouse counts as much as a slow one.
+    /// </summary>
+    public Vector2? StrokeFrom { get; private set; }
 
     public TracePenMode Mode { get; private set; } = TracePenMode.Idle;
     /// <summary>True once the trace is finished: the pen does nothing more.</summary>
@@ -81,6 +91,7 @@ public sealed class TracePen
     /// <summary>The button went down. A pen that was following stops here.</summary>
     public TraceTapResult Press(Vector2 at)
     {
+        _lastDrawn = null;
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Following)
         {
@@ -94,6 +105,14 @@ public sealed class TracePen
 
     /// <summary>The pointer moved. Returns true when this point should be drawn and traced.</summary>
     public bool Move(Vector2 at, bool buttonHeld)
+    {
+        var draws = Moved(at, buttonHeld);
+        StrokeFrom = draws && _lastDrawn is { } last && Vector2.Distance(last, at) <= MaxStep ? last : null;
+        _lastDrawn = draws ? at : null;
+        return draws;
+    }
+
+    private bool Moved(Vector2 at, bool buttonHeld)
     {
         if (IsFinished) return false;
         if (buttonHeld)
@@ -124,6 +143,7 @@ public sealed class TracePen
     /// </summary>
     public TraceTapResult Release(Vector2 at, TraceSpot spot)
     {
+        _lastDrawn = null;
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
         if (_pressedAt is not { } pressed) return TraceTapResult.None;
@@ -143,9 +163,13 @@ public sealed class TracePen
         }
     }
 
+    /// <summary>Whether a release at <paramref name="at"/> ends a click (press and release without moving much), not a drag.</summary>
+    public bool IsClick(Vector2 at) => !IsFinished && _pressedAt is { } pressed && Vector2.Distance(at, pressed) <= TapSlop;
+
     /// <summary>The trace is done: stop drawing for good.</summary>
     public void Finish()
     {
+        _lastDrawn = null;
         IsFinished = true;
         Mode = TracePenMode.Idle;
         _pressedAt = null;
