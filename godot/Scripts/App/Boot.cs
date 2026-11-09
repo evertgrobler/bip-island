@@ -47,6 +47,9 @@ public partial class Boot : Node
             _ = Updater.CheckAndDownloadInBackground();
     }
 
+    /// <summary>The Mac's mouse fence (KidLock): puts the mouse back if it leaves the game's window.</summary>
+    public override void _Process(double delta) => KidLock.FenceMouse();
+
     public override void _Notification(int what)
     {
         if (what == NotificationWMCloseRequest)

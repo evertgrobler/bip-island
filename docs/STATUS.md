@@ -705,3 +705,8 @@
   either, whose o is the long "oo" of "boom", review of #74), with the goat picture. Gemini's daily limit resets at midnight Pacific time (10:00 SAST in the southern summer), so the
   daily run is at 10:17 SAST. `Content/af/language.json` switches Afrikaans on; the download page names both
   languages, shows the Language Island and CAPS (`site_screenshots.sh` adds `language-game` from Show Me).
+- **9 Nov: the Mac mouse moves normally again.** On 0.2.242 the owner found the mouse slow, "as if something's pulling
+  it back": Godot's Confined mouse mode on a Mac takes over the pointer and moves it without the Mac's acceleration.
+  On a Mac the lock now leaves the mouse alone and `KidLock.FenceMouse` (every frame, from `Boot._Process`) only puts
+  it back inside the window when it has left it (towards a second screen); Windows keeps Confined (the system's own
+  cursor clip, which doesn't slow the mouse).

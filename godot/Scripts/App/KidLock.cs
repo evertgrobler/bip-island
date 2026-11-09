@@ -74,36 +74,70 @@ public static class KidLock
 
     /// <summary>
     /// Whether the mouse is kept inside the game's window (for the self-test report). On Windows this asks
-    /// the system for the cursor's clip rectangle and compares it with the game window; on a Mac there is
-    /// no such question to ask, so it reports Godot's own setting.
+    /// the system for the cursor's clip rectangle and compares it with the game window; on a Mac it reports
+    /// whether the fence (<see cref="FenceMouse"/>) is up.
     /// </summary>
     public static bool MouseKeptIn
     {
         get
         {
+            if (IsMac) return _fence;
             if (Input.MouseMode != Input.MouseModeEnum.Confined) return false;
             try { return Status != "windows" || Windows.CursorClippedToGame(); }
             catch (Exception) { return false; }
         }
     }
 
+    /// <summary>On a Mac, whether <see cref="FenceMouse"/> keeps the mouse in (see <see cref="KeepMouseIn"/>).</summary>
+    private static bool _fence;
+
     /// <summary>
-    /// Keeps the mouse inside the game's window, so it can't reach a second screen. Godot skips a mode
-    /// it thinks is already set, so the mode goes to Visible first: the system really is asked again.
+    /// Keeps the mouse inside the game's window, so it can't reach a second screen. On Windows Godot's
+    /// Confined mode asks the system to clip the cursor, and the mouse moves as normal. On a Mac Confined
+    /// takes over the pointer and moves it without the Mac's acceleration, so it felt slow and held back
+    /// (owner, 9 Nov 2026 on 0.2.242): there the mouse stays the Mac's own and <see cref="FenceMouse"/> only
+    /// puts it back when it leaves the window. Godot skips a mode it thinks is already set, so the mode goes
+    /// to Visible first: the system really is asked again.
     /// </summary>
     private static void KeepMouseIn()
     {
         try
         {
             Input.MouseMode = Input.MouseModeEnum.Visible;
-            Input.MouseMode = Input.MouseModeEnum.Confined;
+            if (IsMac) _fence = true;
+            else Input.MouseMode = Input.MouseModeEnum.Confined;
         }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock (mouse): {error.Message}"); }
+    }
+
+    /// <summary>
+    /// The Mac's mouse fence, every frame while the game is in front: a mouse that has left the game's window
+    /// (towards a second screen) goes back to the nearest point inside it. Inside the window it does nothing,
+    /// so the mouse moves exactly as the Mac moves it.
+    /// </summary>
+    public static void FenceMouse()
+    {
+        if (!_fence || !DisplayServer.WindowIsFocused()) return;
+        try
+        {
+            var mouse = DisplayServer.MouseGetPosition();
+            var origin = DisplayServer.WindowGetPosition();
+            var size = DisplayServer.WindowGetSize();
+            if (new Rect2I(origin, size).HasPoint(mouse)) return;
+            var inside = (mouse - origin).Clamp(Vector2I.Zero, size - Vector2I.One);
+            DisplayServer.WarpMouse(inside);
+        }
+        catch (Exception error)
+        {
+            _fence = false;
+            GD.PrintErr($"Bip Island: child lock (mouse fence): {error.Message}");
+        }
     }
 
     /// <summary>Lifts the lock before the game quits or restarts for an update.</summary>
     public static void Release()
     {
+        _fence = false;
         try { Input.MouseMode = Input.MouseModeEnum.Visible; }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (mouse): {error.Message}"); }
         if (!IsOn) return;
