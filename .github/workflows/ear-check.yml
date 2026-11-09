@@ -1,8 +1,9 @@
 name: Ear check
 
-# A listening AI hears the narrator clips and notes accent, pronunciation and sound (scripts/ear_check.py).
-# Started by a push of voice-lab/ear-run.txt (its first line: the most requests for this run) on a claude/ branch,
-# or by hand. It only writes voice-lab/ear_check.json; nothing in the game changes because of it.
+# Free open-source listening tools measure every narrator clip: accent, pronunciation and sound
+# (scripts/ear_scan.py). No key and no cost: it runs on GitHub's runner with downloaded models (owner, 9 Nov 2026).
+# Started by a push of voice-lab/ear-run.txt on a claude/ branch, or by hand. It only writes voice-lab/ear_scan.json;
+# nothing in the game changes because of it.
 on:
   workflow_dispatch:
   push:
@@ -21,26 +22,34 @@ jobs:
   listen:
     if: startsWith(github.ref, 'refs/heads/claude/')
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 175
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      # Only ever the free key: a key from a Google project with no billing, so the ear check can never cost
-      # money (owner, 9 Nov 2026). The recorder's paid GEMINI_API_KEY is never given to it.
-      - name: Listen
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_FREE_KEY }}
+      - name: Install ffmpeg, espeak-ng and the listening tools (CPU)
         run: |
-          pip install -q numpy
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg espeak-ng
+          pip install -q numpy==2.1.3 --index-url https://pypi.org/simple
+          pip install -q torch==2.5.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -q speechbrain==1.0.3 transformers==4.46.3 phonemizer==3.3.0
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/huggingface
+            ~/.cache/accent-ecapa
+          key: ear-scan-models-1
+      - name: Listen
+        run: |
           python3 scripts/validate_content.py > /dev/null
-          MAX_REQUESTS=$(head -1 voice-lab/ear-run.txt | tr -dc 0-9) python3 scripts/ear_check.py
+          python3 scripts/ear_scan.py
       - name: Commit the notes
         if: ${{ always() }}
         run: |
           git config user.name "ear-check"
           git config user.email "ear-check@users.noreply.github.com"
-          git add voice-lab/ear_check.json 2>/dev/null || exit 0
-          git commit -m "Ear check notes from the listening AI" || exit 0
+          [ -f voice-lab/ear_scan.json ] || exit 0
+          git add voice-lab/ear_scan.json
+          git commit -m "Ear scan notes from the free listening tools" || exit 0
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push
