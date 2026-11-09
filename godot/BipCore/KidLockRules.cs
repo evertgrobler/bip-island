@@ -49,4 +49,15 @@ public static class KidLockRules
 
     /// <summary>NSEvent.ModifierFlags option key: held at launch, the game opens unlocked (parent mode).</summary>
     public const ulong MacOptionKeyFlag = 1 << 19;
+
+    /// <summary>
+    /// The Mac's mouse fence: where a mouse at (x, y) goes back to, inside the game window at (left, top) of
+    /// width by height (screen pixels), or null when it is already inside and must be left alone.
+    /// </summary>
+    public static (int X, int Y)? FencePoint(int x, int y, int left, int top, int width, int height)
+    {
+        if (width <= 0 || height <= 0) return null;
+        if (x >= left && x < left + width && y >= top && y < top + height) return null;
+        return (Math.Clamp(x, left, left + width - 1), Math.Clamp(y, top, top + height - 1));
+    }
 }

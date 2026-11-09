@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using BipIsland.Drawing;
 using System.Runtime.InteropServices;
 using BipCore;
 using Godot;
@@ -17,6 +19,8 @@ namespace BipIsland.App;
 ///   screen a child can't move it over there and click another program (which would also take the game
 ///   out of the front, where the Windows keyboard hook stops blocking). If another program takes the
 ///   front by itself (a system dialog, an updater), the limit lifts until the game is back in front.
+///   On a Mac every other screen is also covered by a plain paper window of the game's own, so even a
+///   flick that gets past the mouse fence for a moment lands on the game, never on another program.
 /// - Hold Option (Mac) or Alt (Windows) while the game opens for parent mode: a normal window, no lock.
 /// Cmd-Q, Alt-F4 and the close button are handled in <see cref="Boot"/> (only the parent area quits).
 /// Every operating-system call is guarded: if one fails, the game logs it and plays unlocked.
@@ -75,13 +79,13 @@ public static class KidLock
     /// <summary>
     /// Whether the mouse is kept inside the game's window (for the self-test report). On Windows this asks
     /// the system for the cursor's clip rectangle and compares it with the game window; on a Mac it reports
-    /// whether the fence (<see cref="FenceMouse"/>) is up.
+    /// whether the fence (<see cref="FenceMouse"/>) is up and every other screen has its cover.
     /// </summary>
     public static bool MouseKeptIn
     {
         get
         {
-            if (IsMac) return _fence;
+            if (IsMac) return _fence && OtherScreensCovered();
             if (Input.MouseMode != Input.MouseModeEnum.Confined) return false;
             try { return Status != "windows" || Windows.CursorClippedToGame(); }
             catch (Exception) { return false; }
@@ -104,10 +108,65 @@ public static class KidLock
         try
         {
             Input.MouseMode = Input.MouseModeEnum.Visible;
-            if (IsMac) _fence = true;
+            if (IsMac)
+            {
+                _fence = true;
+                CoverOtherScreens();
+            }
             else Input.MouseMode = Input.MouseModeEnum.Confined;
         }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock (mouse): {error.Message}"); }
+    }
+
+    /// <summary>The paper windows over the Mac's other screens (see <see cref="CoverOtherScreens"/>).</summary>
+    private static readonly List<Window> Covers = [];
+
+    /// <summary>
+    /// Covers every screen but the game's with a borderless paper window of the game's own, always on top and
+    /// never taking the focus (the fence below only pulls the mouse back once a frame, so a quick flick and
+    /// click could otherwise reach another program on a second screen; review of #74). A click there lands on
+    /// the cover and the game stays in front. Done again when the game comes back to the front, in case a
+    /// screen was plugged in or taken away.
+    /// </summary>
+    private static void CoverOtherScreens()
+    {
+        if (OtherScreensCovered()) return;
+        RemoveCovers();
+        var game = DisplayServer.GetPrimaryScreen();
+        for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
+        {
+            if (screen == game) continue;
+            var cover = new Window
+            {
+                Title = "Bip Island",
+                ForceNative = true,
+                Borderless = true,
+                AlwaysOnTop = true,
+                Unfocusable = true,
+                Transient = false,
+                Position = DisplayServer.ScreenGetPosition(screen),
+                Size = DisplayServer.ScreenGetSize(screen),
+            };
+            var paper = new ColorRect { Color = Palette.Paper, MouseFilter = Control.MouseFilterEnum.Stop };
+            paper.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            cover.AddChild(paper);
+            Covers.Add(cover);
+            // Install runs from Boot._Ready: add the windows once the tree is free to take them.
+            Boot.Instance.CallDeferred(Node.MethodName.AddChild, cover);
+        }
+    }
+
+    private static bool OtherScreensCovered()
+    {
+        Covers.RemoveAll(cover => !GodotObject.IsInstanceValid(cover));
+        return Covers.Count == Math.Max(0, DisplayServer.GetScreenCount() - 1);
+    }
+
+    private static void RemoveCovers()
+    {
+        foreach (var cover in Covers)
+            if (GodotObject.IsInstanceValid(cover)) cover.QueueFree();
+        Covers.Clear();
     }
 
     /// <summary>
@@ -123,9 +182,8 @@ public static class KidLock
             var mouse = DisplayServer.MouseGetPosition();
             var origin = DisplayServer.WindowGetPosition();
             var size = DisplayServer.WindowGetSize();
-            if (new Rect2I(origin, size).HasPoint(mouse)) return;
-            var inside = (mouse - origin).Clamp(Vector2I.Zero, size - Vector2I.One);
-            DisplayServer.WarpMouse(inside);
+            var back = KidLockRules.FencePoint(mouse.X, mouse.Y, origin.X, origin.Y, size.X, size.Y);
+            if (back is { } point) DisplayServer.WarpMouse(new Vector2I(point.X, point.Y) - origin);
         }
         catch (Exception error)
         {
@@ -138,6 +196,8 @@ public static class KidLock
     public static void Release()
     {
         _fence = false;
+        try { RemoveCovers(); }
+        catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (covers): {error.Message}"); }
         try { Input.MouseMode = Input.MouseModeEnum.Visible; }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (mouse): {error.Message}"); }
         if (!IsOn) return;

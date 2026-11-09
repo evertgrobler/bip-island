@@ -139,10 +139,15 @@
   exclusive full screen with a keyboard hook (Windows). Off when headless, with `--bip-windowed`, on
   Linux, or with Option/Alt held at launch (parent mode). Quitting or updating lifts it first. It
   can't run on Linux: the CI Mac/Windows jobs run `--bip-kidlock-check` on a real desktop.
-  Second screens: the mouse is kept inside the game's window while locked (`Input.MouseMode` Confined,
-  put back when the game comes to the front), so a click can't reach another app on a second display;
-  the lock check reports `mouseKeptIn` and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a Mac it can only report Godot's own setting). Setting it again goes through Visible first, as Godot skips a mode it thinks is already set. The CI install jobs only warn when `locked` is false. The second screen itself still shows the desktop
-  (no paper cover windows like the Swift app had).
+  Second screens: the mouse is kept inside the game's window while locked, put back when the game comes to the
+  front, so a click can't reach another app on a second display. Windows: `Input.MouseMode` Confined (the
+  system's cursor clip). Mac (9 Nov): Confined slowed the Mac's mouse, so the mouse stays the Mac's own and
+  `KidLock.FenceMouse` (every frame, `Boot._Process`, the point from `KidLockRules.FencePoint`) puts it back when it
+  leaves the window, and every other screen is covered by a borderless, always-on-top, unfocusable paper window
+  of the game's own, so a flick that beats the fence lands on the game. The lock check reports `mouseKeptIn`
+  and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a
+  Mac it reports the fence and that every other screen has its cover). Setting the mode again goes through
+  Visible first, as Godot skips a mode it thinks is already set. The CI install jobs only warn when `locked` is false.
 
 ## Gotchas learned the hard way
 
@@ -710,3 +715,5 @@
   On a Mac the lock now leaves the mouse alone and `KidLock.FenceMouse` (every frame, from `Boot._Process`) only puts
   it back inside the window when it has left it (towards a second screen); Windows keeps Confined (the system's own
   cursor clip, which doesn't slow the mouse).
+  Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
+  every other screen now gets a paper cover window of the game's own (as the Swift app had).
