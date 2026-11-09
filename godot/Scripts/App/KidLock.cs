@@ -136,7 +136,7 @@ public static class KidLock
     private static readonly List<Window> Covers = [];
 
     /// <summary>
-    /// Covers every screen but the game's with a borderless paper window of the game's own, always on top and
+    /// Covers every screen but the game's with a borderless paper window of the game's own, below the game and
     /// never taking the focus (the fence below only pulls the mouse back once a frame, so a quick flick and
     /// click could otherwise reach another program on a second screen; review of #74). A click there lands on
     /// the cover and the game stays in front. Done again when the game comes back to the front, in case a
@@ -157,7 +157,6 @@ public static class KidLock
                 Title = "Bip Island",
                 ForceNative = true,
                 Borderless = true,
-                AlwaysOnTop = true,
                 Unfocusable = true,
                 Transient = false,
                 Position = DisplayServer.ScreenGetPosition(screen),
@@ -170,15 +169,25 @@ public static class KidLock
             // Install runs from Boot._Ready: add the windows once the tree is free to take them.
             Boot.Instance.CallDeferred(Node.MethodName.AddChild, cover);
         }
+        // The covers sit at the normal window level, never above the game: once they're up, the game's own window
+        // is brought to the front again, so even a cover in the wrong place could never hide it.
+        if (Covers.Count > 0) Callable.From(() => DisplayServer.WindowMoveToForeground()).CallDeferred();
     }
 
-    /// <summary>Every screen but the one the game's window is on.</summary>
+    /// <summary>
+    /// Every screen the game's window doesn't touch. Judged from where the window really is, not from a screen
+    /// number: on the owner's MacBook with a second screen (0.2.256, 9 Nov) the number pointed at the MacBook's
+    /// own screen, and its cover hid the game.
+    /// </summary>
     private static List<int> OtherScreens()
     {
-        var game = DisplayServer.WindowGetCurrentScreen();
+        var game = new Rect2I(DisplayServer.WindowGetPosition(), DisplayServer.WindowGetSize());
         var screens = new List<int>();
         for (var screen = 0; screen < DisplayServer.GetScreenCount(); screen++)
-            if (screen != game) screens.Add(screen);
+        {
+            var area = new Rect2I(DisplayServer.ScreenGetPosition(screen), DisplayServer.ScreenGetSize(screen));
+            if (!area.Intersects(game)) screens.Add(screen);
+        }
         return screens;
     }
 

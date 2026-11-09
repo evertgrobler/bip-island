@@ -143,7 +143,8 @@
   front, so a click can't reach another app on a second display. Windows: `Input.MouseMode` Confined (the
   system's cursor clip). Mac (9 Nov): Confined slowed the Mac's mouse, so the mouse stays the Mac's own and
   `KidLock.FenceMouse` (every frame, `Boot._Process`, the point from `KidLockRules.FencePoint`) puts it back when it
-  leaves the window, and every other screen is covered by a borderless, always-on-top, unfocusable paper window
+  leaves the window, and every other screen is covered by a borderless, unfocusable paper window (normal level, the game brought to the front after it; screens chosen by
+  where the game's window really is)
   of the game's own, so a flick that beats the fence lands on the game. The covers step aside (hidden) while another program has
   the front and come back with the game, which also takes the keys back; they're checked against the screens once
   a second (plugged in, swapped or moved). The lock check reports `mouseKeptIn`
@@ -719,3 +720,8 @@
   cursor clip, which doesn't slow the mouse).
   Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
   every other screen now gets a paper cover window of the game's own (as the Swift app had).
+- **9 Nov: 0.2.256 hid the game on a MacBook with a second screen.** The owner's photo showed the paper cover on the
+  MacBook itself, over the game: the cover chose screens by `WindowGetCurrentScreen`'s number, which pointed at the
+  MacBook's own screen, and covers were always on top. Covers now go only on screens the game's window doesn't touch
+  (by its real position and size), sit at the normal window level, and the game's window is brought to the front
+  after them. Until then: unplug the second screen, or open with Option held.
