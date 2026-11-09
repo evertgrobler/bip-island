@@ -29,12 +29,14 @@
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. While the game is in
   front the mouse stays inside its window (1 Nov), so a second screen can't be reached.
-- **Voice:** the whole game is being re-recorded with Gemini's Aoede voice, English and Afrikaans, in daily
-  paid runs at 10:17 SAST, after Gemini's daily limit resets (`scripts/gemini_narrator.py --status` says how far;
-  2,508 of 2,800 on 3 Nov). Clips Whisper keeps turning down get takes kept in `voice-lab/aoede_review/` for the
-  owner's ear. Until a clip is
-  re-recorded the older one plays (ElevenLabs "Bip Island Narrator", then Chatterbox copying her). Letter sounds
-  and letter names wait in `voice-lab/aoede_phonics/` for the owner's ear. The y sound's picture word is yo-yo.
+- **Voice:** every clip, English and Afrikaans, is Gemini's Aoede voice (2,849 of 2,849 on 9 Nov; two English
+  clips keep the older narrator by the owner's call). `scripts/gemini_narrator.py --status` says where it stands,
+  including retakes. Runs start by a push of `voice-lab/aoede-run.txt` to `claude/aoede-narrator` (the daily task
+  is off now the recording is finished). Every English style ends with a firmer South African accent sentence
+  (`ACCENT`, 9 Nov, after the owner heard British on Coding Island). To record a finished clip again,
+  `--retake CLIP...`: the new take waits in `voice-lab/aoede_review/` for the owner's ear while the game's clip
+  keeps playing (`--approve`, `--redo`, `--keep`); letter sounds and names go back to `voice-lab/aoede_phonics/`.
+  Clips Whisper keeps turning down also get takes in `aoede_review/`.
 - **Text contrast (18 Oct):** every text colour meets WCAG (4.5:1, 3:1 for big glyphs). Use `Palette.Ink`,
   `SoftInk`, `QuietInk`, `AlertOrange`, `WrongRed`, `ProblemRed` or `GoodGreen` for text, and the named fills
   (`BalanceBoxFill`, `GapFill`, …) behind it. Their values live in `BipCore.PaletteColours`; a unit test
