@@ -14,6 +14,9 @@ public sealed class TraceCheckpoints
     /// <summary>The share of checkpoints that finishes the letter: a stroke's very tip may be missed.</summary>
     public const float Enough = 0.9f;
 
+    /// <summary>The fewest checkpoints a letter's shape has (trace_shapes.json; the validator and the screen agree).</summary>
+    public const int Fewest = 3;
+
     private readonly Vector2[] _points;
     private readonly bool[] _touched;
     private readonly bool[] _alone;
@@ -27,7 +30,8 @@ public sealed class TraceCheckpoints
     public TraceCheckpoints(IReadOnlyList<IReadOnlyList<float>> shape, Vector2 centre, float size, float radius,
                             IEnumerable<int>? dots = null)
     {
-        _points = shape.Where(p => p.Count >= 2).Select(p => centre + new Vector2(p[0], p[1]) * size).ToArray();
+        // Every entry is a checkpoint (a malformed one sits in the middle), so the dots' indexes stay right.
+        _points = shape.Select(p => centre + (p.Count >= 2 ? new Vector2(p[0], p[1]) : Vector2.Zero) * size).ToArray();
         _touched = new bool[_points.Length];
         _radius = radius;
         // A stroke of one checkpoint can't be "nearly" traced: it must be touched (the dot of i and j).

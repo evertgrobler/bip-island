@@ -60,10 +60,14 @@ def shape(text, font):
     pad = SIZE // 2
     image = Image.new("L", (int(width) + 2 * pad, height + 2 * pad), 0)
     # Each letter at its place in the line; the hyphen of a split digraph (a-e) is a gap, not a stroke to trace.
+    # The whole string at once, so pairs are kerned as Godot kerns them; then the hyphen's own ink is blanked.
     draw = ImageDraw.Draw(image)
+    draw.text((pad, pad + ascent), text, font=font, fill=255, anchor="ls")
     for i, ch in enumerate(text):
-        if ch != "-":
-            draw.text((pad + font.getlength(text[:i]), pad + ascent), ch, font=font, fill=255, anchor="ls")
+        if ch == "-":
+            left = pad + font.getlength(text[:i + 1]) - font.getlength(ch)
+            box = font.getbbox(ch, anchor="ls")
+            draw.rectangle((left + box[0] - 2, pad + ascent + box[1] - 2, left + box[2] + 2, pad + ascent + box[3] + 2), fill=0)
     ink = np.array(image) > 127
     lines = thin(ink)
     ys, xs = np.nonzero(lines)

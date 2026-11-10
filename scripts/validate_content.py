@@ -11,7 +11,7 @@ shared files. When Content/af/ exists the same checks run again for it (--lang a
 Content/af/asset_manifest.json, with Afrikaans number words, audio/af/script.csv and the
 Afrikaans spelling check (af_spelling.py) in place of the South African English one.
 """
-import csv, hashlib, json, re, subprocess, sys, unicodedata
+import csv, json, re, subprocess, sys, unicodedata
 from collections import deque
 from pathlib import Path
 

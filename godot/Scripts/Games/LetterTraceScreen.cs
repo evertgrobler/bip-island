@@ -65,9 +65,8 @@ public partial class LetterTraceScreen : GameScreen
         _letter.Position = P(0, 60);
         _letter.ZIndex = 10;
         Stage.AddChild(_letter);
-        var shapes = Coordinator.Content?.TraceShapes;
-        _checkpoints = new TraceCheckpoints(Shape(), Numeric(_letter.Position), LetterSize, TouchRadius,
-                                            shapes?.Dots.GetValueOrDefault(_sound.Grapheme));
+        var (shape, dots) = Shape();
+        _checkpoints = new TraceCheckpoints(shape, Numeric(_letter.Position), LetterSize, TouchRadius, dots);
 
         // 120 pt across: the smallest click target allowed.
         _startDot = Buttons.Tappable(Group(
@@ -143,7 +142,12 @@ public partial class LetterTraceScreen : GameScreen
                     _pressedOn = null;
                     SyncStartDot();
                     // The end of a drag counts up to where the button came up.
-                    if (_pen.StrokeEnd is { } end) fresh += _checkpoints.Stroke(end.From, end.To);
+                    if (_pen.StrokeEnd is { } end)
+                    {
+                        fresh += _checkpoints.Stroke(end.From, end.To);
+                        Sparkle(where);
+                    }
+                    if (dotted) Sparkle(where);
                     if (dotted || fresh > 0) Traced(fresh);
                     Tapped(result);
                     return;
@@ -213,14 +217,19 @@ public partial class LetterTraceScreen : GameScreen
     private void Trace(Vector2 point, System.Numerics.Vector2? from)
     {
         if (!CanTrace) return;
+        Sparkle(point);
+        Traced(from is { } start ? _checkpoints.Stroke(start, Numeric(point)) : _checkpoints.Touch(Numeric(point)));
+    }
+
+    /// <summary>A sparkle where the pen traced, fading away.</summary>
+    private void Sparkle(Vector2 point)
+    {
         Color[] colours = [Palette.Sun, Palette.Pink, Palette.Teal, Palette.Purple];
         var dot = new Disc(8 + Coordinator.Rng.NextIndex(7), colours[Coordinator.Rng.NextIndex(colours.Length)]) { Position = point, ZIndex = 30 };
         Stage.AddChild(dot);
         var fade = dot.CreateTween();
         fade.TweenProperty(dot, "modulate:a", 0f, 0.7);
         fade.TweenCallback(Callable.From(dot.QueueFree));
-
-        Traced(from is { } start ? _checkpoints.Stroke(start, Numeric(point)) : _checkpoints.Touch(Numeric(point)));
     }
 
     /// <summary>Checkpoints were reached: a tick, and the end once the letter is traced.</summary>
@@ -263,10 +272,11 @@ public partial class LetterTraceScreen : GameScreen
     /// This grapheme's checkpoints from trace_shapes.json. A grapheme the file doesn't have yet (new content before
     /// scripts/trace_shapes.py ran; the validator catches it) gets one checkpoint in the letter's middle: never gated.
     /// </summary>
-    private List<List<float>> Shape()
+    private (List<List<float>> Shape, List<int>? Dots) Shape()
     {
-        if (Coordinator.Content?.TraceShapes.Shapes.TryGetValue(_sound.Grapheme, out var shape) == true && shape.Count > 0)
-            return shape;
-        return [[0f, 0f]];
+        if (Coordinator.Content?.TraceShapes is { } shapes && shapes.Shapes.TryGetValue(_sound.Grapheme, out var shape)
+            && shape.Count >= TraceCheckpoints.Fewest)
+            return (shape, shapes.Dots.GetValueOrDefault(_sound.Grapheme));
+        return ([[0f, 0f]], null);
     }
 }

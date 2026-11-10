@@ -887,11 +887,11 @@ public static class WalkTest
                 // The pen starts drawing once the press has moved past a click's wobble.
                 PenButton(trace, points[0] + new Vector2(0, 40), true);
                 foreach (var point in points.Take(4)) PenMove(point, held: true);
-                PenButton(trace, points[3], false);
+                PenButton(trace, points[3 % points.Count], false);
                 Check("dragging with the button held traces", trace.TouchedCount >= 4 && trace.PenMode == BipCore.TracePenMode.Idle,
                       $"touched {trace.TouchedCount}, pen {trace.PenMode}");
                 var dragged = trace.TouchedCount;
-                PenMove(points[5], held: false);
+                PenMove(points[5 % points.Count], held: false);
                 Check("after letting go, moving draws nothing", trace.TouchedCount == dragged && trace.PenMode == BipCore.TracePenMode.Idle);
 
                 // A trackpad: two clicks away from the start dot, then the dot wiggles for a hint.
@@ -901,11 +901,11 @@ public static class WalkTest
                 Check("two clicks away from the start dot: the dot wiggles for a hint", trace.StartDotHinted && trace.PenMode == BipCore.TracePenMode.Idle);
                 PenClick(trace.StartDotOnScreen);
                 Check("a click on the start dot starts tap mode", trace.PenMode == BipCore.TracePenMode.Following && !trace.StartDotHinted);
-                PenMove(points[4], held: false);
-                PenClick(points[4]);
+                PenMove(points[4 % points.Count], held: false);
+                PenClick(points[4 % points.Count]);
                 Check("clicking again lifts the pen", trace.PenMode == BipCore.TracePenMode.Idle);
                 var touched = trace.TouchedCount;
-                PenMove(points[6], held: false);
+                PenMove(points[6 % points.Count], held: false);
                 Check("a lifted pen draws nothing", trace.TouchedCount == touched);
                 // A wobbly click (3 points) away from the letter draws nothing.
                 PenButton(trace, paper, true);
