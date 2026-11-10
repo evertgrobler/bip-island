@@ -1,0 +1,1702 @@
+[
+  {
+    "step": "a first run opens the setup guide, with the game paused behind it",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "on a first run the practice step can\u0027t be skipped (the parent controls come after it)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the hold ring shows above the guide while Esc is held",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "holding Esc in the guide opens the real question",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right answer comes back to the guide, not the parent area",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a hold carried past the practice step doesn\u0027t open the gate",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the passcode step is the parent area\u0027s passcode form",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the first child added takes over \u0022Player 1\u0022",
+    "ok": true,
+    "detail": "Thabo"
+  },
+  {
+    "step": "the play-time step shows the settings",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "after the tour comes All set",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "handing over ends the guide and saves that it\u0027s done",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "with one child the game opens on the map",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the guide doesn\u0027t open again by itself",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "from Settings the practice step can be skipped",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a hold running when the guide ends doesn\u0027t open the gate",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "skipping the guide from Settings goes back to the same screen",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "one child: the game opens on the map",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the map plays its music",
+    "ok": true,
+    "detail": "music_map"
+  },
+  {
+    "step": "letters island opens",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "tapping a sound stone opens Meet the Sound",
+    "ok": true,
+    "detail": "showing MeetSoundScreen"
+  },
+  {
+    "step": "Meet the Sound introduces the sound, then shows the green arrow",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the sound is marked as met and saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Meet the Sound goes back to the island",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the play button starts Bip\u0027s suggested activity",
+    "ok": true,
+    "detail": "showing MeetSoundScreen"
+  },
+  {
+    "step": "the suggestion is a Letters game",
+    "ok": true,
+    "detail": "showing MeetSoundScreen"
+  },
+  {
+    "step": "home from the suggested activity goes back to letters island",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "Sound Hunt opens for a sound",
+    "ok": true,
+    "detail": "showing SoundHuntScreen"
+  },
+  {
+    "step": "Sound Hunt shows three pictures",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "two misses: the hint, and still on the question",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right picture after misses: no star, but the answer is saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Sound Hunt goes back to letters island",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "Bubble Pop opens for a sound",
+    "ok": true,
+    "detail": "showing BubblePopScreen"
+  },
+  {
+    "step": "Bubble Pop floats a bubble with the right letter",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "popping the right bubble earns a star",
+    "ok": true,
+    "detail": "stars 0 \u2192 1"
+  },
+  {
+    "step": "home from Bubble Pop goes back to letters island",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "Letter Trace opens from the island",
+    "ok": true,
+    "detail": "showing LetterTraceScreen"
+  },
+  {
+    "step": "tap mode starts from the start dot",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "one click on home goes home while the pen follows",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "Letter Trace opens from the island",
+    "ok": true,
+    "detail": "showing LetterTraceScreen"
+  },
+  {
+    "step": "Letter Trace is ready to trace",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "dragging with the button held traces",
+    "ok": true,
+    "detail": "touched 4, pen Idle"
+  },
+  {
+    "step": "after letting go, moving draws nothing",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "clicks on the letter are not misses",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "two clicks away from the start dot: the dot wiggles for a hint",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a click on the start dot starts tap mode",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "clicking again lifts the pen",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a lifted pen draws nothing",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wobbly click draws nothing",
+    "ok": true,
+    "detail": "touched 5 \u2192 5"
+  },
+  {
+    "step": "tap mode hides the start dot",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a drag that takes over from tap mode brings the start dot back",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "no star until the letter is finished",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "tracing round the letter in tap mode earns a star",
+    "ok": true,
+    "detail": "stars 1 \u2192 2"
+  },
+  {
+    "step": "a finished trace stops the pen",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Letter Trace ends on the end card, with a picture sticker for finishing",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Letter Trace goes back to the island",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "with no foods yet, there\u0027s no monster button",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "after learning groups 1-3, group 4 is open",
+    "ok": true,
+    "detail": "highest group 4"
+  },
+  {
+    "step": "letters island again, now with group 4 open",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "Feed the Monster opens from the island",
+    "ok": true,
+    "detail": "showing FeedMonsterScreen"
+  },
+  {
+    "step": "Feed the Monster shows foods",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong food goes back, no star",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "dragging the right food to the monster is saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the next food comes",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a food carried away and put back isn\u0027t fed",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "clicking a food picks it up",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "clicking away from the mouth puts it back, no miss",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong food clicked to the mouth is a miss",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right food clicked to the mouth is eaten",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "then the next food comes",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a clicked food is in hand",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home works with a food in hand, and goes back to letters island",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "home goes back to the map",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "numbers island opens",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "tapping Bip on numbers island starts its first game",
+    "ok": true,
+    "detail": "showing CountTapScreen"
+  },
+  {
+    "step": "the music goes quiet in a numbers game",
+    "ok": true,
+    "detail": "quiet"
+  },
+  {
+    "step": "home from that game goes back to numbers island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "home from numbers island",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "words island opens",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "tapping Bip on words island starts its first game",
+    "ok": true,
+    "detail": "showing SoundButtonsScreen"
+  },
+  {
+    "step": "the music goes quiet in a words game",
+    "ok": true,
+    "detail": "quiet"
+  },
+  {
+    "step": "home from that game goes back to words island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "home from words island",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "coding island opens",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "tapping Bip on coding island starts its first game",
+    "ok": true,
+    "detail": "showing MorningOrderScreen"
+  },
+  {
+    "step": "the music goes quiet in a coding game",
+    "ok": true,
+    "detail": "quiet"
+  },
+  {
+    "step": "home from that game goes back to coding island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "home from coding island",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "numbers island opens for a game",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Count \u0026 Tap opens from the island",
+    "ok": true,
+    "detail": "showing CountTapScreen"
+  },
+  {
+    "step": "Count \u0026 Tap shows its level badge",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Count \u0026 Tap shows animals to count",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "counting every animal brings up three numerals",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right numeral earns a star",
+    "ok": true,
+    "detail": "stars 62 \u2192 63"
+  },
+  {
+    "step": "the answer is saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the game\u0027s level is tracked",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home in a game goes back to its island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Quick Look opens from the island",
+    "ok": true,
+    "detail": "showing QuickLookScreen"
+  },
+  {
+    "step": "Quick Look\u0027s dots flash, then the numerals show",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong numeral stays on the question",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "right after a miss: no star, but the answer still counts",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the end card shows the new picture sticker for finishing",
+    "ok": true,
+    "detail": "showing QuickLookScreen"
+  },
+  {
+    "step": "eight questions make a visit: the stars are counted and Bip goes back to the island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "finishing a game wins a picture sticker, and every 10 stars another",
+    "ok": true,
+    "detail": "stickers 7 \u2192 9, stars 70"
+  },
+  {
+    "step": "the stickers are saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "seven first-try answers, seven stars",
+    "ok": true,
+    "detail": "stars 63 \u2192 70"
+  },
+  {
+    "step": "both games are in the recent games",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Block Towers opens from the island",
+    "ok": true,
+    "detail": "showing BlockTowersScreen"
+  },
+  {
+    "step": "Block Towers asks for a tower",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "one cube too many boops and gives no star",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "taking the extra cube off, the tower is right: the answer is saved, no star after a miss",
+    "ok": true,
+    "detail": "stars 70 \u2192 70"
+  },
+  {
+    "step": "...and the next tower comes",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right tower first time earns a star",
+    "ok": true,
+    "detail": "stars 70 \u2192 71"
+  },
+  {
+    "step": "home from Block Towers goes back to numbers island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Bip\u0027s Balance opens from the island",
+    "ok": true,
+    "detail": "showing BipsBalanceScreen"
+  },
+  {
+    "step": "Bip\u0027s Balance shows a sum and three cards",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong card stays on the same sum, with no star",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right card levels the see-saw",
+    "ok": true,
+    "detail": "tilt 0"
+  },
+  {
+    "step": "right after a miss: no star, but the answer still counts",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "...and the next sum comes",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right card first time earns a star",
+    "ok": true,
+    "detail": "stars 71 \u2192 72"
+  },
+  {
+    "step": "home from Bip\u0027s Balance goes back to numbers island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Picnic Plates opens from the island",
+    "ok": true,
+    "detail": "showing PicnicPlatesScreen"
+  },
+  {
+    "step": "Picnic Plates shows plates and three cards",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong card stays on the same plates",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right card counts for equal groups",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Picnic Plates goes back to numbers island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Picnic Plates opens again, at sharing",
+    "ok": true,
+    "detail": "showing PicnicPlatesScreen"
+  },
+  {
+    "step": "sharing starts with the basket, no cards yet",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "each click of the basket deals a round; then the cards come",
+    "ok": true,
+    "detail": "0 deals left"
+  },
+  {
+    "step": "the right share counts for sharing",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Picnic Plates (sharing) goes back to numbers island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Number Machine opens from the island",
+    "ok": true,
+    "detail": "showing NumberMachineScreen"
+  },
+  {
+    "step": "Number Machine shows a number going in and three cards",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the times machine shows its groups",
+    "ok": true,
+    "detail": "4 of 4"
+  },
+  {
+    "step": "a wrong card stays on the same number",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right card counts for the tables",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Number Machine goes back to numbers island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Number Machine opens again, at what\u0027s the rule",
+    "ok": true,
+    "detail": "showing NumberMachineScreen"
+  },
+  {
+    "step": "the rule level shows rule cards",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right rule card counts for times and divide",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Number Machine (rules) goes back to numbers island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "home from numbers island after the games",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "words island opens for a game",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Sound Buttons opens from the island",
+    "ok": true,
+    "detail": "showing SoundButtonsScreen"
+  },
+  {
+    "step": "Sound Buttons shows letter buttons and three pictures",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a letter button says its sound and stays on the question",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong picture stays on the question, no star",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right picture after a miss: no star, but the answer is saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the next question comes",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Sound Buttons goes back to words island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Word Builder opens from the island",
+    "ok": true,
+    "detail": "showing WordBuilderScreen"
+  },
+  {
+    "step": "Word Builder shows a picture, spaces and tiles",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong word stays on the question, no star",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "tapping placed tiles sends them back",
+    "ok": true,
+    "detail": ",,"
+  },
+  {
+    "step": "a drag whose release was missed drops the tile instead of following the pointer",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "dragging a tile drops it in the space",
+    "ok": true,
+    "detail": "r,,"
+  },
+  {
+    "step": "the right word is sounded out and saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the next word comes",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Word Builder goes back to words island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Word Rocket opens from the island",
+    "ok": true,
+    "detail": "showing WordRocketScreen"
+  },
+  {
+    "step": "Word Rocket shows a craft with a window for each letter",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong key boops and types nothing",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "two misses on a letter: the right key glows",
+    "ok": true,
+    "detail": "glowing b"
+  },
+  {
+    "step": "Space replays, Enter and numbers type nothing",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "an upper-case key counts, and shows lower case",
+    "ok": true,
+    "detail": "b"
+  },
+  {
+    "step": "the last letter launches the craft; after misses no star, but the answer counts",
+    "ok": true,
+    "detail": "typed b, stars 74 \u2192 74"
+  },
+  {
+    "step": "the next question comes with empty windows",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "holding Esc in Word Rocket opens the parent gate, and nothing is typed",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Word Rocket goes back to words island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Word Rocket opens again at the word level",
+    "ok": true,
+    "detail": "showing WordRocketScreen"
+  },
+  {
+    "step": "the right key fills the first window",
+    "ok": true,
+    "detail": "d"
+  },
+  {
+    "step": "Backspace takes the letter back",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a word typed right first time launches and earns a star",
+    "ok": true,
+    "detail": "dig: stars 74 \u2192 75"
+  },
+  {
+    "step": "home from Word Rocket goes back to words island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Bip\u0027s Stories opens from the island",
+    "ok": true,
+    "detail": "showing StoriesScreen"
+  },
+  {
+    "step": "the story opens on its first page, with its sentences",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "clicking a sentence reads it again and stays on the page",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "after a clicked sentence the arrow still glows to turn the page",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the arrow turns to page 2",
+    "ok": true,
+    "detail": "page 1"
+  },
+  {
+    "step": "after the last page come the questions",
+    "ok": true,
+    "detail": "Asking, 2 pages"
+  },
+  {
+    "step": "a wrong answer boops, no star, no hint yet",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "two misses bring back the scene that holds the answer",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right answer after the hint: no star, but the answer is saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the next question or story comes after the right answer",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a quick wrong-then-right click doesn\u0027t freeze the story: the game moves on",
+    "ok": true,
+    "detail": "rounds 2 \u2192 3, locked False"
+  },
+  {
+    "step": "the quick wrong-then-right click test ran",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Bip\u0027s Stories goes back to words island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Bip\u0027s Stories ends back on words island",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from words island after the games",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "coding island opens for a game",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Morning Order opens from the island",
+    "ok": true,
+    "detail": "showing MorningOrderScreen"
+  },
+  {
+    "step": "Morning Order shows its cards",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "tapping a card sends it to space 1",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "tapping a placed card sends it back",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong order slides back and stays on the question, no star",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right order is saved and the next routine comes",
+    "ok": true,
+    "detail": "placed 0"
+  },
+  {
+    "step": "home from Morning Order goes back to coding island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Bip\u0027s Path opens from the island",
+    "ok": true,
+    "detail": "showing BipsPathScreen"
+  },
+  {
+    "step": "Bip\u0027s Path shows a grid and blocks",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a block snaps in, and take-back removes it",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Go with no blocks does nothing",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right-arrow key snaps a block in and Backspace takes it back",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the working program is in the strip",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Bip walks the program, leaving footprints, and it counts",
+    "ok": true,
+    "detail": "footprints 3"
+  },
+  {
+    "step": "the next puzzle comes",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from Bip\u0027s Path goes back to coding island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "home from coding island after the games",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "art island opens",
+    "ok": true,
+    "detail": "showing ArtIslandScreen"
+  },
+  {
+    "step": "Shape Builder opens from the island",
+    "ok": true,
+    "detail": "showing ShapeBuilderScreen"
+  },
+  {
+    "step": "Shape Builder shows three shape cards",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong shape boops and gives no star",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right shape after a miss: no star, but the answer is saved",
+    "ok": true,
+    "detail": "stars 76 \u2192 76"
+  },
+  {
+    "step": "home from Shape Builder goes back to art island",
+    "ok": true,
+    "detail": "showing ArtIslandScreen"
+  },
+  {
+    "step": "Paint Pots opens from the island",
+    "ok": true,
+    "detail": "showing PaintPotsScreen"
+  },
+  {
+    "step": "Paint Pots shows its pots",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "mixing the right two pots earns a star",
+    "ok": true,
+    "detail": "stars 76 \u2192 77"
+  },
+  {
+    "step": "home from Paint Pots goes back to art island",
+    "ok": true,
+    "detail": "showing ArtIslandScreen"
+  },
+  {
+    "step": "Mirror Magic opens from the island",
+    "ok": true,
+    "detail": "showing MirrorMagicScreen"
+  },
+  {
+    "step": "Mirror Magic shows its pictures",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the picture that\u0027s the same on both sides earns a star",
+    "ok": true,
+    "detail": "stars 77 \u2192 78"
+  },
+  {
+    "step": "home from Mirror Magic goes back to art island",
+    "ok": true,
+    "detail": "showing ArtIslandScreen"
+  },
+  {
+    "step": "home from art island after the games",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the Language Island sleeps out of sight until the other language is in the game",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the map with the Language Island",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the Language Island opens",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "an English child hears Afrikaans words from the Afrikaans folder, hints from their own",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Show Me opens from the island",
+    "ok": true,
+    "detail": "showing ShowMeScreen"
+  },
+  {
+    "step": "Show Me shows its pictures",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the picture Bip named earns a star",
+    "ok": true,
+    "detail": "stars 78 \u2192 79"
+  },
+  {
+    "step": "home from Show Me goes back to the Language Island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "What Is It? opens from the island",
+    "ok": true,
+    "detail": "showing WhatIsItScreen"
+  },
+  {
+    "step": "What Is It? shows its word bubbles",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong word boops and gives no star",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right word after a miss: no star, but the answer is saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from What Is It? goes back to the Language Island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Bip\u0027s Day opens from the island",
+    "ok": true,
+    "detail": "showing BipsDayScreen"
+  },
+  {
+    "step": "Bip\u0027s Day shows its pictures",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the moment Bip described earns a star",
+    "ok": true,
+    "detail": "stars 79 \u2192 80"
+  },
+  {
+    "step": "home from Bip\u0027s Day goes back to the Language Island",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "home from the Language Island",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the map, now as an Afrikaans child",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the Language Island opens for an Afrikaans child",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Afrikaans child, Show Me round 1: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 80 \u2192 81"
+  },
+  {
+    "step": "Afrikaans child, Show Me round 2: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 81 \u2192 82"
+  },
+  {
+    "step": "Afrikaans child, Show Me round 3: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 82 \u2192 83"
+  },
+  {
+    "step": "Afrikaans child, Show Me round 4: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 83 \u2192 84"
+  },
+  {
+    "step": "home from Show Me goes back to the Language Island (Afrikaans child)",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Afrikaans child, What Is It? round 1: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 84 \u2192 85"
+  },
+  {
+    "step": "Afrikaans child, What Is It? round 2: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 85 \u2192 86"
+  },
+  {
+    "step": "Afrikaans child, What Is It? round 3: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 86 \u2192 87"
+  },
+  {
+    "step": "Afrikaans child, What Is It? round 4: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 87 \u2192 88"
+  },
+  {
+    "step": "home from What Is It? goes back to the Language Island (Afrikaans child)",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Afrikaans child, Bip\u0027s Day round 1: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 88 \u2192 89"
+  },
+  {
+    "step": "Afrikaans child, Bip\u0027s Day round 2: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 89 \u2192 90"
+  },
+  {
+    "step": "Afrikaans child, Bip\u0027s Day round 3: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 90 \u2192 91"
+  },
+  {
+    "step": "Afrikaans child, Bip\u0027s Day round 4: the right answer earns a star",
+    "ok": true,
+    "detail": "stars 91 \u2192 92"
+  },
+  {
+    "step": "home from Bip\u0027s Day goes back to the Language Island (Afrikaans child)",
+    "ok": true,
+    "detail": "showing GameIslandScreen"
+  },
+  {
+    "step": "Afrikaans child: every clip Bip said on the Language Island is in the build",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Afrikaans child: the words to learn are said in English",
+    "ok": true,
+    "detail": "res://assets/audio/learn_grey.ogg, res://assets/audio/learn_pink.ogg, res://assets/audio/learn_pink.ogg, res://assets/audio/learn_girl.ogg, res://assets/audio/learn_girl.ogg, res://assets/audio/learn_cap.ogg, res://assets/audio/learn_white.ogg, res://assets/audio/learn_orange.ogg, res://assets/audio/learn_black.ogg, res://assets/audio/learn_purple.ogg, res://assets/audio/learn_n1.ogg, res://assets/audio/learn_queen.ogg"
+  },
+  {
+    "step": "Afrikaans child: Bip\u0027s instructions are in Afrikaans",
+    "ok": true,
+    "detail": "res://assets/audio/af/vo_language_island.ogg, res://assets/audio/af/vo_show_me.ogg, res://assets/audio/af/vo_language_island.ogg, res://assets/audio/af/vo_what_is_it.ogg, res://assets/audio/af/vo_language_island.ogg, res://assets/audio/af/vo_bips_day.ogg, res://assets/audio/vo_bedtime_3.ogg, res://assets/audio/vo_dogwalk_4.ogg, res://assets/audio/vo_dogwalk_4.ogg, res://assets/audio/vo_appletree_3.ogg, res://assets/audio/vo_appletree_3.ogg, res://assets/audio/vo_sandcastle_2.ogg, res://assets/audio/af/vo_language_island.ogg"
+  },
+  {
+    "step": "Afrikaans child played the Language Island\u0027s games",
+    "ok": true,
+    "detail": "12 rounds"
+  },
+  {
+    "step": "home from the Language Island (Afrikaans child)",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the sticker book opens",
+    "ok": true,
+    "detail": "showing StickerScreen"
+  },
+  {
+    "step": "the sticker book opens on the child\u0027s picture stickers",
+    "ok": true,
+    "detail": "11 picture stickers"
+  },
+  {
+    "step": "the sticker page turns",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "home from the sticker book",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the mystery box is there once a day",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the mystery box\u0027s stars don\u0027t make up 10, but the sticker that was waiting pops out",
+    "ok": true,
+    "detail": "stars 92 \u002B 5, stickers 11 \u2192 11"
+  },
+  {
+    "step": "the mystery box gives 5 stars, once",
+    "ok": true,
+    "detail": "stars 92 \u2192 97"
+  },
+  {
+    "step": "the stars are saved",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "arrow keys and Enter open an island",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "the island Enter chose is open",
+    "ok": true,
+    "detail": "showing LettersIslandScreen"
+  },
+  {
+    "step": "home after keyboard play",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "two children: the game opens on Who\u0027s playing?",
+    "ok": true,
+    "detail": "showing ProfilesScreen"
+  },
+  {
+    "step": "choosing a child opens the map",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "the chosen child is playing",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the map shows the child\u0027s badge",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the badge goes back to Who\u0027s playing?",
+    "ok": true,
+    "detail": "showing ProfilesScreen"
+  },
+  {
+    "step": "during a break the map shows Bip charging",
+    "ok": true,
+    "detail": "showing ChargingScreen"
+  },
+  {
+    "step": "during a break a game shows Bip charging instead",
+    "ok": true,
+    "detail": "showing ChargingScreen"
+  },
+  {
+    "step": "...and doesn\u0027t count as played",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the charging screen tells grown-ups when games open again",
+    "ok": true,
+    "detail": "Games open again at 16:49 (in 1 minute)."
+  },
+  {
+    "step": "the battery starts empty",
+    "ok": true,
+    "detail": "0 bars"
+  },
+  {
+    "step": "when the break ends, Bip wakes up and the map opens by itself",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "with a daily maximum, a break still shows the battery first",
+    "ok": true,
+    "detail": "showing ChargingScreen"
+  },
+  {
+    "step": "...in charging mode",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "when the day\u0027s play is used up, the map shows Bip asleep",
+    "ok": true,
+    "detail": "showing ChargingScreen"
+  },
+  {
+    "step": "...with its own words: games open again tomorrow, even if a break was showing",
+    "ok": true,
+    "detail": "Games open again tomorrow."
+  },
+  {
+    "step": "with no daily maximum the map opens again",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "Lily\u0027s break: Bip charging",
+    "ok": true,
+    "detail": "showing ChargingScreen"
+  },
+  {
+    "step": "the charging screen has the badge for Who\u0027s playing?",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the badge on the charging screen goes to Who\u0027s playing?",
+    "ok": true,
+    "detail": "showing ProfilesScreen"
+  },
+  {
+    "step": "Lily shows as resting, the other child doesn\u0027t",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "picking someone else while Lily rests asks a grown-up first",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "after the grown-up\u0027s answer, the other child plays: the map opens",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "...as the other child, with their own break clock",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "back to Who\u0027s playing?",
+    "ok": true,
+    "detail": "showing ProfilesScreen"
+  },
+  {
+    "step": "Who\u0027s playing? is said in the young voice whoever played last",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "tapping resting Lily shows her charging, and the other child stays the one playing",
+    "ok": true,
+    "detail": "ChargingScreen"
+  },
+  {
+    "step": "...in her own voice band",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "...and none of that time counts as Lily\u0027s play",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "from Lily\u0027s charging screen, back to Who\u0027s playing?",
+    "ok": true,
+    "detail": "showing ProfilesScreen"
+  },
+  {
+    "step": "the child who only looked at Lily goes back to their own picture with no grown-up",
+    "ok": true,
+    "detail": "MapScreen"
+  },
+  {
+    "step": "reopened while Lily rests: Who\u0027s playing?",
+    "ok": true,
+    "detail": "showing ProfilesScreen"
+  },
+  {
+    "step": "straight after opening, the other child starts without a grown-up",
+    "ok": true,
+    "detail": "MapScreen"
+  },
+  {
+    "step": "...and Lily is still on her break",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Lily\u0027s break ended: the map opens",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "Lily rests (15 minutes), the other child rests (3 seconds): Who\u0027s playing?",
+    "ok": true,
+    "detail": "showing ProfilesScreen"
+  },
+  {
+    "step": "Lily can look at the other child\u0027s charging screen; she stays the one at the computer",
+    "ok": true,
+    "detail": "ChargingScreen"
+  },
+  {
+    "step": "when the other child\u0027s break ends first, Who\u0027s playing? opens, not the map",
+    "ok": true,
+    "detail": "ProfilesScreen"
+  },
+  {
+    "step": "...and playing as them asks a grown-up, because Lily is still resting",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "...and the question names Lily as the one on a break",
+    "ok": true,
+    "detail": "Lily is having a break. Let Thabo play now?"
+  },
+  {
+    "step": "Who\u0027s playing? again",
+    "ok": true,
+    "detail": "showing ProfilesScreen"
+  },
+  {
+    "step": "ending the break while looking at the other child ends Lily\u0027s break, not theirs",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Lily\u0027s break ended: the map opens as Lily",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "...as Lily",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a short Esc press doesn\u0027t open the gate",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "holding Esc for 3 seconds opens the gate",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the game is paused behind the gate",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a wrong answer keeps the gate shut",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the right answer opens the parent area",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a passcode needs two matching boxes",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a parent can set a passcode",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a parent can add a child",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "an Afrikaans child\u0027s game loads in Afrikaans",
+    "ok": true,
+    "detail": "Afrikaans, content Afrikaans, voice res://assets/audio/af/vo_welcome.ogg"
+  },
+  {
+    "step": "and back in English",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "an eight-year-old hears Bip\u0027s older voice lines",
+    "ok": true,
+    "detail": "vo_welcome_big"
+  },
+  {
+    "step": "...a four-year-old the young ones",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "...and back for the child\u0027s own age",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a parent can remove a child",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "every parent tab opens",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "a fresh Esc press goes back to the game",
+    "ok": true,
+    "detail": "phase Closed, paused False"
+  },
+  {
+    "step": "the map is back after the parent area",
+    "ok": true,
+    "detail": "showing MapScreen"
+  },
+  {
+    "step": "with a passcode set the gate asks for it",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the passcode opens the parent area",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the update button asks the grown-up question first",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "after the gate the update installs (or Settings says why not)",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "the game carries on after the parent area",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "Bip\u0027s sentence waits while the gate is open",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "step": "...and finishes once the gate closes, so a game never gets stuck",
+    "ok": true,
+    "detail": ""
+  }
+]

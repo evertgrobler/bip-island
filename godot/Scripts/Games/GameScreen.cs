@@ -33,7 +33,11 @@ public abstract partial class GameScreen : BaseScreen
         if (count > 1) ShowLevelBadge(Coordinator.CurrentVisit().LevelBefore, count);
     }
 
-    protected override void GoHome() => Coordinator.ShowIsland(HomeIsland);
+    /// <summary>
+    /// Home from a game goes back to its island without the island's welcome: the child was just there (owner, 10 Nov
+    /// 2026: Bip said "Welkom op Taal-eiland!" again after every game). The welcome is for arriving from the map.
+    /// </summary>
+    protected override void GoHome() => Coordinator.ShowIsland(HomeIsland, greet: false);
 
     /// <summary>Records an answer (first try counts) against its skill and sound, and the game's level.</summary>
     protected MasteryChange Record(bool correct, string skillId, string? soundId = null) =>
