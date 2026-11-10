@@ -143,9 +143,11 @@
   front, so a click can't reach another app on a second display. Windows: `Input.MouseMode` Confined (the
   system's cursor clip). Mac (9 Nov): Confined slowed the Mac's mouse, so the mouse stays the Mac's own and
   `KidLock.FenceMouse` (every frame, `Boot._Process`, the point from `KidLockRules.FencePoint`) puts it back when it
-  leaves the window, and every other screen is covered by a borderless, always-on-top, unfocusable paper window
-  of the game's own, so a flick that beats the fence lands on the game. The covers step aside (hidden) while another program has
-  the front and come back with the game, which also takes the keys back; they're checked against the screens once
+  leaves the window, and every other screen is covered by a borderless, unfocusable paper window of the game's
+  own (floating, above other programs), so a flick that beats the fence lands on paper. `KidLockRules.ScreensToCover`
+  picks the screens: never the main one, never the one the game overlaps most. The game's window floats too and is
+  raised above the covers, and a cover that still lands over the game is taken away. The covers step aside
+  (hidden) while another program has the front and come back with the game, which also takes the keys back; they're checked against the screens once
   a second (plugged in, swapped or moved). The lock check reports `mouseKeptIn`
   and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a
   Mac it reports the fence and that every other screen has its cover). Setting the mode again goes through
@@ -719,3 +721,11 @@
   cursor clip, which doesn't slow the mouse).
   Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
   every other screen now gets a paper cover window of the game's own (as the Swift app had).
+- **9 Nov: 0.2.256 hid the game on a MacBook with a second screen.** The owner's photo showed the paper cover on the
+  MacBook itself, over the game: the cover chose screens by `WindowGetCurrentScreen`'s number, which pointed at the
+  MacBook's own screen, and covers were always on top. Now `KidLockRules.ScreensToCover` (tested) covers every
+  screen except the main one and the one the game overlaps most (a screen the window only grazes still gets its
+  cover); a game that drifts off the main screen is put back on it; the covers stay floating above other programs
+  and the game's window floats above them (it stops floating while another program has the front); a cover that
+  the system put over a real share of the game (`KidLockRules.CoverHidesGame`, by the cover's position as the
+  system reports it) is taken away. Until the fix: unplug the second screen, or open with Option held.
