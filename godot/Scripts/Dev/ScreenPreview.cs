@@ -90,6 +90,11 @@ public partial class ScreenPreview : Node
             game.AddChildProfile("Lily", 5, "penguin");
             game.AddChildProfile("Sam", 7, "tortoise");
         }
+        // "--bip-language af": the sample child plays in Afrikaans (screenshots of the Afrikaans game).
+        var language = Array.IndexOf(Boot.UserArgs, "--bip-language");
+        if (language >= 0 && language + 1 < Boot.UserArgs.Length && Boot.UserArgs[language + 1] == "af"
+            && game.CurrentChild is { } child)
+            game.UpdateChild(child with { Language = HomeLanguage.Afrikaans });
         // Letters games practise sounds the child has met: the sample child has learnt groups 1-3
         // (Feed the Monster's foods start at group 4).
         if (Screen is "sound_hunt" or "bubble_pop" or "feed_the_monster") LearnGroups(game, 3);

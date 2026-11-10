@@ -29,7 +29,7 @@ public partial class MapScreen : BaseScreen
         DrawSea();
         _islands[Island.Letters] = AddIsland("letters", P(-400, 170), Palette.Grass, Coordinator.LettersOpen, 600, n =>
         {
-            var letters = Sketch.Letter("s a t", 110, shadow: Palette.Orange);
+            var letters = Sketch.Letter(Texts.LettersSign(ScreenLanguage), 110, shadow: Palette.Orange);
             letters.Position = P(0, 30);
             n.AddChild(letters);
         });

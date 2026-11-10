@@ -208,7 +208,7 @@ public partial class GameIslandScreen : BaseScreen
         Node2D[] games = _island switch
         {
             Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton(), PicnicButton(), MachineButton()],
-            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton(), StoriesButton()],
+            Island.Words => [SoundButtonsButton(Texts.SignWord(ScreenLanguage)), BuilderButton(Texts.SignWord(ScreenLanguage)), RocketButton(), StoriesButton()],
             Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
@@ -316,10 +316,10 @@ public partial class GameIslandScreen : BaseScreen
         return machine;
     }
 
-    private static Node2D SoundButtonsButton()
+    private static Node2D SoundButtonsButton(string word)
     {
         var buttons = new Node2D();
-        foreach (var (i, letter) in Indexed("c", "a", "t"))
+        foreach (var (i, letter) in Indexed([.. word.Select(c => c.ToString())]))
         {
             var x = (i - 1) * 130.0;
             buttons.AddChild(Pen(Ellipse(P(x, 0), 62, 62), (ulong)(812 + i), fill: Palette.Card, lineWidth: 5));
@@ -330,10 +330,10 @@ public partial class GameIslandScreen : BaseScreen
         return Plate("buttons", 819, buttons, 0.8f, WordsPlate);
     }
 
-    private static Node2D BuilderButton()
+    private static Node2D BuilderButton(string word)
     {
         var builder = new Node2D();
-        foreach (var (i, letter) in Indexed("c", "a", "t"))
+        foreach (var (i, letter) in Indexed([.. word.Select(c => c.ToString())]))
         {
             var x = (i - 1) * 120.0;
             builder.AddChild(Pen(RoundRect(R(x - 52, -52, 104, 104), 18), (ulong)(815 + i), fill: Palette.Teal, lineWidth: 5));
