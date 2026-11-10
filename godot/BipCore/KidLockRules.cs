@@ -51,6 +51,50 @@ public static class KidLockRules
     public const ulong MacOptionKeyFlag = 1 << 19;
 
     /// <summary>
+    /// Which screens the Mac's paper covers go on: every screen except the main one (where the lock puts the game)
+    /// and the one the game's window overlaps most. Rectangles are (x, y, width, height) in screen pixels. A screen
+    /// the window only grazes (a pixel of rounding, a moment of rearranging) still gets its cover. Owner's MacBook
+    /// with a second screen, 0.2.256 (9 Nov 2026): the cover landed on the game's own screen.
+    /// </summary>
+    public static List<int> ScreensToCover((int X, int Y, int W, int H) window,
+                                           IReadOnlyList<(int X, int Y, int W, int H)> screens, int main)
+    {
+        var game = GameScreen(window, screens);
+        var cover = new List<int>();
+        for (var i = 0; i < screens.Count; i++)
+            if (i != main && i != game && screens[i].W > 0 && screens[i].H > 0) cover.Add(i);
+        return cover;
+    }
+
+    /// <summary>The screen the game's window overlaps most, or -1 when it overlaps none.</summary>
+    public static int GameScreen((int X, int Y, int W, int H) window, IReadOnlyList<(int X, int Y, int W, int H)> screens)
+    {
+        var game = -1;
+        long most = 0;
+        for (var i = 0; i < screens.Count; i++)
+        {
+            var area = Overlap(window, screens[i]);
+            if (area > most) (most, game) = (area, i);
+        }
+        return game;
+    }
+
+    /// <summary>
+    /// Whether a cover really hides the game: it covers at least a twentieth of the game's window. A cover that only
+    /// grazes the window's edge (a pixel of rounding) stays, as <see cref="ScreensToCover"/> wants it.
+    /// </summary>
+    public static bool CoverHidesGame((int X, int Y, int W, int H) cover, (int X, int Y, int W, int H) window) =>
+        Overlap(cover, window) * 20 >= (long)Math.Max(window.W, 0) * Math.Max(window.H, 0) && Overlap(cover, window) > 0;
+
+    /// <summary>How many pixels two (x, y, width, height) rectangles share.</summary>
+    public static long Overlap((int X, int Y, int W, int H) a, (int X, int Y, int W, int H) b)
+    {
+        long w = Math.Min(a.X + a.W, b.X + b.W) - Math.Max(a.X, b.X);
+        long h = Math.Min(a.Y + a.H, b.Y + b.H) - Math.Max(a.Y, b.Y);
+        return w > 0 && h > 0 ? w * h : 0;
+    }
+
+    /// <summary>
     /// The Mac's mouse fence: where a mouse at (x, y) goes back to, inside the game window at (left, top) of
     /// width by height (screen pixels), or null when it is already inside and must be left alone.
     /// </summary>

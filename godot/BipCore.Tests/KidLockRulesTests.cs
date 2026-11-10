@@ -56,4 +56,66 @@ public sealed class KidLockRulesTests
     [Fact]
     public void TheMacFenceWorksForAWindowAwayFromTheOrigin() =>
         Assert.Equal((100, 249), KidLockRules.FencePoint(50, 400, 100, 50, 800, 200));
+
+    private static readonly (int, int, int, int) MacBook = (0, 0, 1728, 1117);
+    private static readonly (int, int, int, int) Monitor = (1728, 0, 1920, 1080);
+
+    [Fact]
+    public void TheCoverGoesOnTheOtherScreenNeverTheGames()
+    {
+        // The owner's setup: the MacBook (main, the game on it) and a monitor to its right.
+        Assert.Equal([1], KidLockRules.ScreensToCover(MacBook, [MacBook, Monitor], main: 0));
+    }
+
+    [Fact]
+    public void TheMainScreenIsNeverCoveredEvenIfTheWindowLooksElsewhere()
+    {
+        // A window reading that hasn't caught up yet (still on the monitor): neither screen gets a cover.
+        Assert.Empty(KidLockRules.ScreensToCover(Monitor, [MacBook, Monitor], main: 0));
+    }
+
+    [Fact]
+    public void AScreenTheWindowOnlyGrazesStillGetsItsCover()
+    {
+        var window = (0, 0, 1729, 1117); // one pixel over the edge
+        Assert.Equal([1], KidLockRules.ScreensToCover(window, [MacBook, Monitor], main: 0));
+    }
+
+    [Fact]
+    public void ScreensAboveAndToTheLeftAreCoveredToo()
+    {
+        var left = (-1920, -200, 1920, 1080);
+        var above = (0, -1080, 1920, 1080);
+        Assert.Equal([1, 2], KidLockRules.ScreensToCover(MacBook, [MacBook, left, above], main: 0));
+    }
+
+    [Fact]
+    public void OneScreenNeedsNoCoverAndAnEmptyScreenIsSkipped()
+    {
+        Assert.Empty(KidLockRules.ScreensToCover(MacBook, [MacBook], main: 0));
+        Assert.Empty(KidLockRules.ScreensToCover(MacBook, [MacBook, (1728, 0, 0, 0)], main: 0));
+    }
+
+    [Fact]
+    public void OverlapCountsSharedPixels()
+    {
+        Assert.Equal(0, KidLockRules.Overlap(MacBook, Monitor));
+        Assert.Equal(1080, KidLockRules.Overlap((0, 0, 1729, 1117), Monitor)); // one column of the monitor's 1080 rows
+    }
+
+    [Fact]
+    public void ACoverHidesTheGameOnlyWhenItCoversARealShareOfIt()
+    {
+        Assert.False(KidLockRules.CoverHidesGame(Monitor, (0, 0, 1729, 1117)));     // grazes one column
+        Assert.True(KidLockRules.CoverHidesGame(MacBook, MacBook));                  // the 0.2.256 bug
+        Assert.False(KidLockRules.CoverHidesGame(Monitor, MacBook));                 // side by side
+    }
+
+    [Fact]
+    public void TheGameScreenIsTheOneTheWindowOverlapsMost()
+    {
+        Assert.Equal(0, KidLockRules.GameScreen(MacBook, [MacBook, Monitor]));
+        Assert.Equal(1, KidLockRules.GameScreen(Monitor, [MacBook, Monitor]));
+        Assert.Equal(-1, KidLockRules.GameScreen((5000, 5000, 10, 10), [MacBook, Monitor]));
+    }
 }
