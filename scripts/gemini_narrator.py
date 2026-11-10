@@ -54,33 +54,42 @@ EAR_TRIES = 3
 EAR_FROM = {"en": GIVE_UP, "af": 1}
 REVIEW_DIR = ROOT / "voice-lab" / "aoede_review"
 
+# Every English style ends with this (owner, 9 Nov 2026: some lines, Coding Island's among them, still
+# sounded British). It starts "Natural South African English accent", which in_afrikaans() looks for.
+ACCENT = ("Natural South African English accent, the way an English-speaking teacher in Johannesburg or Cape Town "
+          "talks: South African vowels and rhythm in every word, never British Received Pronunciation, never posh or "
+          "plummy, and not American.")
+
+# Words of the accent sentence a line or a mishearing can easily hold: never taken as instructions read out.
+ACCENT_EVERYDAY = {"natural", "english", "speaking", "teacher", "talks", "every", "rhythm", "south", "african",
+                   "vowels"}
+
 # The styles (docs/VOICE_PLAN.md, section 6): Bip's own lines sparkle for young children (sparkle) and are
 # upbeat but relaxed for older ones (big, the <clip>_big lines); instructions and sentences are clear and
 # friendly for every age (clear); words and numbers are even and clear (words).
 SPARKLE = ("Read these lines as a bubbly, sparkling, warm South African English teacher of four- to six-year-olds "
            "who is delighted to see the child: a big smile in the voice, playful and full of wonder, a little "
            "sing-song on the happy words, unhurried and very clear, with tiny pauses so a young child can follow. "
-           "Friendly, never shrill, squeaky or baby-talk. Natural South African English accent, not British and not American.")
+           "Friendly, never shrill, squeaky or baby-talk. " + ACCENT)
 BIG = ("Read these lines as the same warm South African English teacher, now talking to a seven- to ten-year-old "
        "she respects: friendly, upbeat and genuinely pleased, with a real smile in the voice, but relaxed and "
        "natural, like a favourite teacher or an older cousin chatting, not performing for a toddler. Normal "
        "talking speed, a little quicker than for little ones; no sing-song, no exaggerated excitement, no baby "
-       "talk, never sarcastic or bored. Confident and encouraging. Natural South African English accent, not "
-       "British and not American.")
+       "talk, never sarcastic or bored. Confident and encouraging. " + ACCENT)
 CLEAR = ("Read these lines as a warm, friendly South African English primary school teacher giving clear "
          "instructions to children aged four to ten: a smile in the voice and a bright, positive tone, but natural "
          "and not sing-song, so it suits a five-year-old and doesn't sound babyish to a ten-year-old. Unhurried and "
          "very clear; say each line once, exactly as written. A line that ends without a full stop, or with a "
          "comma or colon, leads straight into another recording: keep the voice up and unfinished, as if the "
-         "sentence carries on. Natural South African English accent, not British and not American.")
+         "sentence carries on. " + ACCENT)
 WORDS = ("Read these words as a warm, friendly South African English teacher showing a child each word: clear, "
          "bright and natural, each word once, exactly as written, all at the same even pitch and speed, so the "
-         "first and last words sound alike and none sounds like the end of a list. Natural South African English "
-         "accent, not British and not American.")
+         "first and last words sound alike and none sounds like the end of a list. " + ACCENT)
 PHONICS = ("You are a calm, clear South African English phonics teacher. Each line below is one letter sound. "
            "Say only the pure sound, never the letter name, once, then stop: stretchy sounds (s, m, n, f, l, r, v, z, "
            "sh, th) are held for about a second; stop sounds (t, p, k, c, b, d, g) are short and crisp with no 'uh' "
-           "after them; vowels are short unless the line says long. The sounds in order:")
+           "after them; vowels are short unless the line says long. South African English vowels, never British Received "
+           "Pronunciation. The sounds in order:")
 PHONICS_DIR = ROOT / "voice-lab" / "aoede_phonics"
 PAUSE = "After every line, stay silent for two full seconds before the next one. Never read anything twice."
 
@@ -247,7 +256,9 @@ def reads_instructions(heard, text, lang, style):
     if len(heard) > 2 * len(text) + 20:
         return True
     # Gemini sometimes reads them out in Afrikaans too ("Never lees iets twee keer nie", 6 Nov 2026).
-    prompt = set(words(LANGS[lang]["styles"][style] + " " + PAUSE)) | {
+    # The accent sentence's everyday words are left out (a misheard line can have them); its telling ones
+    # ("british", "received", "pronunciation", "american") still count.
+    prompt = (set(words(LANGS[lang]["styles"][style] + " " + PAUSE)) - (ACCENT_EVERYDAY if lang == "en" else set())) | {
         "lees", "keer", "volgende", "sekondes", "stil", "instruksies", "notes", "director", "never"}
     line = set(line_words(lang, text))
     extra = {w for w in words(heard) if len(w) >= 5 and w in prompt and w not in line}
@@ -274,6 +285,7 @@ def load_state():
     state = json.loads(STATE.read_text()) if STATE.exists() else {"done": {}, "failed": {}}
     state.setdefault("failed_text", {})
     state.setdefault("review", {})
+    state.setdefault("retake", [])  # finished clips recorded again for the owner's ear (--retake)
     return state
 
 
@@ -289,9 +301,31 @@ def failed_take(state, clip, text):
 
 def took(state, clip, text):
     state["done"][clip] = text
-    state["review"].pop(clip, None)
+    if state["review"].pop(clip, None) is not None:
+        review_path(clip).unlink(missing_ok=True)  # no orphan take left where no option can reach it
+    if clip in state["retake"]:
+        state["retake"].remove(clip)
     state["failed"].pop(clip, None)
     state["failed_text"].pop(clip, None)
+
+
+def review_path(clip):
+    """Where a clip's take waits for the owner's ear: voice-lab/aoede_review/ (af/ for Afrikaans)."""
+    lang, name = split(clip)
+    return REVIEW_DIR / ("af" if lang == "af" else "") / f"{name}.m4a"
+
+
+def to_review(state, clip, out, text, heard):
+    """A take that waits in voice-lab/aoede_review/ for the owner's ear (--approve or --redo)."""
+    path = review_path(clip)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    out.replace(path)
+    state["review"][clip] = {"text": text, "heard": heard}
+
+
+def is_retake(state, clip, text):
+    """A finished clip recorded again for the owner's ear (--retake): only while the game's clip still says this text."""
+    return clip in state["retake"] and state["done"].get(clip) == text
 
 
 def save_state(state):
@@ -714,13 +748,33 @@ class Listener:
         return same or one_word_alike(lang, heard, text) or same_number(lang, heard, text), heard
 
 
+def retakes(state, all_texts):
+    """(waiting to be recorded, given up): retakes with no take for the ear yet, and those out of tries."""
+    hold = held()
+    live = [c for c in state["retake"] if c in all_texts and is_retake(state, c, all_texts[c]) and c not in state["review"]
+            and not is_held(c, hold)]
+    gave_up = [c for c in live if fails(state, c, all_texts[c]) >= GIVE_UP + EAR_TRIES]
+    return [c for c in live if c not in gave_up], gave_up
+
+
 def status(state, all_texts):
+    # A retake whose line has changed since is recorded as a new line, straight into the game.
+    state["retake"] = [c for c in state["retake"] if c in all_texts and state["done"].get(c) == all_texts[c]]
     done = sum(1 for c, t in all_texts.items() if state["done"].get(c) == t)
     stuck = [c for c in state["failed"] if c in all_texts and fails(state, c, all_texts[c]) >= GIVE_UP
-             and state["review"].get(c, {}).get("text") != all_texts[c]]
+             and state["review"].get(c, {}).get("text") != all_texts[c] and state["done"].get(c) != all_texts[c]]
     hold = held()
     waiting = sum(1 for c, t in all_texts.items() if state["done"].get(c) != t and is_held(c, hold))
     return len(all_texts), done, stuck, waiting
+
+
+def report(state, all_texts):
+    """The one status line --status and every run print."""
+    total, done, stuck, waiting = status(state, all_texts)
+    queued, gave_up = retakes(state, all_texts)
+    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(state['review'])} takes "
+          f"waiting for the owner's ear; {len(stuck)} need a person ({', '.join(stuck) or 'none'}); {len(queued)} retakes "
+          f"to record; {len(gave_up)} retakes given up ({', '.join(gave_up) or 'none'}).", flush=True)
 
 
 def main():
@@ -732,12 +786,48 @@ def main():
                     help="the owner's ear turned these review takes or letter sounds/names down: record again")
     ap.add_argument("--keep", nargs="+", metavar="CLIP",
                     help="the owner keeps the clip the game has now (an older narrator's): never recorded again")
+    ap.add_argument("--retake", nargs="+", metavar="CLIP",
+                    help="record these finished clips again; every new take waits for the owner's ear and the "
+                         "current clip keeps playing until --approve (--keep turns the retake down)")
     a = ap.parse_args()
     state, all_texts = load_state(), texts()
+    if a.retake:
+        if a.keep or a.approve or a.redo:
+            sys.exit("--retake goes on its own: run --keep, --approve or --redo first, then --retake.")
+        a.retake = list(dict.fromkeys(a.retake))
+        hold = held()
+        for clip in a.retake:
+            if clip not in all_texts:
+                sys.exit(f"{clip} is not a clip the game needs.")
+            if is_held(clip, hold):
+                sys.exit(f"{clip} is held (voice-lab/aoede-hold.txt): it wouldn't be recorded.")
+            if state["done"].get(clip) != all_texts[clip]:
+                sys.exit(f"{clip} isn't finished yet: the next run records it anyway.")
+            lang, name = split(clip)
+            if clip in state["review"] or (LANGS[lang]["phonics"] / f"{name}.m4a").exists():
+                sys.exit(f"{clip} has a take waiting for the owner's ear: --approve, --redo or --keep it first.")
+        for clip in a.retake:
+            lang, name = split(clip)
+            state["failed"].pop(clip, None)
+            state["failed_text"].pop(clip, None)
+            if name.startswith(("snd_", "name_")):
+                # Letter sounds and names always wait in aoede_phonics/ for the ear: record one again as new
+                # (the game's clip plays until --approve moves the new take in).
+                state["done"].pop(clip, None)
+            elif clip not in state["retake"]:
+                # "done" stays: the clip in the game is fine and keeps playing until the owner approves a retake.
+                state["retake"].append(clip)
+        save_state(state)
+        letters = sum(1 for c in a.retake if split(c)[1].startswith(("snd_", "name_")))
+        print(f"To record again for the owner's ear: {len(a.retake)} ({letters} letter sounds or names back in the "
+              f"phonics queue, counted as not done until approved).")
+        a.status = True
     if a.keep:
         for clip in a.keep:
             if clip not in all_texts:
                 sys.exit(f"{clip} isn't a clip the game needs.")
+            if clip in state["review"]:  # a waiting take (a retake turned down, say) is thrown away
+                review_path(clip).unlink(missing_ok=True)
             took(state, clip, all_texts[clip])  # done as it is: the clip in Resources/Audio stays
         save_state(state)
         print(f"Kept {len(a.keep)} as they are.")
@@ -749,7 +839,7 @@ def main():
             """Where the clip's take waits for the owner's ear: a review take, or a letter sound or name."""
             lang, name = split(clip)
             if clip in state["review"]:
-                return REVIEW_DIR / ("af" if lang == "af" else "") / f"{name}.m4a"
+                return review_path(clip)
             phonics = LANGS[lang]["phonics"] / f"{name}.m4a"
             return phonics if phonics.exists() else None
         for clip in (a.approve or []) + (a.redo or []):
@@ -765,15 +855,15 @@ def main():
         for clip in a.redo or []:
             waiting(clip).unlink()
             state["review"].pop(clip, None)
-            state["done"].pop(clip, None)  # recorded again, in a fresh batch
+            if clip not in state["retake"]:
+                state["done"].pop(clip, None)  # recorded again, in a fresh batch (a retake keeps its clip)
             state["failed"].pop(clip, None)
             state["failed_text"].pop(clip, None)
         save_state(state)
         print(f"Approved {len(a.approve or [])}, to record again {len(a.redo or [])}.")
         a.status = True
     KNOWN_NAMES.update(known_names(all_texts))
-    total, done, stuck, waiting = status(state, all_texts)
-    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(state['review'])} takes waiting for the owner's ear; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
+    report(state, all_texts)
     if a.status:
         return
     key = os.environ.get("GEMINI_API_KEY")
@@ -781,7 +871,7 @@ def main():
         sys.exit("No GEMINI_API_KEY secret.")
 
     hold = held()
-    todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if state["done"].get(c) != all_texts[c]
+    todo = [c for c in sorted(all_texts, key=lambda c: (priority(c), c)) if (state["done"].get(c) != all_texts[c] or is_retake(state, c, all_texts[c]))
             and not is_held(c, hold)
             and state["review"].get(c, {}).get("text") != all_texts[c]  # a take already waits for the owner's ear
             and fails(state, c, all_texts[c]) < GIVE_UP + EAR_TRIES]
@@ -892,26 +982,28 @@ def main():
                     out.replace(LANGS[lang]["phonics"] / f"{name}.m4a")
                     took(state, clip, all_texts[clip])
                     good += 1
-                elif (check := listener.ok(clip, out, all_texts[clip]))[0]:
-                    LANGS[lang]["audio"].mkdir(parents=True, exist_ok=True)
-                    out.replace(LANGS[lang]["audio"] / f"{name}.m4a")
-                    took(state, clip, all_texts[clip])
+                    continue
+                ok, heard = listener.ok(clip, out, all_texts[clip])
+                if ok:
+                    if is_retake(state, clip, all_texts[clip]):
+                        # A retake (--retake): the owner hears it first; the clip in the game keeps playing till then.
+                        to_review(state, clip, out, all_texts[clip], heard)
+                    else:
+                        LANGS[lang]["audio"].mkdir(parents=True, exist_ok=True)
+                        out.replace(LANGS[lang]["audio"] / f"{name}.m4a")
+                        took(state, clip, all_texts[clip])
                     good += 1
                 else:
                     # Past EAR_FROM failed takes the take waits for the owner's ear instead of being thrown away,
                     # unless Gemini plainly read more than the line (its instructions, out loud).
                     if (fails(state, clip, all_texts[clip]) >= EAR_FROM[lang]
-                            and not reads_instructions(check[1], all_texts[clip], lang, style)):
-                        where = REVIEW_DIR / ("af" if lang == "af" else "")
-                        where.mkdir(parents=True, exist_ok=True)
-                        out.replace(where / f"{name}.m4a")
-                        state["review"][clip] = {"text": all_texts[clip], "heard": check[1]}
+                            and not reads_instructions(heard, all_texts[clip], lang, style)):
+                        to_review(state, clip, out, all_texts[clip], heard)
                     failed_take(state, clip, all_texts[clip])
-                    print(f"  {clip}: heard {check[1]!r}, wanted {all_texts[clip]!r}", flush=True)
+                    print(f"  {clip}: heard {heard!r}, wanted {all_texts[clip]!r}", flush=True)
             save_state(state)
             print(f"Request {requests}: {good} of {len(clips)} {lang} {style} clips kept.", flush=True)
-    total, done, stuck, waiting = status(state, all_texts)
-    print(f"Aoede: {done} of {total} clips done; {waiting} waiting for the owner's check; {len(state['review'])} takes waiting for the owner's ear; {len(stuck)} need a person ({', '.join(stuck) or 'none'}).", flush=True)
+    report(state, all_texts)
     if setup_error:
         sys.exit(1)
 
