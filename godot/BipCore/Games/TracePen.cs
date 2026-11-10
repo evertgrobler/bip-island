@@ -118,7 +118,11 @@ public sealed class TracePen
     {
         // A drag starts where the button went down, not at its first move past the wobble: the stroke's tip counts.
         var pressed = _pressedAt;
+        var wasDragging = Mode == TracePenMode.Dragging;
         var draws = Moved(at, buttonHeld);
+        // A drag that takes over without its press seen (the gate had it) starts afresh here: never a line from
+        // where the following pen last was.
+        if (draws && !wasDragging && Mode == TracePenMode.Dragging && pressed is null) _lastDrawn = null;
         if (draws && _lastDrawn is null && pressed is { } start && Mode == TracePenMode.Dragging) _lastDrawn = start;
         StrokeFrom = draws && _lastDrawn is { } last
                      && (Mode == TracePenMode.Dragging || Vector2.Distance(last, at) <= MaxStep) ? last : null;
