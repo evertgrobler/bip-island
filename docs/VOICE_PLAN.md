@@ -293,22 +293,20 @@ existing Afrikaans accent sentence.
 | `big` | the `_big` lines | B | B + AF |
 | `clear` (new) | game instructions, sentence pieces, story steps, reading and number sentences | C | C + AF |
 | `words` | words, numbers, money, names, Language Island words | D | D + AF |
-| `phonics` | letter sounds | unchanged | unchanged |
+| `phonics` | letter sounds | unchanged, plus a vowels clause (9 Nov) | unchanged |
 
 **A. Little, sparkling (ages 3–6)**
 > Read these lines as a bubbly, sparkling, warm South African English teacher of four- to
 > six-year-olds who is delighted to see the child: a big smile in the voice, playful and full of
 > wonder, a little sing-song on the happy words, unhurried and very clear, with tiny pauses so a young
-> child can follow. Friendly, never shrill, squeaky or baby-talk. Natural South African English
-> accent, not British and not American.
+> child can follow. Friendly, never shrill, squeaky or baby-talk. ACCENT (below).
 
 **B. Big, upbeat (ages 7–10)**
 > Read these lines as the same warm South African English teacher, now talking to a seven- to
 > ten-year-old she respects: friendly, upbeat and genuinely pleased, with a real smile in the voice,
 > but relaxed and natural, like a favourite teacher or an older cousin chatting, not performing for a
 > toddler. Normal talking speed, a little quicker than for little ones; no sing-song, no exaggerated
-> excitement, no baby talk, never sarcastic or bored. Confident and encouraging. Natural South
-> African English accent, not British and not American.
+> excitement, no baby talk, never sarcastic or bored. Confident and encouraging. ACCENT (below).
 
 **C. Clear and friendly (all ages)**
 > Read these lines as a warm, friendly South African English primary school teacher giving clear
@@ -316,13 +314,19 @@ existing Afrikaans accent sentence.
 > natural and not sing-song, so it suits a five-year-old and doesn't sound babyish to a ten-year-old.
 > Unhurried and very clear; say each line once, exactly as written. A line that ends without a full
 > stop, or with "…", leads straight into another recording: keep the voice up and unfinished, as if
-> the sentence carries on. Natural South African English accent, not British and not American.
+> the sentence carries on. ACCENT (below).
 
 **D. Words (all ages)**
 > Read these words as a warm, friendly South African English teacher showing a child each word:
 > clear, bright and natural, each word once, exactly as written, all at the same even pitch and
-> speed, so the first and last words sound alike and none sounds like the end of a list. Natural
-> South African English accent, not British and not American.
+> speed, so the first and last words sound alike and none sounds like the end of a list. ACCENT (below).
+
+**ACCENT (ends A–D in English; 9 Nov 2026, after the owner heard British on Coding Island):**
+> Natural South African English accent, the way an English-speaking teacher in Johannesburg or Cape
+> Town talks: South African vowels and rhythm in every word, never British Received Pronunciation,
+> never posh or plummy, and not American.
+
+The `phonics` style adds: "South African English vowels, never British Received Pronunciation."
 
 **AF (added to A–D for Afrikaans, replacing "South African English" with "Afrikaans" in the text):**
 > Everything is in Afrikaans: say it with natural, fluent South African Afrikaans pronunciation, as a

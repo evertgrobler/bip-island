@@ -29,12 +29,14 @@
 - **Kid lock:** Mac (presentation options, quits on power-off) and Windows (exclusive full screen +
   keyboard hook), proven on real runners on 3 Oct. Option/Alt at launch = parent mode. While the game is in
   front the mouse stays inside its window (1 Nov), so a second screen can't be reached.
-- **Voice:** the whole game is being re-recorded with Gemini's Aoede voice, English and Afrikaans, in daily
-  paid runs at 10:17 SAST, after Gemini's daily limit resets (`scripts/gemini_narrator.py --status` says how far;
-  2,508 of 2,800 on 3 Nov). Clips Whisper keeps turning down get takes kept in `voice-lab/aoede_review/` for the
-  owner's ear. Until a clip is
-  re-recorded the older one plays (ElevenLabs "Bip Island Narrator", then Chatterbox copying her). Letter sounds
-  and letter names wait in `voice-lab/aoede_phonics/` for the owner's ear. The y sound's picture word is yo-yo.
+- **Voice:** every clip, English and Afrikaans, is Gemini's Aoede voice (2,849 of 2,849 on 9 Nov; two English
+  clips keep the older narrator by the owner's call). `scripts/gemini_narrator.py --status` says where it stands,
+  including retakes. Runs start by a push of `voice-lab/aoede-run.txt` to `claude/aoede-narrator` (the daily task
+  is off now the recording is finished). Every English style ends with a firmer South African accent sentence
+  (`ACCENT`, 9 Nov, after the owner heard British on Coding Island). To record a finished clip again,
+  `--retake CLIP...`: the new take waits in `voice-lab/aoede_review/` for the owner's ear while the game's clip
+  keeps playing (`--approve`, `--redo`, `--keep`); letter sounds and names go back to `voice-lab/aoede_phonics/`.
+  Clips Whisper keeps turning down also get takes in `aoede_review/`.
 - **Text contrast (18 Oct):** every text colour meets WCAG (4.5:1, 3:1 for big glyphs). Use `Palette.Ink`,
   `SoftInk`, `QuietInk`, `AlertOrange`, `WrongRed`, `ProblemRed` or `GoodGreen` for text, and the named fills
   (`BalanceBoxFill`, `GapFill`, …) behind it. Their values live in `BipCore.PaletteColours`; a unit test
@@ -143,9 +145,11 @@
   front, so a click can't reach another app on a second display. Windows: `Input.MouseMode` Confined (the
   system's cursor clip). Mac (9 Nov): Confined slowed the Mac's mouse, so the mouse stays the Mac's own and
   `KidLock.FenceMouse` (every frame, `Boot._Process`, the point from `KidLockRules.FencePoint`) puts it back when it
-  leaves the window, and every other screen is covered by a borderless, always-on-top, unfocusable paper window
-  of the game's own, so a flick that beats the fence lands on the game. The covers step aside (hidden) while another program has
-  the front and come back with the game, which also takes the keys back; they're checked against the screens once
+  leaves the window, and every other screen is covered by a borderless, unfocusable paper window of the game's
+  own (floating, above other programs), so a flick that beats the fence lands on paper. `KidLockRules.ScreensToCover`
+  picks the screens: never the main one, never the one the game overlaps most. The game's window floats too and is
+  raised above the covers, and a cover that still lands over the game is taken away. The covers step aside
+  (hidden) while another program has the front and come back with the game, which also takes the keys back; they're checked against the screens once
   a second (plugged in, swapped or moved). The lock check reports `mouseKeptIn`
   and counts it (on Windows it asks the system with `GetClipCursor` and compares it with the game window; on a
   Mac it reports the fence and that every other screen has its cover). Setting the mode again goes through
@@ -719,3 +723,18 @@
   cursor clip, which doesn't slow the mouse).
   Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
   every other screen now gets a paper cover window of the game's own (as the Swift app had).
+- **9 Nov: Coding Island sounded British.** On 0.2.256 the owner heard a British accent on Coding Island, although
+  the lines were already Aoede's. Every English style now ends with one firmer `ACCENT` sentence (an English-speaking
+  teacher in Johannesburg or Cape Town, South African vowels and rhythm, never British Received Pronunciation), and
+  letter sounds ask for South African vowels. `gemini_narrator.py --retake CLIP...` records finished clips again:
+  every new take waits in `voice-lab/aoede_review/` for the owner's ear while the game's clip keeps playing
+  (`--approve` takes it, `--redo` tries again, `--keep` turns it down). The owner compared now and new by ear and
+  chose the retakes of `vo_coding_island`, `vo_coding_island_big`, `vo_bips_path` and `vo_morning_order`.
+- **9 Nov: 0.2.256 hid the game on a MacBook with a second screen.** The owner's photo showed the paper cover on the
+  MacBook itself, over the game: the cover chose screens by `WindowGetCurrentScreen`'s number, which pointed at the
+  MacBook's own screen, and covers were always on top. Now `KidLockRules.ScreensToCover` (tested) covers every
+  screen except the main one and the one the game overlaps most (a screen the window only grazes still gets its
+  cover); a game that drifts off the main screen is put back on it; the covers stay floating above other programs
+  and the game's window floats above them (it stops floating while another program has the front); a cover that
+  the system put over a real share of the game (`KidLockRules.CoverHidesGame`, by the cover's position as the
+  system reports it) is taken away. Until the fix: unplug the second screen, or open with Option held.
