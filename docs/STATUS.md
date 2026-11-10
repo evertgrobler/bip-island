@@ -723,6 +723,12 @@
   cursor clip, which doesn't slow the mouse).
   Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
   every other screen now gets a paper cover window of the game's own (as the Swift app had).
+- **10 Nov: Afrikaans side checked end to end.** The owner saw glitches on the Afrikaans side, mostly on the Language
+  Island. A full Afrikaans run (screenshots with `--bip-language af`, and a walk-through that plays the Language Island
+  as an Afrikaans child and records every clip it asks for, `VoicePlayer.Heard`) found English on two signs (the map's
+  Letters Island said "s a t", the Words Island's buttons "cat": now `Texts.LettersSign`/`SignWord`, "m a t" and "kat")
+  and Bip repeating the island's welcome after every game (home from a game now skips it). The Language Island's
+  words, pictures and clips all matched.
 - **9 Nov: Coding Island sounded British.** On 0.2.256 the owner heard a British accent on Coding Island, although
   the lines were already Aoede's. Every English style now ends with one firmer `ACCENT` sentence (an English-speaking
   teacher in Johannesburg or Cape Town, South African vowels and rhythm, never British Received Pronunciation), and

@@ -14,6 +14,16 @@ public sealed class LanguageTests : IDisposable
     }
 
     [Fact]
+    public void TheSignsAreInTheChildsLanguage()
+    {
+        // Owner, 10 Nov 2026: the Afrikaans side showed "s a t" and "cat".
+        Assert.Equal("s a t", Texts.LettersSign(HomeLanguage.English));
+        Assert.Equal("m a t", Texts.LettersSign(HomeLanguage.Afrikaans));
+        Assert.Equal("cat", Texts.SignWord(HomeLanguage.English));
+        Assert.Equal("kat", Texts.SignWord(HomeLanguage.Afrikaans));
+    }
+
+    [Fact]
     public void AChildIsEnglishUnlessAGrownUpChoosesAfrikaans()
     {
         var store = new SaveStore(_folder);
