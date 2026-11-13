@@ -90,8 +90,9 @@ public partial class ParentLayer
             Coordinator.ResetWelcome();
             Coordinator.Start();
         }
-        // From Settings: back to the same screen, unless children or settings changed (as the parent area does).
-        else if (changed) Coordinator.ShowMap();
+        // From Settings: back to the same screen, unless children or settings changed (as the parent area does:
+        // "Who's playing?" while nobody has picked yet, else the map).
+        else if (changed) Coordinator.ShowStart();
     }
 
     /// <summary>For the walk-through test: the hold ring is showing, drawn above the guide's card.</summary>

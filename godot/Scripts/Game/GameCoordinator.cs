@@ -342,11 +342,7 @@ public partial class GameCoordinator : Node
     public void ShowStart()
     {
         if (_awaitingFirstPick && Children.Count > 1) ShowProfiles();
-        else
-        {
-            _awaitingFirstPick = false;
-            ShowMap();
-        }
+        else ShowMap();
     }
 
     /// <summary>Whether a child is resting (charging or done for the day), for their picture in "Who's playing?".</summary>
@@ -578,6 +574,9 @@ public partial class GameCoordinator : Node
 
     public void ShowMap()
     {
+        // The map means a child plays (or charges) now, however it opened (a grown-up's change, the setup guide):
+        // their clock runs from here (review of #79).
+        _awaitingFirstPick = false;
         if (!PlayAllowed())
         {
             ShowCharging();
