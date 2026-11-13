@@ -31,9 +31,10 @@ public class TraceCheckpointsTests
     [Fact]
     public void AtTheScreensRadiusTracingTheStemLeavesTheDotToDo()
     {
-        // LetterTraceScreen's radius (80) at its size (380): every stem checkpoint touched, the dot still to do (going
-        // right up past the stem's tip may tick it too, which is forgiving on purpose).
-        var i = new TraceCheckpoints(TestContent.Library().TraceShapes.Shapes["i"], Vector2.Zero, 380, 80,
+        // Letter Trace's own radius at its own size: every stem checkpoint touched, the dot still to do (going right up
+        // past the stem's tip may tick it too, which is forgiving on purpose).
+        var i = new TraceCheckpoints(TestContent.Library().TraceShapes.Shapes["i"], Vector2.Zero,
+                                     TraceCheckpoints.ScreenLetterSize, TraceCheckpoints.ScreenRadius,
                                      TestContent.Library().TraceShapes.Dots["i"]);
         var dot = i.Points.MinBy(p => p.Y);
         foreach (var p in i.Points.Where(p => p != dot)) i.Touch(p);
@@ -133,7 +134,6 @@ public class TraceCheckpointsTests
         var middle = stem[stem.Count / 2];
         // However often a child clicks the stem, each click ticks one checkpoint at most, the same one.
         Assert.Equal(1, i.TouchNearest(middle));
-        Assert.Equal(0, i.TouchNearest(middle));
         Assert.Equal(1, i.Touched);
         // Far from every stroke: nothing.
         Assert.Equal(0, i.TouchNearest(new Vector2(Size, Size)));
@@ -147,5 +147,28 @@ public class TraceCheckpointsTests
         var line = new TraceCheckpoints(shape, Vector2.Zero, Size, Radius);
         Assert.Equal(1, line.Stroke(Vector2.Zero, new Vector2(0, 30)));
         Assert.Equal(1, line.Touched);
+    }
+
+    [Fact]
+    public void AClickTicksTheNearestCheckpointStillToTouch()
+    {
+        // A click just below the i's dot, nearer the traced stem top than the dot: the dot (within reach) ticks.
+        var i = new TraceCheckpoints(TestContent.Library().TraceShapes.Shapes["i"], Vector2.Zero,
+                                     TraceCheckpoints.ScreenLetterSize, TraceCheckpoints.ScreenRadius,
+                                     TestContent.Library().TraceShapes.Dots["i"]);
+        var dot = i.Points.MinBy(p => p.Y);
+        foreach (var p in i.Points.Where(p => p != dot)) i.Touch(p);
+        var stemTop = i.Points.Where(p => p != dot).MinBy(p => p.Y);
+        var below = dot + (stemTop - dot) * 0.6f;
+        Assert.Equal(1, i.TouchNearest(below));
+        Assert.True(i.Done);
+    }
+
+    [Fact]
+    public void ANullEntryInAShapeIsACheckpointInTheMiddleNotACrash()
+    {
+        var shape = new List<List<float>> { new() { 0, 0 }, null!, new() { 0, 1 } };
+        var letter = new TraceCheckpoints(shape, Vector2.Zero, Size, Radius);
+        Assert.Equal(3, letter.Count);
     }
 }

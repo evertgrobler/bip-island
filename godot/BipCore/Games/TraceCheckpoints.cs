@@ -14,6 +14,17 @@ public sealed class TraceCheckpoints
     /// <summary>The share of checkpoints that finishes the letter: a stroke's very tip may be missed.</summary>
     public const float Enough = 0.9f;
 
+    /// <summary>
+    /// How near Letter Trace's pen must come to a checkpoint, at <see cref="ScreenLetterSize"/>: a stroke's width and
+    /// more, so drawing a finger's width beside the letter still counts. Less than the 95 between the dot of i and j
+    /// and the stem's last checkpoint, so tracing the stem leaves the dot to do; a pen that goes right up past the
+    /// stem's tip may tick the dot too, which is forgiving on purpose (tracing is savoured, never gated).
+    /// </summary>
+    public const float ScreenRadius = 80;
+
+    /// <summary>The letter's font size on Letter Trace's screen (one em of trace_shapes.json).</summary>
+    public const int ScreenLetterSize = 380;
+
     /// <summary>The fewest checkpoints a letter's shape has (trace_shapes.json; the validator and the screen agree).</summary>
     public const int Fewest = 3;
 
@@ -32,7 +43,7 @@ public sealed class TraceCheckpoints
                             IEnumerable<int>? dots = null)
     {
         // Every entry is a checkpoint (a malformed one sits in the middle), so the dots' indexes stay right.
-        _points = shape.Select(p => centre + (p.Count >= 2 ? new Vector2(p[0], p[1]) : Vector2.Zero) * size).ToArray();
+        _points = shape.Select(p => centre + (p is { Count: >= 2 } ? new Vector2(p[0], p[1]) : Vector2.Zero) * size).ToArray();
         _touched = new bool[_points.Length];
         _radius = radius;
         // A stroke of one checkpoint can't be "nearly" traced: it must be touched (the dot of i and j).
@@ -76,7 +87,7 @@ public sealed class TraceCheckpoints
     }
 
     /// <summary>
-    /// A click at <paramref name="at"/>: only the one checkpoint nearest to it, if it is near enough and not yet touched,
+    /// A click at <paramref name="at"/>: only the nearest checkpoint still to touch, if one is near enough,
     /// so a click dots the i or the j and one click ticks one checkpoint at most (never a whole stretch). Returns 1 or 0.
     /// </summary>
     public int TouchNearest(Vector2 at)
@@ -85,10 +96,11 @@ public sealed class TraceCheckpoints
         var best = _radius;
         for (var i = 0; i < _points.Length; i++)
         {
+            if (_touched[i]) continue;
             var d = Vector2.Distance(at, _points[i]);
             if (d <= best) (best, nearest) = (d, i);
         }
-        if (nearest < 0 || _touched[nearest]) return 0;
+        if (nearest < 0) return 0;
         _touched[nearest] = true;
         _touchedCount++;
         return 1;

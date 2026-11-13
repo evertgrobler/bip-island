@@ -27,6 +27,8 @@ def graphemes():
 def source_hash():
     """The font, the graphemes and the generator itself: when any of them changes, the shapes are out of date."""
     recipe = f"{SIZE} {SPACING} {FEWEST}\n" + "\n".join(sorted(graphemes()))
-    # Line endings normalised, so a Windows checkout (CRLF) reads the same generator.
-    generator = Path(__file__).with_name("trace_shapes.py").read_bytes().replace(b"\r\n", b"\n")
+    # The generator and this file (how the graphemes are gathered), line endings normalised so a Windows checkout
+    # (CRLF) reads the same.
+    generator = b"".join(Path(__file__).with_name(name).read_bytes().replace(b"\r\n", b"\n")
+                         for name in ("trace_shapes.py", "trace_source.py"))
     return hashlib.sha1(FONT.read_bytes() + generator + recipe.encode("utf-8")).hexdigest()
