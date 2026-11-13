@@ -22,7 +22,9 @@ public partial class LetterTraceScreen : GameScreen
 {
     /// <summary>
     /// How near the pen must come to a checkpoint: a stroke's width and more, so drawing a finger's width beside the
-    /// letter still counts (review of #77), but less than the 95 between the dot of i and j and their stem.
+    /// letter still counts (review of #77). Less than the 95 between the dot of i and j and the stem's last checkpoint,
+    /// so tracing the stem leaves the dot to do; a pen that goes right up past the stem's tip may tick the dot too,
+    /// which is forgiving on purpose (tracing is savoured, never gated).
     /// </summary>
     private const float TouchRadius = 80;
     /// <summary>The letter's font size (and so one em of trace_shapes.json).</summary>

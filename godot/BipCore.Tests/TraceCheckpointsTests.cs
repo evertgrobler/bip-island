@@ -29,9 +29,10 @@ public class TraceCheckpointsTests
         Assert.Equal(TraceCheckpoints.Fewest, TestContent.Library().TraceShapes.Fewest);
 
     [Fact]
-    public void TheScreensRadiusKeepsTheDotApartFromTheStem()
+    public void AtTheScreensRadiusTracingTheStemLeavesTheDotToDo()
     {
-        // LetterTraceScreen's radius (80) at its size (380): tracing the stem's top must not tick the dot.
+        // LetterTraceScreen's radius (80) at its size (380): every stem checkpoint touched, the dot still to do (going
+        // right up past the stem's tip may tick it too, which is forgiving on purpose).
         var i = new TraceCheckpoints(TestContent.Library().TraceShapes.Shapes["i"], Vector2.Zero, 380, 80,
                                      TestContent.Library().TraceShapes.Dots["i"]);
         var dot = i.Points.MinBy(p => p.Y);
