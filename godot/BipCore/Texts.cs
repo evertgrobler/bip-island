@@ -7,18 +7,6 @@ namespace BipCore;
 /// </summary>
 public static class Texts
 {
-    /// <summary>
-    /// The Letters Island's sign on the map: three first letter sounds that make a word. Afrikaans starts with a, s, m,
-    /// t and "sat" is a grumpy word there (fed up), so it says "mat" (owner, 10 Nov 2026: English on the Afrikaans side).
-    /// </summary>
-    public static string LettersSign(HomeLanguage l) => Pick(l, "s a t", "m a t");
-
-    /// <summary>
-    /// The Words Island's word on its game buttons (Sound Buttons, Word Builder): a first word in the language. Always three
-    /// letters: the buttons lay out three tiles (LanguageTests checks it).
-    /// </summary>
-    public static string SignWord(HomeLanguage l) => Pick(l, "cat", "kat");
-
     public static string WhoIsPlaying(HomeLanguage l) => Pick(l, "Who's playing?", "Wie speel?");
     public static string ComingSoon(HomeLanguage l) => Pick(l, "Coming soon!", "Kom binnekort!");
     public static string WellPlayed(HomeLanguage l) => Pick(l, "Well played!", "Mooi gespeel!");

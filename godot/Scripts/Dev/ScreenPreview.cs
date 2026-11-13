@@ -96,8 +96,7 @@ public partial class ScreenPreview : Node
         var language = Array.IndexOf(Boot.UserArgs, "--bip-language");
         var afrikaans = language >= 0 && language + 1 < Boot.UserArgs.Length && Boot.UserArgs[language + 1] == "af";
         var wanted = afrikaans ? HomeLanguage.Afrikaans : HomeLanguage.English;
-        if ((afrikaans || Array.IndexOf(Boot.UserArgs, "--bip-save-dir") >= 0)
-            && game.CurrentChild is { } child && child.Language != wanted)
+        if (Array.IndexOf(Boot.UserArgs, "--bip-save-dir") >= 0 && game.CurrentChild is { } child && child.Language != wanted)
             game.UpdateChild(child with { Language = wanted });
         // Letters games practise sounds the child has met: the sample child has learnt groups 1-3
         // (Feed the Monster's foods start at group 4).

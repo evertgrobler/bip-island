@@ -742,7 +742,8 @@
 - **10 Nov: Afrikaans side checked end to end.** The owner saw glitches on the Afrikaans side, mostly on the Language
   Island. A full Afrikaans run (screenshots with `--bip-language af`, and a walk-through that plays the Language Island
   as an Afrikaans child and records every clip it asks for, `VoicePlayer.Heard`) found English on two signs (the map's
-  Letters Island said "s a t", the Words Island's buttons "cat": now `Texts.LettersSign`/`SignWord`, "m a t" and "kat")
-  and Bip repeating the island's welcome after every game (home from a game now skips it; Bip celebrates only after a
-  finished game, never on home mid-game). The Language Island's
+  Letters Island said "s a t", the Words Island's buttons "cat": now from `words/signs.json`, "m a t" and "kat" in `Content/af/`, checked by the validator)
+  and Bip repeating the island's welcome after every game (only the map greets: `ShowIsland` greets only when
+  asked; Bip celebrates only after a finished game, never on home mid-game or "let's practise again"; the walk-through
+  checks no welcome comes after home). The Language Island's
   words, pictures and clips all matched.

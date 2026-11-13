@@ -13,20 +13,15 @@ public sealed class LanguageTests : IDisposable
         if (Directory.Exists(_folder)) Directory.Delete(_folder, recursive: true);
     }
 
-    [Fact]
-    public void TheSignsAreInTheChildsLanguage()
+    [Theory]
+    [InlineData(HomeLanguage.English, "s a t", "cat")]
+    [InlineData(HomeLanguage.Afrikaans, "m a t", "kat")]
+    public void TheSignsAreInTheChildsLanguage(HomeLanguage language, string letters, string word)
     {
         // Owner, 10 Nov 2026: the Afrikaans side showed "s a t" and "cat".
-        Assert.Equal("s a t", Texts.LettersSign(HomeLanguage.English));
-        Assert.Equal("m a t", Texts.LettersSign(HomeLanguage.Afrikaans));
-        Assert.Equal("cat", Texts.SignWord(HomeLanguage.English));
-        Assert.Equal("kat", Texts.SignWord(HomeLanguage.Afrikaans));
-        // The island buttons lay out three tiles and the map's sign three letters.
-        foreach (var language in Enum.GetValues<HomeLanguage>())
-        {
-            Assert.Equal(3, Texts.SignWord(language).Length);
-            Assert.Equal(3, Texts.LettersSign(language).Split(' ').Length);
-        }
+        var signs = TestContent.Library(language).Signs;
+        Assert.Equal(letters, signs.Letters);
+        Assert.Equal(word, signs.Word);
     }
 
     [Fact]

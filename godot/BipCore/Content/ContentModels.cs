@@ -936,3 +936,15 @@ public sealed record PegBoard
     public required int Most { get; init; }
     public required string Colour { get; init; }
 }
+
+// MARK: - words/signs.json
+
+/// <summary>The islands' signs: the Letters Island's letters on the map and the Words Island's word on its buttons.</summary>
+public sealed record SignsFile
+{
+    public string? Note { get; init; }
+    /// <summary>Three letter sounds with spaces between ("s a t").</summary>
+    public required string Letters { get; init; }
+    /// <summary>A three-letter first word ("cat").</summary>
+    public required string Word { get; init; }
+}

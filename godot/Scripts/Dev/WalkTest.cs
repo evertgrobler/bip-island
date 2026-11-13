@@ -1122,14 +1122,25 @@ public static class WalkTest
                               await WaitFor(() => game.Progress.Stars == stars + 1, 8), $"stars {stars} → {game.Progress.Stars}");
                         rounds++;
                     }
+                    var beforeHome = Audio.VoicePlayer.Heard?.Count ?? 0;
                     if (await Tap("home")) await Expect<GameIslandScreen>($"home from {name} goes back to the Language Island (Afrikaans child)");
+                    await Wait(1.0);
+                    // Owner, 10 Nov 2026: "Welkom op Taal-eiland!" after every game. The welcome is for arriving from the map.
+                    var afterHome = (Audio.VoicePlayer.Heard ?? []).Skip(beforeHome).Select(h => h.Path).ToList();
+                    Check($"home from {name}: no island welcome again", afterHome.All(p => !p.Contains($"/{BipCore.VoiceLine.LanguageIsland}")),
+                          string.Join(", ", afterHome));
                 }
                 var heard = Audio.VoicePlayer.Heard ?? [];
                 foreach (var (path, _) in heard) GD.Print($"Bip said (Afrikaans child): {path}");
                 var missing = heard.Where(h => !h.Recorded).Select(h => h.Path).Distinct().ToList();
                 Check("Afrikaans child: every clip Bip said on the Language Island is in the build", missing.Count == 0, string.Join(", ", missing));
-                var learnt = heard.Where(h => h.Path.Contains("/learn_")).ToList();
-                Check("Afrikaans child: the words to learn are said in English", learnt.Count > 0 && learnt.All(h => !h.Path.Contains("/af/learn_")),
+                // The words to learn are said in English; a hint may say the answer in Afrikaans too, straight after "in our
+                // language", so only those may be Afrikaans.
+                var learnt = heard.Select((h, i) => (h.Path, i)).Where(h => h.Path.Contains("/learn_")).ToList();
+                var wrongLanguage = learnt.Where(h => h.Path.Contains("/af/learn_")
+                    && !heard.Take(h.i).TakeLast(2).Any(p => p.Path.Contains($"/{BipCore.VoiceLine.InOurLanguage}"))).ToList();
+                Check("Afrikaans child: the words to learn are said in English",
+                      learnt.Any(h => !h.Path.Contains("/af/learn_")) && wrongLanguage.Count == 0,
                       string.Join(", ", learnt.Select(h => h.Path)));
                 Check("Afrikaans child: Bip's instructions are in Afrikaans", heard.Any(h => h.Path.Contains("/af/vo_")),
                       string.Join(", ", heard.Select(h => h.Path).Where(p => p.Contains("/vo_"))));
@@ -1140,6 +1151,9 @@ public static class WalkTest
             {
                 Audio.VoicePlayer.Heard = null;
                 game.UpdateChild(child);
+                // The next steps start from a clean map in English, even if a step above failed midway.
+                game.ShowMap();
+                await Wait(0.6);
             }
         }
 

@@ -552,8 +552,10 @@ public partial class GameCoordinator : Node
 
     public void ShowStickers() => Present(new StickerScreen());
 
+    /// <param name="greet">Arriving from the map: Bip welcomes the child to the island. Only the map asks for it, so any
+    /// other way back (home from a game, the end of one) never repeats the welcome (owner, 10 Nov 2026).</param>
     /// <param name="celebrate">Back from a finished game: Bip celebrates (Letters Island). Not for home mid-game.</param>
-    public void ShowIsland(Island island, bool greet = true, bool celebrate = false)
+    public void ShowIsland(Island island, bool greet = false, bool celebrate = false)
     {
         var open = island switch
         {

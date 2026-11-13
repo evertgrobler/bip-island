@@ -211,7 +211,7 @@ public partial class GameIslandScreen : BaseScreen
         Node2D[] games = _island switch
         {
             Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton(), PicnicButton(), MachineButton()],
-            Island.Words => [SoundButtonsButton(Texts.SignWord(ScreenLanguage)), BuilderButton(Texts.SignWord(ScreenLanguage)), RocketButton(), StoriesButton()],
+            Island.Words => [SoundButtonsButton(SignWord), BuilderButton(SignWord), RocketButton(), StoriesButton()],
             Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
@@ -318,6 +318,9 @@ public partial class GameIslandScreen : BaseScreen
         machine.AddChild(rule);
         return machine;
     }
+
+    /// <summary>The Words Island's word on its game buttons, in the child's language (words/signs.json).</summary>
+    private string SignWord => Coordinator.Content?.Signs.Word ?? "";
 
     private static Node2D SoundButtonsButton(string word)
     {

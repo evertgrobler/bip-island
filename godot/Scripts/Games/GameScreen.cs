@@ -37,7 +37,7 @@ public abstract partial class GameScreen : BaseScreen
     /// Home from a game goes back to its island without the island's welcome: the child was just there (owner, 10 Nov
     /// 2026: Bip said "Welkom op Taal-eiland!" again after every game). The welcome is for arriving from the map.
     /// </summary>
-    protected override void GoHome() => Coordinator.ShowIsland(HomeIsland, greet: false);
+    protected override void GoHome() => Coordinator.ShowIsland(HomeIsland);
 
     /// <summary>Records an answer (first try counts) against its skill and sound, and the game's level.</summary>
     protected MasteryChange Record(bool correct, string skillId, string? soundId = null) =>
@@ -192,9 +192,10 @@ public abstract partial class GameScreen : BaseScreen
             Ending.PractiseAgain => VoiceLine.LetsPractiseAgain,
             _ => VoiceLine.RoundDone,
         };
-        // Cut short to practise again isn't a finished game, so it wins no sticker for finishing.
-        Voice.Play([line], completion: () => FinishVisit(() => Coordinator.ShowIsland(HomeIsland, greet: false, celebrate: true),
-                                                         finished: ending != Ending.PractiseAgain));
+        // Cut short to practise again isn't a finished game: no sticker for finishing, and Bip doesn't celebrate.
+        var finished = ending != Ending.PractiseAgain;
+        Voice.Play([line], completion: () => FinishVisit(() => Coordinator.ShowIsland(HomeIsland, celebrate: finished),
+                                                         finished: finished));
     }
 
     /// <summary>

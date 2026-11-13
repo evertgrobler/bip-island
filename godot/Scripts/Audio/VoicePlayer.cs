@@ -135,7 +135,6 @@ public partial class VoicePlayer : Node
     /// Plays clips in order. Starting a new sequence stops the current one.
     /// <paramref name="onClipStart"/> fires as each clip begins; <paramref name="completion"/> after the last.
     /// </summary>
-
     public void Play(IReadOnlyList<string> clips, Action<int, string>? onClipStart = null, Action? completion = null)
     {
         Stop();

@@ -127,7 +127,7 @@ public partial class MeetSoundScreen : GameScreen
                 Buttons.Press(node);
                 Coordinator.MarkMet(_sound);
                 Bip.Celebrate();
-                Voice.Play([Coordinator.RandomPraise()], completion: () => Coordinator.ShowIsland(Island.Letters, greet: false, celebrate: true));
+                Voice.Play([Coordinator.RandomPraise()], completion: () => Coordinator.ShowIsland(Island.Letters, celebrate: true));
                 break;
         }
     }

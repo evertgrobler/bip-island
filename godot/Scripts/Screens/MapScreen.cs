@@ -29,7 +29,7 @@ public partial class MapScreen : BaseScreen
         DrawSea();
         _islands[Island.Letters] = AddIsland("letters", P(-400, 170), Palette.Grass, Coordinator.LettersOpen, 600, n =>
         {
-            var letters = Sketch.Letter(Texts.LettersSign(ScreenLanguage), 110, shadow: Palette.Orange);
+            var letters = Sketch.Letter(Coordinator.Content?.Signs.Letters ?? "", 110, shadow: Palette.Orange);
             letters.Position = P(0, 30);
             n.AddChild(letters);
         });
@@ -252,7 +252,7 @@ public partial class MapScreen : BaseScreen
         Sfx.Play(BipSounds.Effect.Whirr);
         Buttons.Press(node);
         InputLocked = true;
-        After(0.25, () => Coordinator.ShowIsland(island));
+        After(0.25, () => Coordinator.ShowIsland(island, greet: true));
     }
 
     protected override void DidTapBip() => Voice.Play([VoiceLine.Welcome]);
