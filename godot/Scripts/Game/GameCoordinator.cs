@@ -552,7 +552,8 @@ public partial class GameCoordinator : Node
 
     public void ShowStickers() => Present(new StickerScreen());
 
-    public void ShowIsland(Island island, bool greet = true)
+    /// <param name="celebrate">Back from a finished game: Bip celebrates (Letters Island). Not for home mid-game.</param>
+    public void ShowIsland(Island island, bool greet = true, bool celebrate = false)
     {
         var open = island switch
         {
@@ -571,7 +572,7 @@ public partial class GameCoordinator : Node
         }
         Present(island switch
         {
-            Island.Letters => new LettersIslandScreen(greet),
+            Island.Letters => new LettersIslandScreen(greet, celebrate),
             Island.Art => new ArtIslandScreen(greet),
             _ => new GameIslandScreen(island, greet),
         });

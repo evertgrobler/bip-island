@@ -128,12 +128,13 @@ public partial class VoicePlayer : Node
             .Count();
     }
 
+    /// <summary>For the walk-through: every clip Bip starts saying (its path, and whether the build has it), while set.</summary>
+    public static List<(string Path, bool Recorded)>? Heard { get; set; }
+
     /// <summary>
     /// Plays clips in order. Starting a new sequence stops the current one.
     /// <paramref name="onClipStart"/> fires as each clip begins; <paramref name="completion"/> after the last.
     /// </summary>
-    /// <summary>For the walk-through: every clip Bip starts saying (its path, and whether the build has it), while set.</summary>
-    public static List<(string Path, bool Recorded)>? Heard { get; set; }
 
     public void Play(IReadOnlyList<string> clips, Action<int, string>? onClipStart = null, Action? completion = null)
     {

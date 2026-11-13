@@ -193,7 +193,7 @@ public abstract partial class GameScreen : BaseScreen
             _ => VoiceLine.RoundDone,
         };
         // Cut short to practise again isn't a finished game, so it wins no sticker for finishing.
-        Voice.Play([line], completion: () => FinishVisit(() => Coordinator.ShowIsland(HomeIsland, greet: false),
+        Voice.Play([line], completion: () => FinishVisit(() => Coordinator.ShowIsland(HomeIsland, greet: false, celebrate: true),
                                                          finished: ending != Ending.PractiseAgain));
     }
 

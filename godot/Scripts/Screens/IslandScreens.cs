@@ -22,7 +22,9 @@ public partial class LettersIslandScreen : BaseScreen
     private readonly List<Node2D> _keyNodes = [];
 
     public LettersIslandScreen() : this(false) { }
-    public LettersIslandScreen(bool greet) => _greet = greet;
+    private readonly bool _celebrate;
+
+    public LettersIslandScreen(bool greet, bool celebrate = false) => (_greet, _celebrate) = (greet, celebrate);
 
     protected override IReadOnlyList<Node2D> KeyOptions => _keyNodes;
 
@@ -82,7 +84,8 @@ public partial class LettersIslandScreen : BaseScreen
         _keyNodes.Add(play);
 
         if (_greet) After(0.5, ReplayPrompt);
-        else After(0.3, () =>
+        // Back from a finished game, not home mid-game (review of #78).
+        else if (_celebrate) After(0.3, () =>
         {
             Bip.Celebrate();
             Sfx.Play(BipSounds.Effect.Whirr);

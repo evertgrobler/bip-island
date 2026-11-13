@@ -21,6 +21,12 @@ public sealed class LanguageTests : IDisposable
         Assert.Equal("m a t", Texts.LettersSign(HomeLanguage.Afrikaans));
         Assert.Equal("cat", Texts.SignWord(HomeLanguage.English));
         Assert.Equal("kat", Texts.SignWord(HomeLanguage.Afrikaans));
+        // The island buttons lay out three tiles and the map's sign three letters.
+        foreach (var language in Enum.GetValues<HomeLanguage>())
+        {
+            Assert.Equal(3, Texts.SignWord(language).Length);
+            Assert.Equal(3, Texts.LettersSign(language).Split(' ').Length);
+        }
     }
 
     [Fact]

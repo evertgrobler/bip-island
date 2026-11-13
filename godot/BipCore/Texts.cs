@@ -13,7 +13,10 @@ public static class Texts
     /// </summary>
     public static string LettersSign(HomeLanguage l) => Pick(l, "s a t", "m a t");
 
-    /// <summary>The Words Island's word on its game buttons (Sound Buttons, Word Builder): a first word in the language.</summary>
+    /// <summary>
+    /// The Words Island's word on its game buttons (Sound Buttons, Word Builder): a first word in the language. Always three
+    /// letters: the buttons lay out three tiles (LanguageTests checks it).
+    /// </summary>
     public static string SignWord(HomeLanguage l) => Pick(l, "cat", "kat");
 
     public static string WhoIsPlaying(HomeLanguage l) => Pick(l, "Who's playing?", "Wie speel?");

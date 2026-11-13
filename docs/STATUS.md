@@ -4,7 +4,7 @@
 > for the design. **When you finish work, update this file**: append a dated entry under
 > "Session log", refresh "Where things stand", and commit it with your changes.
 
-## Where things stand (31 October 2026)
+## Where things stand (13 November 2026)
 
 - **The game is the Godot version (Mac + Windows).** The Swift Mac app, its Xcode build and its
   Sparkle feed are retired (the owner installs the Godot app fresh; no progress export). How it
@@ -16,7 +16,8 @@
   game, 8-question visits, star celebration. Every game works with a mouse or a trackpad:
   Letter Trace (18 Oct), and Feed the Monster (click to pick up, click to put down) and Word Builder (click to
   place) with one click rule (29 Oct). English and Afrikaans home languages (Afrikaans switched on
-  9 Nov 2026), chosen per child, and the Language Island to learn the other one.
+  9 Nov 2026), chosen per child, and the Language Island to learn the other one. The Afrikaans side was played end
+  to end on 10 Nov (`WalkTest.PlayLanguageInAfrikaans`, screenshots with `--bip-language af`).
 - **Art Island (3 Oct):** the fifth island, in the middle of the map. Content in `Content/art/`, game types
   in `godot/BipCore/Games/`, screens in `godot/Scripts/Games/`, drawing in `Scripts/Drawing/ArtDrawing.cs`.
   Curriculum and the codes still to confirm: `docs/CURRICULUM.md`, "Art Island".
@@ -723,12 +724,6 @@
   cursor clip, which doesn't slow the mouse).
   Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
   every other screen now gets a paper cover window of the game's own (as the Swift app had).
-- **10 Nov: Afrikaans side checked end to end.** The owner saw glitches on the Afrikaans side, mostly on the Language
-  Island. A full Afrikaans run (screenshots with `--bip-language af`, and a walk-through that plays the Language Island
-  as an Afrikaans child and records every clip it asks for, `VoicePlayer.Heard`) found English on two signs (the map's
-  Letters Island said "s a t", the Words Island's buttons "cat": now `Texts.LettersSign`/`SignWord`, "m a t" and "kat")
-  and Bip repeating the island's welcome after every game (home from a game now skips it). The Language Island's
-  words, pictures and clips all matched.
 - **9 Nov: Coding Island sounded British.** On 0.2.256 the owner heard a British accent on Coding Island, although
   the lines were already Aoede's. Every English style now ends with one firmer `ACCENT` sentence (an English-speaking
   teacher in Johannesburg or Cape Town, South African vowels and rhythm, never British Received Pronunciation), and
@@ -744,3 +739,10 @@
   and the game's window floats above them (it stops floating while another program has the front); a cover that
   the system put over a real share of the game (`KidLockRules.CoverHidesGame`, by the cover's position as the
   system reports it) is taken away. Until the fix: unplug the second screen, or open with Option held.
+- **10 Nov: Afrikaans side checked end to end.** The owner saw glitches on the Afrikaans side, mostly on the Language
+  Island. A full Afrikaans run (screenshots with `--bip-language af`, and a walk-through that plays the Language Island
+  as an Afrikaans child and records every clip it asks for, `VoicePlayer.Heard`) found English on two signs (the map's
+  Letters Island said "s a t", the Words Island's buttons "cat": now `Texts.LettersSign`/`SignWord`, "m a t" and "kat")
+  and Bip repeating the island's welcome after every game (home from a game now skips it; Bip celebrates only after a
+  finished game, never on home mid-game). The Language Island's
+  words, pictures and clips all matched.
