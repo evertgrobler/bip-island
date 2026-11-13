@@ -108,4 +108,18 @@ public class TraceCheckpointsTests
         foreach (var p in letter.Points.Where(p => p != tip)) letter.Touch(p);
         Assert.True(letter.Done, $"{grapheme}: missing only {tip} should be enough");
     }
+
+    [Fact]
+    public void AClickTracesOnlyTheCheckpointUnderIt()
+    {
+        var i = For("i");
+        var stem = i.Points.OrderBy(p => p.Y).Skip(1).ToList();
+        var middle = stem[stem.Count / 2];
+        // However often a child clicks the stem, each click ticks one checkpoint at most, the same one.
+        Assert.Equal(1, i.TouchNearest(middle));
+        Assert.Equal(0, i.TouchNearest(middle));
+        Assert.Equal(1, i.Touched);
+        // Far from every stroke: nothing.
+        Assert.Equal(0, i.TouchNearest(new Vector2(Size, Size)));
+    }
 }

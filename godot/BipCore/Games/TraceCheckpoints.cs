@@ -19,8 +19,9 @@ public sealed class TraceCheckpoints
 
     private readonly Vector2[] _points;
     private readonly bool[] _touched;
-    private readonly bool[] _alone;
+    private readonly int[] _dots;
     private readonly float _radius;
+    private int _touchedCount;
 
     /// <param name="shape">[x, y] in ems from the letter's centre (trace_shapes.json).</param>
     /// <param name="centre">Where the letter's centre is drawn.</param>
@@ -35,13 +36,12 @@ public sealed class TraceCheckpoints
         _touched = new bool[_points.Length];
         _radius = radius;
         // A stroke of one checkpoint can't be "nearly" traced: it must be touched (the dot of i and j).
-        _alone = new bool[_points.Length];
-        foreach (var i in dots ?? []) if (i >= 0 && i < _alone.Length) _alone[i] = true;
+        _dots = (dots ?? []).Where(i => i >= 0 && i < _points.Length).Distinct().ToArray();
     }
 
     public IReadOnlyList<Vector2> Points => _points;
     public int Count => _points.Length;
-    public int Touched => _touched.Count(t => t);
+    public int Touched => _touchedCount;
 
     /// <summary>Checkpoints still to reach.</summary>
     public IEnumerable<Vector2> Remaining => _points.Where((_, i) => !_touched[i]);
@@ -50,7 +50,7 @@ public sealed class TraceCheckpoints
     /// True once enough checkpoints are touched and every stroke of its own (a dot) is: all of them for a letter with
     /// very few.
     /// </summary>
-    public bool Done => Count > 0 && Touched >= Needed(Count) && _alone.Select((a, i) => !a || _touched[i]).All(t => t);
+    public bool Done => Count > 0 && _touchedCount >= Needed(Count) && _dots.All(i => _touched[i]);
 
     /// <summary>
     /// How many checkpoints a letter with <paramref name="count"/> of them needs: all but a tenth, and always at least
@@ -69,9 +69,29 @@ public sealed class TraceCheckpoints
         {
             if (_touched[i] || Vector2.Distance(at, _points[i]) > _radius) continue;
             _touched[i] = true;
+            _touchedCount++;
             fresh++;
         }
         return fresh;
+    }
+
+    /// <summary>
+    /// A click at <paramref name="at"/>: only the one checkpoint nearest to it, if it is near enough and not yet touched,
+    /// so a click dots the i or the j but a row of clicks never stands in for tracing a stroke. Returns 1 or 0.
+    /// </summary>
+    public int TouchNearest(Vector2 at)
+    {
+        var nearest = -1;
+        var best = _radius;
+        for (var i = 0; i < _points.Length; i++)
+        {
+            var d = Vector2.Distance(at, _points[i]);
+            if (d <= best) (best, nearest) = (d, i);
+        }
+        if (nearest < 0 || _touched[nearest]) return 0;
+        _touched[nearest] = true;
+        _touchedCount++;
+        return 1;
     }
 
     /// <summary>

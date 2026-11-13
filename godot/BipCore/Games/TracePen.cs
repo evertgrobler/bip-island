@@ -51,7 +51,7 @@ public enum TraceTapResult
 /// strokes never gets the hint for an old stray click.
 /// A press draws nothing until it has moved past <see cref="TapSlop"/>, so a click never both
 /// draws and counts as a miss. Where a click landed comes from the screen's hit test
-/// (<see cref="TraceSpot"/>); a click on a stroke traces it (the screen asks <see cref="IsClick"/>),
+/// (<see cref="TraceSpot"/>); a click on a stroke traces the checkpoint under it (the screen asks <see cref="IsClick"/>),
 /// and how a finished trace is judged is <see cref="TraceCheckpoints"/>.
 /// </summary>
 public sealed class TracePen
@@ -64,10 +64,14 @@ public sealed class TracePen
 
     /// <summary>
     /// In tap mode (the button up, the pen following), a jump this far between two drawn points is a new stroke, never
-    /// a line across: events can go missing meanwhile (the parent gate). A drag with the button held is one stroke
-    /// however fast it goes, so it is never cut.
+    /// a line across: events can go missing meanwhile (the parent gate). A drag with the button held is cut only when
+    /// the jump also comes after a <see cref="Gap"/> without moves (its events went elsewhere meanwhile); a quick
+    /// stroke on a slow frame comes with no gap, so it stays one stroke.
     /// </summary>
     public const float MaxStep = 180;
+
+    /// <summary>Seconds without a move after which a long jump in a held drag is a new stroke (events went missing).</summary>
+    public const float Gap = 0.25f;
 
     private Vector2? _pressedAt;
     private Vector2? _lastDrawn;
@@ -113,8 +117,11 @@ public sealed class TracePen
         return TraceTapResult.None;
     }
 
-    /// <summary>The pointer moved. Returns true when this point should be drawn and traced.</summary>
-    public bool Move(Vector2 at, bool buttonHeld)
+    /// <summary>
+    /// The pointer moved. Returns true when this point should be drawn and traced. <paramref name="sinceLast"/> is the
+    /// time in seconds since the previous move the screen saw.
+    /// </summary>
+    public bool Move(Vector2 at, bool buttonHeld, float sinceLast = 0)
     {
         // A drag starts where the button went down, not at its first move past the wobble: the stroke's tip counts.
         var pressed = _pressedAt;
@@ -125,7 +132,8 @@ public sealed class TracePen
         if (draws && !wasDragging && Mode == TracePenMode.Dragging && pressed is null) _lastDrawn = null;
         if (draws && _lastDrawn is null && pressed is { } start && Mode == TracePenMode.Dragging) _lastDrawn = start;
         StrokeFrom = draws && _lastDrawn is { } last
-                     && (Mode == TracePenMode.Dragging || Vector2.Distance(last, at) <= MaxStep) ? last : null;
+                     && (Vector2.Distance(last, at) <= MaxStep || Mode == TracePenMode.Dragging && sinceLast < Gap)
+            ? last : null;
         _lastDrawn = draws ? at : null;
         return draws;
     }

@@ -34,6 +34,8 @@ public partial class LetterTraceScreen : GameScreen
     /// <summary>Just above the letter, where most letters start.</summary>
     private static readonly Vector2 StartDotAt = P(0, 290);
     private readonly TracePen _pen = new();
+    /// <summary>When the last mouse move came (milliseconds since start), so a jump after a gap starts a new stroke.</summary>
+    private ulong _lastMoveMsec;
     private string? _pressedOn;
     private bool _started;
 
@@ -56,6 +58,22 @@ public partial class LetterTraceScreen : GameScreen
     public bool StartDotHinted => HintedNode == _startDot;
     public int TouchedCount => _checkpoints.Touched;
     public bool StartDotShown => _startDot.Visible;
+
+    /// <summary>
+    /// A spot on the letter's button that is no stroke (the inside of an o, the paper beside an i), in canvas
+    /// coordinates, or null when the letter has none (for the walk-through test).
+    /// </summary>
+    public Vector2? LetterOffStrokesOnScreen()
+    {
+        for (var y = -LetterSize / 2; y <= LetterSize / 2; y += 20)
+        for (var x = -LetterSize / 2; x <= LetterSize / 2; x += 20)
+        {
+            var local = _letter.Position + new Vector2(x, y);
+            var global = Stage.ToGlobal(local);
+            if (TappableAt(global) == _letter && !_checkpoints.Near(Numeric(local))) return global;
+        }
+        return null;
+    }
 
     protected override void Build()
     {
@@ -102,7 +120,10 @@ public partial class LetterTraceScreen : GameScreen
                 // window, behind the parent gate) stops on the first move without the button.
                 case InputEventMouseMotion motion:
                     var at = Stage.ToLocal(motion.GlobalPosition);
-                    var draws = _pen.Move(Numeric(at), motion.ButtonMask.HasFlag(MouseButtonMask.Left));
+                    var now = Time.GetTicksMsec();
+                    var since = _lastMoveMsec == 0 ? 0f : (now - _lastMoveMsec) / 1000f;
+                    _lastMoveMsec = now;
+                    var draws = _pen.Move(Numeric(at), motion.ButtonMask.HasFlag(MouseButtonMask.Left), since);
                     SyncStartDot();
                     if (draws)
                     {
@@ -126,10 +147,11 @@ public partial class LetterTraceScreen : GameScreen
                 case InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: false } release:
                     GetViewport().SetInputAsHandled();
                     var where = Stage.ToLocal(release.GlobalPosition);
-                    // A click on a stroke traces it (dotting the i or the j with one click): never a miss, every time.
+                    // A click on a stroke traces the one checkpoint under it (dotting the i or the j with one click):
+                    // never a miss, every time, but clicks alone never trace a whole stroke.
                     var dotted = _pressedOn is null or "letter" && _pen.Mode == TracePenMode.Idle && _pen.IsClick(Numeric(where))
                                  && _checkpoints.Near(Numeric(where));
-                    var fresh = dotted ? _checkpoints.Touch(Numeric(where)) : 0;
+                    var fresh = dotted ? _checkpoints.TouchNearest(Numeric(where)) : 0;
                     if (dotted) _pen.Traced();
                     var spot = _pressedOn switch
                     {

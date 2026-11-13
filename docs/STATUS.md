@@ -726,12 +726,14 @@
 - **9 Nov: Letter Trace follows each letter's strokes.** On 0.2.256 the owner couldn't trace letters you lift the
   pen for or go back over (i, j, a): every letter used one ring of checkpoints round its middle. Now
   `scripts/trace_shapes.py` draws each grapheme of both languages in the letter font (skipping the hyphen of a-e),
-  thins it to centre lines and spaces checkpoints along them, marking a stroke of one checkpoint (the dot of i and j)
-  as a dot (`Content/phonics/trace_shapes.json`; `scripts/trace_source.py` holds what it is made from, and the
+  thins it to centre lines and spaces checkpoints along them (every stroke of its own gets one), marking a stroke too
+  short to be nearly traced (the dot of i and j) as a dot (`Content/phonics/trace_shapes.json`; `scripts/trace_source.py` holds what it is made from, and the
   validator fails when the font, the graphemes or the recipe changed without a rerun). `BipCore.TraceCheckpoints`:
   any order and lifts, all but a tenth (at least one may be missed from four up), dots must be touched, a fast move
-  touches everything along the way. `TracePen` owns the stroke (from press to release; in tap mode a jump over
-  180 px starts a new stroke). A click on a stroke traces it and is never a miss. Tested; the walk-through dots a
+  touches everything along the way. `TracePen` owns the stroke (from press to release; a jump over 180 px
+  starts a new stroke in tap mode, and in a held drag when it comes after a quarter second without moves). A click on a
+  stroke traces the one checkpoint under it (so clicks can't stand in for tracing) and is never a miss. CI also runs
+  when only the generator changes. Tested; the walk-through dots a
   letter with a click.
 - **9 Nov: Coding Island sounded British.** On 0.2.256 the owner heard a British accent on Coding Island, although
   the lines were already Aoede's. Every English style now ends with one firmer `ACCENT` sentence (an English-speaking

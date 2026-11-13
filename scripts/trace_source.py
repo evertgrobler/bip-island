@@ -8,6 +8,7 @@ FONT = ROOT / "Resources" / "Fonts" / "AtkinsonHyperlegible-Bold.ttf"
 LISTS = [ROOT / "Content" / "phonics" / "graphemes.json", ROOT / "Content" / "af" / "phonics" / "graphemes.json"]
 SIZE = 400          # pixels per em while measuring
 SPACING = 0.11      # ems between checkpoints along a stroke
+FEWEST = 3          # the fewest checkpoints a shape may have (BipCore.TraceCheckpoints.Fewest says the same)
 
 
 def graphemes():
@@ -23,6 +24,6 @@ def graphemes():
 
 def source_hash():
     """The font, the graphemes and the generator itself: when any of them changes, the shapes are out of date."""
-    recipe = f"{SIZE} {SPACING}\n" + "\n".join(sorted(graphemes()))
+    recipe = f"{SIZE} {SPACING} {FEWEST}\n" + "\n".join(sorted(graphemes()))
     generator = Path(__file__).with_name("trace_shapes.py").read_bytes()
     return hashlib.sha1(FONT.read_bytes() + generator + recipe.encode("utf-8")).hexdigest()

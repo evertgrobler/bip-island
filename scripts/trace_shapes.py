@@ -80,15 +80,22 @@ def shape(text, font):
         x, y = xs[i], ys[i]
         if all((x - cx) ** 2 + (y - cy) ** 2 >= gap * gap for cx, cy in chosen):
             chosen.append((x, y))
+    # Every stroke of its own gets a checkpoint, even one whose pixels all sit near another stroke's points (the
+    # spacing above can leave a short stroke without any): its pixel nearest its middle.
+    piece = pieces(lines)
+    have = {piece[y, x] for x, y in chosen}
+    for label in range(1, piece.max() + 1):
+        if label in have:
+            continue
+        py, px = np.nonzero(piece == label)
+        k = int(np.argmin((px - px.mean()) ** 2 + (py - py.mean()) ** 2))
+        chosen.append((px[k], py[k]))
     centre_x, centre_y = pad + width / 2, pad + height / 2
     points = [[round((x - centre_x) / SIZE, 3), round((y - centre_y) / SIZE, 3)] for x, y in chosen]
-    # A stroke of its own with a single checkpoint (the dot of i and j) must be touched: the game can't let it be
-    # the one checkpoint missed. Found from the centre lines' connected pieces, never guessed from distances.
-    piece = pieces(lines)
-    counts = {}
-    for x, y in chosen:
-        counts[piece[y, x]] = counts.get(piece[y, x], 0) + 1
-    dots = [i for i, (x, y) in enumerate(chosen) if counts[piece[y, x]] == 1]
+    # A stroke too short to be "nearly" traced (the dot of i and j) must be touched: found from the centre lines'
+    # connected pieces and their own length in pixels, never from how the spacing happened to fall.
+    length = np.bincount(piece.ravel())
+    dots = [i for i, (x, y) in enumerate(chosen) if length[piece[y, x]] < 2 * gap]
     return points, dots
 
 

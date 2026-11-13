@@ -920,13 +920,20 @@ public static class WalkTest
                 Check("a drag that takes over from tap mode brings the start dot back",
                       trace.PenMode == BipCore.TracePenMode.Idle && trace.StartDotShown);
                 Check("no star until the letter is finished", game.Progress.Stars == starsBefore);
-                // Clicking the letter says its sound and traces the spot clicked (a child dots an i or a j that way):
-                // never a miss, however often.
+                // Clicking the letter says its sound and traces the one spot clicked (a child dots an i or a j that
+                // way): never a miss, however often, and only that one checkpoint.
                 var beforeClicks = trace.TouchedCount;
                 PenClick(trace.CheckpointsOnScreen.First());
-                Check("a click on a stroke traces it (dotting the i)", trace.TouchedCount > beforeClicks,
+                Check("a click on a stroke traces the one spot clicked (dotting the i)", trace.TouchedCount == beforeClicks + 1,
                       $"touched {beforeClicks} → {trace.TouchedCount}");
-                PenClick(trace.CheckpointsOnScreen.FirstOrDefault(trace.StartDotOnScreen + new Vector2(0, 300)));
+                // Twice in a row on the letter away from its strokes (two would be a hint if they were misses).
+                var offStrokes = trace.LetterOffStrokesOnScreen();
+                Check("the letter has a spot that is no stroke", offStrokes != null);
+                if (offStrokes is { } off)
+                {
+                    PenClick(off);
+                    PenClick(off);
+                }
                 Check("clicks on the letter are not misses", !trace.StartDotHinted);
                 // Click the dot again and finish the letter with the button up.
                 PenClick(trace.StartDotOnScreen);

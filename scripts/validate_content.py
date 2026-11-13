@@ -64,7 +64,7 @@ _made_from = trace_source.source_hash()
 if trace_doc.get("source") != _made_from:
     err("phonics/trace_shapes.json is out of date with the letter font or the graphemes: run scripts/trace_shapes.py")
 for g in ph["graphemes"]:
-    if len(trace_shapes.get(g["grapheme"], [])) < 3:
+    if len(trace_shapes.get(g["grapheme"], [])) < trace_source.FEWEST:
         err(f"grapheme {g['grapheme']}: no Letter Trace shape in phonics/trace_shapes.json (run scripts/trace_shapes.py)")
 
 # --- objectives referenced anywhere must exist

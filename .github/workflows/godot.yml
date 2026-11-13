@@ -14,6 +14,8 @@ on:
       - "scripts/godot/**"
       - "scripts/check_all.sh"
       - "scripts/validate_content.py"
+      - "scripts/trace_shapes.py"
+      - "scripts/trace_source.py"
       - "scripts/sa_english.py"
       - "scripts/af_spelling.py"
       - "scripts/spoken_numbers.py"
