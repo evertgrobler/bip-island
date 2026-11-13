@@ -291,7 +291,8 @@ public partial class FeedMonsterScreen : GameScreen
             return;
         }
         // Mouse presses on food belong to the hand (drag, or click to pick up); this is the keyboard's
-        // Enter on the glowing food.
+        // Enter on the glowing food. Not while a food is in the hand: it would be fed and still follow the pointer.
+        if (_held != null) return;
         if (name.StartsWith("food:") && int.TryParse(name["food:".Length..], out var index)) Feed(index);
     }
 

@@ -203,15 +203,18 @@ public sealed class SaveStore
         get => _file.Settings;
         set
         {
-            _file.Settings = value with
-            {
-                PlayMinutes = Math.Max(1, value.PlayMinutes),
-                BreakMinutes = Math.Max(1, value.BreakMinutes),
-                DailyMaxMinutes = value.DailyMaxMinutes is > 0 ? value.DailyMaxMinutes : null,
-            };
+            _file.Settings = Sensible(value);
             Save();
         }
     }
+
+    /// <summary>Play and break at least a minute, no daily maximum of zero: for what a parent sets and what a file holds.</summary>
+    private static PlayTimeSettings Sensible(PlayTimeSettings value) => value with
+    {
+        PlayMinutes = Math.Max(1, value.PlayMinutes),
+        BreakMinutes = Math.Max(1, value.BreakMinutes),
+        DailyMaxMinutes = value.DailyMaxMinutes is > 0 ? value.DailyMaxMinutes : null,
+    };
 
     public ParentPasscode? Passcode
     {
@@ -267,7 +270,9 @@ public sealed class SaveStore
             // A hand-edited or half-written file can have nulls where lists belong.
             file.Children ??= [];
             file.Children.RemoveAll(c => c is null || c.Id == Guid.Empty);
-            file.Settings ??= new PlayTimeSettings();
+            // A hand-edited or half-written file gets the same limits a parent's settings do (a play time of 0
+            // would start a break on every check: audit, 13 Nov 2026).
+            file.Settings = Sensible(file.Settings ?? new PlayTimeSettings());
             foreach (var child in file.Children)
             {
                 child.Name ??= "";
@@ -280,7 +285,8 @@ public sealed class SaveStore
             file.Break = null;
             return file;
         }
-        catch (JsonException error)
+        // A date or number out of range in the file is as unreadable as broken JSON: a fresh start, never a crash.
+        catch (Exception error) when (error is JsonException or ArgumentException or FormatException or OverflowException)
         {
             // Keep the unreadable text so it can be recovered by hand, then start fresh.
             var backup = Path.Combine(_folder, $"unreadable-save-{_now().ToUnixTimeSeconds()}.json");

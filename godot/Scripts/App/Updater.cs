@@ -123,10 +123,13 @@ public static class Updater
         {
             Boot.Instance.AllowQuit();
             _manager.ApplyUpdatesAndRestart(_downloaded.TargetFullRelease);
+            Boot.Instance.KeepLocked();
             return "ApplyUpdatesAndRestart returned without restarting";
         }
         catch (Exception e)
         {
+            // The game plays on: lock it in again (the lock was lifted for the restart that didn't come).
+            Boot.Instance.KeepLocked();
             GD.PrintErr($"Bip Island: installing the update failed: {e.Message}");
             return $"installing the update failed: {e.Message}";
         }

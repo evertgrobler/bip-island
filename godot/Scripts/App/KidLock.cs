@@ -49,6 +49,11 @@ public static class KidLock
             OpenParentWindow();
             return;
         }
+        Lock();
+    }
+
+    private static void Lock()
+    {
         try
         {
             if (IsMac) Mac.Lock();
@@ -67,6 +72,20 @@ public static class KidLock
         }
     }
 
+    /// <summary>What <see cref="Release"/> lifted: "mac", "windows" or "failed: …" (or nothing to put back).</summary>
+    private static string? _releasedFrom;
+
+    /// <summary>
+    /// Puts the lock back after <see cref="Release"/>, when the restart it was lifted for didn't happen (an update
+    /// that failed to install): the child plays on, so the game must be locked in again (audit, 13 Nov 2026).
+    /// </summary>
+    public static void Restore()
+    {
+        var was = _releasedFrom;
+        _releasedFrom = null;
+        if (was is "mac" or "windows" || was?.StartsWith("failed", StringComparison.Ordinal) == true) Lock();
+    }
+
     /// <summary>
     /// Another program took the front by itself (a system dialog, an updater): the covers step aside until the
     /// game is back (<see cref="Reapply"/>), so that program's windows on another screen can be seen.
@@ -76,11 +95,11 @@ public static class KidLock
         foreach (var cover in Covers)
             if (GodotObject.IsInstanceValid(cover)) cover.Hide();
         _coversHidden = Covers.Count > 0;
-        // The game stops floating too (even when its covers were taken away), so that program's windows can be seen.
+        // The game stops floating too (even when its covers were taken away), so that program's windows can be seen;
+        // it floats again when its covers come back (CoverOtherScreens).
         if (_gameFloating)
         {
             _gameFloating = false;
-            _coversHidden = true; // the game floats again when it's back in front
             try { DisplayServer.WindowSetFlag(DisplayServer.WindowFlags.AlwaysOnTop, false); }
             catch (Exception error) { GD.PrintErr($"Bip Island: child lock (lift): {error.Message}"); }
         }
@@ -171,6 +190,8 @@ public static class KidLock
         // The game left the main screen (the main display changed, a screen woke or was plugged in again): put it
         // back, so the main screen is never left open while the game sits elsewhere (review of #75).
         var main = DisplayServer.GetPrimaryScreen();
+        // Back on the main screen: a later move off it (the same screens sleeping and waking again) is put back too.
+        if (game == main) _putBackFrom = null;
         if (Status == "mac" && game >= 0 && game != main && main < screens.Count)
         {
             // Once per reading: if the system won't place the window there, don't move it every second.
@@ -221,12 +242,17 @@ public static class KidLock
         }
         _coversHidden = false;
         TakeAwayCoversOverTheGame();
+        // New covers join the tree on the deferred AddChild above: check them again once they have (deferred calls
+        // run in order), not only a second later.
+        if (raise) Callable.From(TakeAwayCoversOverTheGame).CallDeferred();
         if (raise) Callable.From(RaiseGame).CallDeferred();
     }
 
     /// <summary>The game's window floats like the covers and goes to the front, above them.</summary>
     private static void RaiseGame()
     {
+        // Deferred: another program may have taken the front meanwhile (Lifted), or the lock was released.
+        if (!_fence || _coversHidden || Covers.Count == 0) return;
         try
         {
             DisplayServer.WindowSetFlag(DisplayServer.WindowFlags.AlwaysOnTop, true);
@@ -325,6 +351,7 @@ public static class KidLock
     /// <summary>Lifts the lock before the game quits or restarts for an update.</summary>
     public static void Release()
     {
+        _releasedFrom = IsOn || Status.StartsWith("failed", StringComparison.Ordinal) ? Status : null;
         _fence = false;
         try
         {
@@ -336,7 +363,12 @@ public static class KidLock
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (covers): {error.Message}"); }
         try { Input.MouseMode = Input.MouseModeEnum.Visible; }
         catch (Exception error) { GD.PrintErr($"Bip Island: child lock release (mouse): {error.Message}"); }
-        if (!IsOn) return;
+        if (!IsOn)
+        {
+            // A lock that failed to start still had its fence and covers: it is off now, so Reapply leaves it off.
+            if (Status.StartsWith("failed", StringComparison.Ordinal)) Status = "off";
+            return;
+        }
         try
         {
             if (Status == "mac") Mac.Unlock();

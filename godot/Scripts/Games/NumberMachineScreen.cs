@@ -203,11 +203,18 @@ public partial class NumberMachineScreen : GameScreen
         // The balls show the first example, so the same numbers are on the machine.
     }
 
+    private Tween? _spin;
+    private float _spinTo;
+
+    /// <summary>One full turn of the handle; a turn asked for mid-turn carries on to one more whole turn, never tilted.</summary>
     private void TurnHandle()
     {
         if (_handle == null) return;
-        var spin = _handle.CreateTween();
-        spin.TweenProperty(_handle, "rotation", _handle.Rotation + Mathf.Tau, 0.7).SetDelay(0.5);
+        var turning = _spin != null && _spin.IsValid() && _spin.IsRunning();
+        _spinTo = (turning ? _spinTo : _handle.Rotation) + Mathf.Tau;
+        _spin?.Kill();
+        _spin = _handle.CreateTween();
+        _spin.TweenProperty(_handle, "rotation", _spinTo, 0.7).SetDelay(0.5);
     }
 
     /// <summary>
@@ -325,16 +332,18 @@ public partial class NumberMachineScreen : GameScreen
         // Two misses: the right card wiggles, the groups show, and each bobs as Bip counts in steps.
         if (RightIndex is var r && r >= 0 && r < _choices.Count) ShowHint(_choices[r]);
         ShowGroups(round);
-        After(0.4, () => Voice.Play(_game.Hint(round)));
+        // Only while the question is open: a quick right answer must not have its praise (and the next question) cut.
+        WhileUnanswered(_attempt, 0.4, () => Voice.Play(_game.Hint(round)));
         for (var i = 0; i < _groups.Count; i++)
         {
             var group = _groups[i];
             After(1.8 + i * 0.7, () =>
             {
                 if (_round != round || !IsInstanceValid(group)) return;
+                var rest = group.Scale;
                 var bob = group.CreateTween();
-                bob.TweenProperty(group, "scale", Vector2.One * 1.15f, 0.15);
-                bob.TweenProperty(group, "scale", Vector2.One, 0.2);
+                bob.TweenProperty(group, "scale", rest * 1.15f, 0.15);
+                bob.TweenProperty(group, "scale", rest, 0.2);
             });
         }
     }

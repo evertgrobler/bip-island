@@ -723,6 +723,24 @@
   cursor clip, which doesn't slow the mouse).
   Review of #74: the fence works once a frame, so a flick and click could reach a second screen for a moment;
   every other screen now gets a paper cover window of the game's own (as the Swift app had).
+- **13 Nov: whole-game audit.** The owner asked for a full audit. Every clip both languages need is recorded (1407
+  English, 1150 Afrikaans) and the content checks pass. Three code reviews of the whole game (child lock, games and
+  screens, play time, saving and the parent area) found these, now fixed:
+  - Picnic Plates and Number Machine could freeze when the right answer came within 0.4 s of the hint (the hint cut the
+    praise): the hint now waits on the open question (`WhileUnanswered`), as every other game's does. Their counting
+    bob keeps a plate's own size, and the machine's handle never ends tilted.
+  - Feed the Monster: Enter on a food while another is in the hand did nothing sensible; it now waits for the hand.
+  - Child lock: a failed update install put the lock back on (`Boot.KeepLocked`, `KidLock.Restore`); a lock that failed
+    to start is "off" once released; the game is put back on the main screen every time it leaves it; a deferred raise
+    never pulls the game over a program that took the front; new covers are checked once they exist.
+  - Play time: while "Who's playing?" waits for the first pick, nobody's clock runs; a grown-up's change goes back to
+    "Who's playing?" then, not the map; "End break now" says so when today's maximum still holds.
+  - Saving: settings read from the file get the same limits (a play time of 0 started a break on every check); a date
+    out of range in the file starts fresh instead of crashing; failed saves are logged; a locked save file doesn't
+    open the first-run setup guide.
+  - The self-test counts Art Island too (5 islands).
+  Kept on purpose: the main screen never gets a cover (the 0.2.256 lesson), and Word Builder's 24-point click (one
+  click rule for every game, 29 Oct).
 - **9 Nov: Coding Island sounded British.** On 0.2.256 the owner heard a British accent on Coding Island, although
   the lines were already Aoede's. Every English style now ends with one firmer `ACCENT` sentence (an English-speaking
   teacher in Johannesburg or Cape Town, South African vowels and rhythm, never British Received Pronunciation), and

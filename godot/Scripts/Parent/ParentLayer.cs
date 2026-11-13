@@ -138,8 +138,9 @@ public partial class ParentLayer : CanvasLayer
             Coordinator.Choose(id);
             return;
         }
-        // Children or settings changed: start again from the map as the (possibly new) child.
-        if (_changed) Coordinator.ShowMap();
+        // Children or settings changed: start again from the map as the (possibly new) child, or from
+        // "Who's playing?" when nobody had picked yet.
+        if (_changed) Coordinator.ShowStart();
         _changed = false;
     }
 

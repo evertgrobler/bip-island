@@ -121,8 +121,9 @@ public static class SelfTest
         var musicTracks = BipCore.MusicRules.AllTracks.Count(MusicPlayer.HasTrack);
         var graphemes = ReadsAsJson("res://assets/content/phonics/graphemes.json");
         var game = BipIsland.Game.GameCoordinator.Instance;
-        var islandsOpen = new[] { game.LettersOpen, game.NumbersOpen, game.WordsOpen, game.CodingOpen }.Count(open => open);
-        var ok = error == null && game.Content != null && islandsOpen == 4 && Fonts.IsInstalled && Fonts.EmojiInstalled && contentFiles > 0 && clipCount > 0
+        // Every island with its games (Art too: audit, 13 Nov 2026), the Language Island when it's on.
+        var islandsOpen = new[] { game.LettersOpen, game.NumbersOpen, game.WordsOpen, game.CodingOpen, game.ArtOpen }.Count(open => open);
+        var ok = error == null && game.Content != null && islandsOpen == 5 && Fonts.IsInstalled && Fonts.EmojiInstalled && contentFiles > 0 && clipCount > 0
                  && sampleClip && graphemes && MusicPlayer.HasTrack(BipCore.MusicRules.MapTrack);
 
         var report = new Dictionary<string, object?>

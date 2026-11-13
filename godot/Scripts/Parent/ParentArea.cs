@@ -495,9 +495,11 @@ public partial class ParentArea : VBoxContainer
         var ended = ParentUi.Text("", 15, colour: ParentUi.Secondary);
         endBreak.Pressed += () =>
         {
-            Coordinator.EndBreakEarly();
+            var open = Coordinator.EndBreakEarly();
             _layer.MarkChanged();
-            ended.Text = "Done: games are open again.";
+            ended.Text = open
+                ? "Done: games are open again."
+                : "The break is over, but today's maximum is reached: raise the daily maximum to play on today.";
         };
         play.AddChild(ParentUi.Row(12, endBreak, ended));
     }

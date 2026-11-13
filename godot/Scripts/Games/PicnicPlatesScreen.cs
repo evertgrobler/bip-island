@@ -433,7 +433,8 @@ public partial class PicnicPlatesScreen : GameScreen
         // Two misses: the right card wiggles, and each plate, row or punnet bobs as Bip counts it.
         if (RightIndex is var r && r >= 0 && r < _choices.Count) ShowHint(_choices[r]);
         var hint = _game.Hint(round);
-        After(0.4, () => Voice.Play(hint));
+        // Only while the question is open: a quick right answer must not have its praise (and the next question) cut.
+        WhileUnanswered(_attempt, 0.4, () => Voice.Play(hint));
         // The count starts after the opening words (about a second), then a group about every 0.7 s.
         var counted = round.Mode == Mode.Sharing ? [] : _groups.ToList();
         for (var i = 0; i < counted.Count; i++)
@@ -442,9 +443,11 @@ public partial class PicnicPlatesScreen : GameScreen
             After(1.6 + i * 0.7, () =>
             {
                 if (_round != round || !IsInstanceValid(group)) return;
+                // Back to the plate's own size (plates beside the basket are drawn a little smaller).
+                var rest = group.Scale;
                 var bob = group.CreateTween();
-                bob.TweenProperty(group, "scale", Vector2.One * 1.12f, 0.15);
-                bob.TweenProperty(group, "scale", Vector2.One, 0.2);
+                bob.TweenProperty(group, "scale", rest * 1.12f, 0.15);
+                bob.TweenProperty(group, "scale", rest, 0.2);
             });
         }
     }
