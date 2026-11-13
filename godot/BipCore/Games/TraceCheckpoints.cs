@@ -102,7 +102,8 @@ public sealed class TraceCheckpoints
     {
         var steps = Math.Max(1, (int)Math.Ceiling(Vector2.Distance(from, to) / (_radius / 2)));
         var fresh = 0;
-        for (var s = 1; s <= steps; s++) fresh += Touch(Vector2.Lerp(from, to, s / (float)steps));
+        // From the start point itself: a drag's first step starts at the press, which nothing has touched yet.
+        for (var s = 0; s <= steps; s++) fresh += Touch(Vector2.Lerp(from, to, s / (float)steps));
         return fresh;
     }
 }

@@ -160,7 +160,9 @@ public partial class LetterTraceScreen : GameScreen
                         "start" => TraceSpot.StartDot,
                         _ => TraceSpot.Button,
                     };
-                    var result = _pen.Release(Numeric(where), spot);
+                    var released = Time.GetTicksMsec();
+                    var sinceMove = _lastMoveMsec == 0 ? 0f : (released - _lastMoveMsec) / 1000f;
+                    var result = _pen.Release(Numeric(where), spot, sinceMove);
                     _pressedOn = null;
                     SyncStartDot();
                     // The end of a drag counts up to where the button came up.

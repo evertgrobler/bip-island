@@ -122,4 +122,14 @@ public class TraceCheckpointsTests
         // Far from every stroke: nothing.
         Assert.Equal(0, i.TouchNearest(new Vector2(Size, Size)));
     }
+
+    [Fact]
+    public void AStrokeTouchesItsStartPoint()
+    {
+        // A drag's first step starts at the press: the checkpoint there counts.
+        var shape = new List<List<float>> { new() { 0, 0 }, new() { 0, 1 } };
+        var line = new TraceCheckpoints(shape, Vector2.Zero, Size, Radius);
+        Assert.Equal(1, line.Stroke(Vector2.Zero, new Vector2(0, 30)));
+        Assert.Equal(1, line.Touched);
+    }
 }

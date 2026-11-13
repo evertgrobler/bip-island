@@ -170,9 +170,12 @@ public sealed class TracePen
     /// is a miss; a click on anything else (<see cref="TraceSpot.Button"/>) is left to that thing.
     /// <paramref name="spot"/> is where the press landed.
     /// </summary>
-    public TraceTapResult Release(Vector2 at, TraceSpot spot)
+    /// <param name="sinceLast">Seconds since the last move the screen saw: a long jump after a gap is no line (see <see cref="Gap"/>).</param>
+    public TraceTapResult Release(Vector2 at, TraceSpot spot, float sinceLast = 0)
     {
-        StrokeEnd = Mode == TracePenMode.Dragging && _lastDrawn is { } last && !IsFinished ? (last, at) : null;
+        StrokeEnd = Mode == TracePenMode.Dragging && _lastDrawn is { } last && !IsFinished
+                    && (Vector2.Distance(last, at) <= MaxStep || sinceLast < Gap)
+            ? (last, at) : null;
         _lastDrawn = null;
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
