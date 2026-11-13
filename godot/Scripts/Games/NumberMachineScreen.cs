@@ -340,7 +340,9 @@ public partial class NumberMachineScreen : GameScreen
             After(1.8 + i * 0.7, () =>
             {
                 if (_round != round || !IsInstanceValid(group)) return;
-                var rest = group.Scale;
+                // Its own size, taken once, before any bob: a bob started mid-bob (quick misses) never grows it.
+                if (!group.HasMeta("rest")) group.SetMeta("rest", group.Scale);
+                var rest = group.GetMeta("rest").AsVector2();
                 var bob = group.CreateTween();
                 bob.TweenProperty(group, "scale", rest * 1.15f, 0.15);
                 bob.TweenProperty(group, "scale", rest, 0.2);

@@ -32,6 +32,9 @@ public static class KidLock
     public static string Status { get; private set; } = "off";
     public static bool IsOn => Status is "mac" or "windows";
 
+    /// <summary>The lock tried to start and couldn't: the game still fills the screen and keeps the mouse in.</summary>
+    private static bool IsFailed => Status.StartsWith("failed", StringComparison.Ordinal);
+
     private static bool IsMac => OS.GetName() == "macOS";
     private static bool IsWindows => OS.GetName() == "Windows";
 
@@ -72,8 +75,8 @@ public static class KidLock
         }
     }
 
-    /// <summary>What <see cref="Release"/> lifted: "mac", "windows" or "failed: …" (or nothing to put back).</summary>
-    private static string? _releasedFrom;
+    /// <summary>Whether <see cref="Release"/> lifted a lock (on, or failed but fencing) that <see cref="Restore"/> puts back.</summary>
+    private static bool _lockedBeforeRelease;
 
     /// <summary>
     /// Puts the lock back after <see cref="Release"/>, when the restart it was lifted for didn't happen (an update
@@ -81,9 +84,9 @@ public static class KidLock
     /// </summary>
     public static void Restore()
     {
-        var was = _releasedFrom;
-        _releasedFrom = null;
-        if (was is "mac" or "windows" || was?.StartsWith("failed", StringComparison.Ordinal) == true) Lock();
+        var was = _lockedBeforeRelease;
+        _lockedBeforeRelease = false;
+        if (was) Lock();
     }
 
     /// <summary>
@@ -108,7 +111,7 @@ public static class KidLock
     /// <summary>The game came back to the front: put the Mac options and the mouse limit back (the system can drop them).</summary>
     public static void Reapply()
     {
-        if (!IsOn && !Status.StartsWith("failed", StringComparison.Ordinal)) return;
+        if (!IsOn && !IsFailed) return;
         KeepMouseIn();
         if (Status != "mac") return;
         // A click on a cover (which can't take the focus) can bring the game back: give the game's window the
@@ -244,8 +247,12 @@ public static class KidLock
         TakeAwayCoversOverTheGame();
         // New covers join the tree on the deferred AddChild above: check them again once they have (deferred calls
         // run in order), not only a second later.
-        if (raise) Callable.From(TakeAwayCoversOverTheGame).CallDeferred();
-        if (raise) Callable.From(RaiseGame).CallDeferred();
+        if (raise)
+            Callable.From(() =>
+            {
+                TakeAwayCoversOverTheGame();
+                RaiseGame();
+            }).CallDeferred();
     }
 
     /// <summary>The game's window floats like the covers and goes to the front, above them.</summary>
@@ -351,7 +358,7 @@ public static class KidLock
     /// <summary>Lifts the lock before the game quits or restarts for an update.</summary>
     public static void Release()
     {
-        _releasedFrom = IsOn || Status.StartsWith("failed", StringComparison.Ordinal) ? Status : null;
+        _lockedBeforeRelease = IsOn || IsFailed;
         _fence = false;
         try
         {
@@ -366,7 +373,7 @@ public static class KidLock
         if (!IsOn)
         {
             // A lock that failed to start still had its fence and covers: it is off now, so Reapply leaves it off.
-            if (Status.StartsWith("failed", StringComparison.Ordinal)) Status = "off";
+            if (IsFailed) Status = "off";
             return;
         }
         try
@@ -581,6 +588,7 @@ public static class KidLock
         // Kept alive for as long as the hook is installed: Windows calls it through a raw pointer.
         private static HookHandler? _handler;
         private static IntPtr _hook;
+        private static System.Threading.Thread? _hookThread;
         private static IntPtr _gameWindow;
         private static uint _hookThreadId;
 
@@ -597,22 +605,27 @@ public static class KidLock
         {
             DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
             _gameWindow = new IntPtr(DisplayServer.WindowGetNativeHandle(DisplayServer.HandleType.WindowHandle));
-            _handler = OnKey;
+            // Each lock has its own handler and hook handle, so a lock put back straight after a release (a failed
+            // update) never shares them with the old hook thread (review of #79).
+            HookHandler handler = OnKey;
+            _handler = handler;
             var ready = new System.Threading.ManualResetEventSlim();
             var error = 0;
             var thread = new System.Threading.Thread(() =>
             {
                 _hookThreadId = GetCurrentThreadId();
-                _hook = SetWindowsHookExW(WhKeyboardLowLevel, _handler, GetModuleHandleW(IntPtr.Zero), 0);
-                if (_hook == IntPtr.Zero) error = Marshal.GetLastWin32Error();
+                var hook = SetWindowsHookExW(WhKeyboardLowLevel, handler, GetModuleHandleW(IntPtr.Zero), 0);
+                _hook = hook;
+                if (hook == IntPtr.Zero) error = Marshal.GetLastWin32Error();
                 ready.Set();
-                if (_hook == IntPtr.Zero) return;
+                if (hook == IntPtr.Zero) return;
                 // Keys are delivered to the hook while this loop waits; WM_QUIT (from Unlock) ends it.
                 while (GetMessageW(out _, IntPtr.Zero, 0, 0) > 0) { }
-                UnhookWindowsHookEx(_hook);
-                _hook = IntPtr.Zero;
+                UnhookWindowsHookEx(hook);
+                System.Threading.Interlocked.CompareExchange(ref _hook, IntPtr.Zero, hook);
             })
             { IsBackground = true, Name = "Bip Island child lock" };
+            _hookThread = thread;
             thread.Start();
             if (!ready.Wait(TimeSpan.FromSeconds(2))) throw new InvalidOperationException("keyboard hook thread didn't start");
             if (_hook == IntPtr.Zero) throw new InvalidOperationException($"keyboard hook refused (error {error})");
@@ -622,6 +635,9 @@ public static class KidLock
         {
             if (_hookThreadId != 0) PostThreadMessageW(_hookThreadId, WmQuit, IntPtr.Zero, IntPtr.Zero);
             _hookThreadId = 0;
+            // Wait for the old hook to come off, so a lock put back right away starts clean.
+            _hookThread?.Join(TimeSpan.FromSeconds(1));
+            _hookThread = null;
         }
 
         /// <summary>Runs for every key press on the computer, so it does as little as possible.</summary>

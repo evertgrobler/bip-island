@@ -141,6 +141,15 @@ public abstract partial class GameScreen : BaseScreen
         WhileUnanswered(attempt, 0.4, () => Voice.Play(line));
     }
 
+    /// <summary>A hint or the sound again, said after a moment (after the boop), unless an answer is being praised by then.</summary>
+    protected void SayLater(double seconds, IReadOnlyList<string> line) =>
+        After(seconds, () =>
+        {
+            // Never over the praise of an answer given meanwhile: cutting it drops its completion (the next question),
+            // and the game would freeze (audit, 13 Nov 2026). Input is locked while the praise plays.
+            if (!InputLocked) Voice.Play(line);
+        });
+
     /// <summary>
     /// Runs <paramref name="action"/> after a moment, only while <paramref name="attempt"/>'s question is still open:
     /// not once it has been answered (even if the next question is already showing, with input unlocked again),

@@ -274,11 +274,11 @@ public partial class FeedMonsterScreen : GameScreen
         if (outcome.Kind == AnswerOutcomeKind.Hint)
         {
             if (RightIndex is var right && right >= 0 && right < _cards.Count) ShowHint(_cards[right]);
-            After(0.4, () => Voice.Play([Coordinator.RandomHint(), round.Target.SoundClip]));
+            SayLater(0.4, [Coordinator.RandomHint(), round.Target.SoundClip]);
         }
         else
         {
-            After(0.4, () => Voice.Play([round.Target.SoundClip]));
+            SayLater(0.4, [round.Target.SoundClip]);
         }
     }
 

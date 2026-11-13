@@ -199,6 +199,13 @@ public sealed class SaveStoreTests : IDisposable
         Assert.Equal(1, settings.PlayMinutes);
         Assert.Equal(1, settings.BreakMinutes);
         Assert.Null(settings.DailyMaxMinutes);
+        // And never more than the parent area offers: a huge number would overflow the seconds.
+        file = new SaveFile { Settings = new PlayTimeSettings { PlayMinutes = 50_000_000, BreakMinutes = 50_000_000, DailyMaxMinutes = 50_000_000 } };
+        File.WriteAllText(Path.Combine(_folder, SaveStore.FileName), BipJson.Encode(file));
+        settings = Open().Settings;
+        Assert.Equal(PlayTimeSettings.MostPlayMinutes, settings.PlayMinutes);
+        Assert.Equal(PlayTimeSettings.MostBreakMinutes, settings.BreakMinutes);
+        Assert.Equal(PlayTimeSettings.MostDailyMinutes, settings.DailyMaxMinutes);
     }
 
     [Fact]

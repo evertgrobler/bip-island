@@ -14,6 +14,9 @@ public sealed record PlayTimeSettings
     /// <summary>Null means no daily maximum.</summary>
     public int? DailyMaxMinutes { get; init; }
 
+    /// <summary>The longest each can be: the parent area's steppers go this far (a file can't go further).</summary>
+    public const int MostPlayMinutes = 120, MostBreakMinutes = 60, MostDailyMinutes = 240;
+
     public BreakSettings ToBreakSettings() => new(PlayMinutes, BreakMinutes, DailyMaxMinutes);
 }
 
@@ -208,12 +211,15 @@ public sealed class SaveStore
         }
     }
 
-    /// <summary>Play and break at least a minute, no daily maximum of zero: for what a parent sets and what a file holds.</summary>
+    /// <summary>
+    /// Play and break at least a minute and at most what the parent area offers, no daily maximum of zero: for what a
+    /// parent sets and what a file holds (a huge number would overflow the seconds and break on every check).
+    /// </summary>
     private static PlayTimeSettings Sensible(PlayTimeSettings value) => value with
     {
-        PlayMinutes = Math.Max(1, value.PlayMinutes),
-        BreakMinutes = Math.Max(1, value.BreakMinutes),
-        DailyMaxMinutes = value.DailyMaxMinutes is > 0 ? value.DailyMaxMinutes : null,
+        PlayMinutes = Math.Clamp(value.PlayMinutes, 1, PlayTimeSettings.MostPlayMinutes),
+        BreakMinutes = Math.Clamp(value.BreakMinutes, 1, PlayTimeSettings.MostBreakMinutes),
+        DailyMaxMinutes = value.DailyMaxMinutes is int most && most > 0 ? Math.Min(most, PlayTimeSettings.MostDailyMinutes) : null,
     };
 
     public ParentPasscode? Passcode
@@ -285,8 +291,8 @@ public sealed class SaveStore
             file.Break = null;
             return file;
         }
-        // A date or number out of range in the file is as unreadable as broken JSON: a fresh start, never a crash.
-        catch (Exception error) when (error is JsonException or ArgumentException or FormatException or OverflowException)
+        // A date out of range in the file is a JsonException too (ReferenceDateConverter): a fresh start, never a crash.
+        catch (JsonException error)
         {
             // Keep the unreadable text so it can be recovered by hand, then start fresh.
             var backup = Path.Combine(_folder, $"unreadable-save-{_now().ToUnixTimeSeconds()}.json");
