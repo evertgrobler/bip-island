@@ -22,7 +22,9 @@ public partial class LettersIslandScreen : BaseScreen
     private readonly List<Node2D> _keyNodes = [];
 
     public LettersIslandScreen() : this(false) { }
-    public LettersIslandScreen(bool greet) => _greet = greet;
+    private readonly bool _celebrate;
+
+    public LettersIslandScreen(bool greet, bool celebrate = false) => (_greet, _celebrate) = (greet, celebrate);
 
     protected override IReadOnlyList<Node2D> KeyOptions => _keyNodes;
 
@@ -82,7 +84,8 @@ public partial class LettersIslandScreen : BaseScreen
         _keyNodes.Add(play);
 
         if (_greet) After(0.5, ReplayPrompt);
-        else After(0.3, () =>
+        // Back from a finished game, not home mid-game (review of #78).
+        else if (_celebrate) After(0.3, () =>
         {
             Bip.Celebrate();
             Sfx.Play(BipSounds.Effect.Whirr);
@@ -208,7 +211,7 @@ public partial class GameIslandScreen : BaseScreen
         Node2D[] games = _island switch
         {
             Island.Numbers => [CountButton(), BlocksButton(), QuickButton(), BalanceButton(), PicnicButton(), MachineButton()],
-            Island.Words => [SoundButtonsButton(), BuilderButton(), RocketButton(), StoriesButton()],
+            Island.Words => [SoundButtonsButton(SignWord), BuilderButton(SignWord), RocketButton(), StoriesButton()],
             Island.Language => [ShowMeButton(), WhatIsItButton(), BipsDayButton()],
             _ => [OrderButton(), PathButton()],
         };
@@ -316,10 +319,13 @@ public partial class GameIslandScreen : BaseScreen
         return machine;
     }
 
-    private static Node2D SoundButtonsButton()
+    /// <summary>The Words Island's word on its game buttons, in the child's language (words/signs.json).</summary>
+    private string SignWord => Coordinator.Content?.Signs.Word ?? "";
+
+    private static Node2D SoundButtonsButton(string word)
     {
         var buttons = new Node2D();
-        foreach (var (i, letter) in Indexed("c", "a", "t"))
+        foreach (var (i, letter) in Indexed([.. word.Select(c => c.ToString())]))
         {
             var x = (i - 1) * 130.0;
             buttons.AddChild(Pen(Ellipse(P(x, 0), 62, 62), (ulong)(812 + i), fill: Palette.Card, lineWidth: 5));
@@ -330,10 +336,10 @@ public partial class GameIslandScreen : BaseScreen
         return Plate("buttons", 819, buttons, 0.8f, WordsPlate);
     }
 
-    private static Node2D BuilderButton()
+    private static Node2D BuilderButton(string word)
     {
         var builder = new Node2D();
-        foreach (var (i, letter) in Indexed("c", "a", "t"))
+        foreach (var (i, letter) in Indexed([.. word.Select(c => c.ToString())]))
         {
             var x = (i - 1) * 120.0;
             builder.AddChild(Pen(RoundRect(R(x - 52, -52, 104, 104), 18), (ulong)(815 + i), fill: Palette.Teal, lineWidth: 5));

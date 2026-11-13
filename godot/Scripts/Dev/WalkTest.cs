@@ -145,6 +145,7 @@ public static class WalkTest
         await PlayCoding();
         await PlayArt();
         await PlayLanguage();
+        await PlayLanguageInAfrikaans();
 
         if (await Tap("stickers")) await Expect<StickerScreen>("the sticker book opens");
         Check("the sticker book opens on the child's picture stickers", Screen() is StickerScreen book
@@ -1082,6 +1083,78 @@ public static class WalkTest
             if (await Tap("home")) await Expect<GameIslandScreen>("home from Bip's Day goes back to the Language Island");
             if (await Tap("home")) await Expect<MapScreen>("home from the Language Island");
             game.PreviewLanguageIsland(false);
+        }
+
+        // The Language Island as an Afrikaans child plays it (owner, 10 Nov 2026: glitches on the Afrikaans side):
+        // a few rounds of each game, every clip Bip says recorded and checked.
+        async Task PlayLanguageInAfrikaans()
+        {
+            if (game.CurrentChild is not { } child || !GameCoordinator.AvailableLanguages.Contains(BipCore.HomeLanguage.Afrikaans)) return;
+            // The real path: an Afrikaans child learns English, so the Language Island opens with no preview switch.
+            game.UpdateChild(child with { Language = BipCore.HomeLanguage.Afrikaans });
+            Audio.VoicePlayer.Heard = [];
+            try
+            {
+                game.ShowMap();
+                await Expect<MapScreen>("the map, now as an Afrikaans child");
+                if (await Tap("island:language")) await Expect<GameIslandScreen>("the Language Island opens for an Afrikaans child");
+                var rounds = 0;
+                foreach (var (button, name) in new[] { ("showme", "Show Me"), ("whatisit", "What Is It?"), ("bipsday", "Bip's Day") })
+                {
+                    if (!await Tap(button)) continue;
+                    for (var round = 0; round < 4; round++)
+                    {
+                        if (!await WaitFor(() => Screen() switch
+                            {
+                                ShowMeScreen { RightIndex: >= 0, InputLocked: false } => true,
+                                WhatIsItScreen { RightIndex: >= 0, InputLocked: false } => true,
+                                BipsDayScreen { RightIndex: >= 0, InputLocked: false } => true,
+                                _ => false,
+                            }, 8))
+                        {
+                            Check($"Afrikaans child, {name} round {round + 1} comes", false, $"screen {Screen()?.GetType().Name}");
+                            break;
+                        }
+                        var right = Screen() switch { ShowMeScreen s => s.RightIndex, WhatIsItScreen w => w.RightIndex, BipsDayScreen d => d.RightIndex, _ => -1 };
+                        var stars = game.Progress.Stars;
+                        await Tap(button == "whatisit" ? $"bubble:{right}" : $"card:{right}");
+                        Check($"Afrikaans child, {name} round {round + 1}: the right answer earns a star",
+                              await WaitFor(() => game.Progress.Stars == stars + 1, 8), $"stars {stars} → {game.Progress.Stars}");
+                        rounds++;
+                    }
+                    var beforeHome = Audio.VoicePlayer.Heard?.Count ?? 0;
+                    if (await Tap("home")) await Expect<GameIslandScreen>($"home from {name} goes back to the Language Island (Afrikaans child)");
+                    await Wait(1.0);
+                    // Owner, 10 Nov 2026: "Welkom op Taal-eiland!" after every game. The welcome is for arriving from the map.
+                    var afterHome = (Audio.VoicePlayer.Heard ?? []).Skip(beforeHome).Select(h => h.Path).ToList();
+                    Check($"home from {name}: no island welcome again", afterHome.All(p => !p.Contains($"/{BipCore.VoiceLine.LanguageIsland}")),
+                          string.Join(", ", afterHome));
+                }
+                var heard = Audio.VoicePlayer.Heard ?? [];
+                foreach (var (path, _) in heard) GD.Print($"Bip said (Afrikaans child): {path}");
+                var missing = heard.Where(h => !h.Recorded).Select(h => h.Path).Distinct().ToList();
+                Check("Afrikaans child: every clip Bip said on the Language Island is in the build", missing.Count == 0, string.Join(", ", missing));
+                // The words to learn are said in English; a hint may say the answer in Afrikaans too, straight after "in our
+                // language", so only those may be Afrikaans.
+                var learnt = heard.Select((h, i) => (h.Path, i)).Where(h => h.Path.Contains("/learn_")).ToList();
+                var wrongLanguage = learnt.Where(h => h.Path.Contains("/af/learn_")
+                    && !heard.Take(h.i).TakeLast(2).Any(p => p.Path.Contains($"/{BipCore.VoiceLine.InOurLanguage}"))).ToList();
+                Check("Afrikaans child: the words to learn are said in English",
+                      learnt.Any(h => !h.Path.Contains("/af/learn_")) && wrongLanguage.Count == 0,
+                      string.Join(", ", learnt.Select(h => h.Path)));
+                Check("Afrikaans child: Bip's instructions are in Afrikaans", heard.Any(h => h.Path.Contains("/af/vo_")),
+                      string.Join(", ", heard.Select(h => h.Path).Where(p => p.Contains("/vo_"))));
+                Check("Afrikaans child played all 12 rounds of the Language Island's games", rounds == 12, $"{rounds} rounds");
+                if (await Tap("home")) await Expect<MapScreen>("home from the Language Island (Afrikaans child)");
+            }
+            finally
+            {
+                Audio.VoicePlayer.Heard = null;
+                game.UpdateChild(child);
+                // The next steps start from a clean map in English, even if a step above failed midway.
+                game.ShowMap();
+                await Wait(0.6);
+            }
         }
 
         async Task PlayArt()

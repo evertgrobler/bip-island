@@ -13,6 +13,17 @@ public sealed class LanguageTests : IDisposable
         if (Directory.Exists(_folder)) Directory.Delete(_folder, recursive: true);
     }
 
+    [Theory]
+    [InlineData(HomeLanguage.English, "s a t", "cat")]
+    [InlineData(HomeLanguage.Afrikaans, "m a t", "kat")]
+    public void TheSignsAreInTheChildsLanguage(HomeLanguage language, string letters, string word)
+    {
+        // Owner, 10 Nov 2026: the Afrikaans side showed "s a t" and "cat".
+        var signs = TestContent.Library(language).Signs;
+        Assert.Equal(letters, signs.Letters);
+        Assert.Equal(word, signs.Word);
+    }
+
     [Fact]
     public void AChildIsEnglishUnlessAGrownUpChoosesAfrikaans()
     {

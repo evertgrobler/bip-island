@@ -228,7 +228,7 @@ public partial class LetterTraceScreen : GameScreen
         Record(true, _game.SkillId(new LetterTraceGame.Round(_sound)), _sound.Id);
         // One trace is the whole game: the end card shows the star and any new picture stickers.
         Voice.Play([Coordinator.RandomPraise(), _sound.SoundClip],
-                   completion: () => FinishVisit(() => Coordinator.ShowIsland(Island.Letters, greet: false)));
+                   completion: () => FinishVisit(() => Coordinator.ShowIsland(Island.Letters, celebrate: true)));
     }
 
     protected override void HandleTap(string name, Node2D node)

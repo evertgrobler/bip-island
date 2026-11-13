@@ -90,6 +90,14 @@ public partial class ScreenPreview : Node
             game.AddChildProfile("Lily", 5, "penguin");
             game.AddChildProfile("Sam", 7, "tortoise");
         }
+        // "--bip-language af": the sample child plays in Afrikaans (screenshots of the Afrikaans game). Every preview
+        // sets the language of its own sample save (only with --bip-save-dir, never a family's save), so one run
+        // with the flag never leaves the next preview in Afrikaans.
+        var language = Array.IndexOf(Boot.UserArgs, "--bip-language");
+        var afrikaans = language >= 0 && language + 1 < Boot.UserArgs.Length && Boot.UserArgs[language + 1] == "af";
+        var wanted = afrikaans ? HomeLanguage.Afrikaans : HomeLanguage.English;
+        if (Array.IndexOf(Boot.UserArgs, "--bip-save-dir") >= 0 && game.CurrentChild is { } child && child.Language != wanted)
+            game.UpdateChild(child with { Language = wanted });
         // Letters games practise sounds the child has met: the sample child has learnt groups 1-3
         // (Feed the Monster's foods start at group 4).
         if (Screen is "sound_hunt" or "bubble_pop" or "feed_the_monster") LearnGroups(game, 3);

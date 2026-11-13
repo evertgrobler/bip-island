@@ -71,7 +71,8 @@ public partial class BubblePopScreen : GameScreen
 
         if (_session.NextRound(_game, Coordinator.LearnerFor(GameId, _focus), Coordinator.Rng) is not { } first)
         {
-            After(0.3, () => Coordinator.ShowIsland(Island.Letters, greet: false));
+            // No round to play: back to the island, nothing to celebrate.
+            After(0.3, () => Coordinator.ShowIsland(Island.Letters));
             return;
         }
         _round = first;

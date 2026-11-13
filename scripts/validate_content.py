@@ -41,6 +41,14 @@ ph = load("phonics/graphemes.json")
 G = {g["id"]: g for g in ph["graphemes"]}
 words_doc = load("words/words.json")
 WORDS = {w["word"]: w for w in words_doc["words"]}
+# --- the islands' signs (words/signs.json): three letter sounds of the language, and a three-letter word it has
+signs = load("words/signs.json")
+_sign_letters = str(signs.get("letters", "")).split(" ")
+_graphemes_here = {g["grapheme"] for g in ph["graphemes"]}
+if len(_sign_letters) != 3 or any(l not in _graphemes_here for l in _sign_letters):
+    err(f"words/signs.json: letters {signs.get('letters')!r} must be three of this language's letter sounds, with spaces")
+if len(str(signs.get("word", ""))) != 3 or signs.get("word") not in WORDS:
+    err(f"words/signs.json: word {signs.get('word')!r} must be a three-letter word in words/words.json")
 tricky = load("words/tricky_words.json")
 sentences = load("words/sentences.json")["sentences"]
 endings = load("words/endings.json")

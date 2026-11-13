@@ -128,6 +128,9 @@ public partial class VoicePlayer : Node
             .Count();
     }
 
+    /// <summary>For the walk-through: every clip Bip starts saying (its path, and whether the build has it), while set.</summary>
+    public static List<(string Path, bool Recorded)>? Heard { get; set; }
+
     /// <summary>
     /// Plays clips in order. Starting a new sequence stops the current one.
     /// <paramref name="onClipStart"/> fires as each clip begins; <paramref name="completion"/> after the last.
@@ -158,6 +161,7 @@ public partial class VoicePlayer : Node
         var name = clips[index];
         onClipStart?.Invoke(index, name);
         name = ResolveClip(name);
+        Heard?.Add((PathFor(name), HasClip(name)));
 
         var length = SilentStubLength;
         if (HasClip(name) && GD.Load<AudioStream>(PathFor(name)) is { } stream)

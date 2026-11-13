@@ -1,0 +1,5 @@
+{
+  "note": "The islands' signs: the Letters Island's three first letter sounds on the map, and the Words Island's word on its game buttons (Sound Buttons, Word Builder). Three letters each (the buttons lay out three tiles). A language's own copy (Content/<lang>/words/signs.json) replaces this one.",
+  "letters": "s a t",
+  "word": "cat"
+}

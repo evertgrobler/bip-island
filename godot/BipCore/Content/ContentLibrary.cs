@@ -18,7 +18,7 @@ public sealed class ContentLibrary
         "curriculum/objectives.json", "curriculum/skills.json", "curriculum/games.json",
         "phonics/graphemes.json",
         "words/words.json", "words/tricky_words.json", "words/sentences.json", "words/endings.json",
-        "words/homophones.json", "words/contractions.json",
+        "words/homophones.json", "words/contractions.json", "words/signs.json",
         "numbers/numbers.json",
         "coding/sequences.json", "coding/patterns.json", "coding/levels.json",
         "art/shapes.json", "art/paints.json", "art/mirror.json",
@@ -51,6 +51,8 @@ public sealed class ContentLibrary
     public StoryScenesFile StoryScenes { get; }
     public StoriesFile Stories { get; }
     public AssetManifestFile Manifest { get; }
+    /// <summary>The islands' signs in this language (words/signs.json).</summary>
+    public SignsFile Signs { get; }
 
     // Lookups, built once.
     private readonly Dictionary<string, Grapheme> _graphemesById;
@@ -124,6 +126,7 @@ public sealed class ContentLibrary
         StoryScenes = Load<StoryScenesFile>("stories/scenes.json");
         Stories = Load<StoriesFile>("stories/stories.json");
         Manifest = Load<AssetManifestFile>("asset_manifest.json");
+        Signs = Load<SignsFile>("words/signs.json");
 
         _graphemesById = FirstById(Phonics.Graphemes, g => g.Id);
         _wordsByText = FirstById(Words.Words, w => w.Text);
