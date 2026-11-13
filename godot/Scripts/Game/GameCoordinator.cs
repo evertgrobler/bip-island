@@ -194,7 +194,21 @@ public partial class GameCoordinator : Node
     }
 
     /// <summary>Saves the playing child's progress, in the language it was loaded in.</summary>
-    public void SaveProgress() => Store.Save(Progress, ChildId, Language);
+    public void SaveProgress()
+    {
+        Store.Save(Progress, ChildId, Language);
+        NoteSaveError();
+    }
+
+    private string? _saveErrorLogged;
+
+    /// <summary>A save that failed (a full disk, a locked file) goes in the log, once for each new reason.</summary>
+    private void NoteSaveError()
+    {
+        if (Store.LastError == _saveErrorLogged) return;
+        _saveErrorLogged = Store.LastError;
+        if (_saveErrorLogged != null) GD.PrintErr($"Bip Island: progress not saved: {_saveErrorLogged}");
+    }
 
     private void LoadContent(HomeLanguage language)
     {
@@ -281,12 +295,15 @@ public partial class GameCoordinator : Node
     /// <summary>With more than one child, the game opens on "Who's playing?".</summary>
     public void Start()
     {
+        _awaitingFirstPick = Children.Count > 1;
         if (Children.Count > 1) ShowProfiles();
         else ShowMap();
         // The first time on this computer, a grown-up is guided through setting up (over the screen, paused).
         // Until it's finished or skipped, so a first run cut short gets it again. Nobody has passed the gate
         // yet, so the parent controls in it wait until the gate has really been opened.
-        if (!Store.SetupDone && Parent.Guide == null) Parent.ShowSetupGuide(firstRun: true);
+        // Not when the save file couldn't be opened (locked by a sync app): the computer may well be set up, and
+        // nothing typed in now would be saved.
+        if (!Store.SetupDone && !Store.SavingPaused && Parent.Guide == null) Parent.ShowSetupGuide(firstRun: true);
     }
 
     /// <summary>The next map greets the child again (after the first-run setup guide).</summary>
@@ -315,6 +332,19 @@ public partial class GameCoordinator : Node
     /// </summary>
     private bool _nobodyYet = true;
 
+    /// <summary>The game opened on "Who's playing?" and no child has picked their picture yet.</summary>
+    private bool _awaitingFirstPick;
+
+    /// <summary>
+    /// Where the game starts again after a grown-up changed something: "Who's playing?" while no child has picked
+    /// yet (the child at the computer picks themselves), else the map.
+    /// </summary>
+    public void ShowStart()
+    {
+        if (_awaitingFirstPick && Children.Count > 1) ShowProfiles();
+        else ShowMap();
+    }
+
     /// <summary>Whether a child is resting (charging or done for the day), for their picture in "Who's playing?".</summary>
     public bool IsResting(Guid id) =>
         PlayBreaks.IsResting(BreakOf(id), DateTimeOffset.Now, Today, Store.Settings.ToBreakSettings());
@@ -333,7 +363,8 @@ public partial class GameCoordinator : Node
     public void Choose(Guid id)
     {
         if (Children.All(c => c.Id != id)) return;
-        CurrentBreakPhase(); // Bank play time to the child who was playing.
+        CurrentBreakPhase(); // Bank play time to the child who was playing (nobody, straight after opening).
+        _awaitingFirstPick = false;
         // Just opened: picking a resting child (their own picture) doesn't make anyone at the computer yet.
         if (_nobodyYet) _nobodyYet = IsResting(id);
         ChildId = id;
@@ -435,20 +466,22 @@ public partial class GameCoordinator : Node
     public BreakPhase CurrentBreakPhase()
     {
         var now = DateTimeOffset.Now;
-        var elapsed = _breakClockPaused ? 0 : PlayBreaks.Credit((now - _lastBreakCheck).TotalSeconds);
+        // While "Who's playing?" waits for the first pick, nobody is playing: no one's clock runs (audit, 13 Nov 2026).
+        var elapsed = _breakClockPaused || _awaitingFirstPick ? 0 : PlayBreaks.Credit((now - _lastBreakCheck).TotalSeconds);
         _lastBreakCheck = now;
         // The child's minutes get exactly what the break banked: nothing on a break or after the day is done.
         var before = _break.DayStamp == Today ? _break.PlayedTodaySeconds : 0;
         var phase = PlayBreaks.Advance(_break, elapsed, now, Today, Store.Settings.ToBreakSettings());
         Store.SaveBreak(ChildId, _break);
+        NoteSaveError();
         var banked = _break.PlayedTodaySeconds - before;
         if (banked > 0)
         {
             Progress.NotePlayTime(banked, Today);
             SaveProgress();
         }
-        // The playing child can play, so they're the one at the computer now.
-        if (phase == BreakPhase.Playing) _nobodyYet = false;
+        // The playing child can play, so they're the one at the computer now (not while nobody has picked yet).
+        if (phase == BreakPhase.Playing && !_awaitingFirstPick) _nobodyYet = false;
         return phase;
     }
 
@@ -467,11 +500,13 @@ public partial class GameCoordinator : Node
     }
 
     /// <summary>A parent ends the playing child's break early from settings.</summary>
-    public void EndBreakEarly()
+    /// <returns>Whether games are open again: false when today's maximum is reached, which only a higher maximum lifts.</returns>
+    public bool EndBreakEarly()
     {
         PlayBreaks.EndBreakEarly(_break);
         Store.SaveBreak(ChildId, _break);
         _lastBreakCheck = DateTimeOffset.Now;
+        return PlayBreaks.PhaseWithoutBanking(_break, DateTimeOffset.Now, Today, Store.Settings.ToBreakSettings()) == BreakPhase.Playing;
     }
 
     /// <summary>When the break ends (null while playing), for the charging screen.</summary>
@@ -539,6 +574,9 @@ public partial class GameCoordinator : Node
 
     public void ShowMap()
     {
+        // The map means a child plays (or charges) now, however it opened (a grown-up's change, the setup guide):
+        // their clock runs from here (review of #79).
+        _awaitingFirstPick = false;
         if (!PlayAllowed())
         {
             ShowCharging();

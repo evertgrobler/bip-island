@@ -369,7 +369,7 @@ public partial class WordBuilderScreen : GameScreen
             else Buttons.Shake(_slots[i]);
         }
         if (outcome.Kind == AnswerOutcomeKind.Hint)
-            After(0.4, () => Voice.Play([Coordinator.RandomHint(), AudioCatalogue.WordClip(round.Word.Text)]));
+            SayLater(0.4, [Coordinator.RandomHint(), AudioCatalogue.WordClip(round.Word.Text)]);
     }
 
     private void StopWiggles()

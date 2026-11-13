@@ -189,6 +189,37 @@ public sealed class SaveStoreTests : IDisposable
     }
 
     [Fact]
+    public void SettingsInTheFileGetTheSameLimitsAsAParentsSettings()
+    {
+        // A play time of 0 would start a break on every check (audit, 13 Nov 2026).
+        Directory.CreateDirectory(_folder);
+        var file = new SaveFile { Settings = new PlayTimeSettings { PlayMinutes = 0, BreakMinutes = -5, DailyMaxMinutes = 0 } };
+        File.WriteAllText(Path.Combine(_folder, SaveStore.FileName), BipJson.Encode(file));
+        var settings = Open().Settings;
+        Assert.Equal(1, settings.PlayMinutes);
+        Assert.Equal(1, settings.BreakMinutes);
+        Assert.Null(settings.DailyMaxMinutes);
+        // And never more than the parent area offers: a huge number would overflow the seconds.
+        file = new SaveFile { Settings = new PlayTimeSettings { PlayMinutes = 50_000_000, BreakMinutes = 50_000_000, DailyMaxMinutes = 50_000_000 } };
+        File.WriteAllText(Path.Combine(_folder, SaveStore.FileName), BipJson.Encode(file));
+        settings = Open().Settings;
+        Assert.Equal(PlayTimeSettings.MostPlayMinutes, settings.PlayMinutes);
+        Assert.Equal(PlayTimeSettings.MostBreakMinutes, settings.BreakMinutes);
+        Assert.Equal(PlayTimeSettings.MostDailyMinutes, settings.DailyMaxMinutes);
+    }
+
+    [Fact]
+    public void ADateOutOfRangeInTheFileStartsFreshNeverCrashes()
+    {
+        Directory.CreateDirectory(_folder);
+        var text = BipJson.Encode(new SaveFile()).Replace("{", "{\"break\": {\"breakEndsAt\": 99999999999999999},", StringComparison.Ordinal);
+        File.WriteAllText(Path.Combine(_folder, SaveStore.FileName), text);
+        var store = Open();
+        Assert.Single(store.Children());
+        Assert.Contains("couldn't read", store.LoadError ?? "");
+    }
+
+    [Fact]
     public void NoTemporaryFileIsLeftBehind()
     {
         var store = Open();

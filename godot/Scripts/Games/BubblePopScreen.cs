@@ -203,7 +203,7 @@ public partial class BubblePopScreen : GameScreen
                 Sfx.Play(BipSounds.Effect.Boop);
                 Buttons.Shake(bubble.Node);
                 Bip.Tilt();
-                After(0.4, () => Voice.Play([round.Target.SoundClip]));
+                SayLater(0.4, [round.Target.SoundClip]);
                 break;
             default:
                 Sfx.Play(BipSounds.Effect.Boop);
@@ -215,7 +215,7 @@ public partial class BubblePopScreen : GameScreen
                     StopWiggle(right);
                     right.Wiggle = Buttons.HintWiggle(right.Node);
                 }
-                After(0.4, () => Voice.Play([Coordinator.RandomHint(), round.Target.SoundClip]));
+                SayLater(0.4, [Coordinator.RandomHint(), round.Target.SoundClip]);
                 break;
         }
     }

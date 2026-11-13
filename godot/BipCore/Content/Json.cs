@@ -100,8 +100,16 @@ internal sealed class ReferenceDateConverter : JsonConverter<DateTimeOffset>
 {
     public static readonly DateTimeOffset ReferenceDate = new(2001, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
-    public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
-        ReferenceDate.AddSeconds(reader.GetDouble());
+    public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        // A number no date can hold (a damaged file) is unreadable JSON, like any other bad value (audit, 13 Nov 2026).
+        var seconds = reader.GetDouble();
+        var earliest = (DateTimeOffset.MinValue - ReferenceDate).TotalSeconds;
+        var latest = (DateTimeOffset.MaxValue - ReferenceDate).TotalSeconds;
+        if (double.IsNaN(seconds) || seconds <= earliest || seconds >= latest)
+            throw new JsonException($"{seconds} seconds is no date");
+        return ReferenceDate.AddSeconds(seconds);
+    }
 
     public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options) =>
         writer.WriteNumberValue((value - ReferenceDate).TotalSeconds);

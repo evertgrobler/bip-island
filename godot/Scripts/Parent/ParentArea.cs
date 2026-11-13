@@ -472,13 +472,13 @@ public partial class ParentArea : VBoxContainer
     {
         var play = ParentUi.Section(_body, "Play time");
         var settings = Coordinator.Store.Settings;
-        play.AddChild(Stepper("Play for", "minutes", settings.PlayMinutes, 5, 120, 5,
+        play.AddChild(Stepper("Play for", "minutes", settings.PlayMinutes, 5, PlayTimeSettings.MostPlayMinutes, 5,
             value => SetSettings(Coordinator.Store.Settings with { PlayMinutes = value })));
-        play.AddChild(Stepper("Break for", "minutes", settings.BreakMinutes, 5, 60, 5,
+        play.AddChild(Stepper("Break for", "minutes", settings.BreakMinutes, 5, PlayTimeSettings.MostBreakMinutes, 5,
             value => SetSettings(Coordinator.Store.Settings with { BreakMinutes = value })));
         var dailyOn = new CheckBox { Text = "Daily maximum", ButtonPressed = settings.DailyMaxMinutes != null, SizeFlagsHorizontal = SizeFlags.ShrinkBegin };
         play.AddChild(dailyOn);
-        var daily = Stepper("At most", "minutes a day", settings.DailyMaxMinutes ?? 60, 10, 240, 10,
+        var daily = Stepper("At most", "minutes a day", settings.DailyMaxMinutes ?? 60, 10, PlayTimeSettings.MostDailyMinutes, 10,
             value => SetSettings(Coordinator.Store.Settings with { DailyMaxMinutes = value }));
         daily.Visible = dailyOn.ButtonPressed;
         play.AddChild(daily);
@@ -495,9 +495,11 @@ public partial class ParentArea : VBoxContainer
         var ended = ParentUi.Text("", 15, colour: ParentUi.Secondary);
         endBreak.Pressed += () =>
         {
-            Coordinator.EndBreakEarly();
+            var open = Coordinator.EndBreakEarly();
             _layer.MarkChanged();
-            ended.Text = "Done: games are open again.";
+            ended.Text = open
+                ? "Done: games are open again."
+                : "The break is over, but today's maximum is reached: raise the daily maximum to play on today.";
         };
         play.AddChild(ParentUi.Row(12, endBreak, ended));
     }

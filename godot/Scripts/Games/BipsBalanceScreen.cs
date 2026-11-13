@@ -365,6 +365,6 @@ public partial class BipsBalanceScreen : GameScreen
         // (Not for fact families: their finished sum is the help, and the sign sits where the cubes would.)
         if (round.Hidden == Slot.Result && round.Story == null && round.Mode != Mode.FactFamily) ShowCubes(round);
         var hint = _game.Hint(round);
-        After(0.4, () => Voice.Play(round.Hidden == Slot.Result ? hint : [AudioCatalogue.LookHint, .. hint]));
+        SayLater(0.4, round.Hidden == Slot.Result ? hint : [AudioCatalogue.LookHint, .. hint]);
     }
 }

@@ -83,8 +83,11 @@ public static class KidLockRules
     /// Whether a cover really hides the game: it covers at least a twentieth of the game's window. A cover that only
     /// grazes the window's edge (a pixel of rounding) stays, as <see cref="ScreensToCover"/> wants it.
     /// </summary>
-    public static bool CoverHidesGame((int X, int Y, int W, int H) cover, (int X, int Y, int W, int H) window) =>
-        Overlap(cover, window) * 20 >= (long)Math.Max(window.W, 0) * Math.Max(window.H, 0) && Overlap(cover, window) > 0;
+    public static bool CoverHidesGame((int X, int Y, int W, int H) cover, (int X, int Y, int W, int H) window)
+    {
+        var shared = Overlap(cover, window);
+        return shared > 0 && shared * 20 >= (long)Math.Max(window.W, 0) * Math.Max(window.H, 0);
+    }
 
     /// <summary>How many pixels two (x, y, width, height) rectangles share.</summary>
     public static long Overlap((int X, int Y, int W, int H) a, (int X, int Y, int W, int H) b)

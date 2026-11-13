@@ -74,6 +74,13 @@ public partial class Boot : Node
         KidLock.Release();
     }
 
+    /// <summary>The restart <see cref="AllowQuit"/> was for didn't happen (a failed update): lock the game in again.</summary>
+    public void KeepLocked()
+    {
+        _allowQuit = false;
+        KidLock.Restore();
+    }
+
     /// <summary>The only way out: the parent gate, a self-test finishing, or an update restarting the game.</summary>
     public void Quit(int exitCode = 0)
     {
