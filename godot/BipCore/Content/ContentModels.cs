@@ -238,6 +238,8 @@ public sealed record TraceShapesFile
     public required Dictionary<string, List<List<float>>> Shapes { get; init; }
     /// <summary>Per grapheme, the checkpoints that are a stroke on their own (the dot of i and j): they must be touched.</summary>
     public Dictionary<string, List<int>> Dots { get; init; } = [];
+    /// <summary>The fewest checkpoints a shape may have (scripts/trace_source.py FEWEST; must equal TraceCheckpoints.Fewest).</summary>
+    public int Fewest { get; init; }
 }
 
 // MARK: - phonics/graphemes.json

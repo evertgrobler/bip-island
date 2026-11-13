@@ -20,8 +20,23 @@ public class TraceCheckpointsTests
     {
         var content = TestContent.Library(language);
         foreach (var g in content.Phonics.Graphemes)
-            Assert.True(content.TraceShapes.Shapes.TryGetValue(g.Text, out var shape) && shape.Count >= 3,
+            Assert.True(content.TraceShapes.Shapes.TryGetValue(g.Text, out var shape) && shape.Count >= TraceCheckpoints.Fewest,
                         $"no trace shape for {g.Text}");
+    }
+
+    [Fact]
+    public void TheGeneratorAndTheGameAgreeOnTheFewestCheckpoints() =>
+        Assert.Equal(TraceCheckpoints.Fewest, TestContent.Library().TraceShapes.Fewest);
+
+    [Fact]
+    public void TheScreensRadiusKeepsTheDotApartFromTheStem()
+    {
+        // LetterTraceScreen's radius (80) at its size (380): tracing the stem's top must not tick the dot.
+        var i = new TraceCheckpoints(TestContent.Library().TraceShapes.Shapes["i"], Vector2.Zero, 380, 80,
+                                     TestContent.Library().TraceShapes.Dots["i"]);
+        var dot = i.Points.MinBy(p => p.Y);
+        foreach (var p in i.Points.Where(p => p != dot)) i.Touch(p);
+        Assert.False(i.Done);
     }
 
     [Fact]

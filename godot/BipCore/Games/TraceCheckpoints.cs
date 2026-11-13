@@ -77,7 +77,7 @@ public sealed class TraceCheckpoints
 
     /// <summary>
     /// A click at <paramref name="at"/>: only the one checkpoint nearest to it, if it is near enough and not yet touched,
-    /// so a click dots the i or the j but a row of clicks never stands in for tracing a stroke. Returns 1 or 0.
+    /// so a click dots the i or the j and one click ticks one checkpoint at most (never a whole stretch). Returns 1 or 0.
     /// </summary>
     public int TouchNearest(Vector2 at)
     {

@@ -731,8 +731,9 @@
   validator fails when the font, the graphemes or the recipe changed without a rerun). `BipCore.TraceCheckpoints`:
   any order and lifts, all but a tenth (at least one may be missed from four up), dots must be touched, a fast move
   touches everything along the way. `TracePen` owns the stroke (from press to release; a jump over 180 px
-  starts a new stroke in tap mode, and in a held drag when it comes after a quarter second without moves). A click on a
-  stroke traces the one checkpoint under it (so clicks can't stand in for tracing) and is never a miss. CI also runs
+  starts a new stroke in tap mode, and the screen lifts the pen when the gate opens, focus goes or the pointer leaves).
+  Touch radius 80 (a finger's width beside the ink counts). A click on a stroke ticks the one checkpoint under it and
+  is never a miss. CI also runs
   when only the generator changes. Tested; the walk-through dots a
   letter with a click.
 - **9 Nov: Coding Island sounded British.** On 0.2.256 the owner heard a British accent on Coding Island, although

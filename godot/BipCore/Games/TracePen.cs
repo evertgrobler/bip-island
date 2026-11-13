@@ -64,14 +64,10 @@ public sealed class TracePen
 
     /// <summary>
     /// In tap mode (the button up, the pen following), a jump this far between two drawn points is a new stroke, never
-    /// a line across: events can go missing meanwhile (the parent gate). A drag with the button held is cut only when
-    /// the jump also comes after a <see cref="Gap"/> without moves (its events went elsewhere meanwhile); a quick
-    /// stroke on a slow frame comes with no gap, so it stays one stroke.
+    /// a line across. A drag with the button held is one stroke however fast it goes; when its moves go elsewhere
+    /// (the parent gate, another program, the pointer leaving the window) the screen calls <see cref="Lift"/>.
     /// </summary>
     public const float MaxStep = 180;
-
-    /// <summary>Seconds without a move after which a long jump in a held drag is a new stroke (events went missing).</summary>
-    public const float Gap = 0.25f;
 
     private Vector2? _pressedAt;
     private Vector2? _lastDrawn;
@@ -117,23 +113,18 @@ public sealed class TracePen
         return TraceTapResult.None;
     }
 
-    /// <summary>
-    /// The pointer moved. Returns true when this point should be drawn and traced. <paramref name="sinceLast"/> is the
-    /// time in seconds since the previous move the screen saw.
-    /// </summary>
-    public bool Move(Vector2 at, bool buttonHeld, float sinceLast = 0)
+    /// <summary>The pointer moved. Returns true when this point should be drawn and traced.</summary>
+    public bool Move(Vector2 at, bool buttonHeld)
     {
         // A drag starts where the button went down, not at its first move past the wobble: the stroke's tip counts.
         var pressed = _pressedAt;
         var wasDragging = Mode == TracePenMode.Dragging;
         var draws = Moved(at, buttonHeld);
-        // A drag that takes over without its press seen (the gate had it) starts afresh here: never a line from
-        // where the following pen last was.
-        if (draws && !wasDragging && Mode == TracePenMode.Dragging && pressed is null) _lastDrawn = null;
-        if (draws && _lastDrawn is null && pressed is { } start && Mode == TracePenMode.Dragging) _lastDrawn = start;
+        // A drag starts at its press, or afresh when its press went unseen (the gate had it): never a line from where
+        // the following pen last was.
+        if (draws && !wasDragging && Mode == TracePenMode.Dragging) _lastDrawn = pressed;
         StrokeFrom = draws && _lastDrawn is { } last
-                     && (Vector2.Distance(last, at) <= MaxStep || Mode == TracePenMode.Dragging && sinceLast < Gap)
-            ? last : null;
+                     && (Mode == TracePenMode.Dragging || Vector2.Distance(last, at) <= MaxStep) ? last : null;
         _lastDrawn = draws ? at : null;
         return draws;
     }
@@ -170,12 +161,9 @@ public sealed class TracePen
     /// is a miss; a click on anything else (<see cref="TraceSpot.Button"/>) is left to that thing.
     /// <paramref name="spot"/> is where the press landed.
     /// </summary>
-    /// <param name="sinceLast">Seconds since the last move the screen saw: a long jump after a gap is no line (see <see cref="Gap"/>).</param>
-    public TraceTapResult Release(Vector2 at, TraceSpot spot, float sinceLast = 0)
+    public TraceTapResult Release(Vector2 at, TraceSpot spot)
     {
-        StrokeEnd = Mode == TracePenMode.Dragging && _lastDrawn is { } last && !IsFinished
-                    && (Vector2.Distance(last, at) <= MaxStep || sinceLast < Gap)
-            ? (last, at) : null;
+        StrokeEnd = Mode == TracePenMode.Dragging && _lastDrawn is { } last && !IsFinished ? (last, at) : null;
         _lastDrawn = null;
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
@@ -198,6 +186,18 @@ public sealed class TracePen
 
     /// <summary>Whether a release at <paramref name="at"/> ends a click (press and release without moving much), not a drag.</summary>
     public bool IsClick(Vector2 at) => !IsFinished && _pressedAt is { } pressed && Vector2.Distance(at, pressed) <= TapSlop;
+
+    /// <summary>
+    /// The screen's moves are going elsewhere (the parent gate opened, another program took the front, the pointer left
+    /// the window): the stroke ends here, so nothing joins it to where the pen comes back. A held drag stops; tap mode
+    /// keeps following, from a fresh point.
+    /// </summary>
+    public void Lift()
+    {
+        _lastDrawn = null;
+        _pressedAt = null;
+        if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
+    }
 
     /// <summary>The trace is done: stop drawing for good.</summary>
     public void Finish()

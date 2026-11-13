@@ -20,8 +20,11 @@ namespace BipIsland.Games;
 /// </summary>
 public partial class LetterTraceScreen : GameScreen
 {
-    /// <summary>How near the pen must come to a checkpoint: about a stroke's width, so drawing beside the letter still counts.</summary>
-    private const float TouchRadius = 60;
+    /// <summary>
+    /// How near the pen must come to a checkpoint: a stroke's width and more, so drawing a finger's width beside the
+    /// letter still counts (review of #77), but less than the 95 between the dot of i and j and their stem.
+    /// </summary>
+    private const float TouchRadius = 80;
     /// <summary>The letter's font size (and so one em of trace_shapes.json).</summary>
     private const int LetterSize = 380;
 
@@ -34,8 +37,6 @@ public partial class LetterTraceScreen : GameScreen
     /// <summary>Just above the letter, where most letters start.</summary>
     private static readonly Vector2 StartDotAt = P(0, 290);
     private readonly TracePen _pen = new();
-    /// <summary>When the last mouse move came (milliseconds since start), so a jump after a gap starts a new stroke.</summary>
-    private ulong _lastMoveMsec;
     private string? _pressedOn;
     private bool _started;
 
@@ -120,10 +121,7 @@ public partial class LetterTraceScreen : GameScreen
                 // window, behind the parent gate) stops on the first move without the button.
                 case InputEventMouseMotion motion:
                     var at = Stage.ToLocal(motion.GlobalPosition);
-                    var now = Time.GetTicksMsec();
-                    var since = _lastMoveMsec == 0 ? 0f : (now - _lastMoveMsec) / 1000f;
-                    _lastMoveMsec = now;
-                    var draws = _pen.Move(Numeric(at), motion.ButtonMask.HasFlag(MouseButtonMask.Left), since);
+                    var draws = _pen.Move(Numeric(at), motion.ButtonMask.HasFlag(MouseButtonMask.Left));
                     SyncStartDot();
                     if (draws)
                     {
@@ -152,7 +150,8 @@ public partial class LetterTraceScreen : GameScreen
                     var dotted = _pressedOn is null or "letter" && _pen.Mode == TracePenMode.Idle && _pen.IsClick(Numeric(where))
                                  && _checkpoints.Near(Numeric(where));
                     var fresh = dotted ? _checkpoints.TouchNearest(Numeric(where)) : 0;
-                    if (dotted) _pen.Traced();
+                    // Only a click that really traced forgives earlier stray clicks (else the hint never comes).
+                    if (fresh > 0) _pen.Traced();
                     var spot = _pressedOn switch
                     {
                         _ when dotted => TraceSpot.Button,
@@ -160,9 +159,7 @@ public partial class LetterTraceScreen : GameScreen
                         "start" => TraceSpot.StartDot,
                         _ => TraceSpot.Button,
                     };
-                    var released = Time.GetTicksMsec();
-                    var sinceMove = _lastMoveMsec == 0 ? 0f : (released - _lastMoveMsec) / 1000f;
-                    var result = _pen.Release(Numeric(where), spot, sinceMove);
+                    var result = _pen.Release(Numeric(where), spot);
                     _pressedOn = null;
                     SyncStartDot();
                     // The end of a drag counts up to where the button came up.
@@ -178,6 +175,20 @@ public partial class LetterTraceScreen : GameScreen
             }
         }
         base._UnhandledInput(@event);
+    }
+
+    /// <summary>
+    /// The pen's moves are about to go elsewhere: the parent gate pauses the game, another program takes the front, or
+    /// the pointer leaves the window. The stroke ends, so it never joins up across the letter when the pen comes back.
+    /// </summary>
+    public override void _Notification(int what)
+    {
+        base._Notification(what);
+        if (what is (int)NotificationPaused or (int)NotificationApplicationFocusOut or (int)NotificationWMMouseExit)
+        {
+            _pen.Lift();
+            if (IsInsideTree()) SyncStartDot();
+        }
     }
 
     private void Tapped(TraceTapResult result)

@@ -19,7 +19,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from trace_source import FONT, ROOT, SIZE, SPACING, graphemes, source_hash
+from trace_source import FEWEST, FONT, ROOT, SIZE, SPACING, graphemes, source_hash
 
 OUT = ROOT / "Content" / "phonics" / "trace_shapes.json"
 
@@ -133,6 +133,7 @@ def main():
                 "which must be touched.",
         "font": FONT.name,
         "source": source_hash(),
+        "fewest": FEWEST,
         "shapes": shapes,
         "dots": dots,
     }, indent=1, ensure_ascii=False) + "\n")
