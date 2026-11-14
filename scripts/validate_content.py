@@ -16,7 +16,7 @@ from collections import deque
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import sa_english, af_spelling, spoken_numbers
+import sa_english, af_spelling, spoken_numbers, trace_source
 af_spelling.self_test()
 
 LANG = sys.argv[sys.argv.index("--lang") + 1] if "--lang" in sys.argv else ""
@@ -56,6 +56,16 @@ shapes_doc = load("art/shapes.json")
 paints_doc = load("art/paints.json")
 mirror_doc = load("art/mirror.json")
 language_doc = load("language/words.json")
+
+# --- Letter Trace needs every grapheme's checkpoints (scripts/trace_shapes.py makes them from the letter font)
+trace_doc = load("phonics/trace_shapes.json")
+trace_shapes = trace_doc["shapes"]
+_made_from = trace_source.source_hash()
+if trace_doc.get("source") != _made_from:
+    err("phonics/trace_shapes.json is out of date with the letter font or the graphemes: run scripts/trace_shapes.py")
+for g in ph["graphemes"]:
+    if len(trace_shapes.get(g["grapheme"], [])) < trace_source.FEWEST:
+        err(f"grapheme {g['grapheme']}: no Letter Trace shape in phonics/trace_shapes.json (run scripts/trace_shapes.py)")
 
 # --- objectives referenced anywhere must exist
 def check_objs(where, codes):

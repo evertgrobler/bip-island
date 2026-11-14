@@ -887,17 +887,12 @@ public static class WalkTest
                 // The pen starts drawing once the press has moved past a click's wobble.
                 PenButton(trace, points[0] + new Vector2(0, 40), true);
                 foreach (var point in points.Take(4)) PenMove(point, held: true);
-                PenButton(trace, points[3], false);
+                PenButton(trace, points[3 % points.Count], false);
                 Check("dragging with the button held traces", trace.TouchedCount >= 4 && trace.PenMode == BipCore.TracePenMode.Idle,
                       $"touched {trace.TouchedCount}, pen {trace.PenMode}");
                 var dragged = trace.TouchedCount;
-                PenMove(points[5], held: false);
+                PenMove(points[5 % points.Count], held: false);
                 Check("after letting go, moving draws nothing", trace.TouchedCount == dragged && trace.PenMode == BipCore.TracePenMode.Idle);
-
-                // Clicking the letter says its sound: never a miss, however often.
-                PenClick(points[8]);
-                PenClick(points[8]);
-                Check("clicks on the letter are not misses", !trace.StartDotHinted);
 
                 // A trackpad: two clicks away from the start dot, then the dot wiggles for a hint.
                 var paper = trace.StartDotOnScreen + new Vector2(520, 0);
@@ -906,16 +901,16 @@ public static class WalkTest
                 Check("two clicks away from the start dot: the dot wiggles for a hint", trace.StartDotHinted && trace.PenMode == BipCore.TracePenMode.Idle);
                 PenClick(trace.StartDotOnScreen);
                 Check("a click on the start dot starts tap mode", trace.PenMode == BipCore.TracePenMode.Following && !trace.StartDotHinted);
-                PenMove(points[4], held: false);
-                PenClick(points[4]);
+                PenMove(points[4 % points.Count], held: false);
+                PenClick(points[4 % points.Count]);
                 Check("clicking again lifts the pen", trace.PenMode == BipCore.TracePenMode.Idle);
                 var touched = trace.TouchedCount;
-                PenMove(points[6], held: false);
+                PenMove(points[6 % points.Count], held: false);
                 Check("a lifted pen draws nothing", trace.TouchedCount == touched);
-                // A wobbly click (3 points) near a checkpoint draws nothing.
-                PenButton(trace, points[6], true);
-                PenMove(points[6] + new Vector2(3, 0), held: true);
-                PenButton(trace, points[6] + new Vector2(3, 0), false);
+                // A wobbly click (3 points) away from the letter draws nothing.
+                PenButton(trace, paper, true);
+                PenMove(paper + new Vector2(3, 0), held: true);
+                PenButton(trace, paper + new Vector2(3, 0), false);
                 Check("a wobbly click draws nothing", trace.TouchedCount == touched, $"touched {touched} → {trace.TouchedCount}");
                 // Following, then a drag takes over (its press went unseen): the start dot comes back.
                 PenClick(trace.StartDotOnScreen);
@@ -925,6 +920,21 @@ public static class WalkTest
                 Check("a drag that takes over from tap mode brings the start dot back",
                       trace.PenMode == BipCore.TracePenMode.Idle && trace.StartDotShown);
                 Check("no star until the letter is finished", game.Progress.Stars == starsBefore);
+                // Clicking the letter says its sound and traces the one spot clicked (a child dots an i or a j that
+                // way): never a miss, however often, and only that one checkpoint.
+                var beforeClicks = trace.TouchedCount;
+                PenClick(trace.CheckpointsOnScreen.First());
+                Check("a click on a stroke traces the one spot clicked (dotting the i)", trace.TouchedCount == beforeClicks + 1,
+                      $"touched {beforeClicks} → {trace.TouchedCount}");
+                // Twice in a row on the letter away from its strokes (two would be a hint if they were misses).
+                var offStrokes = trace.LetterOffStrokesOnScreen();
+                Check("the letter has a spot that is no stroke", offStrokes != null);
+                if (offStrokes is { } off)
+                {
+                    PenClick(off);
+                    PenClick(off);
+                }
+                Check("clicks on the letter are not misses", !trace.StartDotHinted);
                 // Click the dot again and finish the letter with the button up.
                 PenClick(trace.StartDotOnScreen);
                 foreach (var point in points) PenMove(point, held: false);

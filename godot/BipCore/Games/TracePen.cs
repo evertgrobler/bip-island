@@ -51,8 +51,8 @@ public enum TraceTapResult
 /// strokes never gets the hint for an old stray click.
 /// A press draws nothing until it has moved past <see cref="TapSlop"/>, so a click never both
 /// draws and counts as a miss. Where a click landed comes from the screen's hit test
-/// (<see cref="TraceSpot"/>); how a finished trace is judged (every checkpoint touched) stays with
-/// the screen.
+/// (<see cref="TraceSpot"/>); a click on a stroke traces the checkpoint under it (the screen asks <see cref="IsClick"/>),
+/// and how a finished trace is judged is <see cref="TraceCheckpoints"/>.
 /// </summary>
 public sealed class TracePen
 {
@@ -62,8 +62,28 @@ public sealed class TracePen
     /// <summary>How far the pointer may move between press and release for it still to be a click.</summary>
     public const float TapSlop = 24;
 
+    /// <summary>
+    /// In tap mode (the button up, the pen following), a jump this far between two drawn points is a new stroke, never
+    /// a line across. A drag with the button held is one stroke however fast it goes; when its moves go elsewhere
+    /// (the parent gate, another program, the pointer leaving the window) the screen calls <see cref="Lift"/>.
+    /// </summary>
+    public const float MaxStep = 180;
+
     private Vector2? _pressedAt;
+    private Vector2? _lastDrawn;
     private QuestionAttempt _attempt = new();
+
+    /// <summary>
+    /// Where the stroke was before the point <see cref="Move"/> just drew, or null when that point starts a stroke:
+    /// the screen traces the whole step from here, so a fast mouse counts as much as a slow one.
+    /// </summary>
+    public Vector2? StrokeFrom { get; private set; }
+
+    /// <summary>
+    /// The last stretch of a drag, from its last drawn point to where the button came up, after <see cref="Release"/>:
+    /// the screen traces it so a stroke's end counts even when the last move fell short of it. Null otherwise.
+    /// </summary>
+    public (Vector2 From, Vector2 To)? StrokeEnd { get; private set; }
 
     public TracePenMode Mode { get; private set; } = TracePenMode.Idle;
     /// <summary>True once the trace is finished: the pen does nothing more.</summary>
@@ -81,6 +101,7 @@ public sealed class TracePen
     /// <summary>The button went down. A pen that was following stops here.</summary>
     public TraceTapResult Press(Vector2 at)
     {
+        _lastDrawn = null;
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Following)
         {
@@ -94,6 +115,24 @@ public sealed class TracePen
 
     /// <summary>The pointer moved. Returns true when this point should be drawn and traced.</summary>
     public bool Move(Vector2 at, bool buttonHeld)
+    {
+        // A drag starts where the button went down, not at its first move past the wobble: the stroke's tip counts.
+        var pressed = _pressedAt;
+        var wasDragging = Mode == TracePenMode.Dragging;
+        var draws = Moved(at, buttonHeld);
+        // A drag starts at its press, or afresh when its press went unseen (the gate had it): never a line from where
+        // the following pen last was.
+        if (draws && !wasDragging && Mode == TracePenMode.Dragging) _lastDrawn = pressed;
+        StrokeFrom = draws && _lastDrawn is { } last
+                     && (Mode == TracePenMode.Dragging || Vector2.Distance(last, at) <= MaxStep) ? last : null;
+        _lastDrawn = draws ? at : null;
+        return draws;
+    }
+
+    /// <summary>A click traced the letter (it landed on a stroke): like a drag, it forgives earlier stray clicks.</summary>
+    public void Traced() => _attempt = new QuestionAttempt();
+
+    private bool Moved(Vector2 at, bool buttonHeld)
     {
         if (IsFinished) return false;
         if (buttonHeld)
@@ -124,11 +163,13 @@ public sealed class TracePen
     /// </summary>
     public TraceTapResult Release(Vector2 at, TraceSpot spot)
     {
+        StrokeEnd = Mode == TracePenMode.Dragging && _lastDrawn is { } last && !IsFinished ? (last, at) : null;
+        _lastDrawn = null;
         if (IsFinished) return TraceTapResult.None;
         if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
-        if (_pressedAt is not { } pressed) return TraceTapResult.None;
+        var click = IsClick(at);
         _pressedAt = null;
-        if (Vector2.Distance(at, pressed) > TapSlop) return TraceTapResult.None;
+        if (!click) return TraceTapResult.None;
         switch (spot)
         {
             case TraceSpot.StartDot:
@@ -143,9 +184,25 @@ public sealed class TracePen
         }
     }
 
+    /// <summary>Whether a release at <paramref name="at"/> ends a click (press and release without moving much), not a drag.</summary>
+    public bool IsClick(Vector2 at) => !IsFinished && _pressedAt is { } pressed && Vector2.Distance(at, pressed) <= TapSlop;
+
+    /// <summary>
+    /// The screen's moves are going elsewhere (the parent gate opened, another program took the front, the pointer left
+    /// the window): the stroke ends here, so nothing joins it to where the pen comes back. A held drag stops; tap mode
+    /// keeps following, from a fresh point.
+    /// </summary>
+    public void Lift()
+    {
+        _lastDrawn = null;
+        _pressedAt = null;
+        if (Mode == TracePenMode.Dragging) Mode = TracePenMode.Idle;
+    }
+
     /// <summary>The trace is done: stop drawing for good.</summary>
     public void Finish()
     {
+        _lastDrawn = null;
         IsFinished = true;
         Mode = TracePenMode.Idle;
         _pressedAt = null;
